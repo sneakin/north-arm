@@ -1,3 +1,5 @@
+( Test cases for the built in words. )
+
 " Loading..." .
 
 : 2dup

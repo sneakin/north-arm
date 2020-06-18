@@ -1,21 +1,31 @@
-declare -a STACK
-declare -A DICT
+#
+# Stack
+#
 
+declare -a STACK
+
+# Pushes the argument onto the Forth stack.
 function fpush()
 {
     STACK=( "$1" "${STACK[@]}" )
 }
 
+# Pops 1 or more values from the Forth stack.
 function fpop()
 {
     local n="${1:-1}"
     STACK=( "${STACK[@]:$n}" )
 }
 
+#
+# Input reading
+#
+
 INPUT=""
 INPUT_BYTE=""
 TOKEN=""
 
+# Read a full of input into $INPUT.
 function read_input_line()
 {
     local prompt="$1"
@@ -27,6 +37,8 @@ function read_input_line()
     fi
 }
 
+# Read one byte from the input line, possibly
+# reading a new line when no input is available.
 function read_byte()
 {
     if [[ "${INPUT}" == "" ]]; then
@@ -45,31 +57,8 @@ function read_byte()
     return 0
 }
 
-function isspace()
-{
-    case "$1" in
-	"
-"|" "|"\t"|"\n"|"\r"|"") return 0 ;;
-	*) return 1 ;;
-    esac
-}
-
-function next_token()
-{
-    TOKEN=""
-    while read_byte; do
-	if isspace "$INPUT_BYTE"; then
-	    if [[ "${#TOKEN}" > 0 ]]; then
-		return 0
-	    fi
-	else
-	    TOKEN="${TOKEN}${INPUT_BYTE}"
-	fi
-    done
-
-    return 1
-}
-
+# Read bytes into $TOKEN until the read byte
+# matches the argument.
 function read_until()
 {
     TOKEN=""
@@ -87,6 +76,46 @@ function read_until()
     return 1
 }
 
+#
+# Tokenizing
+#
+
+# Return success if the argument is whitespace.
+function isspace()
+{
+    case "$1" in
+	"
+"|" "|"\t"|"\n"|"\r"|"") return 0 ;;
+	*) return 1 ;;
+    esac
+}
+
+# Read the next Forth token. Returned in $TOKEN.
+function next_token()
+{
+    TOKEN=""
+    while read_byte; do
+	if isspace "$INPUT_BYTE"; then
+	    if [[ "${#TOKEN}" > 0 ]]; then
+		return 0
+	    fi
+	else
+	    TOKEN="${TOKEN}${INPUT_BYTE}"
+	fi
+    done
+
+    return 1
+}
+
+#
+# Evaluation
+#
+
+declare -A DICT # the dictionary
+EVAL_EXPR=() # current expression being evaluated
+EIP=0 # current evaluated word's index
+
+# Execute the wordkpassed as an argument.
 function fexec()
 {
     local entry="${DICT[$1]}"
@@ -98,10 +127,12 @@ function fexec()
     fi
 }
 
+# Execute each token of read input.
 function finterp()
 {
     local fin=0
 
+    # Execute tokens until one does not `return 0`
     while [[ "$fin" != "1" ]] && next_token
     do
 	fexec "$TOKEN" || fin=1
@@ -110,20 +141,21 @@ function finterp()
     return $fin
 }
 
-EVAL_EXPR=()
-EIP=0
-
+# Execute all the arguments.
 function feval()
 {
+    # Save caller state
     local last_expr=( "${EVAL_EXPR[@]}" )
     local last_eip="$EIP"
+    # Set the evaluation state
     EVAL_EXPR=( "$@" )
     EIP=0
+    # Evaluate each word:
     while [[ "$EIP" -lt "${#EVAL_EXPR[@]}" ]]; do
 	fexec "${EVAL_EXPR[$EIP]}"
 	EIP=$(($EIP + 1))
     done
-
+    # Restore caller state
     EVAL_EXPR=( "${last_expr[@]}" )
     EIP="$last_eip"
 }
