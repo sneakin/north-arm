@@ -8,7 +8,8 @@ function fpush()
 
 function fpop()
 {
-    STACK=( "${STACK[@]:1}" )
+    local n="${1:-1}"
+    STACK=( "${STACK[@]:$n}" )
 }
 
 INPUT=""
@@ -109,36 +110,20 @@ function finterp()
     return $fin
 }
 
+EVAL_EXPR=()
+EIP=0
+
 function feval()
 {
-    local expr=( "$@" )
-    for ip in "${!expr[@]}"; do
-	fexec "${expr[$ip]}"
+    local last_expr=( "${EVAL_EXPR[@]}" )
+    local last_eip="$EIP"
+    EVAL_EXPR=( "$@" )
+    EIP=0
+    while [[ "$EIP" -lt "${#EVAL_EXPR[@]}" ]]; do
+	fexec "${EVAL_EXPR[$EIP]}"
+	EIP=$(($EIP + 1))
     done
-}
 
-function feval0()
-{
-    local expr=( "$@" )
-    local ip=0
-    while [[ "$ip" < "${#expr[@]}" ]]; do
-	echo "feval $ip/${#expr[@]} ${expr[$ip]}: ${!expr[@]}" 1>&2
-	case "${expr[$ip]}" in
-	    ifjump) if [[ "${STACK[0]}" != "0" ]]; then
-			fpop
-			ip=$(($ip + ${STACK[0]}))
-			fpop
-		    fi
-		    ;;
-	    unlessjump) if [[ "${STACK[0]}" == "0" ]]; then
-			    fpop
-			    ip=$(($ip + ${STACK[0]}))
-			    fpop
-		    fi
-		    ;;
-	    *) fexec "${expr[$ip]}"
-	       ip=$(($ip + 1))
-	       ;;
-	esac
-    done
+    EVAL_EXPR=( "${last_expr[@]}" )
+    EIP="$last_eip"
 }

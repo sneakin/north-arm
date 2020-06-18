@@ -1,0 +1,24 @@
+#+TITLE: North: Bash Bootstrap
+
+* Tasks
+** jumps & loops
+*** DONE relative jumps
+*** DONE returns
+*** TODO IF immediate to count offset
+** read strings properly in load, using immediates
+** compile loop:
+*** relocate indexes but not data literals
+*** immediate / compiling words & dictionary
+*** compiler lookup
+** Writing
+*** ddump to binary file
+*** initial code / header
+*** extract strings from data into section
+** Defining words
+*** Compiled words: create & def -> :
+*** Compiler words: :
+*** Immediates: immediate
+** Assemblers
+*** Bacaw
+*** x86
+*** ARM

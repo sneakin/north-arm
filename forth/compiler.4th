@@ -19,13 +19,3 @@
   ';' intern-tokens-until
   over dict-entry-data dpoke
 ;
-
-(
-# initial code / header
-# compile loop:
-## relocate indexes but not data literals
-## immediate / compiling words & dictionary
-## compiler lookup
-# extract strings from data into section
-# jumps & loops
-)
