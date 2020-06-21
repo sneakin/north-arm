@@ -1,21 +1,101 @@
-( Any compiled code needs to populate a dictionary
- on the data stack. Each word needs to point to the entry's cell on the data stack.
- )
-0 var> dict
+" Loading..." error-line
 
-: create
-  dhere swap dpush
-  0 dpush
-  dict dpush
-  dup set-dict
+0 var> compiling
+0 var> this-word
+
+: immediate-exec
+  dup immediate-lookup
+  null? 3 unless-jump drop 0 return
+  swap drop sys-exec 1
 ;
 
-: dict-entry-name 0 + ;
-: dict-entry-data 1 + ;
-: dict-entry-link 2 + ;
+" feval 0 set-compiling" ' ; set-immediate!
 
-: def
-  next-token create
-  ';' intern-tokens-until
-  over dict-entry-data dpoke
+: compiling-read-loop
+  next-token
+  null? 1 unless-jump return
+  immediate-exec drop
+  compiling 1 if-jump return
+  loop
 ;
+
+' *read-terminator* const> read-terminator
+
+: compiling-read
+  1 set-compiling
+  read-terminator compiling-read-loop
+;
+
+: 2dup
+  over over
+;
+  
+: stack-find-loop
+  2dup speek equals 3 unless-jump swap drop return
+  1 -
+  dup 0 equals 1 unless-jump return
+  loop
+;
+
+: stack-find
+  here 2 - stack-find-loop
+;
+
+: concat-seq-loop
+  dup speek
+  4 overn "  " swap ++ ++
+  3 set-overn
+  2dup equals 1 unless-jump return
+  1 + loop
+;
+
+: concat-seq
+  here literal 0 swap " " swap
+  read-terminator stack-find
+  dup 4 set-overn
+  1 + concat-seq-loop 2 dropn
+  2dup swap spoke
+  over here swap - 1 - dropn
+;
+
+: compile
+  compiling-read concat-seq
+;
+
+: immediate/1
+  dup get-word swap set-immediate!
+;
+
+: immediate this-word immediate/1 ;
+
+' ( immediate/1
+
+: :
+  next-token dup error-line
+  dup set-this-word
+  compile literal " feval " ++ swap set-word!
+;
+
+: IF
+  literal if-placeholder
+  literal unless-jump
+; immediate
+
+: UNLESS
+  literal if-placeholder
+  literal if-jump
+; immediate
+
+: ELSE
+  literal if-placeholder stack-find
+  literal if-placeholder literal jump
+  roll
+  dup 3 + here swap - swap spoke
+; immediate
+
+: THEN
+  literal if-placeholder stack-find
+  dup 3 + here swap - swap spoke
+; immediate
+
+" Done." error-line

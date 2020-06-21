@@ -115,15 +115,25 @@ declare -A DICT # the dictionary
 EVAL_EXPR=() # current expression being evaluated
 EIP=0 # current evaluated word's index
 
-# Execute the wordkpassed as an argument.
+# Execute the word passed as an argument.
+function fsysexec()
+{
+    local entry="${1}"
+    # echo "fexec $1 -> '$entry'" 1>&2
+    eval "${entry}" || return $?
+}
+
+# Lookup and execute the word passed as an argument.
 function fexec()
 {
-    local entry="${DICT[$1]}"
-    # echo "fexec $1 -> '$entry'" 1>&2
+    local entry=""
+    if [[ "$1" != "" ]]; then
+	entry="${DICT[$1]}"
+    fi
     if [[ "${entry}" == "" ]]; then
 	fpush "$1"
     else
-	eval "${entry}" || return $?
+	fsysexec "${entry}"
     fi
 }
 
