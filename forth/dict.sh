@@ -88,9 +88,13 @@ DICT[',+']='fpush $((${STACK[1]} + ${STACK[0]}))'
 DICT['+']='feval ,+ rot drop drop'
 DICT[',-']='fpush $((${STACK[1]} - ${STACK[0]}))'
 DICT['-']='feval ,- rot drop drop'
+DICT[',*']='fpush $((${STACK[1]} * ${STACK[0]}))'
+DICT['*']='feval ,* rot drop drop'
 
 DICT[',bsl']='fpush $((${STACK[1]} << ${STACK[0]}))'
 DICT['bsl']='feval ,bsl rot drop drop'
+DICT[',bsr']='fpush $((${STACK[1]} >> ${STACK[0]}))'
+DICT['bsr']='feval ,bsr rot drop drop'
 
 DICT[',logior']='fpush $((${STACK[1]} | ${STACK[0]}))'
 DICT['logior']='feval ,logior rot drop drop'
@@ -105,6 +109,9 @@ DICT['int32']="${DICT[literal]}"
 # String ops
 #
 DICT['++']='v="${STACK[0]}${STACK[1]}"; fpop 2; fpush "$v"'
+DICT['string-length']='v="${STACK[0]}"; fpop; fpush "${#v}"'
+DICT['string-peek']='v="${STACK[1]}"; n="${STACK[0]}"; fpop 2; fpush "${v:$n:1}"'
+DICT['char-code']="v=\$(printf %d \\'\${STACK[0]}); fpop; fpush \$v"
 
 #
 # Output
@@ -116,6 +123,7 @@ DICT[',h']='printf "%x\n" "${STACK[0]}"'
 DICT['write-string']='echo -n -e "${STACK[0]}"; fpop'
 DICT['write-line']='echo -e "${STACK[0]}"; fpop'
 DICT['error-line']='echo -e "${STACK[0]}" 1>&2; fpop'
+DICT['write-byte']='printf "\\x$(printf %x "${STACK[0]}")"; fpop'
 
 #IDICT['"']="${DICT['\"']}"
 #IDICT["\'"]="${DICT[\\\"\'\\\"]}"
