@@ -2,8 +2,11 @@
 
 ROOT=$(dirname "$BASH_SOURCE")
 
+set -e
+
 source "$ROOT"/core.sh
 source "$ROOT"/dict.sh
+source "$ROOT"/state.sh
 source "$ROOT"/data.sh
 source "$ROOT"/compiler.sh
 
