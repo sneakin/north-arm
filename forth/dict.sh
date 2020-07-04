@@ -88,8 +88,10 @@ DICT[',+']='fpush $((${STACK[1]} + ${STACK[0]}))'
 DICT['+']='feval ,+ rot drop drop'
 DICT[',-']='fpush $((${STACK[1]} - ${STACK[0]}))'
 DICT['-']='feval ,- rot drop drop'
-DICT[',*']='fpush $((${STACK[1]} * ${STACK[0]}))'
-DICT['*']='feval ,* rot drop drop'
+DICT[',mult']='fpush $((${STACK[1]} * ${STACK[0]}))'
+DICT['mult']='feval ,mult rot drop drop'
+DICT[',/']='fpush $((${STACK[1]} / ${STACK[0]}))'
+DICT['/']='feval ,/ rot drop drop'
 
 DICT[',bsl']='fpush $((${STACK[1]} << ${STACK[0]}))'
 DICT['bsl']='feval ,bsl rot drop drop'
@@ -116,7 +118,7 @@ DICT['char-code']="v=\$(printf %d \\'\${STACK[0]}); fpop; fpush \$v"
 #
 # Output
 #
-DICT[".s"]='echo Stack ${#STACK[@]}: ${STACK[@]}'
+DICT[".s"]='echo "Stack ${#STACK[@]}: ${STACK[@]}" 1>&2'
 DICT[","]='echo -e "${STACK[0]}"'
 DICT['.']='feval , drop'
 DICT[',h']='printf "%x\n" "${STACK[0]}"'

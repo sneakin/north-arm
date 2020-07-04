@@ -5,10 +5,11 @@
 ;
 
 : ,uint8 255 logand dpush ;
+: uint8! swap 255 logand swap dpoke ;
 
 : ,uint16
   dup ,uint8
-  -8 bsl ,uint8
+  8 bsr ,uint8
 ;
 
 : ,uint32
@@ -16,6 +17,13 @@
   dup 8 bsr ,uint8
   dup 16 bsr ,uint8
   24 bsr ,uint8
+;
+
+: uint32!
+  2dup uint8!
+  1 + swap 8 bsr swap 2dup uint8!
+  1 + swap 8 bsr swap 2dup uint8!
+  1 + swap 8 bsr swap uint8!
 ;
 
 : ,byte-string/3
@@ -27,5 +35,5 @@
 
 : ,byte-string
   dup string-length 0 ,byte-string/3
-  4 dropn
+  3 dropn
 ;

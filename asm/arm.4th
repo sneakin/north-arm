@@ -6,6 +6,7 @@
 : arm-gen-registers
   1 - dup arm-gen-reg
   dup 0 equals UNLESS loop THEN
+  drop
 ;
 
 16 arm-gen-registers
