@@ -1,5 +1,3 @@
-( Happy loading: load whole file with program header, .text section that starts at 0x8000, valid strings for sections )
-
 : page-align
   4096 + 4096 / 4096 mult
 ;
@@ -59,9 +57,9 @@
 ( ' shentsize uint16 field )
 40 ,uint16
 ( ' shentnum uint16 field )
-4 ,uint16
-( ' shstrindx uint16 field )
 3 ,uint16
+( ' shstrindx uint16 field )
+2 ,uint16
 ;
 
 : write-elf32-interp-program-header
@@ -127,15 +125,15 @@ dup ,uint32
 ( ' offset uint32 field )
 swap ,uint32
 ( ' vaddr uint32 field )
-0 ( x80000 ) ,uint32
+0x80000 ,uint32
 ( ' paddr uint32 field )
-0 ( x80000 ) ,uint32
+0x80000 ,uint32
 ( ' filesz uint32 field )
 dup ,uint32
 ( ' memsz uint32 field )
 ,uint32
 ( ' flags uint32 field )
-7 ,uint32
+5 ,uint32
 ( ' align uint32 field )
 0x10000 ,uint32
 ;
@@ -169,7 +167,7 @@ swap dup ( x80000 ) ,uint32
 ( ' type uint32 field )
 3 ,uint32
 ( ' flags uint32 field )
-0x23 ,uint32
+0x20 ,uint32
 ( ' addr uint32 field )
 0 ,uint32
 ( ' offset uint32 field )
@@ -192,11 +190,11 @@ swap ,uint32
 ( ' type uint32 field )
 7 ,uint32
 ( ' flags uint32 field )
-2 ,uint32
+0 ,uint32
 ( ' addr uint32 field )
-swap dup ,uint32
+0 ,uint32
 ( ' offset uint32 field )
-,uint32
+swap ,uint32
 ( ' size uint32 field )
 ,uint32
 ( ' link uint32 field )
@@ -285,22 +283,24 @@ swap dup ,uint32
 : write-elf32
   write-elf32-header
   ( dhere write-elf32-interp )
-  0x8000 align-data
+  0x10 align-data
   dhere write-elf32-code
   dhere write-elf32-abi-tag
   dhere write-elf32-string-section
 
+  0x10 align-data
   dhere .s
   ( 5 overn 5 overn over - .s write-elf32-interp-program-header )
-  0 33059 write-elf32-program-code-header
+  0 over write-elf32-program-code-header
   ( 2 overn 2 overn over - write-elf32-program-string-header )
 
+  0x10 align-data
   dhere .s
   write-elf32-zero-section-header
   5 overn 5 overn over - write-elf32-code-section-header
-  4 overn 4 overn over - write-elf32-abi-tag-section-header
+  ( 4 overn 4 overn over - write-elf32-abi-tag-section-header )
   3 overn 3 overn over - write-elf32-string-section-header
 
   ( needs header offsets )
-  ( 0x8000 6 overn + ) 5 overn rot swap .s rewrite-elf32-header
+  5 overn 0x80000 + rot swap .s rewrite-elf32-header
 ;

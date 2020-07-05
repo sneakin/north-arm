@@ -1,3 +1,8 @@
+( Happy with:
+    loading code from offset zero
+    proper section flags
+    data section addr including the offset and no overlap with other section data. )
+
 : page-align
   4096 + 4096 / 4096 mult
 ;
@@ -47,7 +52,7 @@
 ( ' shoff uint32 field )
 0 ,uint32
 ( ' flags uint32 field )
-0x5000082 ,uint32
+0x5400482 ,uint32
 ( ' ehsize uint16 field )
 52 ,uint16
 ( ' phentsize uint16 field )
@@ -57,7 +62,7 @@
 ( ' shentsize uint16 field )
 40 ,uint16
 ( ' shentnum uint16 field )
-6 ,uint16
+5 ,uint16
 ( ' shstrindx uint16 field )
 3 ,uint16
 ;
@@ -85,11 +90,11 @@ dup ,uint32
 ( ' type uint32 field )
 1 ,uint32
 ( ' offset uint32 field )
-swap ,uint32
+swap dup ,uint32
 ( ' vaddr uint32 field )
-0x410000 ,uint32
+0x410000 + dup ,uint32
 ( ' paddr uint32 field )
-0x410000 ,uint32
+,uint32
 ( ' filesz uint32 field )
 dup ,uint32
 ( ' memsz uint32 field )
@@ -97,7 +102,7 @@ page-align ,uint32
 ( ' flags uint32 field )
 6 ,uint32
 ( ' align uint32 field )
-0x10000 ,uint32
+0x4 ,uint32
 ;
 
 : write-elf32-program-string-header
@@ -114,7 +119,7 @@ dup ,uint32
 ( ' memsz uint32 field )
 page-align ,uint32
 ( ' flags uint32 field )
-6 ,uint32
+5 ,uint32
 ( ' align uint32 field )
 0x10000 ,uint32
 ;
@@ -123,7 +128,7 @@ page-align ,uint32
 ( ' type uint32 field )
 1 ,uint32
 ( ' offset uint32 field )
-236 ,uint32
+0 ,uint32
 ( ' vaddr uint32 field )
 0x420000 ,uint32
 ( ' paddr uint32 field )
@@ -150,7 +155,7 @@ swap ,uint32
 ( ' filesz uint32 field )
 dup ,uint32
 ( ' memsz uint32 field )
-page-align ,uint32
+,uint32
 ( ' flags uint32 field )
 5 ,uint32
 ( ' align uint32 field )
@@ -165,9 +170,9 @@ page-align ,uint32
 ( ' flags uint32 field )
 6 ,uint32
 ( ' addr uint32 field )
-0x80000 ,uint32
+swap dup 0x80000 + ,uint32
 ( ' offset uint32 field )
-swap ,uint32
+,uint32
 ( ' size uint32 field )
 ,uint32
 ( ' link uint32 field )
@@ -175,7 +180,7 @@ swap ,uint32
 ( ' info uint32 field )
 0 ,uint32
 ( ' addralign uint32 field )
-4 ,uint32
+4096 ,uint32
 ( ' entsize uint32 field )
 0 ,uint32
 ;
@@ -188,9 +193,9 @@ swap ,uint32
 ( ' flags uint32 field )
 3 ,uint32
 ( ' addr uint32 field )
-0x410000 ,uint32
+swap dup 0x410000 + ,uint32
 ( ' offset uint32 field )
-swap ,uint32
+,uint32
 ( ' size uint32 field )
 ,uint32
 ( ' link uint32 field )
@@ -198,7 +203,7 @@ swap ,uint32
 ( ' info uint32 field )
 0 ,uint32
 ( ' addralign uint32 field )
-1 ,uint32
+4 ,uint32
 ( ' entsize uint32 field )
 0 ,uint32
 ;
@@ -209,7 +214,7 @@ swap ,uint32
 ( ' type uint32 field )
 3 ,uint32
 ( ' flags uint32 field )
-0x23 ,uint32
+0x20 ,uint32
 ( ' addr uint32 field )
 0 ,uint32
 ( ' offset uint32 field )
@@ -238,7 +243,7 @@ swap ,uint32
 ( ' offset uint32 field )
 0 ,uint32
 ( ' size uint32 field )
-0 ,uint32
+4096 ,uint32
 ( ' link uint32 field )
 0 ,uint32
 ( ' info uint32 field )
@@ -255,9 +260,9 @@ swap ,uint32
 ( ' type uint32 field )
 1 ,uint32
 ( ' flags uint32 field )
-1 ,uint32
+0 ,uint32
 ( ' addr uint32 field )
-0x430000 ,uint32
+0 ,uint32
 ( ' offset uint32 field )
 0 ,uint32
 ( ' size uint32 field )
@@ -347,7 +352,7 @@ swap ,uint32
 
   dhere .s
   ( 5 overn 5 overn over - .s write-elf32-interp-program-header )
-  4 overn 4 overn over - write-elf32-program-code-header
+  ( 0 over ) 0 4 overn write-elf32-program-code-header
   3 overn 3 overn over - write-elf32-program-data-header
   ( 2 overn 2 overn over - write-elf32-program-string-header )
   write-elf32-program-bss-header
@@ -358,7 +363,7 @@ swap ,uint32
   4 overn 4 overn over - write-elf32-data-section-header
   3 overn 3 overn over - write-elf32-string-section-header
   write-elf32-bss-section-header
-  write-elf32-noinit-section-header
+  ( write-elf32-noinit-section-header )
 
   ( needs header offsets )
   5 overn
