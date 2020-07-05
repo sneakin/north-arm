@@ -1,0 +1,7 @@
+#!/bin/bash
+
+FFROOT=$(dirname "$0")
+source "$FFROOT"/../forth/forth.sh
+source "$FFROOT"/fforth.dict
+
+finterp

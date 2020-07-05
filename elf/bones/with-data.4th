@@ -1,3 +1,8 @@
+forth/compiler.4th load
+asm/words.4th load
+asm/byte-data.4th load
+asm/arm.4th load
+
 ( Happy with:
     loading code from offset zero
     proper section flags
@@ -369,3 +374,6 @@ swap ,uint32
   5 overn
   0x80000 + rot swap .s rewrite-elf32-header
 ;
+
+write-elf32
+0 ddump-binary-bytes

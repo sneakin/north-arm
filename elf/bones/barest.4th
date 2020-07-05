@@ -1,3 +1,8 @@
+forth/compiler.4th load
+asm/words.4th load
+asm/byte-data.4th load
+asm/arm.4th load
+
 : page-align
   4096 + 4096 / 4096 mult
 ;
@@ -304,3 +309,6 @@ swap ,uint32
   ( needs header offsets )
   5 overn 0x80000 + rot swap .s rewrite-elf32-header
 ;
+
+write-elf32
+0 ddump-binary-bytes

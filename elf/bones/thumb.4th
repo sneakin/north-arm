@@ -1,4 +1,7 @@
-( Happy loading: load whole file with program header, .text section that starts at 0x8000, valid strings for sections )
+forth/compiler.4th load
+asm/words.4th load
+asm/byte-data.4th load
+asm/thumb.4th load
 
 : page-align
   4096 + 4096 / 4096 mult
@@ -323,3 +326,6 @@ swap ,uint32
   ( needs header offsets )
   5 overn 0x80001 + rot swap .s rewrite-elf32-header
 ;
+
+write-elf32
+0 ddump-binary-bytes
