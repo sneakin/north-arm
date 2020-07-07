@@ -1,12 +1,3 @@
-forth/compiler.4th load
-asm/words.4th load
-asm/byte-data.4th load
-asm/thumb.4th load
-
-: page-align
-  4096 + 4096 / 4096 mult
-;
-
 : write-elf32-header
 ( ' id uint8 16 array-field )
 ( EI_MAG0 0 File identification )
@@ -88,7 +79,7 @@ dup ,uint32
 ( ' flags uint32 field )
 6 ,uint32
 ( ' addr uint32 field )
-swap dup ,uint32
+swap dup 0x80000 + ,uint32
 ( ' offset uint32 field )
 ,uint32
 ( ' size uint32 field )
@@ -204,28 +195,20 @@ swap ,uint32
   24 uint32!
 ;
 
-: write-elf32
-  write-elf32-header
-  ( dhere write-elf32-interp )
-  0x10 align-data
-  dhere write-elf32-code
-  dhere write-elf32-abi-tag
+: write-elf32-ending ( code-start entry )
   dhere write-elf32-string-section
 
   0x10 align-data
-  dhere .s
-  0 dhere write-elf32-program-code-header
+  dhere
+  0 over write-elf32-program-code-header
   
-  dhere .s
+  dhere
   write-elf32-zero-section-header
-  5 overn 5 overn over - write-elf32-code-section-header
-  ( 4 overn 4 overn over - write-elf32-abi-tag-section-header )
+  5 overn 3 overn over - write-elf32-code-section-header
   3 overn 3 overn over - write-elf32-string-section-header
 
   ( needs entry + 1, section header, and program header offsets )
-  5 overn 0x80001 +
+  4 overn 0x80000 +
   rot swap rewrite-elf32-header
 ;
 
-write-elf32
-0 ddump-binary-bytes

@@ -37,3 +37,9 @@
   dup string-length 0 ,byte-string/3
   3 dropn
 ;
+
+: align-data
+  dhere over + over / over mult
+  dmove
+  drop
+;

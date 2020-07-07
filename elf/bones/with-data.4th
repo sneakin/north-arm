@@ -12,12 +12,6 @@ asm/arm.4th load
   4096 + 4096 / 4096 mult
 ;
 
-: align-data
-  dhere over + over / over mult
-  dmove
-  drop
-;
-  
 : write-elf32-header
 ( ' id uint8 16 array-field )
 ( EI_MAG0 0 File identification )

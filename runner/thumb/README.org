@@ -1,0 +1,16 @@
+* Building
+cat runner/thumb/build.4th|./forth/forth.sh>runner1.bin
+- or -
+make runner/thumb/build.elf
+
+* Inspecting
+readelf -a runner1.bin
+
+* Decompiling
+objdump -Mforce-thumb -d runner1.bin
+
+* Stepping
+qemu-arm -g 11223 ./runner1.bin &
+gdb runner1.bin
+target remote localhost:11223
+cont

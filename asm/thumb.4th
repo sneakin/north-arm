@@ -115,7 +115,7 @@ alias> sl r10
 ( 0 1 0 0 1 Rd Word:8 PC-relative load )
 : ldr-pc ( value rd )
   8 bsl
-  swap 0xFF logand logior
+  swap 2 bsr 0xFF logand logior
   9 11 bsl logior
 ;
 
@@ -141,7 +141,7 @@ alias> sl r10
 ( 0 1 1 B L Offset:5 Rb:3 Rd:3 Load/store with immediate offset )
 : str-offset ( offset rb rd )
   swap 3 bsl logior
-  swap 6 bsl logior
+  swap 2 bsr 31 logand 6 bsl logior
   3 13 bsl logior
 ;
 
@@ -267,4 +267,12 @@ alias> sl r10
   dup 12 bsr bl-hi
   swap 1 bsr bl-lo 16 bsl
   logior
+;
+
+: bkpt/1
+  0xFF logand 0xBE00 logior
+;
+
+: bkpt
+  0 bkpt/1
 ;

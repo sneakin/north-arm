@@ -4,4 +4,9 @@ a.out
 *.elf
 *.dict
 *.exe
+bin/runner-*
+bin/*.dict
+*.out
+*.bin
+*.log
 
