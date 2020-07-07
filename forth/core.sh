@@ -85,7 +85,7 @@ function isspace()
 {
     case "$1" in
 	"
-"|" "|"\t"|"\n"|"\r"|"") return 0 ;;
+"|" "|""|"\v"|"	"|"\t"|"\n"|"\r"|"") return 0 ;;
 	*) return 1 ;;
     esac
 }

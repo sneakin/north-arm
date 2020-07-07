@@ -113,7 +113,7 @@ DICT['int32']="${DICT[literal]}"
 DICT['++']='v="${STACK[0]}${STACK[1]}"; fpop 2; fpush "$v"'
 DICT['string-length']='v="${STACK[0]}"; fpop; fpush "${#v}"'
 DICT['string-peek']='v="${STACK[1]}"; n="${STACK[0]}"; fpop 2; fpush "${v:$n:1}"'
-DICT['char-code']="v=\$(printf %d \\'\${STACK[0]}); fpop; fpush \$v"
+DICT['char-code']="v=\$(printf %d \"'\${STACK[0]}\"); fpop; fpush \$v"
 
 #
 # Output
@@ -122,6 +122,7 @@ DICT[".s"]='echo "Stack ${#STACK[@]}: ${STACK[@]}" 1>&2'
 DICT[","]='echo -e "${STACK[0]}"'
 DICT['.']='feval , drop'
 DICT[',h']='printf "%x\n" "${STACK[0]}"'
+DICT[',,h']='printf "%x\n" "${STACK[0]}" 1>&2'
 DICT['write-string']='echo -n -e "${STACK[0]}"; fpop'
 DICT['write-line']='echo -e "${STACK[0]}"; fpop'
 DICT['error-line']='echo -e "${STACK[0]}" 1>&2; fpop'
