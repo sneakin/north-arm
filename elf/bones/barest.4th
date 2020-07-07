@@ -175,11 +175,11 @@ swap ,uint32
 : write-elf32
   write-elf32-header
 
-  0x10 align-data
+  0x10 pad-data
   dhere write-elf32-code
   dhere write-elf32-string-section
 
-  0x10 align-data
+  0x10 pad-data
   dhere
   0 over write-elf32-program-code-header
 

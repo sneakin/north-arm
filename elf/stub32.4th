@@ -198,7 +198,7 @@ swap ,uint32
 : write-elf32-ending ( code-start entry )
   dhere write-elf32-string-section
 
-  0x10 align-data
+  0x10 pad-data
   dhere
   0 over write-elf32-program-code-header
   

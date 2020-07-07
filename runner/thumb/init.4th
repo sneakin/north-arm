@@ -29,11 +29,17 @@ defop init
   0 r2 mov# ,uint16
   0 r3 mov# ,uint16
   0 eip mov# ,uint16
+  ( set the dictionary )
+  12 dict-reg ldr-pc ,uint16
+  cs dict-reg dict-reg add ,uint16
   ( exec boot )
-  8 r1 ldr-pc ,uint16
+  6 r1 ldr-pc ,uint16
   op-exec-r1 emit-op-call
   ( data: )
   4 align-data
-  dhere 18 - ,uint32
+  dict dict-entry-size + 6 + ,uint32
   op-boot ,uint32
+  dict ,uint32
 endop
+
+  ( todo set dict in colon def from const )

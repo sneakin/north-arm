@@ -207,12 +207,12 @@ swap ,uint32
 : write-elf32
   write-elf32-header
   ( dhere write-elf32-interp )
-  0x10 align-data
+  0x10 pad-data
   dhere write-elf32-code
   dhere write-elf32-abi-tag
   dhere write-elf32-string-section
 
-  0x10 align-data
+  0x10 pad-data
   dhere .s
   0 dhere write-elf32-program-code-header
   

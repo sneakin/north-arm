@@ -13,12 +13,13 @@ pc r3 mov-hilo ,uint16
 r0 r3 r5 add ,uint16
 r0 pc add-lohi ,uint16
 0xBEEFBEEF ,uint32
+dhere
 
 runner/thumb/ops.4th load
 runner/thumb/init.4th load
 
 ( todo needs to branch to code's seq )
-op-init dict-entry-size + over - 8 - .s over 8 + uint32!
+op-init dict-entry-size + swap - .s over 8 + uint32!
 
 ( todo load itself into dictionary )
 

@@ -2,14 +2,15 @@
   " op-" ++ make-const
 ;
 
+0 var> dict
+4 const> cell-size
+r5 const> dict-reg
+r6 const> cs
+r7 const> eip
+
 : rel-addr
   dhere -
 ;
-
-0 var> dict
-4 const> cell-size
-r6 const> cs
-r7 const> eip
 
 : dict-entry-size cell-size 4 mult ;
 : dict-entry-code cell-size + ;
@@ -25,7 +26,6 @@ r7 const> eip
 ;
 
 : create
-  next-token
   dup error-line
   dup make-dict-entry ,,h
   dup rot make-label
@@ -38,7 +38,7 @@ r7 const> eip
 ;
 
 : defop
-  create does-code
+  next-token create does-code
 ;
 
 : endop
@@ -47,13 +47,14 @@ r7 const> eip
 ; immediate
 
 : does-col
-  4 align-data
   op-do-col dict dict-entry-code uint32!
+  4 align-data
   dhere dict dict-entry-data uint32!
 ;
 
 : defcol
-  create does-col
+  next-token create does-col
+  ( ' cross-dict compiling-read )
 ;
 
 : endcol

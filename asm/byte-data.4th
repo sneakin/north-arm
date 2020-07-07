@@ -39,6 +39,12 @@
 ;
 
 : align-data
+  dhere over / over mult
+  dmove
+  drop
+;
+
+: pad-data
   dhere over + over / over mult
   dmove
   drop

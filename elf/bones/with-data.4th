@@ -342,11 +342,11 @@ swap ,uint32
 : write-elf32
   write-elf32-header
   dhere write-elf32-interp
-  4 align-data
+  4 pad-data
   dhere write-elf32-code
-  4 align-data
+  4 pad-data
   dhere write-elf32-data
-  4 align-data
+  4 pad-data
   dhere write-elf32-string-section
 
   dhere .s
