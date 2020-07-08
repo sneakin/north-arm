@@ -164,11 +164,11 @@ swap ,uint32
 ;
 
 : write-elf32-string-section
-  " " ,byte-string
-  " .text" ,byte-string
-  " .data" ,byte-string
-  " .shstrtab" ,byte-string
-  " .note.ABI-tag" ,byte-string
+  literal " " ,byte-string
+  literal " .text" ,byte-string
+  literal " .data" ,byte-string
+  literal " .shstrtab" ,byte-string
+  literal " .note.ABI-tag" ,byte-string
 ;
 
 : write-elf32-code

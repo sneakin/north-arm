@@ -171,13 +171,30 @@ defop sysexit
 endop
 
 defcol abort
-  op-int32 ,uint32 255 ,uint32
-  op-sysexit ,uint32
-  op-exit ,uint32
+  int32 255
+  sysexit
+  exit
 endcol
 
 defcol bye
-  op-int32 ,uint32 0 ,uint32
-  op-sysexit ,uint32
-  op-exit ,uint32
+  int32 0
+  sysexit
+  exit
 endcol
+
+defop does-const
+  ( load word in R1's data to ToS )
+  0 r0 bit-set pushr ,uint16
+  0 dict-entry-data r1 r0 ldr-offset ,uint16
+  emit-next
+endop
+
+: defconst
+  create
+  ' op-does-const dict dict-entry-code uint32!
+  dict dict-entry-data uint32!
+;
+
+: defconst>
+  next-token defconst
+;

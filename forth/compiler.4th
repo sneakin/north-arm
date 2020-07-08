@@ -3,6 +3,20 @@
 0 var> compiling
 0 var> this-word
 
+: alias
+  get-word swap set-word!
+;
+
+: alias>
+  next-token next-token alias
+;
+
+alias> down-stack/1 +
+: down-stack 1 down-stack/1 ;
+
+alias> up-stack/1 -
+: up-stack 1 up-stack/1 ;
+
 : immediate-exec
   dup immediate-lookup
   null? 3 unless-jump drop 0 return
@@ -32,30 +46,34 @@
   
 : stack-find-loop
   2dup speek equals 3 unless-jump swap drop return
-  1 -
+  up-stack
   dup 0 equals 1 unless-jump return
   loop
 ;
 
+: stack-find/2
+  2 up-stack/1 stack-find-loop
+;
+
 : stack-find
-  here 2 - stack-find-loop
+  here stack-find/2
 ;
 
 : concat-seq-loop
-  dup speek
+  dup speek has-spaces? 1 unless-jump quote-string
   4 overn "  " swap ++ ++
   3 set-overn
   2dup equals 1 unless-jump return
-  1 + loop
+  down-stack loop
 ;
 
 : concat-seq
   here literal 0 swap " " swap
   read-terminator stack-find
   dup 4 set-overn
-  1 + concat-seq-loop 2 dropn
+  down-stack concat-seq-loop 2 dropn
   2dup swap spoke
-  over here swap - 1 - dropn
+  over here swap - up-stack dropn
 ;
 
 : compile
@@ -90,12 +108,12 @@
   literal if-placeholder stack-find
   literal if-placeholder literal jump
   roll
-  dup 3 + here swap - swap spoke
+  dup 3 + here swap up-stack/1 swap spoke
 ; immediate
 
 : THEN
   literal if-placeholder stack-find
-  dup 3 + here swap - swap spoke
+  dup 3 + here swap up-stack/1 swap spoke
 ; immediate
 
 " Done." error-line

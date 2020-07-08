@@ -21,7 +21,7 @@ bin/fforth.dict: ./forth/forth.sh ./forth/compiler.4th ./forth/data.sh ./forth/s
 bin/runner-thumb: runner/thumb/build.elf
 	ln -sf ../$< $@
 
-runner/thumb/build.elf: runner/thumb/build.4th runner/thumb/ops.4th runner/thumb/init.4th runner/thumb/words.4th
+runner/thumb/build.elf: runner/thumb/build.4th runner/thumb/ops.4th runner/thumb/init.4th runner/thumb/words.4th elf/stub32.4th  asm/words.4th asm/byte-data.4th
 
 %.elf: %.4th
 	cat $< | $(FORTH) > $@

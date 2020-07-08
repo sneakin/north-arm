@@ -38,14 +38,15 @@
   3 dropn
 ;
 
-: align-data
-  dhere over / over mult
-  dmove
-  drop
+: pad-addr ( addr alignment )
+  2dup + over / over mult
+  rot 2 dropn
 ;
 
 : pad-data
-  dhere over + over / over mult
-  dmove
-  drop
+  dhere swap pad-addr dmove
+;
+
+: align-data
+  dhere over / IF pad-data ELSE drop THEN
 ;

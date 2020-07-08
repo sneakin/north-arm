@@ -52,12 +52,26 @@ r7 const> eip
   dhere dict dict-entry-data uint32!
 ;
 
+: cross-lookup
+  dup " op-" ++
+  dup get-word null? IF 2 dropn return THEN
+  drop swap drop exec
+;
+
+: defcol-cb
+  cross-lookup number? IF ,uint32 ELSE ,byte-string THEN
+  1 +
+;
+
+: defcol-read
+  compiling-read here 0 literal ' defcol-cb revmap-stack-seq/3 1 + dropn
+  op-exit ,uint32
+;
+
 : defcol
-  next-token create does-col
-  ( ' cross-dict compiling-read )
+  next-token create does-col defcol-read
 ;
 
 : endcol
-  0 ,uint16
-  4 align-data
+  0 set-compiling
 ; immediate

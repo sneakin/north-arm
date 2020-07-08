@@ -15,8 +15,10 @@ DICT['sys-exec']='tip="${STACK[0]}"; fpop; fsysexec "$tip"'
 # Equality
 #
 DICT['not']='STACK[0]=$(($STACK[0] == 0))'
-DICT['null?']='if [[ "${STACK[0]}" == "" ]]; then fpush 1; else fpush 0; fi'
 DICT['equals']='if [[ "${STACK[0]}" == "${STACK[1]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
+
+DICT['null?']='if [[ "${STACK[0]}" == "" ]]; then fpush 1; else fpush 0; fi'
+DICT['number?']='if [[ "${STACK[0]}" =~ -?[0-9]+(\.[0-9]+)? ]] || [[ "${STACK[0]}" =~ -?(0x)[0-9a-fA-F]+(\.[0-9a-fA-F]+)? ]]; then fpush 1; else fpush 0; fi'
 
 #
 # Stack ops
@@ -114,6 +116,8 @@ DICT['++']='v="${STACK[0]}${STACK[1]}"; fpop 2; fpush "$v"'
 DICT['string-length']='v="${STACK[0]}"; fpop; fpush "${#v}"'
 DICT['string-peek']='v="${STACK[1]}"; n="${STACK[0]}"; fpop 2; fpush "${v:$n:1}"'
 DICT['char-code']="v=\$(printf %d \"'\${STACK[0]}\"); fpop; fpush \$v"
+DICT['has-spaces?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([ \t\n\r\v]) ]]; then fpush 1; else fpush 0; fi'
+DICT['quote-string']='v="${STACK[0]}"; fpop; fpush "$(printf %q "$v")"'
 
 #
 # Output
@@ -132,7 +136,7 @@ DICT['write-byte']='printf "\\x$(printf %x "${STACK[0]}")"; fpop'
 #IDICT["\'"]="${DICT[\\\"\'\\\"]}"
 
 IDICT["'"]='next_token; fpush "${TOKEN}"'
-IDICT['"']='read_until \" && fpush "\"${TOKEN}\""'
+IDICT['"']='read_until \" && fpush "${TOKEN}"'
 
 #
 # Startup
