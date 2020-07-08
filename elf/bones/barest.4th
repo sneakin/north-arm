@@ -150,10 +150,10 @@ swap ,uint32
 ;
 
 : write-elf32-string-section
-  " " ,byte-string
-  " .text" ,byte-string
-  " .data" ,byte-string
-  " .shstrtab" ,byte-string
+  literal " " ,byte-string
+  literal " .text" ,byte-string
+  literal " .data" ,byte-string
+  literal " .shstrtab" ,byte-string
 ;
 
 : write-elf32-code
@@ -176,11 +176,11 @@ swap ,uint32
   write-elf32-header
 
   0x10 pad-data
-  dhere write-elf32-code
-  dhere write-elf32-string-section
+  dhere .s write-elf32-code
+  dhere .s write-elf32-string-section
 
   0x10 pad-data
-  dhere
+  dhere .s
   0 over write-elf32-program-code-header
 
   dhere

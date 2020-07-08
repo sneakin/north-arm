@@ -304,13 +304,13 @@ swap ,uint32
 ;
 
 : write-elf32-string-section
-  " " ,byte-string
-  " .text" ,byte-string
-  " .data" ,byte-string
-  " .shstrtab" ,byte-string
-  " .bss" ,byte-string
-  " .noinit" ,byte-string
-  " Nolan's Forth" ,byte-string
+  literal " " ,byte-string
+  literal " .text" ,byte-string
+  literal " .data" ,byte-string
+  literal " .shstrtab" ,byte-string
+  literal " .bss" ,byte-string
+  literal " .noinit" ,byte-string
+  literal " Nolan's Forth" ,byte-string
 ;
 
 : write-elf32-code
@@ -324,7 +324,7 @@ swap ,uint32
 ;
 
 : write-elf32-data
-  " Data here" ,byte-string
+  literal " Data here" ,byte-string
 ;
 
 : rewrite-elf32-header ( entry section-headers program-headers )

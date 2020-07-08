@@ -42,21 +42,21 @@ alias> ip r12
 
 arm-conditions:
   ( Code Suffix Flags Meaning )
-  0000 eq Z " set equal"
-  0001 ne Z " clear not equal"
-  0010 cs C " set unsigned higher or same"
-  0011 cc C " clear unsigned lower"
-  0100 mi N " set negative"
-  0101 pl N " clear positive or zero"
-  0110 vs V " set overflow"
-  0111 vc V " clear no overflow"
-  1000 hi C " set and Z clear unsigned higher"
-  1001 ls C " clear or Z set unsigned lower or same"
-  1010 ge N " equals V greater or equal"
-  1011 lt N " not equal to V less than"
-  1100 gt Z " clear AND [N equals V] greater than"
-  1101 le Z " set OR [N not equal to V] less than or equal"
-  1110 al _ " always"
+  0000 eq Z q" set equal"
+  0001 ne Z q" clear not equal"
+  0010 cs C q" set unsigned higher or same"
+  0011 cc C q" clear unsigned lower"
+  0100 mi N q" set negative"
+  0101 pl N q" clear positive or zero"
+  0110 vs V q" set overflow"
+  0111 vc V q" clear no overflow"
+  1000 hi C q" set and Z clear unsigned higher"
+  1001 ls C q" clear or Z set unsigned lower or same"
+  1010 ge N q" equals V greater or equal"
+  1011 lt N q" not equal to V less than"
+  1100 gt Z q" clear AND [N equals V] greater than"
+  1101 le Z q" set OR [N not equal to V] less than or equal"
+  1110 al _ q" always"
 ;
 
 ( ARM instructions:

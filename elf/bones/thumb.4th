@@ -173,11 +173,11 @@ swap ,uint32
 ;
 
 : write-elf32-string-section
-  " " ,byte-string
-  " .text" ,byte-string
-  " .data" ,byte-string
-  " .shstrtab" ,byte-string
-  " .note.ABI-tag" ,byte-string
+  literal " " ,byte-string
+  literal " .text" ,byte-string
+  literal " .data" ,byte-string
+  literal " .shstrtab" ,byte-string
+  literal " .note.ABI-tag" ,byte-string
 ;
 
 : write-elf32-code
@@ -191,7 +191,7 @@ swap ,uint32
   4 ,uint32 ( name )
   16 ,uint32 ( desc )
   1 ,uint32 ( type )
-  "GNU" ,byte-string
+  literal "GNU" ,byte-string
   0 ,uint32 ( OS )
   4 ,uint32 ( major )
   20 ,uint32 ( minor)

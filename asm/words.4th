@@ -1,5 +1,5 @@
 : make-const
-  swap " fpush " ++
+  swap literal " fpush " ++
   swap set-word!
 ;
 
@@ -11,7 +11,7 @@ alias> @ dpeek
 ;
 
 : unsigned-integer/2
-  " #" swap ++ ++ 0 +
+  literal q" #" swap ++ ++ 0 +
 ;
 
 : bit-set? 1 swap bsl logand ;
