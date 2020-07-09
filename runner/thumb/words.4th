@@ -64,7 +64,7 @@ r7 const> eip
 ;
 
 : defcol-read
-  compiling-read here 0 literal ' defcol-cb revmap-stack-seq/3 1 + dropn
+  compiling-read here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
   op-exit ,uint32
 ;
 

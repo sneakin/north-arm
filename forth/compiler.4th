@@ -91,7 +91,7 @@ alias> up-stack/1 -
 : :
   next-token dup error-line
   dup set-this-word
-  compile literal " feval " ++ swap set-word!
+  compile " feval " ++ swap set-word!
 ;
 
 : IF

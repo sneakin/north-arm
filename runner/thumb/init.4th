@@ -6,7 +6,7 @@ defcol hello
   write
   drop
   exit
-  " Hello!
+  s" Hello!
 "
 endcol
 

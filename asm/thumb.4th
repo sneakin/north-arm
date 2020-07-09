@@ -2,7 +2,7 @@
 
 ( Registers: )
 : arm-gen-reg
-  dup literal " r" ++ make-const
+  dup " r" ++ make-const
 ;
 
 : arm-gen-registers

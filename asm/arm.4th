@@ -1,6 +1,6 @@
 ( Registers: )
 : arm-gen-reg
-  dup literal " r" ++ make-const
+  dup " r" ++ make-const
 ;
 
 : arm-gen-registers
@@ -24,8 +24,8 @@ alias> ip r12
 : generate-arm-condition
   ( bits suffix flags doc -- )
   4 overn 2 unsigned-integer/2 28 bsl
-  literal " feval arm-clear-cond literal " ++ literal "  logior" swap ++
-  4 overn literal " ." ++ set-word!
+  " feval arm-clear-cond " ++ "  logior" swap ++
+  4 overn " ." ++ set-word!
   4 dropn
 ;
 
@@ -42,21 +42,21 @@ alias> ip r12
 
 arm-conditions:
   ( Code Suffix Flags Meaning )
-  0000 eq Z q" set equal"
-  0001 ne Z q" clear not equal"
-  0010 cs C q" set unsigned higher or same"
-  0011 cc C q" clear unsigned lower"
-  0100 mi N q" set negative"
-  0101 pl N q" clear positive or zero"
-  0110 vs V q" set overflow"
-  0111 vc V q" clear no overflow"
-  1000 hi C q" set and Z clear unsigned higher"
-  1001 ls C q" clear or Z set unsigned lower or same"
-  1010 ge N q" equals V greater or equal"
-  1011 lt N q" not equal to V less than"
-  1100 gt Z q" clear AND [N equals V] greater than"
-  1101 le Z q" set OR [N not equal to V] less than or equal"
-  1110 al _ q" always"
+  0000 eq Z s" set equal"
+  0001 ne Z s" clear not equal"
+  0010 cs C s" set unsigned higher or same"
+  0011 cc C s" clear unsigned lower"
+  0100 mi N s" set negative"
+  0101 pl N s" clear positive or zero"
+  0110 vs V s" set overflow"
+  0111 vc V s" clear no overflow"
+  1000 hi C s" set and Z clear unsigned higher"
+  1001 ls C s" clear or Z set unsigned lower or same"
+  1010 ge N s" equals V greater or equal"
+  1011 lt N s" not equal to V less than"
+  1100 gt Z s" clear AND [N equals V] greater than"
+  1101 le Z s" set OR [N not equal to V] less than or equal"
+  1110 al _ s" always"
 ;
 
 ( ARM instructions:
@@ -204,7 +204,7 @@ SWP Swap register with memory Rd := [Rn], [Rn] := Rm 4.12
 : generate-arm-data-op
   drop
   2 unsigned-integer/2 21 bsl
-  swap literal " ARM-DATA-OP-" ++ make-const
+  swap " ARM-DATA-OP-" ++ make-const
 ;
 
 : generate-arm-data-ops
@@ -220,22 +220,22 @@ SWP Swap register with memory Rd := [Rn], [Rn] := Rm 4.12
 
 arm-data-ops:
 ( Mnemonic OpCode Action )
-AND 0000 " operand1 AND operand2"
-EOR 0001 " operand1 EOR operand2"
-SUB 0010 " operand1 - operand2"
-RSB 0011 " operand2 - operand1"
-ADD 0100 " operand1 + operand2"
-ADC 0101 " operand1 + operand2 + carry"
-SBC 0110 " operand1 - operand2 + carry - 1"
-RSC 0111 " operand2 - operand1 + carry - 1"
-TST 1000 " as AND, but result is not written"
-TEQ 1001 " as EOR, but result is not written"
-CMP 1010 " as SUB, but result is not written"
-CMN 1011 " as ADD, but result is not written"
-ORR 1100 " operand1 OR operand2"
-MOV 1101 " operand2, operand1 is ignored"
-BIC 1110 " operand1 AND NOT operand2, Bit clear"
-MVN 1111 " NOT operand2, operand1 is ignored"
+AND 0000 s" operand1 AND operand2"
+EOR 0001 s" operand1 EOR operand2"
+SUB 0010 s" operand1 - operand2"
+RSB 0011 s" operand2 - operand1"
+ADD 0100 s" operand1 + operand2"
+ADC 0101 s" operand1 + operand2 + carry"
+SBC 0110 s" operand1 - operand2 + carry - 1"
+RSC 0111 s" operand2 - operand1 + carry - 1"
+TST 1000 s" as AND, but result is not written"
+TEQ 1001 s" as EOR, but result is not written"
+CMP 1010 s" as SUB, but result is not written"
+CMN 1011 s" as ADD, but result is not written"
+ORR 1100 s" operand1 OR operand2"
+MOV 1101 s" operand2, operand1 is ignored"
+BIC 1110 s" operand1 AND NOT operand2, Bit clear"
+MVN 1111 s" NOT operand2, operand1 is ignored"
 ;
 
 ( MOV,MVN [single operand instructions.]

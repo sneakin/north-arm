@@ -135,9 +135,10 @@ DICT['write-byte']='printf "\\x$(printf %x "${STACK[0]}")"; fpop'
 #IDICT['"']="${DICT['\"']}"
 #IDICT["\'"]="${DICT[\\\"\'\\\"]}"
 
-IDICT["'"]='next_token; fpush "${TOKEN}"'
-IDICT['"']='read_until \" && fpush "${TOKEN}"'
-IDICT['q"']='read_until \" && fpush "\"${TOKEN}\""'
+IDICT["'"]='next_token; fpush literal && fpush "${TOKEN}"'
+IDICT['"']='read_until \" && fpush literal && fpush "${TOKEN}"'
+IDICT['q"']='read_until \" && fpush literal && fpush "\"${TOKEN}\""'
+IDICT['s"']='read_until \" && fpush "${TOKEN}"'
 
 #
 # Startup
