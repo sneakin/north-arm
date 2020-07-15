@@ -1,9 +1,12 @@
+" op-" const> -op-prefix
+
 : make-label
-  " op-" ++ make-const
+  -op-prefix ++ make-const
 ;
 
 0 var> dict
-4 const> cell-size
+
+r4 const> fp
 r5 const> dict-reg
 r6 const> cs
 r7 const> eip
@@ -47,14 +50,17 @@ r7 const> eip
 ; immediate
 
 : does-col
-  op-do-col dict dict-entry-code uint32!
+  op-do-col dict-entry-size + dict dict-entry-code uint32!
   4 align-data
   dhere dict dict-entry-data uint32!
 ;
 
 : cross-lookup
   dup " op-" ++
-  dup get-word null? IF 2 dropn return THEN
+  dup get-word null? IF
+    over number? IF drop ELSE " Warning: " ++ error-line THEN
+    2 dropn return
+  THEN
   drop swap drop exec
 ;
 
@@ -64,7 +70,7 @@ r7 const> eip
 ;
 
 : defcol-read
-  compiling-read here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
+  literal out_immediates compiling-read/1 here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
   op-exit ,uint32
 ;
 
@@ -74,4 +80,4 @@ r7 const> eip
 
 : endcol
   0 set-compiling
-; immediate
+; out-immediate

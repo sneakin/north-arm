@@ -3,6 +3,11 @@ asm/words.4th load
 asm/byte-data.4th load
 asm/thumb.4th load
 elf/stub32.4th load
+
+4 const> cell-size
+cell-size const> -op-size
+
+runner/thumb/iwords.4th load
 runner/thumb/words.4th load
 
 write-elf32-header

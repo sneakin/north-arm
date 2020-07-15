@@ -148,7 +148,9 @@ alias> sl r10
 : ldr-offset
   str-offset .load
 ;
-  
+
+: .offset-byte 12 bit-set ;
+
 ( 1 0 0 0 L Offset:5 Rb:3 Rd:3 Load/store halfword )
 : strh ( offset rb rd )
   swap 3 bsl logior
