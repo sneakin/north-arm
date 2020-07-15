@@ -1,19 +1,26 @@
 #+TITLE: North: Bash Bootstrap
 
 * Tasks
-** jumps & loops
-*** DONE relative jumps
-*** DONE returns
-*** TODO IF immediate to count offset
-** read strings properly in load, using immediates
 ** compile loop:
-*** relocate indexes but not data literals
-*** immediate / compiling words & dictionary
-*** compiler lookup
+*** relocate calls and pointers but not data literals
+*** DONE immediate / compiling words & dictionary
+*** DONE compiler lookup
+*** DONE compile with different dictionaries
+*** compile with linked dictionary for output
+*** DONE Base offset for word addresses
+** Reader
+*** Rewrite from bash to Forth?
+*** Reuse reader from North Core? read-byte level.
+Call frames, stack & data pointer math
 ** Writing
-*** ddump to binary file
-*** initial code / header
+*** DONE ddump to binary file
+*** DONE initial code / header & footer
+**** DONE ELF32 files
+**** ELF64 files
+**** Blobs for Bacaw
+**** EXE files
 *** extract strings from data into section
+*** symbol table section
 ** Defining words
 *** Compiled words: create & def -> :
 *** Compiler words: :
@@ -21,4 +28,9 @@
 ** Assemblers
 *** Bacaw
 *** x86
-*** ARM
+*** DONE ARM
+** DONE jumps & loops
+*** DONE relative jumps
+*** DONE returns
+*** DONE IF immediate to count offset
+** DONE read strings properly in load, using immediates
