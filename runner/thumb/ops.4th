@@ -120,6 +120,40 @@ defop dup
   emit-next
 endop
 
+defop 2dup
+  0 r1 ldr-sp ,uint16
+  0 r0 bit-set pushr ,uint16
+  0 r1 bit-set pushr ,uint16
+  emit-next
+endop
+
+defop swap
+  0 r1 ldr-sp ,uint16
+  0 r0 str-sp ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  emit-next
+endop
+
+defop 2swap ( a b c d -- c d a b )
+  ( d <-> b )
+  cell-size 1 mult r1 ldr-sp ,uint16
+  cell-size 1 mult r0 str-sp ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  ( c <-> a )
+  cell-size 0 mult r1 ldr-sp ,uint16
+  cell-size 2 mult r2 ldr-sp ,uint16
+  cell-size 2 mult r1 str-sp ,uint16
+  cell-size 0 mult r2 str-sp ,uint16
+  emit-next
+endop
+
+defop rot
+  cell-size r1 ldr-sp ,uint16
+  cell-size r0 str-sp ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  emit-next
+endcol
+
 defop over
   0 r0 bit-set pushr ,uint16
   cell-size r0 ldr-sp ,uint16
@@ -237,6 +271,8 @@ defop write ( len ptr fd -- result )
   emit-next
 endop
 
+( Exit to system: )
+
 defop sysexit
   1 r7 mov# ,uint16
   0 swi ,uint16
@@ -253,6 +289,9 @@ defcol bye
   sysexit
   exit
 endcol
+
+
+( Constants: )
 
 defop does-const
   ( load word in R1's data to ToS )
@@ -289,7 +328,15 @@ endop
   next-token defconst-offset
 ;
 
-( Math: )
+: string-const>
+  dhere swap ,byte-string 4 pad-data defconst-offset>
+;
+
+cell-size defconst> cell-size
+-op-size defconst> op-size
+
+
+( Integer Math: )
 
 defop +
   0 r1 bit-set popr ,uint16
@@ -337,3 +384,94 @@ defop int<=
   ' ble emit-truther
   emit-next
 endop
+
+
+( Bits and logic: )
+
+defop bsl
+  0 r1 bit-set popr ,uint16
+  r0 r1 lsl ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  emit-next
+endop
+
+defop bsr
+  0 r1 bit-set popr ,uint16
+  r0 r1 lsr ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  emit-next
+endop
+
+defop logand
+  0 r1 bit-set popr ,uint16
+  r0 r1 and ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  emit-next
+endop
+
+defop logior
+  0 r1 bit-set popr ,uint16
+  r1 r0 eor ,uint16
+  emit-next
+endop
+
+defop lognot
+  r0 r0 mvn ,uint16
+  emit-next
+endop
+
+( Conditions: )
+
+defop equals?
+  0 r1 bit-set popr ,uint16
+  r1 r0 cmp ,uint16
+  ' beq emit-truther
+  emit-next
+endop
+
+defop null?
+  0 r0 cmp# ,uint16
+  ' beq emit-truther
+  emit-next
+endop
+
+defop if-jump
+  0 r1 bit-set popr ,uint16
+  0 r1 cmp# ,uint16
+  1 beq ,uint16
+  ( 2 r0 r0 mov-lsl ,uint16 )
+  r0 eip eip add ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+
+defop unless-jump
+  0 r1 bit-set popr ,uint16
+  0 r1 cmp# ,uint16
+  1 bne ,uint16
+  ( 2 r0 r0 mov-lsl ,uint16 )
+  r0 eip eip add ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+
+( Registers: )
+
+defop cs
+  0 r0 bit-set pushr ,uint16
+  0 cs r0 mov-lsl ,uint16
+  emit-next
+endcol
+
+defop dict
+  0 r0 bit-set pushr ,uint16
+  0 dict-reg r0 mov-lsl ,uint16
+  emit-next
+endop
+
+defop set-dict
+  0 r0 dict-reg mov-lsl ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+

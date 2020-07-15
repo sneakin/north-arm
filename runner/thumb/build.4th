@@ -13,15 +13,15 @@ runner/thumb/words.4th load
 write-elf32-header
 dhere
 
-pc r3 mov-hilo ,uint16
-4 r0 ldr-pc ,uint16
-r0 r3 r5 add ,uint16
+0 r0 ldr-pc ,uint16
 r0 pc add-lohi ,uint16
 dhere
 0xBEEFBEEF ,uint32
 dhere
 
 runner/thumb/ops.4th load
+runner/thumb/frames.4th load
+runner/thumb/interp.4th load
 runner/thumb/init.4th load
 
 ( todo needs to branch to code's seq )

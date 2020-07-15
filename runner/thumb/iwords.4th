@@ -45,3 +45,9 @@ out-immediate-as "
   dup 3 + here swap up-stack/1 -op-size mult
   swap spoke
 ; out-immediate-as THEN
+
+: RECURSE
+  ' int32
+  dict
+  ' exec ( fixme litters stack with return addresses? )
+; out-immediate
