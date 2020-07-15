@@ -23,7 +23,7 @@ runner/thumb/interp.4th load
 runner/thumb/init.4th load
 
 ( entry point: )
-op-init dict-entry-size + 4 pad-addr 2 -
+op-init dict-entry-size + 4 pad-addr
 ( finish the ELF file )
 1 + .s write-elf32-ending
 

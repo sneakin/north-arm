@@ -144,6 +144,5 @@ endop
 ;
 
 : end
-  literal return
   0 set-compiling
 ; out-immediate
