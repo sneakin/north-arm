@@ -1,6 +1,7 @@
 " Loading..." error-line
 
 0 var> compiling
+0 var> compiling-immediates
 0 var> this-word
 
 : alias
@@ -18,7 +19,7 @@ alias> up-stack/1 -
 : up-stack 1 up-stack/1 ;
 
 : immediate-exec
-  dup immediate-lookup
+  over swap dict-lookup
   null? 3 unless-jump drop 0 return
   swap drop sys-exec 1
 ;
@@ -28,16 +29,21 @@ alias> up-stack/1 -
 : compiling-read-loop
   next-token
   null? 1 unless-jump return
-  immediate-exec drop
+  compiling-immediates immediate-exec drop
   compiling 1 if-jump return
   loop
 ;
 
 ' *read-terminator* const> read-terminator
 
-: compiling-read
+: compiling-read/1
   1 set-compiling
+  set-compiling-immediates
   read-terminator compiling-read-loop
+;
+
+: compiling-read
+  literal IDICT compiling-read/1
 ;
 
 : 2dup
@@ -95,25 +101,30 @@ alias> up-stack/1 -
 ;
 
 : IF
+  literal literal
   literal if-placeholder
   literal unless-jump
 ; immediate
 
 : UNLESS
+  literal literal
   literal if-placeholder
   literal if-jump
 ; immediate
 
 : ELSE
+  literal literal
   literal if-placeholder stack-find
-  literal if-placeholder literal jump
+  literal if-placeholder literal jump-rel
   roll
-  dup 3 + here swap up-stack/1 swap spoke
+  dup 3 + here swap up-stack/1
+  swap spoke
 ; immediate
 
 : THEN
   literal if-placeholder stack-find
-  dup 3 + here swap up-stack/1 swap spoke
+  dup 3 + here swap up-stack/1
+  swap spoke
 ; immediate
 
 " Done." error-line
