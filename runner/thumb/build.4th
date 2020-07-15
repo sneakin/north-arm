@@ -13,25 +13,19 @@ runner/thumb/words.4th load
 write-elf32-header
 dhere
 
-0 r0 ldr-pc ,uint16
-r0 pc add-lohi ,uint16
-dhere
-0xBEEFBEEF ,uint32
-dhere
-
+( The main stage: )
 runner/thumb/ops.4th load
 runner/thumb/frames.4th load
 runner/thumb/interp.4th load
-runner/thumb/init.4th load
-
-( todo needs to branch to code's seq )
-op-init dict-entry-size + 4 pad-addr 2 + swap - swap .s uint32!
 
 ( todo load itself into dictionary )
 
-dict defconst> orig-dict
+runner/thumb/init.4th load
 
-dup 1 + .s write-elf32-ending
+( entry point: )
+op-init dict-entry-size + 4 pad-addr 2 -
+( finish the ELF file )
+1 + .s write-elf32-ending
 
 " Writing..." error-line
 0 ddump-binary-bytes
