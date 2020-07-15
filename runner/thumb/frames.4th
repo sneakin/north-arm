@@ -131,3 +131,19 @@ endop
   literal begin-frame stack-find here - 1 - -op-size mult
   literal jump-rel
 ; out-immediate
+
+: def-read
+  read-terminator literal begin-frame
+  literal out_immediates compiling-read/2
+  here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
+  op-return ,uint32
+;
+
+: def
+  next-token create does-col def-read
+;
+
+: end
+  literal return
+  0 set-compiling
+; out-immediate

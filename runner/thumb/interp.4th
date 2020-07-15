@@ -55,8 +55,7 @@ endcol
 
 ( fixme "boo" == "boot"? Need to check lengths on both. Checking for 0 byte at end works, but not perfect. )
 
-defcol byte-string-equals?/3 ( a-str b-str length )
-  begin-frame
+def byte-string-equals?/3 ( a-str b-str length )
   arg2 peek-byte
   arg1 peek-byte
   equals? UNLESS int32 0 return1 THEN
@@ -65,10 +64,9 @@ defcol byte-string-equals?/3 ( a-str b-str length )
   int32 1 arg1 + set-arg1
   int32 1 arg2 + set-arg2
   repeat-frame
-endcol
+end
 
-defcol string-equals?/3 ( a-str b-str length )
-  begin-frame
+def string-equals?/3 ( a-str b-str length )
   arg0 cell-size int< IF
     arg2 arg1 arg0 byte-string-equals?/3 return1
   THEN
@@ -79,7 +77,7 @@ defcol string-equals?/3 ( a-str b-str length )
   cell-size arg1 + set-arg1
   cell-size arg2 + set-arg2
   repeat-frame
-endcol
+end
 
 defcol string-poke ( value string index )
   rot +
@@ -102,8 +100,7 @@ defcol dict-entry-link
   swap
 endcol
 
-defcol dict-lookup ( ptr length dict-entry ++ found? )
-  begin-frame
+def dict-lookup ( ptr length dict-entry ++ found? )
   arg0 null? IF int32 0 return1 THEN
   ( arg0 dict-entry-name peek cs + arg1 write-string/2 )
   arg0 dict-entry-name peek cs + arg2 arg1 string-equals?/3 IF
@@ -114,7 +111,7 @@ defcol dict-lookup ( ptr length dict-entry ++ found? )
   dup null? IF int32 0 return1 THEN
   cs + set-arg0
   repeat-frame
-endcol
+end
 
 defcol lookup ( ptr length -- dict-entry found? )
   rot swap
@@ -155,8 +152,7 @@ defcol hex-digit
   + swap
 endcol
 
-defcol uint->hex-string/4 ( n out-ptr counter print-always? )
-  begin-frame
+def uint->hex-string/4 ( n out-ptr counter print-always? )
   ( start with the highest nibble )
   arg3 int32 0xF0000000 logand int32 28 bsr
   ( past leading zeroes? )
@@ -182,20 +178,18 @@ defcol uint->hex-string/4 ( n out-ptr counter print-always? )
     repeat-frame
   THEN
   return
-endcol
+end
 
-defcol uint->hex-string ( n out-ptr -- out-ptr length )
-  begin-frame
+def uint->hex-string ( n out-ptr -- out-ptr length )
   arg1 arg0 int32 0 int32 0 uint->hex-string/4
   int32 2 dropn
   arg0 dup set-arg1
   swap - set-arg0
   arg1 arg0 int32 1 + null-terminate
   return
-endcol
+end
 
-defcol int->hex-string ( n out-ptr -- out-ptr length )
-  begin-frame
+def int->hex-string ( n out-ptr -- out-ptr length )
   arg1 negative? IF
     negate
     int32 45 arg0 poke-byte
@@ -209,28 +203,26 @@ defcol int->hex-string ( n out-ptr -- out-ptr length )
   swap - set-arg0
   arg1 arg0 int32 1 + null-terminate
   return
-endcol
+end
 
-defcol write-hex-uint/1 ( n )
-  begin-frame
+def write-hex-uint/1 ( n )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
   arg0 over uint->hex-string
   write-string/2
   return
-endcol
+end
 
 defcol write-hex-uint
   swap write-hex-uint/1
   drop
 endcol
 
-defcol write-hex-int/1 ( n )
-  begin-frame
+def write-hex-int/1 ( n )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
   arg0 over int->hex-string
   write-string/2
   return
-endcol
+end
 
 defcol write-hex-int
   swap write-hex-int/1
@@ -256,13 +248,11 @@ defcol prompt
   s" Forth> "
 endcol
 
-defcol interp
-  nl hello
-  begin-frame
+def interp
   nl prompt
   arg1 arg0 read-token negative? IF what return THEN
   2dup write-string/2 nl
   lookup IF exec-abs ELSE not-found drop THEN
   dup write-hex-uint
   repeat-frame
-endcol
+end

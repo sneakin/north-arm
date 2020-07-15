@@ -1,13 +1,11 @@
 ( The first interpreted definition that is called: )
-defcol boot
+def boot
   hello
-  begin-frame
   int32 128 stack-allot
   int32 128 interp
   boo
   bye
-  return
-endcol
+end
 
 ( OS entry point: )
 defop init

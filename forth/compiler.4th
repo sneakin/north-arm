@@ -36,10 +36,15 @@ alias> up-stack/1 -
 
 ' *read-terminator* const> read-terminator
 
-: compiling-read/1
+( read-terminator ... immediates )
+: compiling-read/2
   1 set-compiling
   set-compiling-immediates
-  read-terminator compiling-read-loop
+  compiling-read-loop
+;
+
+: compiling-read/1
+  read-terminator swap compiling-read/2
 ;
 
 : compiling-read
@@ -86,6 +91,14 @@ alias> up-stack/1 -
   compiling-read concat-seq
 ;
 
+: :
+  next-token dup error-line
+  dup set-this-word
+  compile " feval " ++ swap set-word!
+;
+
+( Now that immediates can execute: )
+
 : immediate/1
   dup get-word swap set-immediate!
 ;
@@ -94,11 +107,7 @@ alias> up-stack/1 -
 
 ' ( immediate/1
 
-: :
-  next-token dup error-line
-  dup set-this-word
-  compile " feval " ++ swap set-word!
-;
+( IF ... ELSE ... THEN )
 
 : IF
   literal literal
