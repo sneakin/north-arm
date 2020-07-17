@@ -251,56 +251,6 @@ defop offset32
   emit-next
 endop
 
-( System calls: )
-
-0 cs bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
-
-: emit-push-state
-  state-register-mask pushr ,uint16
-;
-
-: emit-pop-state
-  state-register-mask popr ,uint16
-;
-
-defop read ( len ptr fd -- result )
-  0 r1 bit-set r2 bit-set popr ,uint16
-  emit-push-state
-  3 r7 mov# ,uint16
-  0 swi ,uint16
-  emit-pop-state
-  emit-next
-endop
-
-defop write ( len ptr fd -- result )
-  0 r1 bit-set r2 bit-set popr ,uint16
-  emit-push-state
-  4 r7 mov# ,uint16
-  0 swi ,uint16
-  emit-pop-state
-  emit-next
-endop
-
-( Exit to system: )
-
-defop sysexit
-  1 r7 mov# ,uint16
-  0 swi ,uint16
-endop
-
-defcol abort
-  int32 255
-  sysexit
-  exit
-endcol
-
-defcol bye
-  int32 0
-  sysexit
-  exit
-endcol
-
-
 ( Constants: )
 
 defop does-const

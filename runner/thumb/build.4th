@@ -12,6 +12,7 @@ dhere
 
 ( The main stage: )
 runner/thumb/ops.4th load
+runner/thumb/linux.4th load
 runner/thumb/frames.4th load
 runner/thumb/interp.4th load
 
