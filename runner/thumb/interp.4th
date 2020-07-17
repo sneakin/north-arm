@@ -125,11 +125,6 @@ defcol negative?
   over int32 0 int< swap
 endcol
 
-defop negate
-  r0 r0 neg ,uint16
-  emit-next
-endop
-
 defcol one
   int32 1 swap
 endcol

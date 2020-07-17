@@ -1,14 +1,11 @@
-forth/compiler.4th load
-asm/words.4th load
-asm/byte-data.4th load
-asm/thumb.4th load
-elf/stub32.4th load
-
 4 const> cell-size
-cell-size const> -op-size
+4 const> -op-size
+( Needs literals handled. )
+( 2 const> -op-size )
+( Needs defconst sooner. )
+0xFFFFFFFF const> -op-mask
 
-runner/thumb/iwords.4th load
-runner/thumb/words.4th load
+runner/thumb/load.4th load
 
 write-elf32-header
 dhere

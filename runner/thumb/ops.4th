@@ -47,8 +47,9 @@ endop
 defop next
   ( load word eip points at )
   0 eip r1 ldr-offset ,uint16
+  ( todo apply op-mask )
   ( increase eip )
-  cell-size eip add# ,uint16
+  -op-size eip add# ,uint16
   op-exec-r1 emit-op-call
 endop
 
@@ -343,9 +344,15 @@ endop
 
 cell-size defconst> cell-size
 -op-size defconst> op-size
+-op-mask defconst> op-mask
 
 
 ( Integer Math: )
+
+defop negate
+  r0 r0 neg ,uint16
+  emit-next
+endop
 
 defop +
   0 r1 bit-set popr ,uint16
@@ -483,4 +490,3 @@ defop set-dict
   0 r0 bit-set popr ,uint16
   emit-next
 endop
-

@@ -1,3 +1,8 @@
+(
+' cell-size get-word UNLESS 4 const> cell-size THEN
+' -op-size get-word UNLESS cell-size const> -op-size THEN
+)
+
 : out-immediate/2
   swap get-word swap literal out_immediates dict-set!
 ;

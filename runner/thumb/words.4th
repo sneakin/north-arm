@@ -64,14 +64,18 @@ r7 const> eip
   drop swap drop exec
 ;
 
+: ,op
+  -op-size 2 equals IF ,uint16 ELSE ,uint32 THEN
+;
+
 : defcol-cb
-  cross-lookup number? IF ,uint32 ELSE ,byte-string THEN
+  cross-lookup number? IF ,op ELSE ,byte-string THEN
   1 +
 ;
 
 : defcol-read
   literal out_immediates compiling-read/1 here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
-  op-exit ,uint32
+  op-exit ,op
 ;
 
 : defcol
