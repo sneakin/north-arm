@@ -1,6 +1,15 @@
+: abs-int
+  dup 0 int< IF -1 mult THEN
+;
+
 ( Emits the assembly to jump to an op. )
 : emit-op-call
-  dict-entry-size + rel-addr ( 4 - branch ,uint16 ) branch-long ,uint32
+  dict-entry-size + rel-addr
+  dup abs-int 128 int< IF
+    branch ,uint16
+  ELSE
+    branch-long ,uint32
+  THEN
 ;
 
 ( Core execution: )
