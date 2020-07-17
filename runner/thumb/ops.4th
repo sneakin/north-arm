@@ -322,13 +322,17 @@ defop *
   emit-next
 endop
 
-(
 defop /
   0 r1 bit-set popr ,uint16
-  r1 r0 div ,uint16
+  r1 r0 r0 sdiv ,uint32
   emit-next
 endop
-)
+
+defop uint-div
+  0 r1 bit-set popr ,uint16
+  r1 r0 r0 udiv ,uint32
+  emit-next
+endop
 
 : emit-truther
   2 swap exec ,uint16

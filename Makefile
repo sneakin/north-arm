@@ -40,6 +40,7 @@ runner/thumb/build.elf: runner/thumb/build.4th \
 	asm/words.4th \
 	asm/byte-data.4th \
 	asm/thumb.4th \
+	asm/thumb2.4th \
 	$(FOURTH_SRC)
 
 %.elf: %.4th
