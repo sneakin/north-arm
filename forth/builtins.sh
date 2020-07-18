@@ -75,7 +75,8 @@ DICT['read-until']='term="${STACK[0]}"; fpop; read_until "$term"; fpush "$TOKEN"
 DICT['"']='read_until \" && fpush "${TOKEN}"'
 DICT['(']='read_until ")"'
 DICT['read-file']='fpush "$(cat ${STACK[0]})"'
-DICT['load']='echo "Loading ${STACK[0]}" 1>&2; INPUT="$(cat ${STACK[0]}) $INPUT" && fpop'
+
+DICT['load']='echo "Loading ${STACK[0]}" 1>&2; F="${STACK[0]}"; fpop && finterp "$(cat $F)"'
 
 #
 # Defining words

@@ -23,6 +23,7 @@ function fpop()
 
 INPUT=""
 INPUT_BYTE=""
+INPUT_STREAMED="1"
 TOKEN=""
 
 # Read a full of input into $INPUT.
@@ -30,7 +31,7 @@ function read_input_line()
 {
     local prompt="$1"
     [[ "$prompt" == "" ]] && prompt="${#STACK[@]} > "
-    if read -p "$prompt" INPUT; then
+    if [[ "${INPUT_STREAMED}" == "1" ]] && read -p "$prompt" INPUT; then
 	return 0
     else
 	return 1
@@ -141,13 +142,21 @@ function fexec()
 function finterp()
 {
     local fin=0
-
+    local input_streamed="${INPUT_STREAMED}"
+    local saved_input
+    if [[ "$1" != "" ]]; then
+	INPUT_STREAMED=0
+	INPUT="${1} ${INPUT}"
+    fi
+    
     # Execute tokens until one does not `return 0`
     while [[ "$fin" != "1" ]] && next_token
     do
 	fexec "$TOKEN" || fin=1
     done
 
+    INPUT_STREAMED="${input_streamed}"
+    
     return $fin
 }
 
