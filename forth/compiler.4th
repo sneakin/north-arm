@@ -5,7 +5,9 @@
 0 var> this-word
 
 : alias
-  get-word swap set-word!
+  get-word swap
+  dup set-this-word
+  set-word!
 ;
 
 : alias>

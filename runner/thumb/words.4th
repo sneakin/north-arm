@@ -85,3 +85,15 @@ r7 const> eip
 : endcol
   0 set-compiling
 ; out-immediate
+
+: does-defalias
+  cross-lookup dup IF
+    dup dict-entry-code uint32@ dict dict-entry-code uint32! 
+    dup dict-entry-data uint32@ dict dict-entry-data uint32!
+  THEN
+  drop
+;
+  
+: defalias>
+  next-token create next-token does-defalias
+;

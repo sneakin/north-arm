@@ -314,25 +314,25 @@ defop negate
   emit-next
 endop
 
-defop +
+defop int-add
   0 r1 bit-set popr ,uint16
   r1 r0 r0 add ,uint16
   emit-next
 endop
 
-defop -
+defop int-sub
   0 r1 bit-set popr ,uint16
   r1 r0 r0 sub ,uint16
   emit-next
 endop
 
-defop *
+defop int-mul
   0 r1 bit-set popr ,uint16
   r1 r0 mul ,uint16
   emit-next
 endop
 
-defop /
+defop int-div
   0 r1 bit-set popr ,uint16
   r0 r1 r0 sdiv ,uint32
   emit-next
@@ -343,6 +343,11 @@ defop uint-div
   r0 r1 r0 udiv ,uint32
   emit-next
 endop
+
+defalias> + int-add
+defalias> - int-sub
+defalias> * int-mul
+defalias> / int-div
 
 : emit-truther
   2 swap exec ,uint16

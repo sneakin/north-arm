@@ -40,7 +40,7 @@ def int-divmod-sw ( numer denom -- quotient remainder )
   set-arg0
 end
 
-alias> sw/ int-divmod-sw
+defalias> sw/ int-divmod-sw
 
 defcol int-mod
   rot swap 2dup / * swap - swap

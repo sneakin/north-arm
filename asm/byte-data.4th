@@ -26,6 +26,16 @@
   1 + swap 8 bsr swap uint8!
 ;
 
+: uint32@
+  dup dpeek
+  swap 1 + dup dpeek
+  swap 1 + dup dpeek
+  swap 1 + dpeek
+  8 bsl logior
+  8 bsl logior
+  8 bsl logior
+;
+
 : ,byte-string/3
   ( string length n )
   2dup equals IF 0 ,uint8 return THEN
