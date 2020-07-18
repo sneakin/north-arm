@@ -32,6 +32,7 @@ runner/thumb/build.elf: runner/thumb/build.4th \
 	runner/thumb/ops.4th \
 	runner/thumb/linux.4th \
 	runner/thumb/init.4th \
+	runner/thumb/math.4th \
 	runner/thumb/interp.4th \
 	runner/thumb/frames.4th \
 	runner/thumb/iwords.4th \

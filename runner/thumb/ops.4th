@@ -178,6 +178,16 @@ defop overn
   emit-next
 endop
 
+defop set-overn
+  0 r1 bit-set popr ,uint16
+  2 r0 r0 mov-lsl ,uint16
+  sp r0 add-hilo ,uint16
+  cell-size r0 sub# ,uint16
+  0 r1 r0 str-offset ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+
 defop here
   0 r0 bit-set pushr ,uint16
   sp r0 mov-hilo ,uint16
@@ -324,13 +334,13 @@ endop
 
 defop /
   0 r1 bit-set popr ,uint16
-  r1 r0 r0 sdiv ,uint32
+  r0 r1 r0 sdiv ,uint32
   emit-next
 endop
 
 defop uint-div
   0 r1 bit-set popr ,uint16
-  r1 r0 r0 udiv ,uint32
+  r0 r1 r0 udiv ,uint32
   emit-next
 endop
 

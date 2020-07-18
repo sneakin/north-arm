@@ -133,7 +133,6 @@ defcol zero
   int32 0 swap
 endcol
 
-
 ( Hexadecimal output: )
 
 defcol hex-digit
