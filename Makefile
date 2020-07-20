@@ -34,6 +34,7 @@ RUNNER_THUMB_SRC=runner/thumb/builder.4th \
 	runner/thumb/linux.4th \
 	runner/thumb/init.4th \
 	runner/thumb/math.4th \
+	runner/thumb/reader.4th \
 	runner/thumb/interp.4th \
 	runner/thumb/frames.4th \
 	runner/thumb/iwords.4th \

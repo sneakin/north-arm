@@ -79,6 +79,10 @@ def string-equals?/3 ( a-str b-str length )
   repeat-frame
 end
 
+defcol string-peek ( string index -- byte )
+  rot + peek-byte swap
+endcol
+
 defcol string-poke ( value string index )
   rot +
   swap rot swap poke-byte
@@ -130,6 +134,24 @@ defcol one
 endcol
 
 defcol zero
+  int32 0 swap
+endcol
+
+( Logic: )
+
+defcol not
+  swap IF int32 0 ELSE int32 1 THEN
+  swap
+endcol
+
+defcol and
+  rot IF IF int32 1 swap exit THEN THEN
+  int32 0 swap
+endcol
+
+defcol or
+  rot IF drop int32 1 swap exit THEN
+  IF int32 1 swap exit THEN
   int32 0 swap
 endcol
 
@@ -223,9 +245,48 @@ defcol write-hex-int
   drop
 endcol
 
+defcol print-args
+  arg3 write-hex-int nl
+  arg2 write-hex-int nl
+  arg1 write-hex-int nl
+  arg0 write-hex-int nl nl
+endcol
+
 ( Input: )
 
-defcol read-token ( ptr len -- ptr read-length )
+defcol prompt
+  " Forth> " write-string/2
+endcol
+
+defcol stdin-read ( ptr len -- ptr read-length )
+  over int32 4 overn int32 0 read
+  rot drop
+endcol
+
+defcol prompt-read
+  nl prompt
+  ( fixme perfect spot for a tailcall )
+  over int32 4 overn int32 0 read
+  rot drop
+endcol
+
+runner/thumb/reader.4th load
+
+defcol make-stdin-reader
+  int32 0 swap
+  int32 0 swap  
+  literal stdin-read swap
+  here cell-size + swap
+endcol
+
+defcol make-prompt-reader
+  int32 0 swap
+  int32 0 swap  
+  literal prompt-read swap
+  here cell-size + swap
+endcol
+
+defcol read-line ( ptr len -- ptr read-length )
   over int32 4 overn int32 0 read
   negative? UNLESS
     int32 1 swap -
@@ -234,17 +295,22 @@ defcol read-token ( ptr len -- ptr read-length )
   rot drop
 endcol
 
-( Interpretation loop: )
-
-defcol prompt
-  offset32 20 int32 7 write-string/2
-  exit
-  s" Forth> "
+defcol read-token ( ptr len reader -- ptr read-length )
+  int32 4 overn int32 4 overn int32 4 overn reader-next-token
+  negative? IF
+    drop dup int32 0 equals? IF drop int32 -1 THEN
+  ELSE
+    drop over over null-terminate
+  THEN
+  ( ptr len reader -- ptr len )
+  int32 4 set-overn
+  drop swap drop
 endcol
 
+( Interpretation loop: )
+
 def interp
-  nl prompt
-  arg1 arg0 read-token negative? IF what return THEN
+  arg2 arg1 arg0 read-token negative? IF what return THEN
   2dup write-string/2 nl
   lookup IF exec-abs ELSE not-found drop THEN
   dup write-hex-uint

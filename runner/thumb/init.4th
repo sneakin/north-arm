@@ -1,8 +1,9 @@
 ( The first interpreted definition that is called: )
 def boot
   hello
+  int32 128 stack-allot int32 128 make-prompt-reader
   int32 128 stack-allot
-  int32 128 interp
+  int32 128 int32 35 overn interp
   boo
   bye
 end
@@ -10,7 +11,7 @@ end
 ( OS entry point: )
 defop init
   ( calculate CS: pc - dhere )
-  30 r3 ldr-pc ,uint16
+  24 r3 ldr-pc ,uint16
   pc r5 mov-hilo ,uint16
   r3 r5 cs sub ,uint16
   ( zero registers )
@@ -21,16 +22,15 @@ defop init
   0 fp mov# ,uint16
   0 eip mov# ,uint16
   ( set the dictionary )
-  20 dict-reg ldr-pc ,uint16
+  12 dict-reg ldr-pc ,uint16
   cs dict-reg dict-reg add ,uint16
   ( exec boot )
-  14 r1 ldr-pc ,uint16
+  12 r1 ldr-pc ,uint16
   op-exec-r1 emit-op-call
   ( data: )
-  4 align-data
   dict dict-entry-size + 10 + ,uint32
-  op-boot ,uint32
   dict ,uint32
+  op-boot ,uint32
 endop
 
 ( todo pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. )
