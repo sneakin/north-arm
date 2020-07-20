@@ -5,7 +5,7 @@
 ( Emits the assembly to jump to an op. )
 : emit-op-call
   dict-entry-size + rel-addr
-  dup abs-int 128 int< IF
+  dup abs-int 0x400 int< IF
     branch ,uint16
   ELSE
     branch-long ,uint32
@@ -183,7 +183,7 @@ defop set-overn
   2 r0 r0 mov-lsl ,uint16
   sp r0 add-hilo ,uint16
   cell-size r0 sub# ,uint16
-  0 r1 r0 str-offset ,uint16
+  0 r0 r1 str-offset ,uint16
   0 r0 bit-set popr ,uint16
   emit-next
 endop
@@ -194,11 +194,15 @@ defop here
   emit-next
 endop
 
+defop move
+  r0 sp mov-lohi ,uint16
+  emit-next
+endop
+
 defop stack-allot
   sp r1 mov-hilo ,uint16
   r0 r1 r0 sub ,uint16
   r0 sp mov-lohi ,uint16
-  sp r0 mov-hilo ,uint16
   emit-next
 endop
 
