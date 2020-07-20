@@ -22,7 +22,17 @@
 : out-dq
   ' \" read-until
 ; out-immediate-as s"
-out-immediate-as "
+
+: out-dq-string
+  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
+  literal pointer dhere ( todo pointer or segment offset )
+  ' \" read-until
+  dup string-length swap ,byte-string
+  literal int32 swap
+  ( Update the word being defined as it's definition will have moved. )
+  ( todo update when mapping the stack? )
+  dhere dict dict-entry-data uint32!
+; out-immediate-as "
 
 : out-IF
   literal literal

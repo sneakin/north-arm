@@ -261,6 +261,17 @@ defop offset32
   emit-next
 endop
 
+defop pointer
+  ( store ToS )
+  0 r0 bit-set pushr ,uint16  
+  ( load cell at eip & add CS )
+  0 eip r0 ldr-offset ,uint16
+  cs r0 r0 add ,uint16
+  ( advance eip )
+  cell-size eip add# ,uint16
+  emit-next
+endop
+
 ( Constants: )
 
 defop does-const

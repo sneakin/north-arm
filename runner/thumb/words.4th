@@ -79,7 +79,8 @@ r7 const> eip
 ;
 
 : defcol
-  next-token create does-col defcol-read
+  next-token create does-col
+  defcol-read
 ;
 
 : endcol
