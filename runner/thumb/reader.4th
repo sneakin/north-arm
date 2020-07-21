@@ -33,20 +33,6 @@ defcol make-reader
   here cell-size + swap
 endcol
 
-defcol make-stdin-reader
-  int32 0 swap
-  int32 0 swap  
-  literal stdin-read swap
-  here cell-size + swap
-endcol
-
-defcol make-prompt-reader
-  int32 0 swap
-  int32 0 swap  
-  literal prompt-read swap
-  here cell-size + swap
-endcol
-
 defcol reader-buffer
   swap cell-size int32 4 * + swap
 endcol

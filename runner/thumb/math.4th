@@ -1,3 +1,19 @@
+( Numbers: )
+
+defcol negative?
+  over int32 0 int< swap
+endcol
+
+defcol one
+  int32 1 swap
+endcol
+
+defcol zero
+  int32 0 swap
+endcol
+
+( Division: )
+
 def bsl-to-match/3 ( to-match n bits-left )
   arg2 arg1 int< IF return THEN
   arg1 int32 1 bsl set-arg1

@@ -474,3 +474,9 @@ defop set-dict
   0 r0 bit-set popr ,uint16
   emit-next
 endop
+
+( Debug helpers: )
+
+defcol break
+  int32 0x47 peek
+endcol
