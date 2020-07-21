@@ -9,27 +9,21 @@ runner/thumb/load.4th load
 
 0 var> code-origin
 
-: load-sources
-  dup 0 equals IF drop return THEN
-  swap load .s
-  1 - loop
-;
-
-: builder-run ( files... count )
+: builder-run/2 ( entry-fn files... count )
   " Building..." error-line
   write-elf32-header
   dhere set-code-origin
 
   ( The main stage: )
   runner/thumb/math.4th
-  runner/thumb/interp.4th
-  runner/thumb/frames.4th
   runner/thumb/linux.4th
+  runner/thumb/frames.4th
   runner/thumb/ops.4th
-  5 load-sources
+  4 load-sources
 
   load-sources
 
+  ' main create does-defalias
   runner/thumb/init.4th load
 
   code-origin

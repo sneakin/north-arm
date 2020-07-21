@@ -98,3 +98,9 @@ r7 const> eip
 : defalias>
   next-token create next-token does-defalias
 ;
+
+: load-sources
+  dup 0 equals IF drop return THEN
+  swap load .s
+  1 - loop
+;

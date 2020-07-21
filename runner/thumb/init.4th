@@ -1,11 +1,6 @@
 ( The first interpreted definition that is called: )
 def boot
-  hello
-  int32 128 stack-allot int32 128 make-prompt-reader
-  int32 128 stack-allot
-  int32 128 int32 35 overn interp
-  boo
-  bye
+  hello main bye
 end
 
 ( OS entry point: )

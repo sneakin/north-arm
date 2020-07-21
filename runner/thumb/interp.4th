@@ -1,10 +1,3 @@
-runner/thumb/messages.4th load
-runner/thumb/strings.4th load
-runner/thumb/dictionary.4th load
-runner/thumb/logic.4th load
-runner/thumb/output.4th load
-runner/thumb/reader.4th load
-
 ( Debugging aid: )
 
 defcol print-args
@@ -75,4 +68,11 @@ def interp
   lookup IF exec-abs ELSE not-found drop THEN
   dup write-hex-uint
   repeat-frame
+end
+
+def interp-boot
+  int32 128 stack-allot int32 128 make-prompt-reader
+  int32 128 stack-allot
+  int32 128 int32 35 overn
+  interp
 end
