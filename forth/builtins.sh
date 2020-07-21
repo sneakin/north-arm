@@ -153,3 +153,6 @@ IDICT['s"']='read_until \" && fpush "${TOKEN}"'
 # Startup
 #
 DICT['boot']='feval "Hello." error-line'
+
+DICT['argc']='fpush "${#ARGV[@]}"'
+DICT['argv']='n="${STACK[0]}"; fpop; fpush "${ARGV[$n]}"'

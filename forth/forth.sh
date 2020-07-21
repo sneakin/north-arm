@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ROOT=$(dirname "$BASH_SOURCE")
+ARGV=("$@")
 
 set -e
 
