@@ -204,7 +204,7 @@ alias> sl r10
   12 12 bsl logior
 ;
 
-: ldmia strm .load ;
+: ldmia stmia .load ;
 
 ( 1 1 0 1 Cond:4 Soffset:8 Conditional branch )
 ( Branch if Z set, equal )
