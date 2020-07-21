@@ -39,7 +39,7 @@
 : ,byte-string/3
   ( string length n )
   2dup equals IF 0 ,uint8 return THEN
-  3 overn 2 overn string-peek char-code ,uint8
+  3 overn 2 overn string-peek ,uint8
   1 + loop
 ;
 
