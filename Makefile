@@ -29,7 +29,16 @@ bin/fforth.dict: $(FORTH_SRC)
 bin/interp-thumb: runner/thumb/bin/interp.elf
 	ln -sf ../$< $@
 
-RUNNER_THUMB_SRC=runner/thumb/builder.4th \
+THUMB_ASSEMBLER_SRC=\
+	elf/stub32.4th \
+	lib/bit-fields.4th \
+	asm/words.4th \
+	asm/byte-data.4th \
+	asm/thumb.4th \
+	asm/thumb2.4th
+
+RUNNER_THUMB_SRC=\
+	runner/thumb/builder.4th \
 	runner/thumb/ops.4th \
 	runner/thumb/linux.4th \
 	runner/thumb/init.4th \
@@ -44,15 +53,11 @@ RUNNER_THUMB_SRC=runner/thumb/builder.4th \
 	runner/thumb/frames.4th \
 	runner/thumb/iwords.4th \
 	runner/thumb/words.4th \
-	elf/stub32.4th \
-	asm/words.4th \
-	asm/byte-data.4th \
-	asm/thumb.4th \
-	asm/thumb2.4th \
+	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
 runner/thumb/bin/interp.elf: runner/thumb/bin/interp.4th $(RUNNER_THUMB_SRC)
-runner/thumb/bin/assembler.elf: runner/thumb/bin/assembler.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th asm/thumb.4th asm/thumb2.4th asm/byte-data.4th
+runner/thumb/bin/assembler.elf: runner/thumb/bin/assembler.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th $(THUMB_ASSEMBLER_SRC)
 runner/thumb/bin/runner.elf: runner/thumb/bin/runner.4th $(RUNNER_THUMB_SRC)
 runner/thumb/bin/north.elf: runner/thumb/build.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th
 

@@ -1,11 +1,14 @@
+( String and byte output: )
+
 defcol write-string/2 ( string length -- )
   rot int32 1 write drop
 endcol
 
-( fixme "boo" == "boot"? Need to check lengths on both. Checking for 0 byte at end works, but not perfect. )
+defcol write-byte ( byte )
+  swap here int32 1 write-string/2
+endcol
 
-
-( Hexadecimal output: )
+( Hexadecimal output: )
 
 defcol hex-digit
   swap int32 0xF logand

@@ -4,6 +4,13 @@
 0 var> compiling-immediates
 0 var> this-word
 
+( Defining words: )
+
+: make-const
+  swap " fpush " ++
+  swap set-word!
+;
+
 : alias
   get-word swap
   dup set-this-word
@@ -19,6 +26,8 @@ alias> down-stack/1 +
 
 alias> up-stack/1 -
 : up-stack 1 up-stack/1 ;
+
+( Compiler's read loop with immediates: )
 
 : immediate-exec
   over swap dict-lookup
@@ -53,10 +62,16 @@ alias> up-stack/1 -
   literal IDICT compiling-read/1
 ;
 
+( Stack operations: )
+
 : 2dup
   over over
 ;
   
+: set-overn
+  here swap up-stack/1 up-stack spoke
+;
+
 : stack-find-loop
   2dup speek equals 3 unless-jump swap drop return
   up-stack
@@ -88,6 +103,8 @@ alias> up-stack/1 -
   2dup swap spoke
   over here swap - up-stack dropn
 ;
+
+( Definitions! )
 
 : compile
   compiling-read concat-seq
@@ -137,5 +154,15 @@ alias> up-stack/1 -
   dup 3 + here swap up-stack/1
   swap spoke
 ; immediate
+
+( Numerics: )
+
+: unsigned-integer/2
+  q" #" swap ++ ++ 0 +
+;
+
+: negate
+  0 swap -
+;
 
 " Done." error-line

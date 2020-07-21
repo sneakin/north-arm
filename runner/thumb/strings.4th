@@ -1,5 +1,7 @@
 ( String operations: )
 
+( fixme "boo" == "boot"? Need to check lengths on both. Checking for 0 byte at end works, but not perfect. )
+
 def byte-string-equals?/3 ( a-str b-str length )
   arg2 peek-byte
   arg1 peek-byte
@@ -36,3 +38,15 @@ endcol
 defcol null-terminate
   rot int32 0 rot string-poke
 endcol
+
+def string-length ( ptr -- length )
+  arg0
+  int32 0
+  int32 0
+  begin-frame
+    arg1 arg0 string-peek int32 0 equals? IF return THEN
+    arg0 int32 1 + set-arg0
+    repeat-frame
+  end-frame
+  set-arg0
+end
