@@ -1,3 +1,5 @@
+0x80000 const> elf32-code-segment
+
 : write-elf32-header
 ( ' id uint8 16 array-field )
 ( EI_MAG0 0 File identification )
@@ -58,15 +60,15 @@
 ( ' offset uint32 field )
 swap ,uint32
 ( ' vaddr uint32 field )
-0x80000 ,uint32
+elf32-code-segment ,uint32
 ( ' paddr uint32 field )
-0x80000 ,uint32
+elf32-code-segment ,uint32
 ( ' filesz uint32 field )
 dup ,uint32
 ( ' memsz uint32 field )
 ,uint32
 ( ' flags uint32 field )
-5 ,uint32
+7 ,uint32
 ( ' align uint32 field )
 0x10000 ,uint32
 ;
@@ -77,9 +79,9 @@ dup ,uint32
 ( ' type uint32 field )
 1 ,uint32
 ( ' flags uint32 field )
-6 ,uint32
+7 ,uint32
 ( ' addr uint32 field )
-swap dup 0x80000 + ,uint32
+swap dup elf32-code-segment + ,uint32
 ( ' offset uint32 field )
 ,uint32
 ( ' size uint32 field )
@@ -208,7 +210,7 @@ swap ,uint32
   3 overn 3 overn over - write-elf32-string-section-header
 
   ( needs entry + 1, section header, and program header offsets )
-  4 overn 0x80000 +
+  4 overn elf32-code-segment +
   rot swap rewrite-elf32-header
 ;
 
