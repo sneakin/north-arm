@@ -1,4 +1,4 @@
-" Loading..." error-line
+( Adds a colon definition that supports immediate words. Comments only work on the top level until colon is defined. )
 
 0 var> compiling
 0 var> compiling-immediates
@@ -80,23 +80,25 @@ alias> up-stack/1 -
 ;
 
 : stack-find/2
-  2 up-stack/1 stack-find-loop
+  stack-find-loop
 ;
 
 : stack-find
-  here stack-find/2
+  here 2 up-stack/1 stack-find/2
 ;
 
+( Args: acc stop-ptr work-stack-ptr )
 : concat-seq-loop
+  2dup equals 1 unless-jump return
   dup speek has-spaces? 1 unless-jump quote-string
   4 overn "  " swap ++ ++
   3 set-overn
-  2dup equals 1 unless-jump return
   down-stack loop
 ;
 
+( Concatenates everything on the stack between here and a read-terminator into a string. )
 : concat-seq
-  here literal 0 swap " " swap
+  here down-stack literal 0 swap " " swap
   read-terminator stack-find
   dup 4 set-overn
   down-stack concat-seq-loop 2 dropn
@@ -165,4 +167,3 @@ alias> up-stack/1 -
   0 swap -
 ;
 
-" Done." error-line

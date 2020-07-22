@@ -142,15 +142,17 @@ endop
   literal jump-rel
 ; out-immediate
 
+( todo does-frame )
+
 : def-read
   read-terminator literal begin-frame
   literal out_immediates compiling-read/2
-  here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
-  op-return ,uint32
+  here down-stack 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
 ;
 
 : def
   next-token create does-col def-read
+  op-return ,op
 ;
 
 : end

@@ -14,14 +14,17 @@ alias> @ dpeek
 : map-stack-seq/2 0 swap read-terminator map-stack-seq/4 drop ;
 
 : revmap-stack-seq-loop
+  4 overn over equals IF return THEN
   3 overn over speek 4 overn exec
   3 set-overn
-  4 overn over equals UNLESS down-stack loop THEN
+  down-stack loop
 ;
 
 : revmap-stack-seq/4 ( ptr acc fn term )
-  4 overn stack-find/2 down-stack
-  revmap-stack-seq-loop
+  4 overn stack-find/2
+  dup 5 overn equals UNLESS
+    down-stack revmap-stack-seq-loop
+  THEN
   2 dropn swap drop
 ;
 

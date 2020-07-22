@@ -74,13 +74,14 @@ r7 const> eip
 ;
 
 : defcol-read
-  literal out_immediates compiling-read/1 here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
-  op-exit ,op
+  literal out_immediates compiling-read/1
+  here down-stack 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
 ;
 
 : defcol
   next-token create does-col
   defcol-read
+  op-exit ,op
 ;
 
 : endcol
