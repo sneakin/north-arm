@@ -49,6 +49,7 @@ alias> sl r10
   add 9 bit-set
 ;
 
+( todo immediates get shifted? )
 : .immed 10 bit-set ;
 
 ( 0 0 1 Op:2 Rd:3 Offset:8 Move/compare/add/subtract immediate )

@@ -1,5 +1,5 @@
 defalias> equals equals?
-defalias> make-const defconst
+( alias> make-const defconst )
 ' loop ' RECURSE out-immediate/2
 
 alias> c: :
