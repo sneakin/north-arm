@@ -314,12 +314,34 @@ endop
 ;
 
 : string-const>
-  dhere swap ,byte-string 4 pad-data defconst-offset>
+  dhere swap
+  ,byte-string 4 pad-data defconst-offset>
 ;
 
 cell-size defconst> cell-size
 -op-size defconst> op-size
 -op-mask defconst> op-mask
+
+
+( Variables: )
+
+defop does-var
+  ( load the word in R1's data's address into ToS )
+  0 r0 bit-set pushr ,uint16
+  0 r1 r0 mov-lsl ,uint16
+  0 dict-entry-data r0 add# ,uint16
+  emit-next
+endop
+
+: defvar
+  create
+  op-does-var dict-entry-size + dict dict-entry-code uint32!
+  dict dict-entry-data uint32!
+;
+
+: defvar>
+  next-token defvar
+;
 
 
 ( Integer Math: )
