@@ -6,7 +6,10 @@ OUTPUTS=elf/bones/with-data.elf \
 	runner/thumb/bin/interp.elf \
 	runner/thumb/bin/assembler.elf \
 	bin/interp-thumb \
-	bin/fforth.dict
+	bin/assembler-thumb \
+	bin/fforth.dict \
+	bin/assembler-thumb.sh \
+	bin/assembler-thumb.dict
 
 all: $(OUTPUTS)
 
@@ -34,10 +37,15 @@ THUMB_ASSEMBLER_SRC=\
 
 bin/fforth.dict: $(FORTH_SRC)
 	echo -e "forth/compiler.4th load $@ save-dict\n" | $(FORTH)
+
+bin/assembler-thumb.sh: bin/fforth bin/assembler-thumb.dict
+	ln -sf fforth $@
 bin/assembler-thumb.dict: load-thumb.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
 	echo -e "$< load $@ save-dict\n" | $(FORTH)
 
 bin/interp-thumb: runner/thumb/bin/interp.elf
+	ln -sf ../$< $@
+bin/assembler-thumb: runner/thumb/bin/assembler.elf
 	ln -sf ../$< $@
 
 RUNNER_THUMB_SRC=\
