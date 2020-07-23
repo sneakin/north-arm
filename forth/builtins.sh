@@ -150,6 +150,18 @@ IDICT['q"']='read_until \" && fpush literal && fpush "\"${TOKEN}\""'
 IDICT['s"']='read_until \" && fpush "${TOKEN}"'
 
 #
+# Frames
+#
+FP=0
+
+DICT['current-frame']='fpush $FP'
+DICT['set-current-frame']='FP="${STACK[0]}"; fpop'
+DICT['exit-frame']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
+DICT['return0']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
+DICT['return1']='tmp="${STACK[0]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp"'
+
+
+#
 # Startup
 #
 DICT['boot']='feval "Hello." error-line'

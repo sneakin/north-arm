@@ -17,11 +17,12 @@ bin:
 	mkdir bin
 
 FORTH_SRC=./forth/forth.sh \
-	./forth/compiler.4th \
 	./forth/data.sh \
 	./forth/state.sh \
 	./forth/dict.sh \
-	./forth/builtins.sh
+	./forth/builtins.sh \
+	./forth/compiler.4th \
+	./forth/frames.4th
 
 THUMB_ASSEMBLER_SRC=\
 	elf/stub32.4th \

@@ -120,8 +120,13 @@ alias> up-stack/1 -
 
 ( Now that immediates can execute: )
 
+( Args: src-word target-word )
+: immediate/2
+  swap get-word swap set-immediate!
+;
+
 : immediate/1
-  dup get-word swap set-immediate!
+  dup immediate/2
 ;
 
 : immediate this-word immediate/1 ;
