@@ -172,3 +172,10 @@ alias> up-stack/1 -
   0 swap -
 ;
 
+( Misc: )
+
+: load-sources
+  dup 0 equals IF drop return THEN
+  swap load .s
+  1 - loop
+;
