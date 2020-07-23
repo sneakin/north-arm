@@ -1,7 +1,9 @@
 #!/bin/bash
 
 FFROOT=$(dirname "$0")
+FFBASE=$(basename "$0")
+
 source "$FFROOT"/../forth/forth.sh
-source "$FFROOT"/fforth.dict
+source "$FFROOT"/"$FFBASE".dict
 
 finterp

@@ -23,12 +23,6 @@ FORTH_SRC=./forth/forth.sh \
 	./forth/dict.sh \
 	./forth/builtins.sh
 
-bin/fforth.dict: $(FORTH_SRC)
-	echo -e "forth/compiler.4th load $@ save-dict\n" | $(FORTH)
-
-bin/interp-thumb: runner/thumb/bin/interp.elf
-	ln -sf ../$< $@
-
 THUMB_ASSEMBLER_SRC=\
 	elf/stub32.4th \
 	lib/bit-fields.4th \
@@ -36,6 +30,14 @@ THUMB_ASSEMBLER_SRC=\
 	asm/byte-data.4th \
 	asm/thumb.4th \
 	asm/thumb2.4th
+
+bin/fforth.dict: $(FORTH_SRC)
+	echo -e "forth/compiler.4th load $@ save-dict\n" | $(FORTH)
+bin/assembler-thumb.dict: load-thumb.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
+	echo -e "$< load $@ save-dict\n" | $(FORTH)
+
+bin/interp-thumb: runner/thumb/bin/interp.elf
+	ln -sf ../$< $@
 
 RUNNER_THUMB_SRC=\
 	runner/thumb/builder.4th \
