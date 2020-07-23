@@ -4,33 +4,8 @@ alias> doc( ( out-immediate
 alias> args( ( out-immediate
 
 defalias> equals equals?
-defalias> < int<
-defalias> <= int<=
 defalias> uint< int<
 defalias> uint<= int<=
-
-defcol int>
-  rot int<= IF int32 0 ELSE int32 1 THEN swap
-endcol
-
-defcol int>=
-  rot int< IF int32 0 ELSE int32 1 THEN swap
-endcol
-
-defalias> > int>
-defalias> >= int>=
-
-def dpush
-  return return
-end
-
-def dhere
-  return return
-end
-
-def dmove
-  return return
-end
 
 def ddrop
   return return
@@ -45,9 +20,8 @@ defcol swapdrop
 endcol
 
 defcol rotdrop2 ( a b c -- c )
-  rot ( a ra c b )
-  drop ( a ra c )
-  rot drop ( c ra )
+  swap int32 4 set-overn
+  rot int32 2 dropn
 endcol
 
 defcol returnN

@@ -8,6 +8,7 @@
 runner/thumb/builder.4th load
 
 ' interp-boot
+runner/thumb/proper.4th
 runner/thumb/data-stack.4th
 runner/thumb/interp.4th
 runner/thumb/reader.4th
@@ -16,4 +17,4 @@ runner/thumb/logic.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
 runner/thumb/messages.4th
-8 builder-run/2
+9 builder-run/2

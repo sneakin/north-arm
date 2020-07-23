@@ -502,3 +502,24 @@ endop
 defcol break
   int32 0x47 peek
 endcol
+
+( Dictionary helpers: )
+
+: emit-load-word ( offset reg )
+  2dup emit-load-int32
+  cs over dup add ,uint16
+  int32 2 dropn
+;
+
+: emit-get-word-data
+  2dup emit-load-word
+  swap drop
+  0 dict-entry-data over dup ldr-offset ,uint16
+  drop
+;
+
+: emit-set-word-data ( offset data-reg tmp-reg )
+  int32 3 overn int32 2 overn emit-load-word
+  0 dict-entry-data int32 2 overn int32 4 overn str-offset ,uint16
+  int32 3 dropn
+;

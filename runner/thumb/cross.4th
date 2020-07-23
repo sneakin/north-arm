@@ -1,11 +1,12 @@
 defalias> equals equals?
+defalias> mult int-mul
 ( alias> make-const defconst )
-' loop ' RECURSE out-immediate/2
+' RECURSE ' loop out-immediate/2
 
 alias> c: :
-alias> : def
 alias> ;c ;
-alias> ; end
+alias> : defproper
+alias> ; endproper
 
 alias> const> defconst>
 alias> alias> defalias>

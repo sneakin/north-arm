@@ -279,3 +279,23 @@ alias> sl r10
 : bkpt
   0 bkpt/1
 ;
+
+( Helpers: )
+
+: emit-load-int32 ( n reg )
+  ( 0xAAbbccdd )
+  2 overn 24 bsr 0xFF logand 2 overn mov# ,uint16 ( init reg with highest byte )
+  8 over dup mov-lsl ,uint16 ( reg<<8 )
+  ( 0xaaBBccdd )
+  2 overn 16 bsr 0xFF logand
+  dup 0 equals IF drop ELSE 2 overn add# ,uint16 ( add byte to reg<<8 ) THEN
+  8 over dup mov-lsl ,uint16 ( reg<<8 )
+  ( 0xaabbCCdd )
+  2 overn 8 bsr 0xFF logand
+  dup 0 equals IF drop ELSE 2 overn add# ,uint16 ( add byte to reg<<8 ) THEN
+  8 over dup mov-lsl ,uint16 ( reg<<8 )
+  ( 0xaabbccDD )
+  2 overn 0xFF logand
+  dup 0 equals IF drop ELSE 2 overn add# ,uint16 ( add byte to reg<<8 ) THEN
+  2 dropn
+;

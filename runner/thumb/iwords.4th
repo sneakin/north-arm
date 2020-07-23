@@ -3,11 +3,11 @@
 ' -op-size get-word UNLESS cell-size const> -op-size THEN
 )
 
-: out-immediate/2
+: out-immediate/2 ( src-word out-word )
   swap get-word swap literal out_immediates dict-set!
 ;
 
-: out-immediate/1
+: out-immediate/1 ( word )
   dup out-immediate/2
 ;
 

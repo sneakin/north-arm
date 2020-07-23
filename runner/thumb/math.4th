@@ -1,4 +1,20 @@
-( Numbers: )
+( Comparisons: )
+
+defcol int>
+  rot int<= IF int32 0 ELSE int32 1 THEN swap
+endcol
+
+defcol int>=
+  rot int< IF int32 0 ELSE int32 1 THEN swap
+endcol
+
+defalias> > int>
+defalias> >= int>=
+defalias> < int<
+defalias> <= int<=
+
+
+( Numbers: )
 
 defcol negative?
   over int32 0 int< swap

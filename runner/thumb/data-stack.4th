@@ -26,6 +26,10 @@ defcol dpop
   dhere peek swap
 endcol
 
+defcol ddrop
+  swap cell-size * dhere - dmove  
+endcol
+
 defcol dallot
   dhere rot
   over cell-size * + dmove

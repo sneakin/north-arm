@@ -43,8 +43,10 @@ RUNNER_THUMB_SRC=\
 	runner/thumb/linux.4th \
 	runner/thumb/init.4th \
 	runner/thumb/math.4th \
-	runner/thumb/reader.4th \
+	runner/thumb/proper.4th \
+	runner/thumb/data-stack.4th \
 	runner/thumb/interp.4th \
+	runner/thumb/reader.4th \
 	runner/thumb/output.4th \
 	runner/thumb/logic.4th \
 	runner/thumb/dictionary.4th \
@@ -59,7 +61,7 @@ RUNNER_THUMB_SRC=\
 runner/thumb/bin/interp.elf: runner/thumb/bin/interp.4th $(RUNNER_THUMB_SRC)
 runner/thumb/bin/assembler.elf: runner/thumb/bin/assembler.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th $(THUMB_ASSEMBLER_SRC)
 runner/thumb/bin/runner.elf: runner/thumb/bin/runner.4th $(RUNNER_THUMB_SRC)
-runner/thumb/bin/north.elf: runner/thumb/build.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th
+runner/thumb/bin/north.elf: runner/thumb/bin/north.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th
 
 %.elf: %.4th
 	cat $< | $(FORTH) > $@

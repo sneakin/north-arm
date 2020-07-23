@@ -1,11 +1,13 @@
-: ddump-binary-bytes
-  dup dhere equals IF return THEN
-  dup dpeek write-byte
-  1 + loop
-;
-
 : ,uint8 255 logand dpush ;
 : uint8! swap 255 logand swap dpoke ;
+.s
+: uint8@ dpeek ;
+
+: ddump-binary-bytes
+  dup dhere equals IF return THEN
+  dup uint8@ write-byte
+  1 + loop
+;
 
 : ,uint16
   dup ,uint8
@@ -27,10 +29,10 @@
 ;
 
 : uint32@
-  dup dpeek
-  swap 1 + dup dpeek
-  swap 1 + dup dpeek
-  swap 1 + dpeek
+  dup uint8@
+  swap 1 + dup uint8@
+  swap 1 + dup uint8@
+  swap 1 + uint8@
   8 bsl logior
   8 bsl logior
   8 bsl logior
