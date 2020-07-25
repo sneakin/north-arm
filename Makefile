@@ -40,7 +40,7 @@ bin/fforth.dict: $(FORTH_SRC)
 
 bin/assembler-thumb.sh: bin/fforth bin/assembler-thumb.dict
 	ln -sf fforth $@
-bin/assembler-thumb.dict: load-thumb.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
+bin/assembler-thumb.dict: runner/thumb/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
 	echo -e "$< load $@ save-dict\n" | $(FORTH)
 
 bin/interp-thumb: runner/thumb/bin/interp.elf
