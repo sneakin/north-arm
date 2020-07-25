@@ -4,11 +4,35 @@ defcol dict-entry-name
   exit exit ( fixme compiling-read and empties, revmap too? )
 endcol
 
-defcol dict-entry-link
-  swap
-  cell-size int32 3 * +
-  swap
+defcol dict-entry-code
+  swap cell-size + swap
 endcol
+
+defcol dict-entry-data
+  swap cell-size + cell-size + swap
+endcol
+
+defcol dict-entry-link
+  swap cell-size int32 3 * + swap
+endcol
+
+( Entry construction: )
+
+def alloc-dict-entry
+  int32 0
+  int32 0
+  int32 0
+  int32 0
+  here exit-frame
+end
+
+def make-dict-entry
+  alloc-dict-entry
+  cs arg0 - over dict-entry-name poke
+  exit-frame
+end
+
+( Querying: )
 
 def dict-lookup ( ptr length dict-entry ++ found? )
   arg0 null? IF int32 0 return1 THEN

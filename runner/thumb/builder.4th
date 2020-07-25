@@ -16,10 +16,11 @@ runner/thumb/load.4th load
 
   ( The main stage: )
   runner/thumb/math.4th
+  runner/thumb/logic.4th
   runner/thumb/linux.4th
   runner/thumb/frames.4th
   runner/thumb/ops.4th
-  4 load-sources
+  5 load-sources
 
   load-sources
 

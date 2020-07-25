@@ -13,8 +13,7 @@ runner/thumb/data-stack.4th
 runner/thumb/interp.4th
 runner/thumb/reader.4th
 runner/thumb/output.4th
-runner/thumb/logic.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
 runner/thumb/messages.4th
-9 builder-run/2
+8 builder-run/2

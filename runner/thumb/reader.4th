@@ -94,7 +94,7 @@ end
 
 def reader-skip-until/3 ( fn reader bytes-read ++ last-byte )
   arg1 reader-peek-byte negative? IF return1 THEN
-  dup arg2 exec IF return1 ELSE drop THEN
+  dup arg2 exec-abs IF return1 ELSE drop THEN
   arg1 reader-inc-offset!
   arg0 int32 1 + set-arg0
   repeat-frame
@@ -112,7 +112,7 @@ def reader-read-until/5 ( ptr max-length fn reader bytes-read ++ last-byte )
   ( read a byte, return on EOF )
   arg1 reader-peek-byte negative? IF return1 THEN
   ( call the predicate )
-  dup arg2 exec IF return1 THEN
+  dup arg2 exec-abs IF return1 THEN
   ( store the byte )
   int32 4 argn arg0 string-poke
   ( inc counter )
@@ -124,18 +124,81 @@ end
 def reader-read-until ( ptr max-length fn reader -- ptr bytes-read last-byte )
   arg3 arg2 arg1 arg0 int32 0 reader-read-until/5
   set-arg1 set-arg2
-  drop-locals end-frame ( fixme what and why drop 2? )
-  int32 2 dropn swap drop exit
+  drop-locals end-frame
+  drop swap drop exit
 end
 
 def reader-next-token ( ptr max-length reader -- ptr length last-byte )
-  literal not-whitespace? arg0 reader-skip-until negative? IF
+  pointer not-whitespace? arg0 reader-skip-until negative? IF
     set-arg0
     int32 0 set-arg1
     return
   THEN
   int32 2 dropn
-  arg2 arg1 literal whitespace? arg0 reader-read-until
+  arg2 arg1 pointer whitespace? arg0 reader-read-until
   set-arg0
+  2dup null-terminate
   set-arg1
+end
+
+def reader-skip-tokens-until/4 ( ptr size fn reader )
+  arg3 arg2 arg0 reader-next-token negative? UNLESS
+    drop arg1 exec-abs UNLESS
+      int32 2 dropn repeat-frame
+    THEN
+  THEN
+end
+  
+def reader-skip-tokens-until ( fn reader )
+  int32 128 stack-allot
+  int32 128
+  arg1
+  arg0
+  reader-skip-tokens-until/4
+end
+
+def is-digit?
+  arg0 int32 57 int32 48 in-range? return1
+end
+
+def is-lower-alpha?
+  arg0 int32 122 int32 97 in-range? return1
+end
+
+def is-upper-alpha?
+  arg0 int32 90 int32 65 in-range? return1
+end
+
+def char-to-digit ( char -- digit )
+  arg0 is-digit? IF
+    int32 48
+  ELSE
+    is-lower-alpha? IF
+      int32 97
+    ELSE
+      is-upper-alpha? IF int32 65 ELSE int32 -1 set-arg0 return THEN
+    THEN
+    int32 10 swap -
+  THEN
+  swap - set-arg0
+end
+
+( todo handle overflow; base prefixes: 0x, 2#101; negatives )
+
+def parse-int-loop ( string length base offset n ++ valid? )
+  arg3 arg1 uint<= IF int32 1 return1 THEN
+  int32 4 argn arg1 string-peek char-to-digit
+  negative? IF int32 0 return1 THEN
+  dup arg2 int>= IF int32 0 return1 THEN
+  arg0 arg2 * + set-arg0
+  ( inc offset & repeat )
+  arg1 int32 1 + set-arg1
+  repeat-frame
+end
+
+10 defvar> input-base
+
+def parse-int ( str length -- n valid? )
+  arg1 arg0 input-base peek int32 0 int32 0 parse-int-loop
+  set-arg0 set-arg1
 end

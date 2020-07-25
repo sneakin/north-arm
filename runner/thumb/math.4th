@@ -36,6 +36,11 @@ defcol zero
   int32 0 swap
 endcol
 
+def in-range? ( n max min )
+  arg2 arg1 int<=
+  arg2 arg0 int>= and return1
+end
+
 ( Division: )
 
 def bsl-to-match/3 ( to-match n bits-left )

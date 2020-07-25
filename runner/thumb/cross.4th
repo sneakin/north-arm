@@ -11,4 +11,3 @@ alias> ; endproper
 alias> const> defconst>
 alias> alias> defalias>
 
-: sq arg0 arg0 * return1 ;

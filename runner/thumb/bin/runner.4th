@@ -11,8 +11,7 @@ runner/thumb/builder.4th load
 runner/thumb/interp.4th
 runner/thumb/reader.4th
 runner/thumb/output.4th
-runner/thumb/logic.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
 runner/thumb/messages.4th
-7 builder-run/2
+6 builder-run/2
