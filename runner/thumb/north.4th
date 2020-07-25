@@ -4,8 +4,6 @@ alias> doc( ( out-immediate
 alias> args( ( out-immediate
 
 defalias> equals equals?
-defalias> uint< int<
-defalias> uint<= int<=
 
 def ddrop
   return return

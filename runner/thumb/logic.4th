@@ -6,7 +6,9 @@ defcol not
 endcol
 
 defcol and
-  rot IF IF int32 1 swap exit THEN THEN
+  rot IF
+    IF int32 1 swap exit THEN
+  ELSE drop THEN
   int32 0 swap
 endcol
 

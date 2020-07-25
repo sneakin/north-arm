@@ -407,6 +407,20 @@ defop int<=
   emit-next
 endop
 
+defop uint<
+  0 r1 bit-set popr ,uint16
+  r0 r1 cmp ,uint16
+  ' bcc emit-truther
+  emit-next
+endop
+
+defop uint<=
+  0 r1 bit-set popr ,uint16
+  r0 r1 cmp ,uint16
+  ' bls emit-truther
+  emit-next
+endop
+
 
 ( Bits and logic: )
 

@@ -50,7 +50,7 @@ r7 const> eip
 ; immediate
 
 : does-col
-  op-do-col dict-entry-size + dict dict-entry-code uint32!
+  op-do-col dict-entry-code uint32@ dict dict-entry-code uint32!
   4 align-data
   dhere dict dict-entry-data uint32!
 ;

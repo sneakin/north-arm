@@ -13,9 +13,11 @@ endop
 
 defop end-frame
   ( Set FP to the frame's parent. )
-  0 r0 bit-set pushr ,uint16
+  fp sp cmp-lohi ,uint16
+  2 bhi ,uint16
   0 fp fp ldr-offset ,uint16
-  1 r3 sub# ,uint16
+  0 branch ,uint16
+  0 r0 fp mov-lsl ,uint16
   emit-next
 endop
 
