@@ -1,5 +1,13 @@
 #+TITLE: North: Bash Bootstrap
 
+* Goals
+** Ultimate:
+ELF file that only has an offset thread into a dynamically linked symbol table and interpreter.
+** Primary:
+Build an ELF file that can execute the code to build itself.
+** Secondary:
+North Runner compatible with the x86 runner that can mmap a file to execute.
+
 * Tasks
 ** compile loop:
 *** relocate calls and pointers but not data literals
@@ -9,7 +17,7 @@
 *** compile with linked dictionary for output
 *** DONE Base offset for word addresses
 ** Reader
-*** Rewrite from bash to Forth?
+*** DONE Rewrite from bash to Forth?
 *** Reuse reader from North Core? read-byte level.
 Call frames, stack & data pointer math
 ** Writing
@@ -22,15 +30,83 @@ Call frames, stack & data pointer math
 *** extract strings from data into section
 *** symbol table section
 ** Defining words
-*** Compiled words: create & def -> :
+*** DONE Compiled words: create & def -> :
 *** Compiler words: :
-*** Immediates: immediate
+*** DONE Immediates: immediate
 ** Assemblers
 *** Bacaw
 *** x86
-*** DONE ARM
+*** TODO ARM
+**** TODO Branching and return in Thumb; to call ops in ops and call threading
+**** TODO Status register and coprocessor ops
+*** Thumb Assembler meta words: mov checks arg range
 ** DONE jumps & loops
 *** DONE relative jumps
 *** DONE returns
 *** DONE IF immediate to count offset
 ** DONE read strings properly in load, using immediates
+
+** DONE load needs to be callable from definitions.
+Needs to interpret input when called while not reading additional input.
+** DONE Building needs to allow different program inclusions
+** Returns
+#+BEGIN
+def f ( x y z -- a b )
+  a b returns 3 2
+end
+
+def f ( x y z -- a b )
+  [ a b ] return
+end
+
+[ x y z ] f
+=> [ a b ]
+
+4 1 2 + dup 3 overn f
+
+#+END
+** Building
+Need to better handle targets and loading their sources. Too much duplication.
+Pass sources in as args from Makefile? Every file requires what it needs?
+*** Loading the assembler words into a Bash generated bunary vs. catting them in and dumping?
+**** Words needed for catting:
+Cat in the better compiler.
+Cat in just the assembler.
+
+***** Top level
+const> var>
+load
+
+***** Functions
+Creating dictionary entries: make-dict-entry create
+dict-entry accessors
+compiling-read with immediates: reuse
+comments & strings
+string appending
+
+Dictionary entries that are and have real pointers.
+All their fields need CS added.
+Threads too: offset & indirect.
+Data stack: relative or absolute?
+
+*** DONE argc/argv
+** Separate ops and definitions
+** Separate bash specific defs from the general
+** DONE Variables
+*** Move to own segment
+** Flip int-sub args in runner
+** Use just 'end' instead of 'end.*'?
+** defcol & def can share more code
+** Reader return: drop for negative lengths on reads subsequent to failure
+** DONE compiling-read with empty defs, defcol with single element
+concat-seq down-stack uses
+revmap-stack? stack-find?
+** 16 bit op codes: needs int32, literal, etc. to be immediates that write proper sized bytes to op sequence.
+** TODO make-closure: call a function with predetermined arguments like `equals?` with one argument.
+** Dictionary entry code value: has to point to real code?
+** Lisp style dictionary: assoc list of functions
+** DONE Remove unasked output
+** Tail call optimizations
+*** Proper colon defs
+*** Framed calls
+** Reader needs its own token buffer; no need to return last char/status, negative happens next read
