@@ -1,11 +1,11 @@
 ( String and byte output: )
 
 defcol write-string/2 ( string length -- )
-  rot int32 1 write drop
+  rot current-output peek write drop
 endcol
 
 defcol write-byte ( byte )
-  swap here int32 1 write-string/2
+  swap here current-output peek write-string/2
 endcol
 
 ( Hexadecimal output: )

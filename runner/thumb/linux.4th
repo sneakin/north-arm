@@ -35,6 +35,14 @@
 
 ( Input & output: )
 
+0 defconst> standard-input
+1 defconst> standard-output
+2 defconst> standard-error
+
+0 defvar> current-input
+1 defvar> current-output
+2 defvar> current-error
+
 defop read ( len ptr fd -- result )
   3 3 emit-syscaller
   emit-next
