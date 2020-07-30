@@ -15,7 +15,7 @@ defcol hex-digit
   dup int32 10 int< IF
     int32 48
   ELSE
-    int32 10 swap -
+    int32 10 -
     int32 65
   THEN
   + swap
@@ -53,7 +53,7 @@ def uint->hex-string ( n out-ptr -- out-ptr length )
   arg1 arg0 int32 0 int32 0 uint->hex-string/4
   int32 2 dropn
   arg0 dup set-arg1
-  swap - set-arg0
+  - set-arg0
   arg1 arg0 int32 1 + null-terminate
   return
 end
@@ -69,7 +69,7 @@ def int->hex-string ( n out-ptr -- out-ptr length )
   int32 0 int32 0 uint->hex-string/4
   int32 2 dropn
   arg0 dup set-arg1
-  swap - set-arg0
+  - set-arg0
   arg1 arg0 int32 1 + null-terminate
   return
 end

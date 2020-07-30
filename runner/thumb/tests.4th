@@ -27,7 +27,7 @@ defcol test-repeat
   begin-frame
   nl boo
   arg0 int32 0 int<= IF crap return THEN
-  int32 1 arg0 - set-arg0
+  arg0 int32 1 - set-arg0
   repeat-frame
 endcol
 

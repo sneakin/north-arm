@@ -7,9 +7,9 @@ def byte-string-equals?/3 ( a-str b-str length )
   arg1 peek-byte
   equals? UNLESS int32 0 return1 THEN
   arg0 int32 0 int<= IF int32 1 return1 THEN
-  int32 1 arg0 - set-arg0
-  int32 1 arg1 + set-arg1
-  int32 1 arg2 + set-arg2
+  arg0 int32 1 - set-arg0
+  arg1 int32 1 + set-arg1
+  arg2 int32 1 + set-arg2
   repeat-frame
 end
 
@@ -20,7 +20,7 @@ def string-equals?/3 ( a-str b-str length )
   arg2 peek
   arg1 peek
   equals? UNLESS int32 0 return1 THEN
-  cell-size arg0 - set-arg0
+  arg0 cell-size - set-arg0
   cell-size arg1 + set-arg1
   cell-size arg2 + set-arg2
   repeat-frame

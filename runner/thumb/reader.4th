@@ -180,7 +180,7 @@ def char-to-digit ( char -- digit )
     THEN
     int32 10 swap -
   THEN
-  swap - set-arg0
+  - set-arg0
 end
 
 ( todo handle overflow; base prefixes: 0x, 2#101; negatives )

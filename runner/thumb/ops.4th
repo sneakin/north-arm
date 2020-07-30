@@ -359,7 +359,7 @@ endop
 
 defop int-sub
   0 r1 bit-set popr ,uint16
-  r1 r0 r0 sub ,uint16
+  r0 r1 r0 sub ,uint16
   emit-next
 endop
 

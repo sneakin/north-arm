@@ -62,7 +62,7 @@ def int-divmod-sw/4 ( numer subtractor bit quotient )
   arg1 int32 0 int<= IF return THEN
   ( add the bit to the quotient if numer can have subtractor subtracted )
   arg2 arg3 int<= IF
-    arg2 arg3 - set-arg3
+    arg3 arg2 - set-arg3
     arg0 arg1 + set-arg0
   THEN
   ( shift the subtractor & bit right )
@@ -88,5 +88,5 @@ end
 defalias> sw/ int-divmod-sw
 
 defcol int-mod
-  rot swap 2dup / * swap - swap
+  rot swap 2dup / * - swap
 endcol

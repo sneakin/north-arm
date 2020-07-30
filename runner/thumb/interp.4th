@@ -84,7 +84,7 @@ def make-noname ( data-ptr fn )
   cs arg0 -
   arg1 literal literal
   literal swap
-  here cs swap - int32 8 overn dict-entry-data poke
+  here cs - int32 8 overn dict-entry-data poke
   int32 7 overn exit-frame
 end
 
@@ -137,7 +137,7 @@ def create
   drop
   ( then... )
   make-dict-entry
-  dict cs swap - over dict-entry-link poke
+  dict cs - over dict-entry-link poke
   ( make this the newest dictionary word )
   dup set-dict
   exit-frame

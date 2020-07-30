@@ -28,7 +28,7 @@ end
 
 def make-dict-entry ( name-ptr length ++ ...memory entry-ptr )
   alloc-dict-entry
-  cs arg1 - over dict-entry-name poke
+  arg1 cs - over dict-entry-name poke
   exit-frame
 end
 

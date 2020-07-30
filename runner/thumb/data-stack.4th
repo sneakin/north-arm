@@ -29,17 +29,17 @@ defcol dpush-byte
 endcol
 
 defcol dpop
-  cell-size dhere - dup dmove
+  dhere cell-size - dup dmove
   peek swap
 endcol
 
 defcol dpop-byte
-  int32 1 dhere - dup dmove
+  dhere int32 1 - dup dmove
   peek-byte swap
 endcol
 
 defcol ddrop
-  swap cell-size * dhere - dmove  
+  swap cell-size * dhere swap - dmove  
 endcol
 
 defcol dallot
