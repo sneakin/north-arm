@@ -26,9 +26,9 @@ def alloc-dict-entry
   here exit-frame
 end
 
-def make-dict-entry
+def make-dict-entry ( name-ptr length ++ ...memory entry-ptr )
   alloc-dict-entry
-  cs arg0 - over dict-entry-name poke
+  cs arg1 - over dict-entry-name poke
   exit-frame
 end
 
@@ -47,8 +47,12 @@ def dict-lookup ( ptr length dict-entry ++ found? )
   repeat-frame
 end
 
-defcol lookup ( ptr length -- dict-entry found? )
-  rot swap
-  dict dict-lookup
-  swap 2swap int32 2 dropn rot
+def lookup ( ptr length -- dict-entry found? )
+  arg1 arg0 dict dict-lookup
+  set-arg0 set-arg1
+endcol
+
+defcol defined?
+  swap IF int32 1 ELSE int32 0 THEN
+  swap
 endcol

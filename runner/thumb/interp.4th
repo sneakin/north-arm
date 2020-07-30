@@ -178,7 +178,7 @@ endcol
 def interp
   arg0 the-reader poke
   here prompt-here poke
-  arg2 arg1 arg0 read-token negative? IF what drop return THEN
+  arg2 arg1 arg0 read-token negative? IF what int32 2 dropn return THEN
   trace-eval peek IF 2dup write-string/2 nl THEN
   2dup parse-int IF
     rot int32 2 dropn

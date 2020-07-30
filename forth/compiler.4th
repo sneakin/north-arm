@@ -126,6 +126,10 @@ alias> up-stack/1 -
   compile " feval " ++ swap set-word!
 ;
 
+: defined?
+  get-word null? swap drop
+;
+
 ( Now that immediates can execute: )
 
 ( Args: src-word target-word )
