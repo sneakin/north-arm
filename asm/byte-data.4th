@@ -1,7 +1,6 @@
-: ,uint8 255 logand dpush ;
-: uint8! swap 255 logand swap dpoke ;
-.s
-: uint8@ dpeek ;
+alias> ,uint8 dpush-byte
+alias> uint8! dpoke-byte
+alias> uint8@ dpeek-byte
 
 : ddump-binary-bytes
   dup dhere equals IF return THEN
@@ -12,6 +11,17 @@
 : ,uint16
   dup ,uint8
   8 bsr ,uint8
+;
+
+: uint16@
+  dup uint8@
+  swap 1 + uint8@ 8 bsl
+  logior
+;
+
+: uint16!
+  2dup uint8!
+  1 + swap 8 bsr swap uint8!
 ;
 
 : ,uint32
@@ -37,6 +47,18 @@
   8 bsl logior
   8 bsl logior
 ;
+
+alias> ,int8 ,uint8
+alias> int8@ uint8@
+alias> int8! uint8!
+
+alias> ,int16 ,uint16
+alias> int16@ uint16@
+alias> int16! uint16!
+
+alias> ,int32 ,uint32
+alias> int32@ uint32@
+alias> int32! uint32!
 
 : ,byte-string/3
   ( string length n )

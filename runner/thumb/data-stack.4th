@@ -14,16 +14,28 @@ defcol dmove
 endcol
 
 defalias> dpeek peek
+defalias> dpeek-byte peek-byte
 defalias> dpoke poke
+defalias> dpoke-byte poke-byte
 
 defcol dpush
   swap dhere poke
   dhere cell-size + dmove
 endcol
 
+defcol dpush-byte
+  swap dhere poke-byte
+  dhere int32 1 + dmove
+endcol
+
 defcol dpop
-  cell-size dhere - dmove
-  dhere peek swap
+  cell-size dhere - dup dmove
+  peek swap
+endcol
+
+defcol dpop-byte
+  int32 1 dhere - dup dmove
+  peek-byte swap
 endcol
 
 defcol ddrop
