@@ -147,6 +147,7 @@ endop
 ( todo does-frame )
 
 : def-read
+  ' defcol-state-fn set-compiling-state
   read-terminator literal begin-frame
   literal out_immediates compiling-read/2
   here down-stack 0 ' defcol-cb revmap-stack-seq/3 1 + dropn

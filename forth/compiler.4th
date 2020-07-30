@@ -2,6 +2,7 @@
 
 0 var> compiling
 0 var> compiling-immediates
+0 var> compiling-state
 0 var> this-word
 
 ( Defining words: )
@@ -37,10 +38,16 @@ alias> up-stack/1 -
 
 " feval 0 set-compiling" ' ; set-immediate!
 
+: ?exec
+  dup 0 equals 2 if-jump exec return
+  drop
+;
+
 : compiling-read-loop
   next-token
   null? 1 unless-jump return
   compiling-immediates immediate-exec drop
+  compiling-state ?exec
   compiling 1 if-jump return
   loop
 ;
@@ -59,6 +66,7 @@ alias> up-stack/1 -
 ;
 
 : compiling-read
+  0 set-compiling-state
   literal IDICT compiling-read/1
 ;
 
