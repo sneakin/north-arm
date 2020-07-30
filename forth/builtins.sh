@@ -18,7 +18,9 @@ DICT['not']='STACK[0]=$(($STACK[0] == 0))'
 DICT['equals']='if [[ "${STACK[0]}" == "${STACK[1]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
 
 DICT['null?']='if [[ "${STACK[0]}" == "" ]]; then fpush 1; else fpush 0; fi'
-DICT['number?']='if [[ "${STACK[0]}" =~ -?[0-9]+(\.[0-9]+)? ]] || [[ "${STACK[0]}" =~ -?(0x)[0-9a-fA-F]+(\.[0-9a-fA-F]+)? ]]; then fpush 1; else fpush 0; fi'
+DICT['decimal?']='if [[ "${STACK[0]}" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then fpush 1; else fpush 0; fi'
+DICT['hexadecimal?']='if [[ "${STACK[0]}" =~ ^-?(0x)[0-9a-fA-F]+(\.[0-9a-fA-F]+)?$ ]]; then fpush 1; else fpush 0; fi'
+DICT['number?']='feval decimal? over hexadecimal? swap drop logior'
 
 DICT['int<']='a="${STACK[1]}"; b="${STACK[0]}"; fpop 2; if [[ "$a" < "$b" ]]; then fpush 1; else fpush 0; fi'
 
