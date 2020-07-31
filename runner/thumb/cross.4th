@@ -8,6 +8,7 @@
   make-label get-word null? swap drop
 ;
 
+defalias> return proper-exit
 defalias> equals equals?
 defalias> mult int-mul
 ( alias> make-const defconst )

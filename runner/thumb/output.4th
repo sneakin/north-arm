@@ -5,7 +5,8 @@ defcol write-string/2 ( string length -- )
 endcol
 
 defcol write-byte ( byte )
-  swap here current-output peek write-string/2
+  swap here int32 1 write-string/2
+  drop
 endcol
 
 ( Hexadecimal output: )
