@@ -178,7 +178,7 @@ def char-to-digit ( char -- digit )
     ELSE
       is-upper-alpha? IF int32 65 ELSE int32 -1 set-arg0 return THEN
     THEN
-    int32 10 swap -
+    int32 10 -
   THEN
   - set-arg0
 end

@@ -81,7 +81,7 @@ def make-noname ( data-ptr fn )
   pointer do-col dict-entry-code peek over dict-entry-code poke
   literal exit
   literal swap
-  cs arg0 -
+  arg0 cs -
   arg1 literal literal
   literal swap
   here cs - int32 8 overn dict-entry-data poke
