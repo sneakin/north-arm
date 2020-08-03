@@ -94,7 +94,7 @@ Data stack: relative or absolute?
 ** Separate bash specific defs from the general
 ** DONE Variables
 *** Move to own segment
-** Flip int-sub args in runner
+** DONE Flip int-sub args in runner
 ** Use just 'end' instead of 'end.*'?
 ** defcol & def can share more code
 ** Reader return: drop for negative lengths on reads subsequent to failure
@@ -102,11 +102,19 @@ Data stack: relative or absolute?
 concat-seq down-stack uses
 revmap-stack? stack-find?
 ** 16 bit op codes: needs int32, literal, etc. to be immediates that write proper sized bytes to op sequence.
-** TODO make-closure: call a function with predetermined arguments like `equals?` with one argument.
+** DONE make-noname: call a function with predetermined arguments like `equals?` with one argument.
 ** Dictionary entry code value: has to point to real code?
 ** Lisp style dictionary: assoc list of functions
 ** DONE Remove unasked output
 ** Tail call optimizations
 *** Proper colon defs
 *** Framed calls
-** Reader needs its own token buffer; no need to return last char/status, negative happens next read
+** TODO Reader needs its own token buffer; no need to return last char/status, negative happens next read
+** create> should return the entry, does-col should use it
+** TODO stage1
+*** DONE Hexadecimal numbers for input
+*** Load or cat?
+load needs file opening and reading with a reader stack.
+*** definitions writen to the data stack: reusing code
+*** definition definability for macros
+*** String concatenation: ++
