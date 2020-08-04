@@ -232,6 +232,12 @@ end
 
 def parse-int ( str length -- n valid? )
   arg1 int32 0 string-peek int32 45 equals? IF
+    arg0 int32 1 int<= IF
+      int32 0 set-arg1
+      int32 0 set-arg0
+      return
+    THEN
+    
     arg1 int32 1 + arg0 int32 1 - parse-uint IF
       negate
       int32 1 set-arg0
