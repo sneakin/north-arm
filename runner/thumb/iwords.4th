@@ -19,6 +19,12 @@
 ' ( out-immediate/1
 " '" out-immediate/1
 
+' POSTPONE out-immediate/1
+
+( : POSTPONE
+  next-token " out-" ++
+; out-immediate )
+
 : out-dq
   ' \" read-until
 ; out-immediate-as s"
@@ -35,19 +41,19 @@
 ; out-immediate-as "
 
 : out-IF
-  literal literal
+  literal int32
   literal if-placeholder
   literal unless-jump
 ; out-immediate-as IF
 
 : out-UNLESS
-  literal literal
+  literal int32
   literal if-placeholder
   literal if-jump
 ; out-immediate-as UNLESS
 
 : out-ELSE
-  literal literal
+  literal int32
   literal if-placeholder stack-find
   literal if-placeholder literal jump-rel
   roll

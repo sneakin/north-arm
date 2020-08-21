@@ -60,3 +60,9 @@ endcol
 defcol nl
   int32 1 nl-s int32 1 write drop
 endcol
+
+"  " string-const> sp-s
+
+defcol sp
+  int32 1 sp-s int32 1 write drop
+endcol

@@ -22,12 +22,6 @@
   next-token next-token alias
 ;
 
-alias> down-stack/1 +
-: down-stack 1 down-stack/1 ;
-
-alias> up-stack/1 -
-: up-stack 1 up-stack/1 ;
-
 ( Compiler's read loop with immediates: )
 
 : immediate-exec
@@ -76,6 +70,12 @@ alias> up-stack/1 -
   over over
 ;
   
+alias> down-stack/1 +
+: down-stack 1 down-stack/1 ;
+
+alias> up-stack/1 -
+: up-stack 1 up-stack/1 ;
+
 : set-overn
   here swap up-stack/1 up-stack spoke
 ;
@@ -185,6 +185,12 @@ alias> up-stack/1 -
 ;
 
 ( Misc: )
+
+alias> string-const> const>
+
+: POSTPONE
+  next-token
+; immediate
 
 : load-sources
   dup 0 equals IF drop return THEN

@@ -1,4 +1,5 @@
 forth/compiler.4th load
+lib/case.4th load
 asm/words.4th load
 lib/bit-fields.4th load
 asm/byte-data.4th load

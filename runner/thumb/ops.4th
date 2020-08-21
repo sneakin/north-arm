@@ -66,6 +66,13 @@ defop jump
   emit-next
 endop
 
+defop jump-cs
+  ( Set eip. )
+  r0 cs eip mov-lsl ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+
 defop jump-rel
   ( Set eip from a relative offset. )
   r0 eip eip add ,uint16
@@ -512,6 +519,10 @@ defop set-dict
 endop
 
 ( Debug helpers: )
+
+defop nop
+  emit-next
+endop
 
 defcol break
   int32 0x47 peek

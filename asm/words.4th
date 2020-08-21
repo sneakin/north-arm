@@ -1,6 +1,9 @@
 alias> ! dpoke
 alias> @ dpeek
 
+: speek-byte speek 255 logand ;
+: spoke-byte spoke ;
+
 : map-stack-seq/4 ( stack-pointer state fn terminator -- state )
   ( Example: read-terminator 1 2 3 4 here 0 ' + read-terminator map-stack-seq )
   4 overn speek over equals IF 2 dropn swap drop return THEN
