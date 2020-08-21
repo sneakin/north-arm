@@ -18,9 +18,11 @@ alias> c: :
 alias> ;c ;
 alias> : defproper
 alias> ; endproper
+alias> :: redefproper
 
-alias> immediate out-immediate
-alias> immediate-as out-immediate-as
+( alias> immediate out-immediate )
+( alias> immediate-as out-immediate-as )
 
+alias> var> defvar>
 alias> const> defconst>
 alias> alias> defalias>

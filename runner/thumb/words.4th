@@ -1,10 +1,16 @@
+( Output word access: )
+
 " op-" const> -op-prefix
 
 : make-label
   -op-prefix ++ make-const
 ;
 
+( The output dictionary: )
+
 0 var> dict
+
+( Register aliases: )
 
 r4 const> fp
 r5 const> dict-reg
@@ -15,17 +21,25 @@ r7 const> eip
   dhere -
 ;
 
+( Dictionary words for output: )
+
 : dict-entry-size cell-size 4 mult ;
+: dict-entry-name ;
 : dict-entry-code cell-size + ;
 : dict-entry-data cell-size 2 mult + ;
 
-: make-dict-entry
+: make-dict-entry/4 ( link data code name -- data-pointer )
   dhere swap ,byte-string
   4 align-data
-  dhere swap ,uint32
-  0 ,uint32
-  0 ,uint32
-  dict ,uint32
+  dhere
+  swap ,uint32
+  swap ,uint32
+  swap ,uint32
+  swap ,uint32
+;
+
+: make-dict-entry ( name )
+  dict swap 0 swap 0 swap make-dict-entry/4
 ;
 
 : create
@@ -34,6 +48,21 @@ r7 const> eip
   dup rot make-label
   set-dict
 ;
+
+: copies-entry ( link source-entry )
+  dup dict-entry-data uint32@
+  swap dup dict-entry-code uint32@
+  swap dict-entry-name uint32@
+  make-dict-entry/4
+;
+
+: copies-entry-as ( link source-entry new-name )
+  dhere swap ,byte-string
+  rot swap copies-entry
+  swap over dict-entry-name uint32!
+;
+
+( Op definitions: )
 
 : does-code
   4 align-data
@@ -48,6 +77,8 @@ r7 const> eip
   0 ,uint16
   4 align-data
 ; immediate
+
+( Colon definitions: )
 
 : does-col/1
   op-do-col dict-entry-code uint32@ over dict-entry-code uint32!
@@ -135,6 +166,8 @@ r7 const> eip
 : endcol
   0 set-compiling
 ; out-immediate
+
+( Word aliases: )
 
 : does-defalias
   cross-lookup LOOKUP-WORD equals IF

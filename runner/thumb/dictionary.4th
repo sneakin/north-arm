@@ -1,7 +1,7 @@
 ( Dictionary access: )
 
 defcol dict-entry-name
-  exit exit ( fixme compiling-read and empties, revmap too? )
+  exit
 endcol
 
 defcol dict-entry-code

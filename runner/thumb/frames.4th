@@ -27,6 +27,12 @@ defop drop-locals
   emit-next
 endop
 
+defop set-current-frame
+  0 r0 fp mov-lsl ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+
 defop current-frame
   0 r0 bit-set pushr ,uint16
   0 fp r0 mov-lsl ,uint16
@@ -34,7 +40,7 @@ defop current-frame
 endop
 
 defcol parent-frame
-  exit exit
+  exit
 endcol
 
 defcol args

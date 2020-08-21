@@ -4,6 +4,14 @@ defcol write-string/2 ( string length -- )
   rot current-output peek write drop
 endcol
 
+defcol write-string
+  swap dup string-length write-string/2
+endcol
+
+defcol write-line
+  swap write-string nl
+endcol
+
 defcol write-byte ( byte )
   swap here int32 1 write-string/2
   drop

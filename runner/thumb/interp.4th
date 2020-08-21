@@ -152,17 +152,22 @@ defcol s"
   the-reader peek reader-read-byte drop
 endcol
 
+32 defconst> dict-entry-name-max
+
 def create
-  ( read in the name )
-  int32 16 stack-allot int32 16 next-token
-  2dup write-string/2
-  drop
-  ( then... )
-  make-dict-entry
+  arg1 arg0 make-dict-entry
   dict cs - over dict-entry-link poke
   ( make this the newest dictionary word )
   dup set-dict
   exit-frame
+end
+
+def create>
+  ( read in the name )
+  dict-entry-name-max stack-allot dict-entry-name-max next-token
+  2dup write-string/2
+  ( then... )
+  create exit-frame
 end
 
 def else?
@@ -193,7 +198,184 @@ defcol THEN
   ( no need to do anything besides not crash )
 endcol
 
-( Interpretation loop: )
+( Definitions: )
+
+def copy-dict-entry
+  arg0 dict-entry-link peek
+  arg0 dict-entry-data peek
+  arg0 dict-entry-code peek
+  arg0 dict-entry-name peek
+  here exit-frame
+end
+
+0 defvar> compiling
+0 defvar> compiling-state
+0 defvar> compiling-immediates
+
+defcol end-compile
+  int32 0 compiling poke
+endcol
+
+0 op-end-compile ' end copies-entry-as
+op-end-compile ' ; copies-entry-as
+op-( ' ( copies-entry-as
+defvar> immediates
+
+def compile-token
+  arg1 arg0 parse-int IF
+    int32 0
+  ELSE
+    arg1 arg0 compiling-immediates peek dict-lookup IF
+      int32 1
+    ELSE
+      arg1 arg0 lookup IF cs - int32 0 ELSE int32 0 int32 -1 THEN
+    THEN
+  THEN
+  set-arg0 set-arg1
+end
+
+defcol cell/
+  swap int32 2 bsr swap
+endcol
+
+defcol locals-byte-size
+  here locals swap - swap
+endcol
+
+def compiling-read/2 ( buffer max-length )
+  here prompt-here poke
+  arg1 arg0 next-token negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
+  2dup write-string/2 sp
+  compile-token negative? IF
+    not-found int32 2 dropn
+  ELSE
+    IF exec-abs THEN
+  THEN
+  compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
+end
+
+def compiling-read
+  int32 1 compiling poke
+  immediates peek cs + compiling-immediates poke
+  token-buffer peek token-buffer-max compiling-read/2
+  exit-frame
+end
+
+def reverse-loop ( start ending )
+  arg1 arg0 uint>= IF return THEN
+  ( swap values )
+  arg1 peek arg0 peek
+  arg1 poke arg0 poke
+  ( loop towards the middle )
+  arg1 cell-size + set-arg1
+  arg0 cell-size - set-arg0
+  repeat-frame
+end
+
+def reverse ( ptr length )
+  arg1 arg1 arg0 1 - cell-size * + reverse-loop
+end
+
+def does-col
+  pointer do-col dict-entry-code peek arg0 dict-entry-code poke
+end
+
+def does-col>/2
+  arg1 does-col
+  compiling-read
+  arg0 swap
+  int32 1 +
+  here cell-size + swap reverse
+  int32 2 dropn
+  here cs - arg1 dict-entry-data poke
+  exit-frame
+end
+
+def does-col>
+  arg0 literal exit does-col>/2
+  exit-frame
+end
+
+def defcol
+  create> does-col> exit-frame
+end
+
+def does-frame>
+  arg0 literal exit-frame does-col>/2
+  literal begin-frame
+  here cs - arg0 dict-entry-data poke
+  exit-frame
+end
+
+def def
+  create> does-frame> exit-frame
+end
+
+
+( Decompiling words: )
+
+def literalizes?
+  arg0 pointer literal equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer int32 equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer offset32 equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer pointer equals? IF int32 1 set-arg0 return THEN
+  int32 0 set-arg0
+end
+
+def dict-contains?/2 ( word dict ++ yes )
+  arg0 int32 0 equals? IF int32 0 return1 THEN
+  arg1 int32 0 equals? IF int32 0 return1 THEN
+  arg1 arg0 equals? IF int32 1 return1 THEN
+  arg0 dict-entry-link peek
+  dup IF
+    cs + set-arg0
+    repeat-frame
+  ELSE int32 0 return1 THEN
+end
+
+def dict-contains?
+  arg0 dict dict-contains?/2 return1
+end
+
+def decompile-loop
+  arg0 peek int32 0 equals? IF nl return THEN
+  arg0 peek cs +
+  dup dict-contains? UNLESS nl return THEN
+  dup dict-entry-name peek cs + write-string sp
+  literalizes? IF
+    arg0 op-size +
+    dup set-arg0
+    peek write-hex-uint sp
+  THEN
+  arg0 op-size + set-arg0
+  repeat-frame
+end
+
+def decompile ( entry )
+  arg0 IF
+    arg0 dict-entry-data peek
+    dup IF cs + decompile-loop THEN
+  THEN
+end
+
+def memdump/2 ( ptr num-bytes )
+  arg1 peek write-hex-uint sp
+  arg1 cell-size + set-arg1
+  arg0 cell-size int>= IF
+    arg0 cell-size - set-arg0
+    repeat-frame
+  ELSE
+    nl
+  THEN
+end
+
+defcol memdump
+  rot swap memdump/2
+  int32 2 dropn
+endcol
+
+
+( Interpretation loop: )
 
 0 defvar> trace-eval
 

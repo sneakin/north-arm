@@ -1,5 +1,8 @@
+64 defconst> return-stack-init-size
+64 1024 mult defconst> data-stack-init-size
+
 def assembler-boot
-  int32 64 int32 1024 * data-init-stack
-  int32 64 cell-size * proper-init
+  data-stack-init-size data-init-stack
+  return-stack-init-size cell-size * proper-init
   interp-boot
 end

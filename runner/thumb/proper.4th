@@ -31,10 +31,15 @@ defop do-proper
   emit-next
 endop
 
-: does-proper
-  op-do-proper dict-entry-size + dict dict-entry-code uint32!
+: does-proper/1
+  ( todo use data field )
+  op-do-proper dict-entry-size + over dict-entry-code uint32!
   4 align-data
-  dhere dict dict-entry-data uint32!  
+  dhere swap dict-entry-data uint32!  
+;
+
+: does-proper
+  dict does-proper/1
 ;
 
 : defproper
@@ -45,9 +50,46 @@ endop
 
 ' endcol ' endproper out-immediate/2
 
+: lookup-or-create
+  cross-lookup LOOKUP-WORD equals UNLESS
+    create dict
+  THEN
+;
+
+: redefproper
+  next-token lookup-or-create does-proper/1
+  defcol-read
+  op-proper-exit ,op
+;
+
+: out-loop
+  ' pointer
+  dict dict-entry-data uint32@
+  ' jump
+; out-immediate-as loop
+
 def proper-init
   arg0 stack-allot return-stack poke
   exit-frame
+end
+
+def does-proper
+  pointer do-proper dict-entry-code peek arg0 dict-entry-code poke
+end
+
+def does-proper>
+  arg0 does-proper
+  compiling-read
+  literal proper-exit swap
+  int32 1 +
+  here cell-size + swap reverse
+  int32 2 dropn
+  here cs - arg0 dict-entry-data poke
+  exit-frame
+end
+
+def defproper
+  create> does-proper> exit-frame
 end
 
 defproper test-proper-a

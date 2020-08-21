@@ -61,8 +61,8 @@
   swap spoke
 ; out-immediate-as THEN
 
-: RECURSE
+: out-RECURSE
   ' int32
-  dict
-  ' exec ( fixme litters stack with return addresses? )
+  dict dict-entry-data peek
+  ' jump-cs
 ; out-immediate
