@@ -1,17 +1,23 @@
 ( ARM Thumb Instruction Set: see ARM7TDMI Data Sheet, ARM DDI 0029E )
 
 ( Registers: )
-: arm-gen-reg
-  dup " r" ++ make-const
-;
+0 const> r0
+1 const> r1
+2 const> r2
+3 const> r3
+4 const> r4
+5 const> r5
+6 const> r6
+7 const> r7
+8 const> r8
+9 const> r9
+10 const> r10
+11 const> r11
+12 const> r12
+13 const> r13
+14 const> r14
+15 const> r15
 
-: arm-gen-registers
-  1 - dup arm-gen-reg
-  dup 0 equals UNLESS loop THEN
-  drop
-;
-
-16 arm-gen-registers
 alias> pc r15
 alias> lr r14
 alias> sp r13
