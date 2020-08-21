@@ -43,6 +43,37 @@
 1 defvar> current-output
 2 defvar> current-error
 
+3 defconst> O_ACCMODE
+0 defconst> O_RDONLY
+1 defconst> O_WRONLY
+2 defconst> O_RDWR
+64 defconst> O_CREAT
+128 defconst> O_EXCL
+256 defconst> O_NOCTTY
+512 defconst> O_TRUNC
+1024 defconst> O_APPEND
+2048 defconst> O_NONBLOCK
+alias> O_NDELAY	O_NONBLOCK
+4096 defconst> O_SYNC
+alias> O_FSYNC O_SYNC
+8192 defconst> O_ASYNC
+0x20000 defconst> O_LARGEFILE
+
+defop open ( mode flags path -- result )
+  5 3 emit-syscaller
+  emit-next
+endop
+
+defop close ( fd -- result )
+  6 1 emit-syscaller
+  emit-next
+endop
+
+defop lseek ( whence offset fd -- result )
+  19 3 emit-syscaller
+  emit-next
+endop
+
 defop read ( len ptr fd -- result )
   3 3 emit-syscaller
   emit-next
