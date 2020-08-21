@@ -16,34 +16,50 @@ defcol prompt
   " Forth> " write-string/2
 endcol
 
-defcol stdin-read ( ptr len -- ptr read-length )
-  over int32 4 overn int32 0 read
-  rot drop
-endcol
-
 defcol prompt-read
   prompt
   ( fixme perfect spot for a tailcall )
-  over int32 4 overn int32 0 read
+  over int32 4 overn current-input peek read
   rot drop
 endcol
 
-defcol make-stdin-reader
-  int32 0 swap
-  int32 0 swap  
-  literal stdin-read swap
-  here cell-size + swap
+( todo supply input and output fds )
+
+def make-prompt-reader
+  make-reader
+  arg0 over reader-buffer-length poke
+  arg1 over reader-buffer poke
+  literal prompt-read over reader-reader-fn poke
+  exit-frame
+end
+
+( fixme needs reader )
+defcol read-fd ( reader ptr len -- reader ptr read-length )
+  over int32 4 overn int32 6 overn reader-reader-data peek read
+  rot drop
 endcol
 
-defcol make-prompt-reader
-  int32 0 swap
-  int32 0 swap  
-  literal prompt-read swap
-  here cell-size + swap
+defcol fd-reader-close
+  swap reader-reader-data peek close
 endcol
+
+def make-fd-reader
+  make-reader
+  arg2 over reader-buffer poke
+  arg1 over reader-buffer-length poke
+  arg0 over reader-reader-data poke
+  literal fd-reader-close over reader-reader-finalizer poke
+  literal read-fd over reader-reader-fn poke
+  exit-frame
+end
+
+def make-stdin-reader
+  arg1 arg0 current-input peek make-fd-reader
+  exit-frame
+end
 
 defcol read-line ( ptr len -- ptr read-length )
-  over int32 4 overn int32 0 read
+  over int32 4 overn current-input peek read
   negative? UNLESS
     int32 1 swap -
     int32 4 overn over null-terminate
@@ -64,6 +80,8 @@ defcol read-token ( ptr len reader -- ptr read-length )
 endcol
 
 0 defvar> the-reader
+
+( todo next-token into reusable buffer )
 
 def next-token
   arg1 arg0 the-reader peek read-token
@@ -96,6 +114,8 @@ def skip-until-char
   arg0 pointer equals? make-noname skip-until
 end
 
+( todo nested comments )
+
 def (
   int32 41 skip-until-char
   the-reader peek reader-read-byte
@@ -115,6 +135,8 @@ end
 0 defvar> token-buffer
 128 defconst> token-buffer-max
 0 defvar> token-buffer-length
+
+( todo string reader into temporary, reused buffer; another that copies onto stack from tmp buffer )
 
 defcol s"
   ( eat leading space )
@@ -176,9 +198,8 @@ endcol
 0 defvar> trace-eval
 
 def interp
-  arg0 the-reader poke
   here prompt-here poke
-  arg2 arg1 arg0 read-token negative? IF what int32 2 dropn return THEN
+  arg1 arg0 the-reader peek read-token negative? IF what return THEN
   trace-eval peek IF 2dup write-string/2 nl THEN
   2dup parse-int IF
     rot int32 2 dropn
@@ -195,8 +216,6 @@ defcol ,h over write-hex-uint endcol
 def interp-boot
   int32 0 token-buffer-length poke
   int32 128 stack-allot token-buffer poke
-  int32 128 stack-allot int32 128 make-prompt-reader
-  int32 128 stack-allot
-  int32 128 int32 35 overn
-  interp
+  int32 128 stack-allot int32 128 make-prompt-reader the-reader poke
+  int32 128 stack-allot int32 128 interp
 end

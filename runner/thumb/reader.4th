@@ -29,23 +29,40 @@ endcol
 defcol make-reader
   int32 0 swap
   int32 0 swap
+  int32 0 swap
+  int32 0 swap
+  int32 0 swap
+  int32 0 swap
+  int32 0 swap
   literal reader-null-fn swap
   here cell-size + swap
 endcol
 
 defcol reader-buffer
-  swap cell-size int32 4 * + swap
+  swap cell-size int32 7 * + swap
 endcol
 
 defcol reader-buffer-length
-  swap cell-size int32 3 * + swap
+  swap cell-size int32 6 * + swap
 endcol
 
 defcol reader-length
-  swap cell-size int32 2 * + swap
+  swap cell-size int32 5 * + swap
 endcol
 
 defcol reader-offset
+  swap cell-size int32 4 * + swap
+endcol
+
+defcol reader-reader-next
+  swap cell-size int32 3 * + swap
+endcol
+
+defcol reader-reader-data
+  swap cell-size int32 2 * + swap
+endcol
+
+defcol reader-reader-finalizer
   swap cell-size int32 1 * + swap
 endcol
 
@@ -58,6 +75,7 @@ endcol
 
 def reader-read-more
   arg0 reader-reader-fn peek null? IF int32 -1 return1 THEN
+  arg0
   arg0 reader-buffer peek
   arg0 reader-buffer-length peek
   arg0 reader-reader-fn peek exec
