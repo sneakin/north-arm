@@ -217,9 +217,15 @@ end
 10 defvar> input-base
 
 def parse-int-base ( string index -- base index )
-  ( Input base )
+  ( Not 0... )
   arg1 arg0 string-peek int32 48 equals? UNLESS
-    input-base peek
+    ( $N hexadecimal )
+    arg1 arg0 string-peek int32 36 equals? IF
+      int32 16
+    ELSE
+      ( Input base )
+      input-base peek
+    THEN
     arg0
   ELSE
     ( 0xN Hexadecimal )
