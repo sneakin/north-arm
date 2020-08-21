@@ -111,10 +111,15 @@ revmap-stack? stack-find?
 *** Framed calls
 ** TODO Reader needs its own token buffer; no need to return last char/status, negative happens next read
 ** create> should return the entry, does-col should use it
+** TODO load: reader needs data slot and finalizer, and a stack of readers
 ** TODO stage1
 *** DONE Hexadecimal numbers for input
 *** Load or cat?
 load needs file opening and reading with a reader stack.
-*** definitions writen to the data stack: reusing code
+*** DONE definitions writen to the data stack
+*** definitions with code reuse
 *** definition definability for macros
-*** String concatenation: ++
+*** TODO String concatenation: ++
+** Standard wording
+*** c" returns a 2 string
+** map-string good candidate for cons on stack safety.
