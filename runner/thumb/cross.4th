@@ -19,6 +19,7 @@ defcol down-stack
 endcol
 
 defalias> : defproper
+defalias> return0 return
 defalias> return proper-exit
 defalias> equals equals?
 defalias> mult int-mul
@@ -29,6 +30,11 @@ defalias> spoke-byte poke-byte
 
 ( alias> make-const defconst )
 ( ' RECURSE ' loop out-immediate/2 )
+
+: def
+  next-token create does-col def-read
+  op-return0 ,op
+;
 
 alias> c: :
 alias> ;c ;
