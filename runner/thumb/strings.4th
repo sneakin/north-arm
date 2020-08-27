@@ -49,3 +49,23 @@ def string-length ( ptr -- length )
   arg0 int32 0 string-length-loop
   set-arg0
 end
+
+def copy-byte-string-finals/3 ( src dest length )
+  arg0 int32 0 int<= IF return THEN
+  arg2 peek-byte arg1 poke-byte
+  arg0 int32 1 - set-arg0
+  arg1 int32 1 + set-arg1
+  arg2 int32 1 + set-arg2
+  repeat-frame
+end
+
+def copy-byte-string/3 ( src dest length )
+  arg0 cell-size int< IF
+    arg2 arg1 arg0 copy-byte-string-finals/3 return
+  THEN
+  arg2 peek arg1 poke
+  arg0 cell-size - set-arg0
+  arg1 cell-size + set-arg1
+  arg2 cell-size + set-arg2
+  repeat-frame
+end

@@ -1,15 +1,11 @@
-( Debugging aid: )
-
-defcol print-args
-  arg3 write-hex-int nl
-  arg2 write-hex-int nl
-  arg1 write-hex-int nl
-  arg0 write-hex-int nl nl
-endcol
-
 ( Input: )
 
+0 defvar> token-buffer
+0 defvar> token-buffer-length
+128 defconst> token-buffer-max
+
 0 defvar> prompt-here
+0 defvar> the-reader
 
 defcol prompt
   prompt-here peek peek write-hex-uint nl
@@ -23,6 +19,7 @@ defcol prompt-read
   rot drop
 endcol
 
+( todo input token stream that is a list of ops )
 ( todo supply input and output fds )
 
 def make-prompt-reader
@@ -33,14 +30,13 @@ def make-prompt-reader
   exit-frame
 end
 
-( fixme needs reader )
 defcol read-fd ( reader ptr len -- reader ptr read-length )
   over int32 4 overn int32 6 overn reader-reader-data peek read
   rot drop
 endcol
 
 defcol fd-reader-close
-  swap reader-reader-data peek close
+  swap reader-reader-data peek close drop
 endcol
 
 def make-fd-reader
@@ -57,6 +53,24 @@ def make-stdin-reader
   arg1 arg0 current-input peek make-fd-reader
   exit-frame
 end
+
+( File loading: )
+
+def open-input-file ( path -- fd )
+  0 0 arg0 open set-arg0
+end
+
+def load
+  token-buffer-max stack-allot
+  token-buffer-max
+  arg0 open-input-file negative? IF return THEN
+  make-fd-reader
+  the-reader peek over reader-next poke
+  the-reader poke
+  exit-frame
+end
+
+( the-reader procedures: )
 
 defcol read-line ( ptr len -- ptr read-length )
   over int32 4 overn current-input peek read
@@ -79,7 +93,16 @@ defcol read-token ( ptr len reader -- ptr read-length )
   drop swap drop
 endcol
 
-0 defvar> the-reader
+def pop-the-reader
+  the-reader peek
+  dup reader-close
+  reader-next peek dup IF
+    the-reader poke
+    int32 1 return1
+  ELSE
+    int32 0 return1
+  THEN
+end
 
 ( todo next-token into reusable buffer )
 
@@ -89,8 +112,11 @@ def next-token
 end
 
 def '
-  int32 128 stack-allot
-  int32 128 next-token lookup IF return1 ELSE not-found nl int32 0 return1 THEN
+  token-buffer-max stack-allot
+  token-buffer-max next-token lookup
+  IF return1
+  ELSE not-found nl int32 0 return1
+  THEN
 end
 
 ( will need exec-abs to thread call )
@@ -132,13 +158,9 @@ def read-until-char
   set-arg0 set-arg1
 end
 
-0 defvar> token-buffer
-128 defconst> token-buffer-max
-0 defvar> token-buffer-length
-
 ( todo string reader into temporary, reused buffer; another that copies onto stack from tmp buffer )
 
-defcol s"
+defcol tmp" ( ++ token-buffer-ptr bytes-read )
   ( eat leading space )
   the-reader peek reader-read-byte drop
   ( read the string )
@@ -152,22 +174,13 @@ defcol s"
   the-reader peek reader-read-byte drop
 endcol
 
-32 defconst> dict-entry-name-max
-
-def create
-  arg1 arg0 make-dict-entry
-  dict cs - over dict-entry-link poke
-  ( make this the newest dictionary word )
-  dup set-dict
+def c" ( ++ ...bytes length )
+  POSTPONE tmp"
+  swap drop 1 + stack-allot
+  token-buffer peek over token-buffer-length peek copy-byte-string/3
+  int32 4 dropn
+  token-buffer-length peek
   exit-frame
-end
-
-def create>
-  ( read in the name )
-  dict-entry-name-max stack-allot dict-entry-name-max next-token
-  2dup write-string/2
-  ( then... )
-  create exit-frame
 end
 
 def else?
@@ -208,6 +221,24 @@ def copy-dict-entry
   here exit-frame
 end
 
+32 defconst> new-dict-entry-name-max
+
+def create
+  arg1 arg0 make-dict-entry
+  dict cs - over dict-entry-link poke
+  ( make this the newest dictionary word )
+  dup set-dict
+  exit-frame
+end
+
+def create>
+  ( read in the name )
+  new-dict-entry-name-max stack-allot new-dict-entry-name-max next-token
+  2dup write-string/2
+  ( then... )
+  create exit-frame
+end
+
 0 defvar> compiling
 0 defvar> compiling-state
 0 defvar> compiling-immediates
@@ -219,6 +250,7 @@ endcol
 0 op-end-compile ' end copies-entry-as
 op-end-compile ' ; copies-entry-as
 op-( ' ( copies-entry-as
+op-c" ' c" copies-entry-as
 defvar> immediates
 
 def compile-token
@@ -311,8 +343,23 @@ def def
   create> does-frame> exit-frame
 end
 
+( Debugging aids: )
 
-( Decompiling words: )
+defcol print-caller-args
+  arg3 write-hex-int nl
+  arg2 write-hex-int nl
+  arg1 write-hex-int nl
+  arg0 write-hex-int nl nl
+endcol
+
+def print-args
+  arg3 write-hex-int nl
+  arg2 write-hex-int nl
+  arg1 write-hex-int nl
+  arg0 write-hex-int nl nl
+end
+
+( Decompiling words: )
 
 def literalizes?
   arg0 pointer literal equals? IF int32 1 set-arg0 return THEN
@@ -374,6 +421,11 @@ defcol memdump
   int32 2 dropn
 endcol
 
+def dump-stack
+  args write-hex-uint nl
+  args 64 memdump nl
+end
+
 
 ( Interpretation loop: )
 
@@ -381,10 +433,15 @@ endcol
 
 def interp
   here prompt-here poke
-  arg1 arg0 the-reader peek read-token negative? IF what return THEN
+  arg1 arg0 the-reader peek read-token negative? IF
+    pop-the-reader
+    IF int32 2 dropn repeat-frame
+    ELSE what return
+    THEN
+  THEN
   trace-eval peek IF 2dup write-string/2 nl THEN
-  2dup parse-int IF
-    rot int32 2 dropn
+  2dup parse-int
+  IF rot int32 2 dropn
   ELSE
     drop
     lookup IF exec-abs ELSE not-found drop THEN

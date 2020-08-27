@@ -54,7 +54,7 @@ defcol reader-offset
   swap cell-size int32 4 * + swap
 endcol
 
-defcol reader-reader-next
+defcol reader-next
   swap cell-size int32 3 * + swap
 endcol
 
@@ -68,6 +68,11 @@ endcol
 
 defcol reader-reader-fn
   swap cell-size int32 0 * + swap
+endcol
+
+defcol reader-close
+  swap dup reader-reader-finalizer peek
+  dup IF exec ELSE int32 2 dropn THEN  
 endcol
 
 ( todo read return 0 on EOF, not -1; could use 0 for length on eof but need a flag for the first read. )
