@@ -10,7 +10,7 @@ DICT['unless-jump']='if [[ "${STACK[1]}" == "0" ]]; then EIP=$(($EIP + ${STACK[0
 DICT['eval']='tip="${STACK[0]}"; fpop; feval $tip'
 DICT['exec']='tip="${STACK[0]}"; fpop; fexec "$tip"'
 DICT['sys-exec']='tip="${STACK[0]}"; fpop; fsysexec "$tip"'
-DICT['nop']='feval fexit'
+DICT['nop']='feval'
 
 #
 # Equality
