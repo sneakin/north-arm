@@ -208,6 +208,11 @@ endop
 
 defop stack-allot
   sp r1 mov-hilo ,uint16
+  ( align stack )
+  cell-size 1 - r0 add# ,uint16
+  2 r0 r0 mov-lsr ,uint16
+  2 r0 r0 mov-lsl ,uint16
+  ( move stack )
   r0 r1 r0 sub ,uint16
   r0 sp mov-lohi ,uint16
   emit-next
