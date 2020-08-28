@@ -37,8 +37,11 @@ end
 def dict-map ( dict fn )
   arg1 null? UNLESS
     arg1 arg0 exec-abs
-    arg1 dict-entry-link peek set-arg1
-    repeat-frame
+    arg1 dict-entry-link peek
+    dup null? UNLESS
+      cs + set-arg1
+      repeat-frame
+    THEN
   THEN
 end
 

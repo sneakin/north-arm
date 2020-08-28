@@ -427,7 +427,7 @@ def dump-stack
 end
 
 def words-printer
-  arg0 dict-entry-name peek write-string sp
+  arg0 dict-entry-name peek cs + write-string sp
 end
 
 def words
@@ -435,7 +435,7 @@ def words
 end
 
 def iwords
-  immediates peek words-printer dict-map
+  immediates peek cs + pointer words-printer dict-map
 end
 
 ( Interpretation loop: )
