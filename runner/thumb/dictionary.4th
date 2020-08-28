@@ -32,6 +32,16 @@ def make-dict-entry ( name-ptr length ++ ...memory entry-ptr )
   exit-frame
 end
 
+( Iteration: )
+
+def dict-map ( dict fn )
+  arg1 null? UNLESS
+    arg1 arg0 exec-abs
+    arg1 dict-entry-link peek set-arg1
+    repeat-frame
+  THEN
+end
+
 ( Querying: )
 
 def dict-lookup ( ptr length dict-entry ++ found? )

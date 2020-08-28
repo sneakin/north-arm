@@ -426,6 +426,17 @@ def dump-stack
   args 64 memdump nl
 end
 
+def words-printer
+  arg0 dict-entry-name peek write-string sp
+end
+
+def words
+  dict pointer words-printer dict-map
+end
+
+def iwords
+  immediates peek words-printer dict-map
+end
 
 ( Interpretation loop: )
 
