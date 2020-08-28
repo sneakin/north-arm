@@ -111,7 +111,7 @@ revmap-stack? stack-find?
 *** Framed calls
 ** TODO Reader needs its own token buffer; no need to return last char/status, negative happens next read
 ** create> should return the entry, does-col should use it
-** TODO load: reader needs data slot and finalizer, and a stack of readers
+** DONE load: reader needs data slot and finalizer, and a stack of readers
 ** TODO stage1
 *** DONE Hexadecimal numbers for input
 *** Load or cat?
@@ -123,3 +123,10 @@ load needs file opening and reading with a reader stack.
 ** Standard wording
 *** c" returns a 2 string
 ** map-string good candidate for cons on stack safety.
+** word lists / modules
+*** `word-list word` where `word-list` is an immediate that looks `word` up in the named word list.
+*** import for use in current module
+*** brings in name spacing: what word lists to search when compiling
+*** in-package & export/public & import interplays
+** Lambda / Code blocks & lists
+** To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
