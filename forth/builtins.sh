@@ -106,6 +106,8 @@ DICT[',mult']='fpush $((${STACK[1]} * ${STACK[0]}))'
 DICT['mult']='feval ,mult rot drop drop'
 DICT[',/']='fpush $((${STACK[1]} / ${STACK[0]}))'
 DICT['/']='feval ,/ rot drop drop'
+DICT[',mod']='fpush $((${STACK[1]} % ${STACK[0]}))'
+DICT['mod']='feval ,mod rot drop drop'
 
 DICT[',bsl']='fpush $((${STACK[1]} << ${STACK[0]}))'
 DICT['bsl']='feval ,bsl rot drop drop'
