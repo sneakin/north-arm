@@ -8,7 +8,10 @@
 runner/thumb/builder.4th load
 
 ' interp-boot
+lib/strings.4th
+lib/stack.4th
 runner/thumb/cross.4th
+runner/thumb/case.4th
 runner/thumb/proper.4th
 runner/thumb/data-stack.4th
 runner/thumb/interp.4th
@@ -17,4 +20,4 @@ runner/thumb/output.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
 runner/thumb/messages.4th
-9 builder-run/2
+12 builder-run/2

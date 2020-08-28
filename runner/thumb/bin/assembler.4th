@@ -12,6 +12,7 @@ elf/stub32.4th
 asm/thumb2.4th
 asm/thumb.4th
 lib/strings.4th
+lib/stack.4th
 asm/byte-data.4th
 lib/bit-fields.4th
 runner/thumb/cross.4th
@@ -25,4 +26,4 @@ runner/thumb/output.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
 runner/thumb/messages.4th
-17 builder-run/2
+18 builder-run/2

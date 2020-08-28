@@ -126,6 +126,8 @@ alias> up-stack/1 -
   compile " feval " ++ swap set-word!
 ;
 
+alias> :: :
+
 : defined?
   get-word null? swap drop
 ;

@@ -12,6 +12,8 @@ OUTPUTS=elf/bones/with-data.elf \
 	bin/assembler-thumb.dict
 
 all: $(OUTPUTS)
+tests: runner/thumb/bin/interp-tests.elf
+north: runner/thumb/bin/north.elf
 
 clean:
 	rm -f $(OUTPUTS)
@@ -30,6 +32,7 @@ FORTH_SRC=./forth/forth.sh \
 THUMB_ASSEMBLER_SRC=\
 	elf/stub32.4th \
 	lib/bit-fields.4th \
+	lib/case.4th \
 	asm/words.4th \
 	asm/byte-data.4th \
 	asm/thumb.4th \
@@ -66,11 +69,16 @@ RUNNER_THUMB_SRC=\
 	runner/thumb/frames.4th \
 	runner/thumb/iwords.4th \
 	runner/thumb/words.4th \
+	runner/thumb/case.4th \
+	lib/stack.4th \
+	lib/assert.4th \
+	lib/strings.4th \
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
 runner/thumb/bin/interp.elf: runner/thumb/bin/interp.4th $(RUNNER_THUMB_SRC)
-runner/thumb/bin/assembler.elf: runner/thumb/bin/assembler.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th $(THUMB_ASSEMBLER_SRC)
+runner/thumb/bin/interp-tests.elf: runner/thumb/bin/interp.4th $(RUNNER_THUMB_SRC)
+runner/thumb/bin/assembler.elf: runner/thumb/bin/assembler.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 runner/thumb/bin/runner.elf: runner/thumb/bin/runner.4th $(RUNNER_THUMB_SRC)
 runner/thumb/bin/north.elf: runner/thumb/bin/north.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th
 

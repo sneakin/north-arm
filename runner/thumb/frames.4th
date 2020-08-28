@@ -102,10 +102,16 @@ defcol set-local0
   swap locals poke
 endcol
 
+defcol local1
+  locals cell-size - peek swap
+endcol
+
+defcol set-local1
+  swap locals cell-size - poke
+endcol
+
 defcol return-address
-  swap
-  cell-size +
-  swap
+  swap cell-size + swap
 endcol
 
 defcol exit-frame
