@@ -84,6 +84,16 @@ defop write ( len ptr fd -- result )
   emit-next
 endop
 
+defop pread64 ( offset len ptr fd -- result )
+  180 4 emit-syscaller
+  emit-next
+endop
+
+defop pwrite64 ( offset len ptr fd -- result )
+  181 4 emit-syscaller
+  emit-next
+endop
+
 ( Exit to system: )
 
 defop sysexit
