@@ -216,7 +216,6 @@ def test-delete-substring-middle
   dup 1 string-peek 101 assert-equals
   dup 2 string-peek 111 assert-equals
   dup 3 string-peek 0 assert-equals ( todo raise an error )
-  nl pointer write-byte map-string
 end
 
 def test-delete-substring

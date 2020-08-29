@@ -267,8 +267,8 @@ end
 
 ( Copy a complete string into a newly allocated buffer. )
 def compact-string
-  arg0 string-length 1 + stack-allot drop
-  arg0 string-length make-direct-string
+  arg0 string-length 1 + stack-allot
+  arg0 string-length make-indirect-string
   arg0 over compact-string/2 2 dropn
   exit-frame
 end
