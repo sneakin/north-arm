@@ -21,10 +21,6 @@
 
 ' POSTPONE out-immediate/1
 
-( : POSTPONE
-  next-token " out-" ++
-; out-immediate )
-
 : out-dq
   ' \" read-until
 ; out-immediate-as s"

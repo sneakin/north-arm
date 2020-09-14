@@ -111,13 +111,18 @@ def next-token
   set-arg0
 end
 
-def '
-  token-buffer-max stack-allot
-  token-buffer-max next-token lookup
+32 defconst> new-dict-entry-name-max
+
+def [']
+  new-dict-entry-name-max stack-allot
+  new-dict-entry-name-max next-token
+  lookup
   IF return1
   ELSE not-found nl int32 0 return1
   THEN
 end
+
+defalias> ' [']
 
 ( will need exec-abs to thread call )
 def make-noname ( data-ptr fn )
@@ -203,6 +208,10 @@ defcol IF
   swap UNLESS pointer else-or-then? skip-tokens-until drop THEN
 endcol
 
+defcol UNLESS
+  swap IF pointer else-or-then? skip-tokens-until drop THEN
+endcol
+
 defcol ELSE
   pointer then? skip-tokens-until drop
 endcol
@@ -221,8 +230,6 @@ def copy-dict-entry
   here exit-frame
 end
 
-32 defconst> new-dict-entry-name-max
-
 def create
   arg1 arg0 make-dict-entry
   dict cs - over dict-entry-link poke
@@ -234,7 +241,7 @@ end
 def create>
   ( read in the name )
   new-dict-entry-name-max stack-allot new-dict-entry-name-max next-token
-  2dup write-string/2
+  2dup write-string/2 nl
   ( then... )
   create exit-frame
 end

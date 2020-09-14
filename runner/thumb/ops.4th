@@ -68,7 +68,7 @@ endop
 
 defop jump-cs
   ( Set eip. )
-  r0 cs eip mov-lsl ,uint16
+  r0 cs eip add ,uint16
   0 r0 bit-set popr ,uint16
   emit-next
 endop
@@ -290,7 +290,7 @@ endop
 
 ( Constants: )
 
-defop does-const
+defop do-const
   ( load word in R1's data to ToS )
   0 r0 bit-set pushr ,uint16
   0 dict-entry-data r1 r0 ldr-offset ,uint16
@@ -299,7 +299,7 @@ endop
 
 : defconst
   create
-  op-does-const dict-entry-size + dict dict-entry-code uint32!
+  op-do-const dict-entry-size + dict dict-entry-code uint32!
   dict dict-entry-data uint32!
 ;
 
@@ -307,7 +307,7 @@ endop
   next-token defconst
 ;
 
-defop does-const-offset
+defop do-const-offset
   ( load word in R1's data + CS to ToS )
   0 r0 bit-set pushr ,uint16
   0 dict-entry-data r1 r0 ldr-offset ,uint16
@@ -317,7 +317,7 @@ endop
 
 : defconst-offset
   create
-  op-does-const-offset dict-entry-size + dict dict-entry-code uint32!
+  op-do-const-offset dict-entry-size + dict dict-entry-code uint32!
   dict dict-entry-data uint32!
 ;
 
@@ -337,7 +337,7 @@ cell-size defconst> cell-size
 
 ( Variables: )
 
-defop does-var
+defop do-var
   ( load the word in R1's data's address into ToS )
   0 r0 bit-set pushr ,uint16
   0 r1 r0 mov-lsl ,uint16
@@ -347,7 +347,7 @@ endop
 
 : defvar
   create
-  op-does-var dict-entry-size + dict dict-entry-code uint32!
+  op-do-var dict-entry-size + dict dict-entry-code uint32!
   dict dict-entry-data uint32!
 ;
 
