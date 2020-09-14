@@ -253,14 +253,19 @@ op-( ' ( copies-entry-as
 op-c" ' c" copies-entry-as
 defvar> immediates
 
+-1 defconst> TOKEN-ERROR
+0 defconst> TOKEN-WORD
+1 defconst> TOKEN-IMMED
+2 defconst> TOKEN-INT
+
 def compile-token
   arg1 arg0 parse-int IF
-    int32 0
+    TOKEN-INT
   ELSE
     arg1 arg0 compiling-immediates peek dict-lookup IF
-      int32 1
+      TOKEN-IMMED
     ELSE
-      arg1 arg0 lookup IF cs - int32 0 ELSE int32 0 int32 -1 THEN
+      arg1 arg0 lookup IF cs - TOKEN-WORD ELSE int32 0 TOKEN-ERROR THEN
     THEN
   THEN
   set-arg0 set-arg1
@@ -274,14 +279,25 @@ defcol locals-byte-size
   here locals swap - swap
 endcol
 
+def literalizes?
+  arg0 pointer literal equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer int32 equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer offset32 equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer pointer equals? IF int32 1 set-arg0 return THEN
+  int32 0 set-arg0
+end
+
 def compiling-read/2 ( buffer max-length )
   here prompt-here poke
   arg1 arg0 next-token negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
-  2dup write-string/2 sp
   compile-token negative? IF
     not-found int32 2 dropn
   ELSE
-    IF exec-abs THEN
+    dup TOKEN-IMMED equals? IF drop exec-abs
+    ELSE
+      TOKEN-INT equals?
+      IF over cs + literalizes? UNLESS literal int32 swap THEN THEN
+    THEN
   THEN
   compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
 end
@@ -360,14 +376,6 @@ def print-args
 end
 
 ( Decompiling words: )
-
-def literalizes?
-  arg0 pointer literal equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer int32 equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer offset32 equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer pointer equals? IF int32 1 set-arg0 return THEN
-  int32 0 set-arg0
-end
 
 def dict-contains?/2 ( word dict ++ yes )
   arg0 int32 0 equals? IF int32 0 return1 THEN
