@@ -6,13 +6,13 @@
       drop " not 1 or 2"
     ESAC
 )
-" case-start-marker" const> case-start-marker
-" case-marker" const> case-marker
+symbol> case-start-marker
+symbol> case-marker
 
 : CASE
   ( mark the location of the test value )
   ( here CASE-STACK speek swap cons CASE-STACK poke )
-  literal case-start-marker
+  case-start-marker
 ; immediate
 
 : WHEN
@@ -28,19 +28,19 @@
 : ;;
   ( skip to ESAC )
   literal int32
-  literal case-marker
+  case-marker
   literal jump-rel
   ( finish IF with THEN )
   POSTPONE THEN
 ; immediate
 
 : esac-patcher ( start-ptr stack-ptr )
-  dup speek literal case-start-marker equals IF
+  dup speek case-start-marker equals IF
     literal nop over spoke
     2 dropn
   ELSE
-    dup speek literal case-marker equals IF
-      2dup - 1 - over spoke
+    dup speek case-marker equals IF
+      2dup swap stack-delta 1 - over spoke
     THEN
     up-stack loop
   THEN

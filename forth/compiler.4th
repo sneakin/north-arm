@@ -70,14 +70,18 @@
   over over
 ;
   
-alias> down-stack/1 +
-: down-stack 1 down-stack/1 ;
+alias> down-stack/2 +
+: down-stack 1 down-stack/2 ;
 
-alias> up-stack/1 -
-: up-stack 1 up-stack/1 ;
+alias> up-stack/2 -
+: up-stack 1 up-stack/2 ;
+
+: stack-delta
+  swap -
+;
 
 : set-overn
-  here swap up-stack/1 up-stack spoke
+  here swap up-stack/2 up-stack spoke
 ;
 
 : stack-find-loop
@@ -92,7 +96,7 @@ alias> up-stack/1 -
 ;
 
 : stack-find
-  here 2 up-stack/1 stack-find/2
+  here 2 up-stack/2 stack-find/2
 ;
 
 ( Args: acc stop-ptr work-stack-ptr )
@@ -149,6 +153,12 @@ alias> :: :
 
 ( IF ... ELSE ... THEN )
 
+: symbol>
+  next-token dup " fpush " ++ swap set-word!
+;
+
+symbol> if-placeholder
+
 : IF
   literal literal
   literal if-placeholder
@@ -166,13 +176,13 @@ alias> :: :
   literal if-placeholder stack-find
   literal if-placeholder literal jump-rel
   roll
-  dup 3 + here swap up-stack/1
+  dup here stack-delta 3 -
   swap spoke
 ; immediate
 
 : THEN
   literal if-placeholder stack-find
-  dup 3 + here swap up-stack/1
+  dup here stack-delta 3 -
   swap spoke
 ; immediate
 
