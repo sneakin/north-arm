@@ -60,11 +60,6 @@ def dict-lookup ( ptr length dict-entry ++ found? )
   repeat-frame
 end
 
-def lookup ( ptr length -- dict-entry found? )
-  arg1 arg0 dict dict-lookup
-  set-arg0 set-arg1
-endcol
-
 defcol defined?
   swap IF int32 1 ELSE int32 0 THEN
   swap

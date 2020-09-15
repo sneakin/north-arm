@@ -254,6 +254,22 @@ defcol end-compile
   int32 0 compiling poke
 endcol
 
+def lookup ( ptr length -- dict-entry found? )
+  arg1 arg0 dict dict-lookup
+  set-arg0 set-arg1
+endcol
+
+def [']
+  new-dict-entry-name-max stack-allot
+  new-dict-entry-name-max next-token
+  lookup
+  IF return1
+  ELSE not-found nl int32 0 return1
+  THEN
+end
+
+defalias> ' [']
+
 0 op-end-compile ' end copies-entry-as
 op-end-compile ' ; copies-entry-as
 op-( ' ( copies-entry-as

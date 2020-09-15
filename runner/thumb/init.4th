@@ -23,8 +23,8 @@ defop init
   12 r1 ldr-pc ,uint16
   op-exec-r1 emit-op-call
   ( data: )
-  dict dict-entry-size + 10 + ,uint32
-  dict ,uint32
+  out-dict dict-entry-size + 10 + ,uint32
+  out-dict ,uint32
   op-boot ,uint32
 endop
 

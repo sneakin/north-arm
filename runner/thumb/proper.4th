@@ -39,7 +39,7 @@ endop
 ;
 
 : does-proper
-  dict does-proper/1
+  out-dict does-proper/1
 ;
 
 : defproper
@@ -52,7 +52,7 @@ endop
 
 : lookup-or-create
   cross-lookup LOOKUP-WORD equals UNLESS
-    create dict
+    create out-dict
   THEN
 ;
 
@@ -64,7 +64,7 @@ endop
 
 : out-loop
   ' pointer
-  dict dict-entry-data uint32@
+  out-dict dict-entry-data uint32@
   ' jump
 ; out-immediate-as loop
 

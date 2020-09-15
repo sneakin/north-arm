@@ -33,7 +33,7 @@
   literal int32 swap
   ( Update the word being defined as it's definition will have moved. )
   ( todo update when mapping the stack? )
-  dhere dict dict-entry-data uint32!
+  dhere out-dict dict-entry-data uint32!
 ; out-immediate-as "
 
 : out-IF
@@ -65,6 +65,6 @@
 
 : out-RECURSE
   ' int32
-  dict dict-entry-data peek
+  out-dict dict-entry-data peek
   ' jump-cs
 ; out-immediate

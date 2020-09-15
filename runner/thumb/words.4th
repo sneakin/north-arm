@@ -8,7 +8,7 @@
 
 ( The output dictionary: )
 
-0 var> dict
+0 var> out-dict
 
 ( Register aliases: )
 
@@ -39,14 +39,14 @@ r7 const> eip
 ;
 
 : make-dict-entry ( name )
-  dict swap 0 swap 0 swap make-dict-entry/4
+  out-dict swap 0 swap 0 swap make-dict-entry/4
 ;
 
 : create
   dup error-line
   dup make-dict-entry ,,h
   dup rot make-label
-  set-dict
+  set-out-dict
 ;
 
 : copies-entry ( link source-entry )
@@ -66,7 +66,7 @@ r7 const> eip
 
 : does-code
   4 align-data
-  dhere dict dict-entry-code uint32!
+  dhere out-dict dict-entry-code uint32!
 ;
 
 : defop
@@ -88,7 +88,7 @@ r7 const> eip
 ;
 
 : does-col
-  dict does-col/1
+  out-dict does-col/1
 ;
 
 0 const> LOOKUP-NOT-FOUND
@@ -171,8 +171,8 @@ r7 const> eip
 
 : does-defalias
   cross-lookup LOOKUP-WORD equals IF
-    dup dict-entry-code uint32@ dict dict-entry-code uint32! 
-    dup dict-entry-data uint32@ dict dict-entry-data uint32!
+    dup dict-entry-code uint32@ out-dict dict-entry-code uint32! 
+    dup dict-entry-data uint32@ out-dict dict-entry-data uint32!
   ELSE
     " Warning: bad alias" error-line
   THEN

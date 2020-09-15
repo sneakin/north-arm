@@ -299,8 +299,8 @@ endop
 
 : defconst
   create
-  op-do-const dict-entry-size + dict dict-entry-code uint32!
-  dict dict-entry-data uint32!
+  op-do-const dict-entry-size + out-dict dict-entry-code uint32!
+  out-dict dict-entry-data uint32!
 ;
 
 : defconst>
@@ -317,8 +317,8 @@ endop
 
 : defconst-offset
   create
-  op-do-const-offset dict-entry-size + dict dict-entry-code uint32!
-  dict dict-entry-data uint32!
+  op-do-const-offset dict-entry-size + out-dict dict-entry-code uint32!
+  out-dict dict-entry-data uint32!
 ;
 
 : defconst-offset>
@@ -347,8 +347,8 @@ endop
 
 : defvar
   create
-  op-do-var dict-entry-size + dict dict-entry-code uint32!
-  dict dict-entry-data uint32!
+  op-do-var dict-entry-size + out-dict dict-entry-code uint32!
+  out-dict dict-entry-data uint32!
 ;
 
 : defvar>
