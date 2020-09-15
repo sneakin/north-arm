@@ -4,6 +4,10 @@ return-stack peek UNLESS
   128 proper-init
 THEN
 
+dhere UNLESS
+  64 1024 * data-init-stack
+THEN
+
 def does-const
   pointer do-const dict-entry-code peek arg0 dict-entry-code poke
   return0
@@ -187,10 +191,36 @@ def POSTPONE
   ( todo adjust words by cs )
   negative? IF not-found nl int32 0 return1
   ELSE
-    TOKEN-INT equals? UNLESS cs - THEN
-    return1
+    ( TOKEN-INT equals? UNLESS cs - THEN )
+    drop return1
   THEN
 end immediate
+
+def "
+  POSTPONE c" drop here
+  exit-frame
+end
+
+defcol pad-addr ( addr alignment )
+  rot swap
+  2dup + over / over *
+  rot 2 dropn
+  swap
+end
+
+def d"
+  POSTPONE c"
+  here up-stack dhere 3 overn copy-byte-string/3 3 dropn
+  dhere dup 3 overn + cell-size pad-addr dmove
+  return1
+end immediate
+
+def ["]
+  literal literal
+  POSTPONE d" return2
+end immediate-as "
+
+symbol> read-terminator
 
 : hey IF hello THEN ;
 : heyhey IF hello ELSE boo THEN ;
