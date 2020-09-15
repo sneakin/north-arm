@@ -111,19 +111,6 @@ def next-token
   set-arg0
 end
 
-32 defconst> new-dict-entry-name-max
-
-def [']
-  new-dict-entry-name-max stack-allot
-  new-dict-entry-name-max next-token
-  lookup
-  IF return1
-  ELSE not-found nl int32 0 return1
-  THEN
-end
-
-defalias> ' [']
-
 ( will need exec-abs to thread call )
 def make-noname ( data-ptr fn )
   alloc-dict-entry
@@ -188,6 +175,8 @@ def c" ( ++ ...bytes length )
   exit-frame
 end
 
+( Interpreted conditions: )
+
 def else?
   arg1 " ELSE" string-equals?/3 return1
 end
@@ -221,6 +210,8 @@ defcol THEN
 endcol
 
 ( Definitions: )
+
+48 defconst> new-dict-entry-name-max
 
 def copy-dict-entry
   arg0 dict-entry-link peek
@@ -286,9 +277,12 @@ def compile-token
     TOKEN-INT
   ELSE
     arg1 arg0 compiling-immediates peek dict-lookup IF
-      TOKEN-IMMED
+      cs - TOKEN-IMMED
     ELSE
-      arg1 arg0 lookup IF cs - TOKEN-WORD ELSE int32 0 TOKEN-ERROR THEN
+      arg1 arg0 lookup IF
+        cs - TOKEN-WORD
+      ELSE int32 0 TOKEN-ERROR
+      THEN
     THEN
   THEN
   set-arg0 set-arg1
@@ -316,7 +310,7 @@ def compiling-read/2 ( buffer max-length )
   compile-token negative? IF
     not-found int32 2 dropn
   ELSE
-    dup TOKEN-IMMED equals? IF drop exec-abs
+    dup TOKEN-IMMED equals? IF drop exec
     ELSE
       TOKEN-INT equals?
       IF over cs + literalizes? UNLESS literal int32 swap THEN THEN

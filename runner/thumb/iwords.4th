@@ -18,7 +18,6 @@
 
 ' ( out-immediate/1
 " '" out-immediate/1
-
 ' POSTPONE out-immediate/1
 
 : out-dq
