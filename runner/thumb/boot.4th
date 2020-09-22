@@ -184,6 +184,13 @@ end
   swap spoke
 ; immediate
 
+: repeat-frame
+  literal int32
+  ( todo why does this one need to add 1 to get same offset? op-size guarentee? )
+  literal begin-frame stack-find here stack-delta 1 + op-size * negate
+  literal jump-rel
+; immediate
+
 def POSTPONE
   new-dict-entry-name-max stack-allot
   new-dict-entry-name-max next-token

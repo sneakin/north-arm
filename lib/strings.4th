@@ -1,6 +1,9 @@
 " null-type" string-const> null-type
 : type-of dup IF speek ELSE pointer null-type THEN ;
 
+alias> cstring-peek string-peek
+alias> cstring-length string-length
+
 ( Read only Strings: )
 
 : empty-string
