@@ -9,6 +9,7 @@ runner/thumb/builder.4th load
 
 ' interp-boot
 tests/lib/strings.4th
+runner/thumb/tests/proper.4th
 runner/thumb/tests/2dup.4th
 runner/thumb/tests/bsl.4th
 runner/thumb/tests/bsr.4th
@@ -37,4 +38,4 @@ runner/thumb/output.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
 runner/thumb/messages.4th
-29 builder-run/2
+30 builder-run/2
