@@ -105,6 +105,7 @@ def pop-the-reader
 end
 
 ( todo next-token into reusable buffer )
+( todo simplify compiling-read & merge with compiler.4th's )
 
 def next-token
   arg1 arg0 the-reader peek read-token
@@ -261,7 +262,8 @@ end
 
 defalias> ' [']
 
-0 op-end-compile ' end copies-entry-as
+0 op-end-compile ' endcol copies-entry-as
+op-end-compile ' end copies-entry-as
 op-end-compile ' ; copies-entry-as
 op-( ' ( copies-entry-as
 op-c" ' c" copies-entry-as

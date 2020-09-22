@@ -227,11 +227,12 @@ def parse-int-base ( string index -- base index )
     ( $N hexadecimal )
     arg1 arg0 string-peek int32 36 equals? IF
       int32 16
+      arg0 int32 1 +
     ELSE
       ( Input base )
       input-base peek
+      arg0
     THEN
-    arg0
   ELSE
     ( 0xN Hexadecimal )
     arg1 arg0 int32 1 + string-peek int32 120 equals? IF
@@ -260,13 +261,15 @@ def parse-uint ( str length -- n valid? )
 end
 
 def parse-int ( str length -- n valid? )
+  ( leading minus sign: )
   arg1 int32 0 string-peek int32 45 equals? IF
+    ( no digits )
     arg0 int32 1 int<= IF
       int32 0 set-arg1
       int32 0 set-arg0
       return
     THEN
-    
+    ( read the number )
     arg1 int32 1 + arg0 int32 1 - parse-uint IF
       negate
       int32 1 set-arg0
@@ -274,6 +277,7 @@ def parse-int ( str length -- n valid? )
       int32 0 set-arg0
     THEN
   ELSE
+    ( read the number )
     arg1 arg0 parse-uint
     set-arg0
   THEN
