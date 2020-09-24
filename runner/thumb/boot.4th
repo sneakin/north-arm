@@ -56,8 +56,7 @@ end
 
 def immediate-as/1
   arg0 immediate/1
-  new-dict-entry-name-max stack-allot
-  new-dict-entry-name-max next-token
+  next-token allot-byte-string/2
   IF
     cs -
     immediates peek cs + dict-entry-name poke
@@ -192,9 +191,7 @@ end
 ; immediate
 
 def POSTPONE
-  new-dict-entry-name-max stack-allot
-  new-dict-entry-name-max next-token
-  compile-token
+  next-token compile-token
   ( todo adjust words by cs )
   negative? IF not-found nl int32 0 return1
   ELSE

@@ -69,3 +69,11 @@ def copy-byte-string/3 ( src dest length )
   arg2 cell-size + set-arg2
   repeat-frame
 end
+
+def allot-byte-string/2
+  arg0 int32 1 + stack-allot
+  arg1 over arg0 copy-byte-string/3 int32 3 dropn
+  arg0
+  2dup null-terminate
+  exit-frame
+end

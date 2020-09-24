@@ -1,8 +1,8 @@
 ( Input: )
 
+128 defconst> token-buffer-max
 0 defvar> token-buffer
 0 defvar> token-buffer-length
-128 defconst> token-buffer-max
 
 0 defvar> prompt-here
 0 defvar> the-reader
@@ -104,12 +104,24 @@ def pop-the-reader
   THEN
 end
 
-( todo next-token into reusable buffer )
+( todo raise errors from next-token; pop reader first )
 ( todo simplify compiling-read & merge with compiler.4th's )
 
-def next-token
+def next-token/2
   arg1 arg0 the-reader peek read-token
-  set-arg0
+  negative? IF
+    pop-the-reader
+    IF int32 2 dropn repeat-frame
+    ELSE int32 -1 set-arg0
+    THEN
+  ELSE set-arg0
+  THEN
+end
+
+def next-token
+  token-buffer peek token-buffer-max next-token/2
+  dup token-buffer-length poke
+  return2
 end
 
 ( will need exec-abs to thread call )
@@ -151,17 +163,18 @@ def read-until-char
   set-arg0 set-arg1
 end
 
-( todo string reader into temporary, reused buffer; another that copies onto stack from tmp buffer )
+0 defvar> string-buffer
+0 defvar> string-buffer-length
 
 defcol tmp" ( ++ token-buffer-ptr bytes-read )
   ( eat leading space )
   the-reader peek reader-read-byte drop
   ( read the string )
-  token-buffer peek token-buffer-max int32 34 read-until-char
+  string-buffer peek token-buffer-max int32 34 read-until-char
   drop
   2dup null-terminate
   ( update the string-buffer )
-  dup token-buffer-length poke
+  dup string-buffer-length poke
   swap rot
   ( eat the terminal quote )
   the-reader peek reader-read-byte drop
@@ -170,9 +183,9 @@ endcol
 def c" ( ++ ...bytes length )
   POSTPONE tmp"
   swap drop 1 + stack-allot
-  token-buffer peek over token-buffer-length peek copy-byte-string/3
+  string-buffer peek over string-buffer-length peek copy-byte-string/3
   int32 4 dropn
-  token-buffer-length peek
+  string-buffer-length peek
   exit-frame
 end
 
@@ -232,7 +245,7 @@ end
 
 def create>
   ( read in the name )
-  new-dict-entry-name-max stack-allot new-dict-entry-name-max next-token
+  next-token allot-byte-string/2
   2dup write-string/2 nl
   ( then... )
   create exit-frame
@@ -252,8 +265,7 @@ def lookup ( ptr length -- dict-entry found? )
 endcol
 
 def [']
-  new-dict-entry-name-max stack-allot
-  new-dict-entry-name-max next-token
+  next-token
   lookup
   IF return1
   ELSE not-found nl int32 0 return1
@@ -308,7 +320,7 @@ end
 
 def compiling-read/2 ( buffer max-length )
   here prompt-here poke
-  arg1 arg0 next-token negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
+  arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
   compile-token negative? IF
     not-found int32 2 dropn
   ELSE
@@ -469,20 +481,20 @@ end
 
 0 defvar> trace-eval
 
+def interp-token
+  arg1 arg0 parse-int
+  IF int32 0
+  ELSE drop arg1 arg0 lookup IF int32 1 ELSE int32 -1 THEN
+  THEN set-arg0 set-arg1
+end
+
 def interp
   here prompt-here poke
-  arg1 arg0 the-reader peek read-token negative? IF
-    pop-the-reader
-    IF int32 2 dropn repeat-frame
-    ELSE what return
-    THEN
-  THEN
-  trace-eval peek IF 2dup write-string/2 nl THEN
-  2dup parse-int
-  IF rot int32 2 dropn
-  ELSE
-    drop
-    lookup IF exec-abs ELSE not-found drop THEN
+  next-token negative? IF what return THEN
+  trace-eval peek IF 2dup nl write-string/2 sp THEN
+  interp-token
+  negative? IF not-found int32 2 dropn
+  ELSE IF exec-abs THEN
   THEN
   trace-eval peek IF dup write-hex-uint THEN
   repeat-frame
@@ -490,9 +502,18 @@ end
 
 defcol ,h over write-hex-uint endcol
 
-def interp-boot
+def interp-init
+  ( token-buffer )
   int32 0 token-buffer-length poke
-  int32 128 stack-allot token-buffer poke
-  int32 128 stack-allot int32 128 make-prompt-reader the-reader poke
-  int32 128 stack-allot int32 128 interp
+  token-buffer-max stack-allot token-buffer poke
+  ( string-buffer )
+  int32 0 string-buffer-length poke
+  token-buffer-max stack-allot string-buffer poke
+  ( stdin reader )
+  token-buffer-max stack-allot token-buffer-max make-prompt-reader the-reader poke
+  exit-frame
+end
+
+def interp-boot
+  interp-init interp
 end
