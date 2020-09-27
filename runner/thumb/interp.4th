@@ -321,15 +321,11 @@ end
 def compiling-read/2 ( buffer max-length )
   here prompt-here poke
   arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
-  compile-token negative? IF
-    not-found int32 2 dropn
-  ELSE
-    dup TOKEN-IMMED equals? IF drop exec
-    ELSE
-      TOKEN-INT equals?
-      IF over cs + literalizes? UNLESS literal int32 swap THEN THEN
-    THEN
-  THEN
+  compile-token CASE
+    TOKEN-IMMED WHEN exec ;;
+    TOKEN-INT WHEN over cs + literalizes? UNLESS literal int32 swap THEN ;;
+    negative? IF not-found int32 2 dropn ELSE drop THEN
+  ESAC
   compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
 end
 

@@ -9,7 +9,7 @@
   ( load the value )
   literal over
   ( compare values )
-  literal equals
+  literal equals?
   ( start IF )
   POSTPONE out-IF
   literal drop

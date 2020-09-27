@@ -29,11 +29,11 @@ lib/assert.4th
 lib/strings.4th
 lib/stack.4th
 runner/thumb/cross.4th
-runner/thumb/case.4th
 runner/thumb/proper.4th
 runner/thumb/data-stack.4th
 runner/thumb/interp.4th
 runner/thumb/reader.4th
+runner/thumb/case.4th
 runner/thumb/output.4th
 runner/thumb/dictionary.4th
 runner/thumb/strings.4th
