@@ -219,10 +219,25 @@ def d"
   return1
 end immediate
 
+def s"
+  POSTPONE c"
+  here up-stack dhere 3 overn copy-byte-string/3 3 dropn
+  dhere dup 3 overn + cell-size pad-addr dmove
+  swap return2
+end immediate
+
 def ["]
   literal literal
   POSTPONE d" return2
 end immediate-as "
+
+def does>
+  arg0 next-token interp-token negative?
+  IF not-found
+  ELSE drop does
+  THEN
+  return0
+end immediate
 
 symbol> read-terminator
 

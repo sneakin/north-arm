@@ -329,9 +329,12 @@ def compiling-read/2 ( buffer max-length )
   compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
 end
 
+def compiling-init
+  immediates peek cs + compiling-immediates poke
+end
+
 def compiling-read
   int32 1 compiling poke
-  immediates peek cs + compiling-immediates poke
   token-buffer peek token-buffer-max compiling-read/2
   exit-frame
 end
@@ -351,8 +354,20 @@ def reverse ( ptr length )
   arg1 arg1 arg0 1 - cell-size * + reverse-loop
 end
 
+def interp-token
+  arg1 arg0 parse-int
+  IF int32 0
+  ELSE drop arg1 arg0 lookup IF int32 1 ELSE int32 -1 THEN
+  THEN set-arg0 set-arg1
+end
+
+defcol does ( word code -- )
+  swap dict-entry-code peek
+  swap rot dict-entry-code poke
+endcol
+
 def does-col
-  pointer do-col dict-entry-code peek arg0 dict-entry-code poke
+  arg0 pointer do-col does
 end
 
 def does-col>/2
@@ -435,6 +450,8 @@ end
 
 def decompile ( entry )
   arg0 IF
+    " does> " write-string/2
+    arg0 dict-entry-code peek write-hex-uint nl
     arg0 dict-entry-data peek
     dup IF cs + decompile-loop THEN
   THEN
@@ -477,13 +494,6 @@ end
 
 0 defvar> trace-eval
 
-def interp-token
-  arg1 arg0 parse-int
-  IF int32 0
-  ELSE drop arg1 arg0 lookup IF int32 1 ELSE int32 -1 THEN
-  THEN set-arg0 set-arg1
-end
-
 def interp
   here prompt-here poke
   next-token negative? IF what return THEN
@@ -507,6 +517,8 @@ def interp-init
   token-buffer-max stack-allot string-buffer poke
   ( stdin reader )
   token-buffer-max stack-allot token-buffer-max make-prompt-reader the-reader poke
+  ( compiler )
+  compiling-init
   exit-frame
 end
 
