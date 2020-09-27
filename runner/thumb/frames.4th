@@ -40,7 +40,7 @@ defop current-frame
 endop
 
 defcol parent-frame
-  exit
+  swap peek swap
 endcol
 
 defcol args
