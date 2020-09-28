@@ -48,20 +48,19 @@
 
 ' *read-terminator* const> read-terminator
 
-( read-terminator ... immediates )
-: compiling-read/2
+( read-terminator ... )
+: compiling-read/1
   1 set-compiling
-  set-compiling-immediates
   compiling-read-loop
 ;
 
-: compiling-read/1
-  read-terminator swap compiling-read/2
+: compiling-read
+  compiling-read/1
 ;
 
-: compiling-read
+: compiling-init
+  literal IDICT set-compiling-immediates
   0 set-compiling-state
-  literal IDICT compiling-read/1
 ;
 
 ( Stack operations: )
@@ -121,7 +120,7 @@ alias> up-stack/2 -
 ( Definitions! )
 
 : compile
-  compiling-read concat-seq
+  compiling-init read-terminator compiling-read concat-seq
 ;
 
 : :

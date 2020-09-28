@@ -152,8 +152,9 @@ r7 const> eip
 ;
 
 : defcol-read
+  literal out_immediates set-compiling-immediates
   ' defcol-state-fn set-compiling-state
-  literal out_immediates compiling-read/1
+  read-terminator compiling-read
   here down-stack 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
 ;
 

@@ -46,6 +46,7 @@ def immediate/1
   arg0 copy-dict-entry
   immediates peek over dict-entry-link poke
   cs - immediates poke
+  compiling-init
   exit-frame
 end
 
