@@ -1,3 +1,10 @@
+( Register aliases: )
+
+r4 const> fp
+r5 const> dict-reg
+r6 const> cs
+r7 const> eip
+
 : abs-int
   dup 0 int< IF -1 mult THEN
 ;
@@ -27,21 +34,21 @@ endop
 defop exec-r1
   ( load a word from a CS offset and jump to the word's code field, leaving word in r0 )
   cs r1 r1 add ,uint16
-  op-exec-r1-abs emit-op-call
+  out' exec-r1-abs emit-op-call
 endop
 
 defop exec
   ( Move the ToS to r1, lower stack, and exec the word offset. )
   0 r0 r1 mov-lsl ,uint16
   0 r0 bit-set popr ,uint16
-  op-exec-r1 emit-op-call
+  out' exec-r1 emit-op-call
 endop
 
 defop exec-abs
   ( Move the ToS to r1, lower stack, and exec the word pointer. )
   0 r0 r1 mov-lsl ,uint16
   0 r0 bit-set popr ,uint16
-  op-exec-r1-abs emit-op-call
+  out' exec-r1-abs emit-op-call
 endop
 
 defop next
@@ -50,11 +57,11 @@ defop next
   ( todo apply op-mask )
   ( increase eip )
   -op-size eip add# ,uint16
-  op-exec-r1 emit-op-call
+  out' exec-r1 emit-op-call
 endop
 
 : emit-next
-  op-next emit-op-call
+  out' next emit-op-call
 ;
 
 ( Calling words: )
@@ -94,7 +101,7 @@ defop enter-r0
   ( Call the ToS. )
   0 r0 r1 mov-lsl ,uint16
   0 r0 bit-set popr ,uint16
-  op-enter-r1 emit-op-call
+  out' enter-r1 emit-op-call
 endop
 
 defop do-col
@@ -102,7 +109,7 @@ defop do-col
   ( load r1's data+cs into r1 )
   0 dict-entry-data r1 r1 ldr-offset ,uint16
   cs r1 r1 add ,uint16
-  op-enter-r1 emit-op-call
+  out' enter-r1 emit-op-call
 endop
 
 defop exit
@@ -169,7 +176,7 @@ defop rot
   cell-size r0 str-sp ,uint16
   0 r1 r0 mov-lsl ,uint16
   emit-next
-endcol
+endop
 
 defop over
   0 r0 bit-set pushr ,uint16
@@ -297,16 +304,6 @@ defop do-const
   emit-next
 endop
 
-: defconst
-  create
-  op-do-const dict-entry-size + out-dict dict-entry-code uint32!
-  out-dict dict-entry-data uint32!
-;
-
-: defconst>
-  next-token defconst
-;
-
 defop do-const-offset
   ( load word in R1's data + CS to ToS )
   0 r0 bit-set pushr ,uint16
@@ -314,26 +311,6 @@ defop do-const-offset
   cs r0 r0 add ,uint16
   emit-next
 endop
-
-: defconst-offset
-  create
-  op-do-const-offset dict-entry-size + out-dict dict-entry-code uint32!
-  out-dict dict-entry-data uint32!
-;
-
-: defconst-offset>
-  next-token defconst-offset
-;
-
-: string-const>
-  dhere swap
-  ,byte-string 4 pad-data defconst-offset>
-;
-
-cell-size defconst> cell-size
--op-size defconst> op-size
--op-mask defconst> op-mask
-
 
 ( Variables: )
 
@@ -344,17 +321,6 @@ defop do-var
   0 dict-entry-data r0 add# ,uint16
   emit-next
 endop
-
-: defvar
-  create
-  op-do-var dict-entry-size + out-dict dict-entry-code uint32!
-  out-dict dict-entry-data uint32!
-;
-
-: defvar>
-  next-token defvar
-;
-
 
 ( Integer Math: )
 
@@ -392,11 +358,6 @@ defop uint-div
   r0 r1 r0 udiv ,uint32
   emit-next
 endop
-
-defalias> + int-add
-defalias> - int-sub
-defalias> * int-mul
-defalias> / int-div
 
 : emit-truther
   2 swap exec ,uint16
@@ -509,7 +470,7 @@ defop cs
   0 r0 bit-set pushr ,uint16
   0 cs r0 mov-lsl ,uint16
   emit-next
-endcol
+endop
 
 defop dict
   0 r0 bit-set pushr ,uint16
@@ -523,15 +484,11 @@ defop set-dict
   emit-next
 endop
 
-( Debug helpers: )
+( Misc: )
 
 defop nop
   emit-next
 endop
-
-defcol break
-  int32 0x47 peek
-endcol
 
 ( Dictionary helpers: )
 

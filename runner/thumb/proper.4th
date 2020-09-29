@@ -3,10 +3,10 @@
 defop proper-enter-r1
   ( Save eip on the return-stack and interpret the list of words pointed by r1. )
   ( push eip onto the return-stack )
-  op-return-stack r2 emit-get-word-data
+  out' return-stack r2 emit-get-word-data
   cell-size r2 add# ,uint16
   0 r2 eip str-offset ,uint16
-  op-return-stack r2 r3 emit-set-word-data
+  out' return-stack r2 r3 emit-set-word-data
   ( load r1 into eip )
   0 r1 eip mov-lsl ,uint16
   emit-next
@@ -15,10 +15,10 @@ endop
 defop proper-exit
   ( Return from a list of words. Return address comes from the return-stack. )
   ( pop eip )
-  op-return-stack r2 emit-get-word-data
+  out' return-stack r2 emit-get-word-data
   0 r2 eip ldr-offset ,uint16
   cell-size r2 sub# ,uint16
-  op-return-stack r2 r3 emit-set-word-data
+  out' return-stack r2 r3 emit-set-word-data
   emit-next
 endop
 
@@ -27,13 +27,13 @@ defop do-proper
   ( load r1's data+cs into r1 )
   0 dict-entry-data r1 r1 ldr-offset ,uint16
   cs r1 r1 add ,uint16
-  op-proper-enter-r1 emit-op-call
+  out' proper-enter-r1 emit-op-call
   emit-next
 endop
 
 : does-proper/1
   ( todo use data field )
-  op-do-proper dict-entry-size + over dict-entry-code uint32!
+  out' do-proper dict-entry-size + over dict-entry-code uint32!
   4 align-data
   dhere swap dict-entry-data uint32!  
 ;
@@ -45,7 +45,7 @@ endop
 : defproper
   next-token create does-proper
   defcol-read
-  op-proper-exit ,op
+  out' proper-exit ,op
 ;
 
 ' endcol ' endproper out-immediate/2
@@ -59,7 +59,7 @@ endop
 : redefproper
   next-token lookup-or-create does-proper/1
   defcol-read
-  op-proper-exit ,op
+  out' proper-exit ,op
 ;
 
 : out-loop

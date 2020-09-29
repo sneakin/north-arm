@@ -10,13 +10,6 @@
 
 0 var> out-dict
 
-( Register aliases: )
-
-r4 const> fp
-r5 const> dict-reg
-r6 const> cs
-r7 const> eip
-
 : rel-addr
   dhere -
 ;
@@ -62,34 +55,7 @@ r7 const> eip
   swap over dict-entry-name uint32!
 ;
 
-( Op definitions: )
-
-: does-code
-  4 align-data
-  dhere out-dict dict-entry-code uint32!
-;
-
-: defop
-  next-token create does-code
-;
-
-: endop
-  0 ,uint16
-  4 align-data
-; immediate
-
-( Colon definitions: )
-
-: does-col/1
-  op-do-col dict-entry-code uint32@ over dict-entry-code uint32!
-  4 align-data
-  dhere over dict-entry-data uint32!
-  drop
-;
-
-: does-col
-  out-dict does-col/1
-;
+( Output dictionary lookups: )
 
 0 const> LOOKUP-NOT-FOUND
 1 const> LOOKUP-WORD
@@ -111,30 +77,18 @@ r7 const> eip
   drop swap drop exec LOOKUP-WORD
 ;
 
-: op@
-  -op-size 2 equals IF uint16@ ELSE uint32@ THEN
-;
-
-: ,op
-  -op-size 2 equals IF ,uint16 ELSE ,uint32 THEN
-;
-
-: defcol-cb
-  cross-lookup
-  dup LOOKUP-INT equals
-  IF drop ,uint32
-  ELSE
-    dup LOOKUP-STRING equals
-    IF drop ,byte-string
-    ELSE
-      LOOKUP-NOT-FOUND equals
-      IF drop op-break ,op
-      ELSE ,op
-      THEN
-    THEN
+: out'
+  next-token cross-lookup LOOKUP-NOT-FOUND equals IF
+    not-found
   THEN
-  1 +
-;
+; out-immediate-as [']
+
+: out''
+  literal literal
+  out'
+; out-immediate-as '
+
+' out'' ' out' immediate/2
 
 : literalizes?
   dup ' int32 equals
@@ -145,41 +99,26 @@ r7 const> eip
   logior logior logior logior
 ;
 
-: defcol-state-fn
-  over literalizes? UNLESS
-    number? IF ' int32 swap THEN
-  THEN
+( Op definitions: )
+
+: does-code
+  4 align-data
+  dhere out-dict dict-entry-code uint32!
 ;
 
-: defcol-read
-  literal out_immediates set-compiling-immediates
-  ' defcol-state-fn set-compiling-state
-  read-terminator compiling-read
-  here down-stack 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
+: defop
+  next-token create does-code
 ;
 
-: defcol
-  next-token create does-col
-  defcol-read
-  op-exit ,op
+: endop
+  0 ,uint16
+  4 align-data
+; immediate
+
+: op@
+  -op-size 2 equals IF uint16@ ELSE uint32@ THEN
 ;
 
-: endcol
-  0 set-compiling
-; out-immediate
-
-( Word aliases: )
-
-: does-defalias
-  cross-lookup LOOKUP-WORD equals IF
-    dup dict-entry-code uint32@ out-dict dict-entry-code uint32! 
-    dup dict-entry-data uint32@ out-dict dict-entry-data uint32!
-  ELSE
-    " Warning: bad alias" error-line
-  THEN
-  drop
-;
-  
-: defalias>
-  next-token create next-token does-defalias
+: ,op
+  -op-size 2 equals IF ,uint16 ELSE ,uint32 THEN
 ;

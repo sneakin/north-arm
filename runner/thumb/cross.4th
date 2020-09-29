@@ -33,7 +33,7 @@ defalias> spoke-byte poke-byte
 
 : def
   next-token create does-col def-read
-  op-return0 ,op
+  out' return0 ,op
 ;
 
 alias> c: :

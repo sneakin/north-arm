@@ -21,11 +21,11 @@ defop init
   cs dict-reg dict-reg add ,uint16
   ( exec boot )
   12 r1 ldr-pc ,uint16
-  op-exec-r1 emit-op-call
+  out' exec-r1 emit-op-call
   ( data: )
   out-dict dict-entry-size + 10 + ,uint32
   out-dict ,uint32
-  op-boot ,uint32
+  out' boot ,uint32
 endop
 
 ( todo pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. )

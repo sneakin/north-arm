@@ -127,7 +127,7 @@ defop return
   0 fp bit-set popr ,uint16
   0 r0 bit-set popr ,uint16
   1 r3 sub# ,uint16
-  op-exit emit-op-call
+  out' exit emit-op-call
 endop
 
 defop return1
@@ -168,7 +168,7 @@ endop
 
 : def
   next-token create does-col def-read
-  op-return ,op
+  out' return ,op
 ;
 
 : end

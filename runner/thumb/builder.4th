@@ -19,8 +19,9 @@ runner/thumb/load.4th load
   runner/thumb/logic.4th
   runner/thumb/linux.4th
   runner/thumb/frames.4th
+  runner/thumb/defining.4th
   runner/thumb/ops.4th
-  5 load-sources
+  6 load-sources
 
   load-sources
 
@@ -29,7 +30,8 @@ runner/thumb/load.4th load
 
   code-origin
   ( entry point: )
-  op-init dict-entry-size + 4 pad-addr
+  " init" cross-lookup UNLESS " no init found" error-line not-found return THEN
+  dict-entry-code uint32@
   ( finish the ELF file )
   1 + .s write-elf32-ending
 

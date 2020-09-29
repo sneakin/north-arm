@@ -70,6 +70,7 @@ bin/assembler-thumb: runner/thumb/bin/assembler.elf
 
 RUNNER_THUMB_SRC=\
 	runner/thumb/builder.4th \
+	runner/thumb/defining.4th \
 	runner/thumb/ops.4th \
 	runner/thumb/linux.4th \
 	runner/thumb/init.4th \

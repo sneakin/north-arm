@@ -16,8 +16,9 @@
 
 " feval 0 set-compiling" ' ; ' out_immediates dict-set!
 
+( ' out' ' ['] out-immediate/2 )
+
 ' ( out-immediate/1
-" '" out-immediate/1
 ' POSTPONE out-immediate/1
 
 : out-dq

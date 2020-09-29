@@ -274,11 +274,11 @@ end
 
 defalias> ' [']
 
-0 op-end-compile ' endcol copies-entry-as
-op-end-compile ' end copies-entry-as
-op-end-compile ' ; copies-entry-as
-op-( ' ( copies-entry-as
-op-c" ' c" copies-entry-as
+0 out' end-compile ' endcol copies-entry-as
+out' end-compile ' end copies-entry-as
+out' end-compile ' ; copies-entry-as
+out' ( ' ( copies-entry-as
+out' c" ' c" copies-entry-as
 defvar> immediates
 
 -1 defconst> TOKEN-ERROR
