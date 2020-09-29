@@ -43,8 +43,13 @@ defcol parent-frame
   swap peek swap
 endcol
 
+defcol frame-args
+  swap frame-byte-size +
+  swap
+endcol
+
 defcol args
-  current-frame frame-byte-size +
+  current-frame frame-args
   swap
 endcol
 
