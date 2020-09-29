@@ -261,4 +261,31 @@ def motd
   nl
 end
 
+def top-frame-loop
+  arg0 parent-frame dup IF set-arg0 repeat-frame THEN
+  return0
+end
+
+def top-frame
+  current-frame top-frame-loop return1
+end
+
+def argc
+  top-frame cell-size 3 * + peek return1
+end
+
+def argv
+  top-frame cell-size 4 * + return1
+end
+
+def argv/1
+  argv cell-size arg0 * +
+  dup IF peek ELSE 0 THEN return1
+end
+
+def env
+  top-frame cell-size 5 argc + arg0 + * +
+  dup IF peek ELSE 0 THEN return1
+end
+
 motd
