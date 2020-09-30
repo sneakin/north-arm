@@ -36,16 +36,19 @@ Call frames, stack & data pointer math
 ** Assemblers
 *** Bacaw
 *** x86
-*** TODO ARM
+*** TODO athumb
 **** TODO Branching and return in Thumb; to call ops in ops and call threading
+**** Thumb Assembler meta words: mov checks arg range
+*** TODO aarch32
 **** TODO Status register and coprocessor ops
-*** Thumb Assembler meta words: mov checks arg range
+*** aarch64
+**** assembler
+**** ELF64
 ** DONE jumps & loops
 *** DONE relative jumps
 *** DONE returns
 *** DONE IF immediate to count offset
 ** DONE read strings properly in load, using immediates
-
 ** DONE load needs to be callable from definitions.
 Needs to interpret input when called while not reading additional input.
 ** DONE Building needs to allow different program inclusions
@@ -119,14 +122,91 @@ load needs file opening and reading with a reader stack.
 *** DONE definitions writen to the data stack
 *** definitions with code reuse
 *** definition definability for macros
-*** TODO String concatenation: ++
-** Standard wording
-*** c" returns a 2 string
+*** DONE String concatenation: ++
+** TODO Standard wording
+*** TODO c" returns a 2 string
+*** Returning from colon def vs frame's return
 ** map-string good candidate for cons on stack safety.
 ** word lists / modules
 *** `word-list word` where `word-list` is an immediate that looks `word` up in the named word list.
 *** import for use in current module
 *** brings in name spacing: what word lists to search when compiling
 *** in-package & export/public & import interplays
-** Lambda / Code blocks & lists
-** To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
+** Lambda / Code blocks & lists: use [ ] to delineate
+** TODO To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
+** ELF32
+*** ELF dynamic linking of imports
+*** ELF .o files with symbol table
+*** ELF symbol table
+** Runner's jumps op offset or byte offset?
+** Compile list of words into list of assembly calls.
+** North
+*** TODO Missing/stubbed words
+*** Move to defcol, def, ":" convention.
+** Syscalls
+*** mmap memory
+*** Catch segfaults & other errors
+*** Spawn a thread
+** Testing
+*** Move tests to assert-equals
+*** Test DSL
+** TODO quit needs to reset dict in case words are on the stack
+** TODO remove early uses of R3 to track calls and returns
+** Organization
+*** bash forth
+**** compiler
+*** assemblers
+*** lib
+*** stage1: thumb forth
+**** interpreter
+**** compiler
+**** runner
+**** thumb forth + assembler
+*** stage2
+**** compiler
+
+* Thoughts
+** def syntax
+*** Current
+var>
+const>
+alias>
+defcol => defcolon
+def
+:
+
+***  General def and lists
+Scheme style symbol table
+
+**** Dictionary
+***** dict is an assoc list
+***** values are function objects
+Head points to a Type that has a caller attribute.
+Tail points to the definition sequence.
+
+**** Sequences
+[ exprs... ] => sequence
+'[ exprs... ] => sequence of resolved, but unexecuted, symbols
+
+**** Variables
+def name value
+def name [ exprs... ]
+**** Colon definitions
+def name '[ exprs... ]
+def name colon[ exprs... ]
+**** Framed colon definitions
+def name fun[ exprs... ]
+def name begin[ exprs... ]
+def name fun( args... ) exprs... end
+
+def name fun exprs... end
+def name begin exprs... end
+def name fun( args... )[ exprs... ]
+
+*** Cross compiling reads
+Need to restore state. Globals make this tough, but compiler object with output stack, immediates, and words can handle that.
+** Optimizations
+*** Constants can be immediates
+*** Inlining
+*** To assembly call threading
+*** repeated call sequences that have no side effects and return the same values each call can set a generated binding.
