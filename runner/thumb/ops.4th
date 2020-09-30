@@ -9,6 +9,10 @@ r7 const> eip
   dup 0 int< IF -1 mult THEN
 ;
 
+: rel-addr
+  dhere -
+;
+
 ( Emits the assembly to jump to an op. )
 : emit-op-call
   dict-entry-size + rel-addr

@@ -79,7 +79,7 @@ end immediate-as '
 def .s
   args int32 64 memdump
   return0
-end immediate
+end immediate-as [.s]
 
 : symbol>
   create> does-const

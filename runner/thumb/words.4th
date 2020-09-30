@@ -6,13 +6,31 @@
   -op-prefix ++ make-const
 ;
 
+( Output dictionary lookups: )
+
+0 const> LOOKUP-NOT-FOUND
+1 const> LOOKUP-WORD
+2 const> LOOKUP-INT
+3 const> LOOKUP-STRING
+4 const> LOOKUP-IMMED
+
+: cross-lookup
+  dup " op-" ++
+  dup get-word null? IF
+    drop
+    over number? IF
+      2 dropn LOOKUP-INT return
+    ELSE
+      " Warning: " ++ error-line
+      drop LOOKUP-NOT-FOUND return
+    THEN
+  THEN
+  drop swap drop exec LOOKUP-WORD
+;
+
 ( The output dictionary: )
 
 0 var> out-dict
-
-: rel-addr
-  dhere -
-;
 
 ( Dictionary words for output: )
 
@@ -55,27 +73,7 @@
   swap over dict-entry-name uint32!
 ;
 
-( Output dictionary lookups: )
-
-0 const> LOOKUP-NOT-FOUND
-1 const> LOOKUP-WORD
-2 const> LOOKUP-INT
-3 const> LOOKUP-STRING
-4 const> LOOKUP-IMMED
-
-: cross-lookup
-  dup " op-" ++
-  dup get-word null? IF
-    drop
-    over number? IF
-      2 dropn LOOKUP-INT return
-    ELSE
-      " Warning: " ++ error-line
-      drop LOOKUP-NOT-FOUND return
-    THEN
-  THEN
-  drop swap drop exec LOOKUP-WORD
-;
+( Output quote: )
 
 : out'
   next-token cross-lookup LOOKUP-NOT-FOUND equals IF
