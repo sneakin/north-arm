@@ -13,5 +13,6 @@ runner/thumb/builder.4th load
 runner/thumb/north.4th
 runner/thumb/data-stack.4th
 runner/thumb/output.4th
+runner/thumb/messages.4th
 runner/thumb/strings.4th
-5 builder-run/2
+6 builder-run/2
