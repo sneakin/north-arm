@@ -4,7 +4,7 @@ FFROOT=$(dirname "$0")
 FFBASE=$(basename "$0")
 FFBASE0="${FFBASE/.*/}"
 
-source "$FFROOT"/../forth/forth.sh
+source "$FFROOT"/../src/bash/forth.sh
 source "$FFROOT"/"$FFBASE0".dict
 
 feval boot

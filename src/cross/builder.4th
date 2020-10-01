@@ -5,7 +5,8 @@
 ( Needs defconst sooner. )
 0xFFFFFFFF const> -op-mask
 
-runner/thumb/load.4th load
+src/bash/compiler.4th load
+src/cross/arch/thumb.4th load
 
 0 var> code-origin
 
@@ -15,18 +16,18 @@ runner/thumb/load.4th load
   dhere set-code-origin
 
   ( The main stage: )
-  runner/thumb/math.4th
-  runner/thumb/logic.4th
-  runner/thumb/linux.4th
-  runner/thumb/frames.4th
-  runner/thumb/defining.4th
-  runner/thumb/ops.4th
+  src/runner/thumb/math.4th
+  src/runner/thumb/logic.4th
+  src/runner/thumb/linux.4th
+  src/runner/thumb/frames.4th
+  src/runner/thumb/defining.4th
+  src/runner/thumb/ops.4th
   6 load-sources
 
   load-sources
 
   ' main create does-defalias
-  runner/thumb/init.4th load
+  src/runner/thumb/init.4th load
 
   code-origin
   ( entry point: )

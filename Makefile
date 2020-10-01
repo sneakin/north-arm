@@ -1,13 +1,9 @@
-FORTH=bash ./forth/forth.sh
+FORTH=bash ./src/bash/forth.sh
 HTMLER=./scripts/htmler.sh
+EXECEXT=.elf
 
-OUTPUTS=elf/bones/with-data.elf \
-	elf/bones/barest.elf \
-	elf/bones/thumb.elf \
-	runner/thumb/bin/interp.elf \
-	runner/thumb/bin/assembler.elf \
-	bin/interp-thumb \
-	bin/assembler-thumb \
+OUTPUTS=bin/interp$(EXECEXT) \
+	bin/assembler$(EXECEXT) \
 	bin/fforth.dict \
 	bin/assembler-thumb.sh \
 	bin/assembler-thumb.dict
@@ -15,9 +11,13 @@ DOCS=doc/html/bash.html \
 	doc/html/assembler.html \
 	doc/html/runner-thumb.html
 
+ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
+	bin/tests/elf/bones/barest$(EXECEXT) \
+	bin/tests/elf/bones/thumb$(EXECEXT) \
+
 all: $(OUTPUTS)
-tests: runner/thumb/bin/interp-tests.elf
-north: runner/thumb/bin/north.elf
+tests: bin/interp-tests$(EXECEXT)
+north: bin/north$(EXECEXT)
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
@@ -33,76 +33,80 @@ doc:
 doc/html: doc
 	mkdir doc/html
 
-FORTH_SRC=./forth/forth.sh \
-	./forth/data.sh \
-	./forth/state.sh \
-	./forth/dict.sh \
-	./forth/builtins.sh \
-	./forth/compiler.4th \
-	./forth/frames.4th
+FORTH_SRC=./src/bash/forth.sh \
+	./src/bash/data.sh \
+	./src/bash/state.sh \
+	./src/bash/dict.sh \
+	./src/bash/builtins.sh \
+	./src/bash/compiler.4th \
+	./src/bash/frames.4th
 
 THUMB_ASSEMBLER_SRC=\
-	elf/stub32.4th \
-	lib/bit-fields.4th \
-	lib/case.4th \
-	asm/words.4th \
-	asm/byte-data.4th \
-	asm/thumb.4th \
-	asm/thumb2.4th
+	src/lib/elf/stub32.4th \
+	src/lib/bit-fields.4th \
+	src/lib/case.4th \
+	src/lib/asm/words.4th \
+	src/lib/byte-data.4th \
+	src/lib/asm/thumb.4th \
+	src/lib/asm/thumb2.4th
 
-doc/html/assembler.html: Makefile $(THUMB_ASSEMBLER_SRC) runner/thumb/boot.4th
+doc/html/assembler.html: Makefile $(THUMB_ASSEMBLER_SRC) src/interp/boot/core.4th
 	$(HTMLER) $^ > $@
 doc/html/bash.html: $(FORTH_SRC)
 	$(HTMLER) $^ > $@
 
 bin/fforth.dict: $(FORTH_SRC)
-	echo -e "forth/compiler.4th load $@ save-dict\n" | $(FORTH)
+	echo -e "src/bash/compiler.4th load $@ save-dict\n" | $(FORTH)
 
 bin/assembler-thumb.sh: bin/fforth bin/assembler-thumb.dict
 	ln -sf fforth $@
-bin/assembler-thumb.dict: runner/thumb/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
+bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
 	echo -e "$< load $@ save-dict\n" | $(FORTH)
 
-bin/interp-thumb: runner/thumb/bin/interp.elf
-	ln -sf ../$< $@
-bin/assembler-thumb: runner/thumb/bin/assembler.elf
-	ln -sf ../$< $@
-
 RUNNER_THUMB_SRC=\
-	runner/thumb/builder.4th \
-	runner/thumb/defining.4th \
-	runner/thumb/ops.4th \
-	runner/thumb/linux.4th \
-	runner/thumb/init.4th \
-	runner/thumb/math.4th \
-	runner/thumb/proper.4th \
-	runner/thumb/data-stack.4th \
-	runner/thumb/interp.4th \
-	runner/thumb/reader.4th \
-	runner/thumb/output.4th \
-	runner/thumb/logic.4th \
-	runner/thumb/dictionary.4th \
-	runner/thumb/strings.4th \
-	runner/thumb/messages.4th \
-	runner/thumb/frames.4th \
-	runner/thumb/iwords.4th \
-	runner/thumb/words.4th \
-	runner/thumb/case.4th \
-	lib/stack.4th \
-	lib/assert.4th \
-	lib/strings.4th \
+	src/cross/builder.4th \
+	src/runner/thumb/defining.4th \
+	src/runner/thumb/ops.4th \
+	src/runner/thumb/linux.4th \
+	src/runner/thumb/init.4th \
+	src/runner/thumb/math.4th \
+	src/runner/thumb/proper.4th \
+	src/interp/data-stack.4th \
+	src/interp/interp.4th \
+	src/interp/reader.4th \
+	src/interp/output.4th \
+	src/runner/thumb/logic.4th \
+	src/interp/dictionary.4th \
+	src/interp/strings.4th \
+	src/interp/messages.4th \
+	src/runner/thumb/frames.4th \
+	src/cross/iwords.4th \
+	src/cross/words.4th \
+	src/cross/defop.4th \
+	src/cross/case.4th \
+	src/lib/stack.4th \
+	src/lib/assert.4th \
+	src/lib/strings.4th \
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
-doc/html/runner-thumb.html: Makefile $(RUNNER_THUMB_SRC) runner/thumb/boot.4th
+doc/html/runner-thumb.html: Makefile $(RUNNER_THUMB_SRC) src/interp/boot/core.4th
 	$(HTMLER) $^ > $@
 
-runner/thumb/bin/interp.elf: runner/thumb/bin/interp.4th $(RUNNER_THUMB_SRC)
-runner/thumb/bin/interp-tests.elf: runner/thumb/bin/interp.4th $(RUNNER_THUMB_SRC)
-runner/thumb/bin/assembler.elf: runner/thumb/bin/assembler.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th lib/strings.4th $(THUMB_ASSEMBLER_SRC)
-runner/thumb/bin/runner.elf: runner/thumb/bin/runner.4th $(RUNNER_THUMB_SRC)
-runner/thumb/bin/north.elf: runner/thumb/bin/north.4th $(RUNNER_THUMB_SRC) runner/thumb/cross.4th
+bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+bin/interp-tests$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
+bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
+bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
 
-%.elf: %.4th
+%$(EXECEXT): %.4th
+	cat $< | $(FORTH) > $@
+	chmod u+x $@
+
+bin/%.elf: src/bin/%.4th
+	cat $< | $(FORTH) > $@
+	chmod u+x $@
+
+bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
