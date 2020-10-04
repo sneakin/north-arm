@@ -523,5 +523,5 @@ def interp-init
 end
 
 def interp-boot
-  interp-init interp
+  interp-init interp bye
 end

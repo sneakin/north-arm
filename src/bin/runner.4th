@@ -7,11 +7,6 @@
 
 src/cross/builder.4th load
 
-' interp-boot
-src/interp/interp.4th
-src/interp/reader.4th
-src/interp/output.4th
-src/interp/dictionary.4th
-src/interp/strings.4th
-src/interp/messages.4th
-6 builder-run/2
+' runner-boot
+src/runner/main.4th
+1 builder-run/2
