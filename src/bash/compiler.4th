@@ -32,6 +32,10 @@
 
 " feval 0 set-compiling" ' ; set-immediate!
 
+: symbol>
+  next-token dup " fpush " ++ swap set-word!
+;
+
 : ?exec
   dup 0 equals 2 if-jump exec return
   drop
@@ -48,14 +52,10 @@
 
 ' *read-terminator* const> read-terminator
 
-( read-terminator ... )
-: compiling-read/1
+( read-terminator ... ++ more-words )
+: compiling-read
   1 set-compiling
   compiling-read-loop
-;
-
-: compiling-read
-  compiling-read/1
 ;
 
 : compiling-init
@@ -151,10 +151,6 @@ alias> :: :
 ' ( immediate/1
 
 ( IF ... ELSE ... THEN )
-
-: symbol>
-  next-token dup " fpush " ++ swap set-word!
-;
 
 symbol> if-placeholder
 

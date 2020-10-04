@@ -6,7 +6,7 @@ r6 const> cs
 r7 const> eip
 
 : abs-int
-  dup 0 int< IF -1 mult THEN
+  dup 0 int< IF negate THEN
 ;
 
 : rel-addr

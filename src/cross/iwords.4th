@@ -1,8 +1,3 @@
-(
-' cell-size get-word UNLESS 4 const> cell-size THEN
-' -op-size get-word UNLESS cell-size const> -op-size THEN
-)
-
 : out-immediate/2 ( src-word out-word )
   swap get-word swap literal out_immediates dict-set!
 ;
@@ -15,8 +10,6 @@
 : out-immediate-as this-word next-token out-immediate/2 ;
 
 " feval 0 set-compiling" ' ; ' out_immediates dict-set!
-
-( ' out' ' ['] out-immediate/2 )
 
 ' ( out-immediate/1
 ' POSTPONE out-immediate/1

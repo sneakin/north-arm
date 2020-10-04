@@ -1,4 +1,4 @@
-( Op definitions: )
+( Op definitions: )
 
 : does-code
   4 align-data
@@ -6,7 +6,7 @@
 ;
 
 : defop
-  next-token create does-code
+  create> does-code
 ;
 
 : endop

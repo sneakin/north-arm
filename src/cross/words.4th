@@ -60,6 +60,8 @@
   set-out-dict
 ;
 
+: create> next-token create ;
+
 : copies-entry ( link source-entry )
   dup dict-entry-data uint32@
   swap dup dict-entry-code uint32@
