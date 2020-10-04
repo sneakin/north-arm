@@ -8,10 +8,26 @@ defcol newline?
   swap int32 0x0A equals? swap
 endcol
 
+defcol page-feed?
+  swap int32 0x0C equals? swap
+endcol
+
+defcol line-return?
+  swap int32 0x0D equals? swap
+endcol
+
 defcol whitespace?
   over newline? IF int32 1
   ELSE
-    over is-space? IF int32 1 ELSE int32 0 THEN
+    over is-space? IF int32 1
+    ELSE
+      over page-feed? IF int32 1
+      ELSE
+        over line-return? IF int32 1
+        ELSE int32 0
+	THEN
+      THEN
+    THEN
   THEN
   rot drop
 endcol

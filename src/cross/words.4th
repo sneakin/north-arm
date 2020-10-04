@@ -6,6 +6,15 @@
   -op-prefix ++ make-const
 ;
 
+( The output dictionary: )
+
+0 var> out-dict
+
+: dict-entry-size cell-size 4 mult ;
+: dict-entry-name ;
+: dict-entry-code cell-size + ;
+: dict-entry-data cell-size 2 mult + ;
+
 ( Output dictionary lookups: )
 
 0 const> LOOKUP-NOT-FOUND
@@ -28,16 +37,7 @@
   drop swap drop exec LOOKUP-WORD
 ;
 
-( The output dictionary: )
-
-0 var> out-dict
-
 ( Dictionary words for output: )
-
-: dict-entry-size cell-size 4 mult ;
-: dict-entry-name ;
-: dict-entry-code cell-size + ;
-: dict-entry-data cell-size 2 mult + ;
 
 : make-dict-entry/4 ( link data code name -- data-pointer )
   dhere swap ,byte-string

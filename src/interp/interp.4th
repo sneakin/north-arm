@@ -431,7 +431,8 @@ def dict-contains?/2 ( word dict ++ yes )
 end
 
 def dict-contains?
-  arg0 dict dict-contains?/2 return1
+  arg0 dict dict-contains?/2 IF int32 1 return1 THEN
+  arg0 immediates peek dict-contains?/2 return1
 end
 
 def decompile-loop

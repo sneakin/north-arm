@@ -231,7 +231,14 @@ def s"
   here up-stack dhere 3 overn copy-byte-string/3 3 dropn
   dhere dup 3 overn + cell-size pad-addr dmove
   swap return2
-end immediate
+end
+
+defcol [s"]
+  literal literal swap
+  s" ( ra ptr len )
+  swap rot ( ptr len ra )
+  literal int32 rot swap
+endcol immediate-as s"
 
 def ["]
   literal literal
@@ -246,7 +253,13 @@ def does>
   return0
 end immediate
 
+def error
+  " Error" error-line
+end
+
 symbol> read-terminator
+
+alias> -op-size op-size
 
 : hey IF hello THEN ;
 : heyhey IF hello ELSE boo THEN ;

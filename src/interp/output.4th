@@ -17,6 +17,28 @@ defcol write-byte ( byte )
   drop
 endcol
 
+defcol error-string/2
+  rot current-error peek write drop
+endcol
+
+defcol error-string
+  swap dup string-length error-string/2
+endcol
+
+defcol error-byte
+  swap here int32 1 error-string/2
+  drop
+endcol
+
+defcol error-line/2
+  rot swap error-string/2
+  int32 10 error-byte
+endcol
+
+defcol error-line
+  swap dup string-length error-line/2
+endcol
+
 ( Hexadecimal output: )
 
 defcol hex-digit

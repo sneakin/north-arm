@@ -1,5 +1,7 @@
 ( Dictionary access: )
 
+cell-size 4 mult defconst> dict-entry-size
+
 defcol dict-entry-name
   exit
 endcol
