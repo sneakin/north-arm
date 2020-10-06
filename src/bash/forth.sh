@@ -10,7 +10,6 @@ source "$ROOT"/dict.sh
 source "$ROOT"/builtins.sh
 source "$ROOT"/state.sh
 source "$ROOT"/data.sh
-source "$ROOT"/compiler.sh
 
 if [[ "$BASH_SOURCE" == "$0" ]]; then
     INPUT="boot"
