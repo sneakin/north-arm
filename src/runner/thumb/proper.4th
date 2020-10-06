@@ -31,19 +31,15 @@ defop do-proper
   emit-next
 endop
 
-: does-proper/1
+: does-proper
   ( todo use data field )
   out' do-proper dict-entry-size + over dict-entry-code uint32!
   4 align-data
   dhere swap dict-entry-data uint32!  
 ;
 
-: does-proper
-  out-dict does-proper/1
-;
-
 : defproper
-  next-token create does-proper
+  create> does-proper
   defcol-read
   out' proper-exit ,op
 ;
@@ -57,7 +53,7 @@ endop
 ;
 
 : redefproper
-  next-token lookup-or-create does-proper/1
+  next-token lookup-or-create does-proper
   defcol-read
   out' proper-exit ,op
 ;

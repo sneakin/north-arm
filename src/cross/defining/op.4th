@@ -2,7 +2,7 @@
 
 : does-code
   4 align-data
-  dhere out-dict dict-entry-code uint32!
+  dhere swap dict-entry-code uint32!
 ;
 
 : defop

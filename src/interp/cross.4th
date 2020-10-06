@@ -32,7 +32,7 @@ defalias> spoke-byte poke-byte
 ( ' RECURSE ' loop out-immediate/2 )
 
 : def
-  next-token create does-col def-read
+  create> does-col def-read
   out' return0 ,op
 ;
 

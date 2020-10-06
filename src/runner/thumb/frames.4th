@@ -172,7 +172,7 @@ endop
 ;
 
 : def
-  next-token create does-col def-read
+  create> does-col def-read
   out' return ,op
 ;
 

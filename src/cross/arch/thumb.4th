@@ -8,5 +8,5 @@ src/lib/elf/stub32.4th load
 
 src/cross/iwords.4th load
 src/cross/words.4th load
-src/cross/defop.4th load
+src/cross/defining/op.4th load
 src/cross/case.4th load

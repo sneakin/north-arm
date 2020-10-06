@@ -20,13 +20,18 @@ src/cross/arch/thumb.4th load
   src/runner/thumb/logic.4th
   src/runner/thumb/linux.4th
   src/runner/thumb/frames.4th
-  src/runner/thumb/defining.4th
+  src/runner/thumb/aliases.4th
+  src/cross/defining/variables.4th
+  src/cross/defining/constants.4th
+  src/cross/defining/alias.4th
+  src/cross/defining/colon.4th
+  src/cross/defining/colon-bash.4th
   src/runner/thumb/ops.4th
-  6 load-sources
+  11 load-sources
 
   load-sources
 
-  ' main create does-defalias
+  ' main create swap does-defalias
   src/runner/thumb/init.4th load
 
   code-origin

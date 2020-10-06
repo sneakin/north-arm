@@ -57,7 +57,7 @@
   dup error-line
   dup make-dict-entry ,,h
   dup rot make-label
-  set-out-dict
+  dup set-out-dict
 ;
 
 : create> next-token create ;

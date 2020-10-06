@@ -65,7 +65,11 @@ bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_S
 
 RUNNER_THUMB_SRC=\
 	src/cross/builder.4th \
-	src/runner/thumb/defining.4th \
+	src/runner/thumb/aliases.4th \
+	src/cross/defining/colon.4th \
+	src/cross/defining/alias.4th \
+	src/cross/defining/variables.4th \
+	src/cross/defining/constants.4th \
 	src/runner/thumb/ops.4th \
 	src/runner/thumb/linux.4th \
 	src/runner/thumb/init.4th \
@@ -82,7 +86,7 @@ RUNNER_THUMB_SRC=\
 	src/runner/thumb/frames.4th \
 	src/cross/iwords.4th \
 	src/cross/words.4th \
-	src/cross/defop.4th \
+	src/cross/defining/op.4th \
 	src/cross/case.4th \
 	src/lib/stack.4th \
 	src/lib/assert.4th \
