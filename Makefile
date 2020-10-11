@@ -95,7 +95,7 @@ RUNNER_THUMB_SRC=\
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
-doc/html/runner-thumb.html: Makefile $(RUNNER_THUMB_SRC) src/interp/boot/core.4th
+doc/html/runner-thumb.html: Makefile $(RUNNER_THUMB_SRC) src/interp/boot/*.4th
 	$(HTMLER) $^ > $@
 
 bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)

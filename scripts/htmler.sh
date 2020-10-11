@@ -9,7 +9,7 @@ echo '</pre>'
 for path in $*; do
     echo "<h1>$path</h1>"
     echo "<pre>"
-    cat "$path" || echo "Not found."
+    (cat "$path" | sed -e 's:&:\&amp;:g' -e 's:<:\&lt;:g' -e 's:>:\&gt;:g') || echo "Not found."
     echo "</pre>"
 done
 
