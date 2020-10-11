@@ -387,7 +387,7 @@ def defcol
 end
 
 def does-frame>
-  arg0 literal exit-frame does-col>/2
+  arg0 literal return does-col>/2
   literal begin-frame
   here cs - arg0 dict-entry-data poke
   exit-frame
