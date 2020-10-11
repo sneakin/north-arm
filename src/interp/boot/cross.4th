@@ -39,17 +39,10 @@ dhere var> out-origin
 
 defcol out-dict out-dictionary peek swap endcol
 
-def out-dict-lookup ( ptr length dict-entry ++ found? )
-  arg0 null? IF int32 0 return1 THEN
-  ( arg0 dict-entry-name peek arg1 write-string/2 )
-  arg0 dict-entry-name peek arg2 arg1 string-equals?/3 IF
-    int32 1 return1
-  THEN
-  int32 3 dropn
-  arg0 dict-entry-link peek
-  dup null? IF int32 0 return1 THEN
-  set-arg0
-  repeat-frame
+def out-dict-lookup  ( ptr length dict-entry ++ found? )
+  arg2 arg1 arg0 out-origin peek dict-lookup/4
+  over set-arg0
+  return1
 end
 
 ( Output dictionary lookups: )
@@ -65,6 +58,12 @@ def cross-lookup
   IF LOOKUP-INT
   ELSE drop arg1 arg0 out-dictionary peek out-dict-lookup IF LOOKUP-WORD ELSE LOOKUP-NOT-FOUND THEN
   THEN set-arg0 set-arg1 return0
+end
+
+def cross-lookup-offset
+  arg1 arg0 cross-lookup
+  negative? UNLESS swap out-origin peek - swap THEN
+  set-arg0 set-arg1
 end
 
 ( Dictionary words for output: )
@@ -85,10 +84,10 @@ end
   dhere swap ,byte-string
   4 align-data
   dhere
+  swap out-origin peek - ,uint32
+  swap out-origin peek - ,uint32
   swap ,uint32
-  swap ,uint32
-  swap ,uint32
-  swap ,uint32
+  swap out-origin peek - ,uint32
 ;
 
 : make-dict-entry ( name )
@@ -105,15 +104,15 @@ end
 
 : copies-entry ( link source-entry )
   dup dict-entry-data uint32@
-  swap dup dict-entry-code uint32@
-  swap dict-entry-name uint32@
+  swap dup dict-entry-code uint32@ out-origin peek +
+  swap dict-entry-name uint32@ out-origin peek +
   make-dict-entry/4
 ;
 
 : copies-entry-as ( link source-entry new-name )
   dhere swap ,byte-string
   rot swap copies-entry
-  swap over dict-entry-name uint32!
+  swap over dict-entry-name out-origin peek - uint32!
 ;
 
 ( Output quote: )
@@ -122,11 +121,15 @@ end
   next-token cross-lookup LOOKUP-NOT-FOUND equals IF
     not-found
   THEN
+;
+
+: out-off'
+  POSTPONE out' out-origin peek -
 ; out-immediate-as [']
 
 : out''
-  s" literal" cross-lookup UNLESS not-found THEN
-  POSTPONE out'
+  s" literal" cross-lookup-offset UNLESS not-found THEN
+  POSTPONE out-off'
 ; out-immediate-as '
 
 : [out'']
@@ -137,7 +140,19 @@ end
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
-  s" pointer" cross-lookup UNLESS not-found drop int32 0 THEN swap ( todo pointer or segment offset )
+  s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap ( todo pointer or segment offset )
   dup cstring-length
-  s" int32" cross-lookup UNLESS not-found drop int32 0 THEN swap
+  s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
 ; out-immediate-as "
+
+def oword-printer
+  arg0 dict-entry-name peek out-origin peek + write-string space
+end
+
+def owords
+  out-dict out-origin peek 0 ' oword-printer dict-map/4
+end
+
+def oiwords
+  out-immediates peek ' words-printer dict-map
+end

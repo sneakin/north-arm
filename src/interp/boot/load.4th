@@ -9,13 +9,3 @@ tmp" src/lib/elf/stub32.4th" drop load
 
 tmp" src/interp/boot/cross.4th" drop load
 tmp" src/cross/defining/op.4th" drop load
-
-tmp" src/runner/thumb/ops.4th" drop load
-
-tmp" src/cross/defining/alias.4th" drop load
-tmp" src/cross/defining/constants.4th" drop load
-tmp" src/cross/defining/variables.4th" drop load
-tmp" src/cross/defining/colon.4th" drop load
-
-( runner/thumb/iwords.4th load
-runner/thumb/words.4th load )

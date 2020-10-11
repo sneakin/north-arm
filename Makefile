@@ -67,6 +67,7 @@ RUNNER_THUMB_SRC=\
 	src/cross/builder.4th \
 	src/runner/thumb/aliases.4th \
 	src/cross/defining/colon.4th \
+	src/cross/defining/colon-bash.4th \
 	src/cross/defining/alias.4th \
 	src/cross/defining/variables.4th \
 	src/cross/defining/constants.4th \

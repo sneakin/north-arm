@@ -281,25 +281,27 @@ out' ( ' ( copies-entry-as
 out' c" ' c" copies-entry-as
 defvar> immediates
 
--1 defconst> TOKEN-ERROR
-0 defconst> TOKEN-WORD
-1 defconst> TOKEN-IMMED
-2 defconst> TOKEN-INT
+-1 defconst> COMPILING-ERROR
+0 defconst> COMPILING-INT
+1 defconst> COMPILING-WORD
+2 defconst> COMPILING-IMMED
+
+def interp-token ( ptr length -- value exec? )
+  arg1 arg0 parse-int
+  IF int32 0
+  ELSE drop arg1 arg0 lookup IF int32 1 ELSE int32 -1 THEN
+  THEN set-arg0 set-arg1
+end
 
 def compile-token
-  arg1 arg0 parse-int IF
-    TOKEN-INT
+  arg1 arg0 compiling-immediates peek dict-lookup
+  IF cs - COMPILING-IMMED
   ELSE
-    arg1 arg0 compiling-immediates peek dict-lookup IF
-      cs - TOKEN-IMMED
-    ELSE
-      arg1 arg0 lookup IF
-        cs - TOKEN-WORD
-      ELSE int32 0 TOKEN-ERROR
-      THEN
+    arg1 arg0 interp-token
+    IF cs - COMPILING-WORD
+    ELSE COMPILING-INT
     THEN
-  THEN
-  set-arg0 set-arg1
+  THEN set-arg0 set-arg1
 end
 
 defcol cell/
@@ -322,8 +324,8 @@ def compiling-read/2 ( buffer max-length ++ list-words num-words )
   here prompt-here poke
   arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
   compile-token CASE
-    TOKEN-IMMED WHEN exec ;;
-    TOKEN-INT WHEN over cs + literalizes? UNLESS literal int32 swap THEN ;;
+    COMPILING-IMMED WHEN exec ;;
+    COMPILING-INT WHEN over cs + literalizes? UNLESS literal int32 swap THEN ;;
     negative? IF not-found int32 2 dropn ELSE drop THEN
   ESAC
   compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
@@ -354,13 +356,6 @@ def reverse ( ptr length )
   arg1 arg1 arg0 1 - cell-size * + reverse-loop
 end
 
-def interp-token
-  arg1 arg0 parse-int
-  IF int32 0
-  ELSE drop arg1 arg0 lookup IF int32 1 ELSE int32 -1 THEN
-  THEN set-arg0 set-arg1
-end
-
 defcol does ( word code -- )
   swap dict-entry-code peek
   swap rot dict-entry-code poke
@@ -374,7 +369,8 @@ def does-col>/2
   arg1 does-col
   compiling-read
   arg0 swap
-  int32 1 +
+  int32 0 swap
+  int32 2 +
   here cell-size + swap reverse
   int32 2 dropn
   here cs - arg1 dict-entry-data poke
@@ -418,17 +414,6 @@ def print-args
 end
 
 ( Decompiling words: )
-
-def dict-contains?/2 ( word dict ++ yes )
-  arg0 int32 0 equals? IF int32 0 return1 THEN
-  arg1 int32 0 equals? IF int32 0 return1 THEN
-  arg1 arg0 equals? IF int32 1 return1 THEN
-  arg0 dict-entry-link peek
-  dup IF
-    cs + set-arg0
-    repeat-frame
-  ELSE int32 0 return1 THEN
-end
 
 def dict-contains?
   arg0 dict dict-contains?/2 IF int32 1 return1 THEN
@@ -510,6 +495,16 @@ def interp
 end
 
 defcol ,h over write-hex-uint endcol
+
+def load-comp
+  " ./src/interp/boot/load.4th" drop load
+  exit-frame
+end
+
+def load-ops
+  " ./src/interp/boot/load-ops.4th" drop load
+  exit-frame
+end
 
 def interp-init
   ( token-buffer )
