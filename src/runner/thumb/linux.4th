@@ -39,14 +39,10 @@
 1 defconst> standard-output
 2 defconst> standard-error
 
-0 defvar> current-input
-1 defvar> current-output
-2 defvar> current-error
-
-3 defconst> O_ACCMODE
 0 defconst> O_RDONLY
 1 defconst> O_WRONLY
 2 defconst> O_RDWR
+3 defconst> O_ACCMODE
 64 defconst> O_CREAT
 128 defconst> O_EXCL
 256 defconst> O_NOCTTY

@@ -1,15 +1,17 @@
 ( OS entry point: sets initial state and calls main. )
 ( todo save lr, mark data )
+
+( Linux calls with args on the stack and in registers.
+The arguments are argc, argv as a sequence of pointers, and env as a sequence of pointers.
+The dynamic linker passes a function in r0.
+)
+
 defop init
-  ( calculate CS: pc - dhere )
-  24 r3 ldr-pc ,uint16
+  ( calculate CS: pc - dhere; in r10? )
+  16 r3 ldr-pc ,uint16
   pc r5 mov-hilo ,uint16
-  r3 r5 cs sub ,uint16
-  ( zero registers )
-  sp r0 mov-hilo ,uint16
-  0 r1 mov# ,uint16
-  0 r2 mov# ,uint16
-  0 r3 mov# ,uint16
+  r3 r5 cs-reg sub ,uint16
+  ( init registers )
   0 fp mov# ,uint16
   0 eip mov# ,uint16
   ( set the dictionary )
@@ -19,7 +21,7 @@ defop init
   12 r1 ldr-pc ,uint16
   out' exec-r1 emit-op-call
   ( data: )
-  out-dict dict-entry-size + 10 + ,uint32
+  out-dict dict-entry-code uint32@ 6 + ,uint32
   out-dict ,uint32
   out' main ,uint32
 endop

@@ -284,11 +284,11 @@ def top-frame
 end
 
 def argc
-  top-frame cell-size 3 * + peek return1
+  top-frame frame-args cell-size + peek return1
 end
 
 def argv
-  top-frame cell-size 4 * + return1
+  top-frame frame-args cell-size 2 * + return1
 end
 
 def argv/1
@@ -297,7 +297,7 @@ def argv/1
 end
 
 def env
-  top-frame cell-size 5 argc + arg0 + * +
+  top-frame frame-args cell-size 3 argc + arg0 + * +
   dup IF peek ELSE 0 THEN return1
 end
 

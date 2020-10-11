@@ -15,7 +15,7 @@ r7 const> eip
 
 ( Emits the assembly to jump to an op. )
 : emit-op-call
-  dict-entry-size + rel-addr
+  dict-entry-code uint32@ rel-addr cell-size -
   dup abs-int 0x400 int< IF
     branch ,uint16
   ELSE

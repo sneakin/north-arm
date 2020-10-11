@@ -1,3 +1,9 @@
+( Standard Posix streams: )
+
+0 defvar> current-input
+1 defvar> current-output
+2 defvar> current-error
+
 ( String and byte output: )
 
 defcol write-string/2 ( string length -- )

@@ -1,5 +1,9 @@
 " Hello!" string-const> hello-s
 
+0 defvar> current-input
+1 defvar> current-output
+2 defvar> current-error
+
 defcol hello
   int32 6 hello-s current-output peek write drop
 endcol
