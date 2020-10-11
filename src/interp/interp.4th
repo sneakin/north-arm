@@ -439,11 +439,11 @@ def decompile-loop
   arg0 peek int32 0 equals? IF nl return THEN
   arg0 peek cs +
   dup dict-contains? UNLESS nl return THEN
-  dup dict-entry-name peek cs + write-string sp
+  dup dict-entry-name peek cs + write-string space
   literalizes? IF
     arg0 op-size +
     dup set-arg0
-    peek write-hex-uint sp
+    peek write-hex-uint space
   THEN
   arg0 op-size + set-arg0
   repeat-frame
@@ -459,7 +459,7 @@ def decompile ( entry )
 end
 
 def memdump/2 ( ptr num-bytes )
-  arg1 peek write-hex-uint sp
+  arg1 peek write-hex-uint space
   arg1 cell-size + set-arg1
   arg0 cell-size int>= IF
     arg0 cell-size - set-arg0
@@ -479,8 +479,10 @@ def dump-stack
   args 64 memdump nl
 end
 
+( Word listing: )
+
 def words-printer
-  arg0 dict-entry-name peek cs + write-string sp
+  arg0 dict-entry-name peek cs + write-string space
 end
 
 def words
@@ -498,7 +500,7 @@ end
 def interp
   here prompt-here poke
   next-token negative? IF what return THEN
-  trace-eval peek IF 2dup nl write-string/2 sp THEN
+  trace-eval peek IF 2dup nl write-string/2 space THEN
   interp-token
   negative? IF not-found int32 2 dropn
   ELSE IF exec-abs THEN

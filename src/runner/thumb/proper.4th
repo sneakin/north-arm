@@ -26,7 +26,7 @@ defop do-proper
   ( Enter the definition from word's data field storing the return on the return-stack. )
   ( load r1's data+cs into r1 )
   0 dict-entry-data r1 r1 ldr-offset ,uint16
-  cs r1 r1 add ,uint16
+  cs-reg r1 r1 add ,uint16
   out' proper-enter-r1 emit-op-call
   emit-next
 endop

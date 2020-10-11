@@ -1,6 +1,6 @@
 ( System calls: )
 
-0 cs bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
+0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
 4 cell-size mult const> state-byte-size
 
 : emit-push-state

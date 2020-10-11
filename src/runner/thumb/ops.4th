@@ -2,7 +2,7 @@
 
 r4 const> fp
 r5 const> dict-reg
-r6 const> cs
+r6 const> cs-reg
 r7 const> eip
 
 : abs-int
@@ -30,14 +30,14 @@ defop exec-r1-abs
   0 dict-entry-code r1 r2 ldr-offset ,uint16
   ( dict-entries are offset from the .text segment. )
   ( add the base address )
-  cs r2 r2 add ,uint16
+  cs-reg r2 r2 add ,uint16
   ( jump to the code )
   r2 pc mov-lohi ,uint16
 endop
 
 defop exec-r1
   ( load a word from a CS offset and jump to the word's code field, leaving word in r0 )
-  cs r1 r1 add ,uint16
+  cs-reg r1 r1 add ,uint16
   out' exec-r1-abs emit-op-call
 endop
 
@@ -79,7 +79,7 @@ endop
 
 defop jump-cs
   ( Set eip. )
-  r0 cs eip add ,uint16
+  r0 cs-reg eip add ,uint16
   0 r0 bit-set popr ,uint16
   emit-next
 endop
@@ -112,7 +112,7 @@ defop do-col
   ( Enter the definition from word's data field. )
   ( load r1's data+cs into r1 )
   0 dict-entry-data r1 r1 ldr-offset ,uint16
-  cs r1 r1 add ,uint16
+  cs-reg r1 r1 add ,uint16
   out' enter-r1 emit-op-call
 endop
 
@@ -293,7 +293,7 @@ defop pointer
   0 r0 bit-set pushr ,uint16  
   ( load cell at eip & add CS )
   0 eip r0 ldr-offset ,uint16
-  cs r0 r0 add ,uint16
+  cs-reg r0 r0 add ,uint16
   ( advance eip )
   cell-size eip add# ,uint16
   emit-next
@@ -312,7 +312,7 @@ defop do-const-offset
   ( load word in R1's data + CS to ToS )
   0 r0 bit-set pushr ,uint16
   0 dict-entry-data r1 r0 ldr-offset ,uint16
-  cs r0 r0 add ,uint16
+  cs-reg r0 r0 add ,uint16
   emit-next
 endop
 
@@ -472,7 +472,7 @@ endop
 
 defop cs
   0 r0 bit-set pushr ,uint16
-  0 cs r0 mov-lsl ,uint16
+  0 cs-reg r0 mov-lsl ,uint16
   emit-next
 endop
 
@@ -498,7 +498,7 @@ endop
 
 : emit-load-word ( offset reg )
   2dup emit-load-int32
-  cs over dup add ,uint16
+  cs-reg over dup add ,uint16
   int32 2 dropn
 ;
 

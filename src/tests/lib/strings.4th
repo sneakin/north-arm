@@ -6,8 +6,8 @@
     " ." write-string/2
   ELSE
     " F" write-string/2
-    sp dup string-length write-hex-uint sp write-str
-    sp dup string-length write-hex-uint sp write-str nl
+    space dup string-length write-hex-uint space write-str
+    space dup string-length write-hex-uint space write-str nl
   THEN
 ;
 

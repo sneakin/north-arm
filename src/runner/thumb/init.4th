@@ -14,8 +14,8 @@ defop init
   0 eip mov# ,uint16
   ( set the dictionary )
   12 dict-reg ldr-pc ,uint16
-  cs dict-reg dict-reg add ,uint16
-  ( exec main )
+  cs-reg dict-reg dict-reg add ,uint16
+  ( exec main[fini, argc, argv, env] )
   12 r1 ldr-pc ,uint16
   out' exec-r1 emit-op-call
   ( data: )

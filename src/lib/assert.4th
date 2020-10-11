@@ -4,6 +4,6 @@
     " ." write-string/2
   ELSE
     " F" write-string/2
-    sp write-hex-uint sp write-hex-uint nl
+    space write-hex-uint space write-hex-uint nl
   THEN
 ;

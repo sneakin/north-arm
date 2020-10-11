@@ -61,8 +61,8 @@ defcol nl
   int32 1 nl-s int32 1 write drop
 endcol
 
-"  " string-const> sp-s
+"  " string-const> space-s
 
-defcol sp
-  int32 1 sp-s int32 1 write drop
+defcol space
+  int32 1 space-s int32 1 write drop
 endcol
