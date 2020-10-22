@@ -15,6 +15,7 @@ r7 const> eip
 
 ( Emits the assembly to jump to an op. )
 : emit-op-call
+  ( fixme: out' only returns the offset which is making exec-r1-abs segfault the compiler )
   dict-entry-code uint32@ rel-addr cell-size -
   dup abs-int 0x400 int< IF
     branch ,uint16

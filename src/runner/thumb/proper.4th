@@ -32,8 +32,8 @@ defop do-proper
 endop
 
 : does-proper
-  ( todo use data field )
-  out' do-proper dict-entry-size + over dict-entry-code uint32!
+  out' do-proper dict-entry-code uint32@
+  over dict-entry-code uint32!
   4 align-data
   dhere swap dict-entry-data uint32!  
 ;
@@ -75,7 +75,7 @@ end
 
 def does-proper>
   arg0 does-proper
-  compiling-read
+  compiling-init compiling-read
   literal proper-exit swap
   int32 1 +
   here cell-size + swap reverse

@@ -1,4 +1,4 @@
-( todo adjust output dictionary and pointers by out-offset )
+( todo adjust output dictionary and pointers by out-offset; or make dhere, dpoke, dpeek offset? )
 
 alias> exec-cs exec
 alias> exec exec-abs
@@ -141,7 +141,7 @@ end
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
   s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap ( todo pointer or segment offset )
-  dup cstring-length
+  dup out-origin peek - swap cstring-length
   s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
 ; out-immediate-as "
 

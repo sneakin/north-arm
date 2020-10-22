@@ -1,5 +1,7 @@
 ( Op definitions: )
 
+( todo needs to apply out-origin )
+
 : does-code
   4 align-data
   dhere swap dict-entry-code uint32!

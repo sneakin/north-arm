@@ -254,6 +254,8 @@ end
 0 defvar> compiling
 0 defvar> compiling-state
 0 defvar> compiling-immediates
+0 defvar> compiling-dict
+0 defvar> compiling-offset
 
 defcol end-compile
   int32 0 compiling poke
@@ -286,19 +288,34 @@ defvar> immediates
 1 defconst> COMPILING-WORD
 2 defconst> COMPILING-IMMED
 
-def interp-token ( ptr length -- value exec? )
-  arg1 arg0 parse-int
+( todo decouple dict from everything )
+
+def interp-token/4 ( ptr length dict offset ++ value exec? )
+  arg3 arg2 parse-int
   IF int32 0
-  ELSE drop arg1 arg0 lookup IF int32 1 ELSE int32 -1 THEN
-  THEN set-arg0 set-arg1
+  ELSE drop arg3 arg2 arg1 arg0 dict-lookup/4 IF int32 1 ELSE int32 -1 THEN
+  THEN return2
 end
+
+def interp-token ( ptr length -- value exec? )
+  arg1 arg0 dict cs interp-token/4 set-arg0 set-arg1
+end
+
+( todo dict-lookup with offset )
+
+def compile-lookup ( ptr length -- value exec? )
+  arg1 arg0 compiling-dict peek compiling-offset peek interp-token/4
+  set-arg0 set-arg1
+end
+
+( todo apply offset in reversal )
 
 def compile-token
   arg1 arg0 compiling-immediates peek dict-lookup
   IF cs - COMPILING-IMMED
   ELSE
-    arg1 arg0 interp-token
-    IF cs - COMPILING-WORD
+    arg1 arg0 compile-lookup
+    IF compiling-offset peek - COMPILING-WORD
     ELSE COMPILING-INT
     THEN
   THEN set-arg0 set-arg1
@@ -320,6 +337,8 @@ def literalizes?
   int32 0 set-arg0
 end
 
+( punt literalizes? could search a list of words registered, or flagged on a word, whenever next-word or a literalizing word is used. )
+
 def compiling-read/2 ( buffer max-length ++ list-words num-words )
   here prompt-here poke
   arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
@@ -333,6 +352,8 @@ end
 
 def compiling-init
   immediates peek cs + compiling-immediates poke
+  dict compiling-dict poke
+  cs compiling-offset poke
 end
 
 def compiling-read
@@ -367,7 +388,7 @@ end
 
 def does-col>/2
   arg1 does-col
-  compiling-read
+  compiling-init compiling-read
   arg0 swap
   int32 0 swap
   int32 2 +
@@ -506,7 +527,10 @@ def load-ops
   exit-frame
 end
 
+0 defvar> initial-dict
+
 def interp-init
+  dict initial-dict poke
   ( token-buffer )
   int32 0 token-buffer-length poke
   token-buffer-max stack-allot token-buffer poke

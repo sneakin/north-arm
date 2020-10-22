@@ -162,6 +162,7 @@ endop
 ; out-immediate
 
 ( todo does-frame )
+( todo needs to be adapted for interp )
 
 : def-read
   literal out_immediates set-compiling-immediates
