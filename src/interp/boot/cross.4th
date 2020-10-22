@@ -6,7 +6,7 @@ alias> exec exec-abs
 
 def out-immediate/1 ( word )
   arg0 copy-dict-entry
-  out-immediates peek cs + over dict-entry-link poke
+  out-immediates peek over dict-entry-link poke
   dup cs - out-immediates poke
   exit-frame
 end
@@ -14,7 +14,7 @@ end
 def out-immediate/3 ( src-word name name-length )
   0
   arg2 out-immediate/1 set-local0
-  arg1 arg0 allot-byte-string/2 cs -
+  arg1 arg0 allot-byte-string/2 drop cs -
   local0 dict-entry-name poke
   local0 exit-frame
 end
@@ -154,5 +154,5 @@ def owords
 end
 
 def oiwords
-  out-immediates peek ' words-printer dict-map
+  out-immediates peek cs + ' words-printer dict-map
 end
