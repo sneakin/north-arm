@@ -256,6 +256,7 @@ end
 0 defvar> compiling-immediates
 0 defvar> compiling-dict
 0 defvar> compiling-offset
+0 defvar> compiling-literalizes-fn
 
 defcol end-compile
   int32 0 compiling poke
@@ -344,7 +345,10 @@ def compiling-read/2 ( buffer max-length ++ list-words num-words )
   arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
   compile-token CASE
     COMPILING-IMMED WHEN exec ;;
-    COMPILING-INT WHEN over cs + literalizes? UNLESS literal int32 swap THEN ;;
+    COMPILING-INT WHEN
+      over compiling-offset peek + compiling-literalizes-fn peek exec-abs
+      UNLESS " int32" compile-token drop swap THEN
+    ;;
     negative? IF not-found int32 2 dropn ELSE drop THEN
   ESAC
   compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
@@ -354,6 +358,7 @@ def compiling-init
   immediates peek cs + compiling-immediates poke
   dict compiling-dict poke
   cs compiling-offset poke
+  pointer literalizes? compiling-literalizes-fn poke
 end
 
 def compiling-read
