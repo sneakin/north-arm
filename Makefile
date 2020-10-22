@@ -76,9 +76,13 @@ RUNNER_THUMB_SRC=\
 	src/runner/thumb/linux.4th \
 	src/runner/thumb/init.4th \
 	src/runner/thumb/math.4th \
+	src/cross/defining/proper.4th \
+	src/runner/proper.4th \
 	src/runner/thumb/proper.4th \
 	src/interp/data-stack.4th \
 	src/interp/interp.4th \
+	src/interp/compiler.4th \
+	src/interp/debug.4th \
 	src/interp/reader.4th \
 	src/interp/output.4th \
 	src/runner/thumb/logic.4th \
@@ -86,6 +90,8 @@ RUNNER_THUMB_SRC=\
 	src/interp/strings.4th \
 	src/interp/messages.4th \
 	src/runner/thumb/frames.4th \
+	src/runner/frames.4th \
+	src/cross/defining/frames.4th \
 	src/cross/iwords.4th \
 	src/cross/words.4th \
 	src/cross/defining/op.4th \

@@ -31,13 +31,13 @@ def var>
 end
 
 def get-word ( name name-len ++ data )
-  arg1 arg0 lookup int32 4 unless-jump return1
+  arg1 arg0 dict dict-lookup int32 4 unless-jump return1
   dict-entry-data peek cs + return1
 end
 
 def set-word ( value name name-len )
   ( todo tokenize a string for the value )
-  arg1 arg0 lookup int32 4 unless-jump return0
+  arg1 arg0 dict dict-lookup int32 4 unless-jump return0
   does-col
   arg2 swap dict-entry-data cs + poke return0
 end
@@ -260,19 +260,11 @@ end
 symbol> read-terminator
 
 alias> -op-size op-size
-
-: hey IF hello THEN ;
-: heyhey IF hello ELSE boo THEN ;
+alias> -op-mask op-mask
 
 ( todo load or provide iwords and words:
     to load: this-word get-word out_immediates
     to provide: output only immediates, POSTPONE, " to data stack, RECURSE, defcol and def that write to data stack )
-
-def motd
-  nl
-  hello hello
-  nl
-end
 
 def top-frame-loop
   arg0 parent-frame dup IF set-arg0 repeat-frame THEN
@@ -299,6 +291,12 @@ end
 def env
   top-frame frame-args cell-size 3 argc + arg0 + * +
   dup IF peek ELSE 0 THEN return1
+end
+
+def motd
+  nl
+  hello hello
+  nl
 end
 
 motd
