@@ -99,6 +99,7 @@ RUNNER_THUMB_SRC=\
 	src/lib/stack.4th \
 	src/lib/assert.4th \
 	src/lib/strings.4th \
+	src/lib/catch.4th \
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
