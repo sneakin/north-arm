@@ -27,7 +27,7 @@ src/interp/tests/write-hex-uint.4th
 src/runner/tests.4th
 src/lib/assert.4th
 src/lib/strings.4th
-src/lib/stack.4th
+src/lib/stack-marker.4th
 src/interp/cross.4th
 src/cross/defining/proper.4th
 src/runner/proper.4th

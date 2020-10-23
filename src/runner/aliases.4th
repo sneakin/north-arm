@@ -4,6 +4,11 @@ cell-size defconst> cell-size
 -op-size defconst> op-size
 -op-mask defconst> op-mask
 
+( Shorthands: )
+
+defalias> @ peek
+defalias> ! poke
+
 ( Math aliases: )
 
 defalias> + int-add

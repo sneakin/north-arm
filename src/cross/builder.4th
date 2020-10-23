@@ -22,7 +22,7 @@ src/cross/arch/thumb.4th load
   src/cross/defining/frames.4th
   src/runner/frames.4th
   src/runner/thumb/frames.4th
-  src/runner/thumb/aliases.4th
+  src/runner/aliases.4th
   src/cross/defining/variables.4th
   src/cross/defining/constants.4th
   src/cross/defining/alias.4th

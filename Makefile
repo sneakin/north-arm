@@ -47,7 +47,7 @@ THUMB_ASSEMBLER_SRC=\
 	src/lib/elf/stub32.4th \
 	src/lib/bit-fields.4th \
 	src/lib/case.4th \
-	src/lib/asm/words.4th \
+	src/lib/stack-marker.4th \
 	src/lib/byte-data.4th \
 	src/lib/asm/thumb.4th \
 	src/lib/asm/thumb2.4th
@@ -67,7 +67,7 @@ bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_S
 
 RUNNER_THUMB_SRC=\
 	src/cross/builder.4th \
-	src/runner/thumb/aliases.4th \
+	src/runner/aliases.4th \
 	src/cross/defining/colon.4th \
 	src/cross/defining/colon-bash.4th \
 	src/cross/defining/colon-boot.4th \

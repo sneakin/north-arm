@@ -1,7 +1,7 @@
-forth/compiler.4th load
-asm/words.4th load
-asm/byte-data.4th load
-asm/thumb.4th load
+src/bash/compiler.4th load
+src/lib/stack.4th load
+src/lib/byte-data.4th load
+src/lib/asm/thumb.4th load
 
 : page-align
   4096 + 4096 / 4096 mult

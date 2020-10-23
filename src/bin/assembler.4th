@@ -12,7 +12,7 @@ src/lib/elf/stub32.4th
 src/lib/asm/thumb2.4th
 src/lib/asm/thumb.4th
 src/lib/strings.4th
-src/lib/stack.4th
+src/lib/stack-marker.4th
 src/lib/byte-data.4th
 src/lib/bit-fields.4th
 src/interp/cross.4th

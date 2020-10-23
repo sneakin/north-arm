@@ -117,6 +117,9 @@ alias> up-stack/2 -
   over here swap - up-stack dropn
 ;
 
+: speek-byte speek 255 logand ;
+: spoke-byte spoke ;
+
 ( Definitions! )
 
 : compile
@@ -193,6 +196,8 @@ symbol> if-placeholder
 
 ( Misc: )
 
+alias> ! dpoke
+alias> @ dpeek
 alias> string-const> const>
 
 : POSTPONE
