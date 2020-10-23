@@ -231,12 +231,10 @@ end
 ( Calls a function with each character, index, and accumulator; at and after the index; of the string. )
 def map-string/4 ( accum ptr fn index )
   arg2 string-length arg0 int> IF
-    stack-marker
     arg2 arg0 string-peek
     arg3 swap arg0 swap arg1 exec-abs
-    drop-to-marker
     arg0 1 + set-arg0
-    repeat-frame
+    drop-locals repeat-frame
   ELSE return0
   THEN
 end
