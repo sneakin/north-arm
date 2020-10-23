@@ -103,7 +103,6 @@ end
 ( punt literalizes? could search a list of words registered, or flagged on a word, whenever next-word or a literalizing word is used. )
 
 def compiling-read/2 ( buffer max-length ++ list-words num-words )
-  here prompt-here poke
   arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
   compile-token CASE
     COMPILING-IMMED WHEN exec ;;

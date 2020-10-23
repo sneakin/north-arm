@@ -68,4 +68,3 @@ defop return2
   1 r3 sub# ,uint16
   emit-next
 endop
-

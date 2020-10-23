@@ -107,19 +107,24 @@ end
 ( todo raise errors from next-token; pop reader first )
 ( todo simplify compiling-read & merge with compiler.4th's )
 
-def next-token/2
-  arg1 arg0 the-reader peek read-token
+def next-token/3 ( ptr size prompt-sp ++ length )
+  arg0 prompt-here poke
+  arg2 arg1 the-reader peek read-token
   negative? IF
     pop-the-reader
     IF int32 2 dropn repeat-frame
-    ELSE int32 -1 set-arg0
+    ELSE int32 -1
     THEN
-  ELSE set-arg0
-  THEN
+  THEN return1
+end
+
+def next-token/2
+  arg1 arg0 args cell-size 2 * + next-token/3 set-arg0
 end
 
 def next-token
-  token-buffer peek token-buffer-max next-token/2
+  token-buffer peek token-buffer-max args next-token/3
+  rot 2 dropn
   dup token-buffer-length poke
   return2
 end
@@ -259,7 +264,6 @@ end
 0 defvar> trace-eval
 
 def interp
-  here prompt-here poke
   next-token negative? IF what return THEN
   trace-eval peek IF 2dup nl write-string/2 space THEN
   interp-token
