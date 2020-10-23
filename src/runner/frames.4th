@@ -83,9 +83,3 @@ defcol exit-frame
   current-frame return-address peek
   end-frame jump
 endcol
-
-defcol drop-locals
-  current-frame
-  dup return-address peek set-local0
-  cell-size - move
-endcol
