@@ -8,8 +8,9 @@ OUTPUTS=bin/interp$(EXECEXT) \
 	bin/assembler-thumb.sh \
 	bin/assembler-thumb.dict
 DOCS=doc/html/bash.html \
-	doc/html/assembler.html \
-	doc/html/runner-thumb.html
+	doc/html/interp.html \
+	doc/html/interp-runtime.html \
+	doc/html/assembler-thumb.html
 
 ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 	bin/tests/elf/bones/barest$(EXECEXT) \
@@ -19,21 +20,22 @@ all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
+.PHONY: clean doc all
+
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
 
 bin:
 	mkdir bin
 
-alldoc: doc/html $(DOCS)
+doc: doc/html $(DOCS)
 
-doc:
-	mkdir doc
-
-doc/html: doc
-	mkdir doc/html
+doc/html:
+	mkdir -p doc/html
 
 FORTH_SRC=./src/bash/forth.sh \
+	./src/bash/reader.sh \
+	./src/bash/core.sh \
 	./src/bash/data.sh \
 	./src/bash/state.sh \
 	./src/bash/dict.sh \
@@ -50,7 +52,7 @@ THUMB_ASSEMBLER_SRC=\
 	src/lib/asm/thumb.4th \
 	src/lib/asm/thumb2.4th
 
-doc/html/assembler.html: Makefile $(THUMB_ASSEMBLER_SRC) src/interp/boot/core.4th
+doc/html/assembler-thumb.html: Makefile src/bin/assembler.4th $(THUMB_ASSEMBLER_SRC)
 	$(HTMLER) $^ > $@
 doc/html/bash.html: $(FORTH_SRC)
 	$(HTMLER) $^ > $@
@@ -103,11 +105,20 @@ RUNNER_THUMB_SRC=\
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
-doc/html/runner-thumb.html: Makefile $(RUNNER_THUMB_SRC) src/interp/boot/*.4th
+INTERP_RUNTIME_SRC=\
+	src/interp/boot/core.4th \
+	src/interp/boot/cross.4th \
+	src/interp/boot/load.4th \
+	src/interp/boot/load-ops.4th \
+	$(THUMB_ASSEMBLER_SRC)
+
+doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
+	$(HTMLER) $^ > $@
+doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 	$(HTMLER) $^ > $@
 
 bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
-bin/interp-tests$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
 bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
