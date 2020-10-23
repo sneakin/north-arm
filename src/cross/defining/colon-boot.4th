@@ -24,7 +24,7 @@
   out' exit out-origin peek - swap 1 +
   ( todo get rid of the terminator )
   read-terminator over 2 + set-overn
-  here 0 literal defcol-cb revmap-stack-seq/3 1 + dropn
+  here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
 ;
 
 : endcol
