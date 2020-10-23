@@ -5,14 +5,9 @@
   over dict-entry-code uint32!
 ;
 
-: defconst
-  create does-constant
-  dict-entry-data uint32!
-;
+: defconst does-constant dict-entry-data uint32! ;
 
-: defconst>
-  next-token defconst
-;
+: defconst> create> defconst ;
 
 ( Constants whose data is a CS offset: )
 
@@ -21,14 +16,9 @@
   over dict-entry-code uint32!
 ;
 
-: defconst-offset
-  create does-const-offset
-  dict-entry-data uint32!
-;
+: defconst-offset does-const-offset dict-entry-data uint32! ;
 
-: defconst-offset>
-  next-token defconst-offset
-;
+: defconst-offset> create> defconst-offset ;
 
 ( Constants with string values: )
 
@@ -37,7 +27,4 @@
   ,byte-string 4 pad-data defconst-offset>
 ;
 
-: defsymbol>
-  create> does-constant
-  dup dict-entry-data uint32!
-;
+: defsymbol> create> dup defconst ; ( todo portable without origin? )
