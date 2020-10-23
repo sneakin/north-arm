@@ -3,8 +3,9 @@
 ROOT=$(dirname "$BASH_SOURCE")
 ARGV=("$@")
 
-set -e
+set -eo pipefail
 
+source "$ROOT"/reader.sh
 source "$ROOT"/core.sh
 source "$ROOT"/dict.sh
 source "$ROOT"/builtins.sh

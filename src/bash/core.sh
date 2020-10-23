@@ -18,97 +18,6 @@ function fpop()
 }
 
 #
-# Input reading
-#
-
-INPUT=""
-INPUT_BYTE=""
-INPUT_STREAMED="1"
-TOKEN=""
-
-# Read a full of input into $INPUT.
-function read_input_line()
-{
-    local prompt="$1"
-    [[ "$prompt" == "" ]] && prompt="${#STACK[@]} > "
-    if [[ "${INPUT_STREAMED}" == "1" ]] && read -p "$prompt" INPUT; then
-	return 0
-    else
-	return 1
-    fi
-}
-
-# Read one byte from the input line, possibly
-# reading a new line when no input is available.
-function read_byte()
-{
-    if [[ "${INPUT}" == "" ]]; then
-	if [[ "${INPUT_BYTE}" == "" ]]; then
-	    read_input_line "${1}" || return 1
-	fi
-    fi
-
-    if [[ "$INPUT" == "" ]]; then
-	INPUT_BYTE=""
-    else
-	INPUT_BYTE="${INPUT:0:1}"    
-	INPUT="${INPUT:1}"
-    fi
-
-    return 0
-}
-
-# Read bytes into $TOKEN until the read byte
-# matches the argument.
-function read_until()
-{
-    TOKEN=""
-    while read_byte "... > "; do
-	if [[ "$INPUT_BYTE" == "" ]]; then
-	    TOKEN="${TOKEN}
-"
-	elif [[ "$INPUT_BYTE" == "$1" ]]; then
-	    return 0
-	else
-	    TOKEN="${TOKEN}${INPUT_BYTE}"
-	fi
-    done
-
-    return 1
-}
-
-#
-# Tokenizing
-#
-
-# Return success if the argument is whitespace.
-function isspace()
-{
-    case "$1" in
-	"
-"|" "|""|"\v"|"	"|"\t"|"\n"|"\r"|"") return 0 ;;
-	*) return 1 ;;
-    esac
-}
-
-# Read the next Forth token. Returned in $TOKEN.
-function next_token()
-{
-    TOKEN=""
-    while read_byte; do
-	if isspace "$INPUT_BYTE"; then
-	    if [[ "${#TOKEN}" > 0 ]]; then
-		return 0
-	    fi
-	else
-	    TOKEN="${TOKEN}${INPUT_BYTE}"
-	fi
-    done
-
-    return 1
-}
-
-#
 # Evaluation
 #
 
@@ -128,11 +37,12 @@ function fsysexec()
 function fexec()
 {
     local entry=""
-    if [[ "$1" != "" ]]; then
-	entry="${DICT[$1]}"
+    if [[ "${1:-}" != "" ]]; then
+	entry="${DICT[$1]:-}"
     fi
     if [[ "${entry}" == "" ]]; then
 	fpush "$1"
+	#echo "Warning: not found '${1:-}'" 1>&2
     else
 	fsysexec "${entry}"
     fi
@@ -144,7 +54,7 @@ function finterp()
     local fin=0
     local input_streamed="${INPUT_STREAMED}"
     local saved_input
-    if [[ "$1" != "" ]]; then
+    if [[ "${1:-}" != "" ]]; then
 	INPUT_STREAMED=0
 	INPUT="${1} ${INPUT}"
     fi

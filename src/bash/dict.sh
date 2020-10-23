@@ -2,7 +2,7 @@ function dict_lookup()
 {
     local tip="${1}"
     local -n d="${2}"
-    echo "${d[$tip]}"
+    echo "${d[$tip]:-}"
 }
 
 function dict_set() # dict word def

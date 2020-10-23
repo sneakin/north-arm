@@ -48,7 +48,7 @@ DICT['spoke']='i="${STACK[0]}"; v="${STACK[1]}"; fpop 2; STACK[$(("${#STACK[@]}"
 #
 DICT["'"]='next_token; fpush "${TOKEN}"'
 DICT['set-word!']='DICT["${STACK[0]}"]="${STACK[1]}"; STACK=( "${STACK[@]:2}" )'
-DICT['get-word']='STACK=( "${DICT[${STACK[0]}]}" "${STACK[@]:1}" )'
+DICT['get-word']='STACK=( "${DICT[${STACK[0]}]:-}" "${STACK[@]:1}" )'
 DICT['words']='echo "${!DICT[@]}"'
 
 DICT['dict-lookup']='d="${STACK[0]}"; tip="${STACK[1]}"; fpop 2; fpush "$(dict_lookup "$tip" "$d")"'
