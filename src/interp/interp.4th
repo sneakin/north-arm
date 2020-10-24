@@ -54,22 +54,6 @@ def make-stdin-reader
   exit-frame
 end
 
-( File loading: )
-
-def open-input-file ( path -- fd )
-  0 0 arg0 open set-arg0
-end
-
-def load
-  token-buffer-max stack-allot
-  token-buffer-max
-  arg0 open-input-file negative? IF return THEN
-  make-fd-reader
-  the-reader peek over reader-next poke
-  the-reader poke
-  exit-frame
-end
-
 ( the-reader procedures: )
 
 defcol read-line ( ptr len -- ptr read-length )
@@ -264,7 +248,7 @@ end
 0 defvar> trace-eval
 
 def interp
-  next-token negative? IF what return THEN
+  next-token negative? IF int32 2 dropn exit-frame THEN
   trace-eval peek IF 2dup nl write-string/2 space THEN
   interp-token
   negative? IF not-found int32 2 dropn
@@ -274,7 +258,22 @@ def interp
   repeat-frame
 end
 
-defcol ,h over write-hex-uint endcol
+( File loading: )
+
+def open-input-file ( path -- fd )
+  0 0 arg0 open set-arg0
+end
+
+def load
+  the-reader peek
+  token-buffer-max stack-allot
+  token-buffer-max
+  arg0 open-input-file negative? IF return THEN
+  make-fd-reader the-reader poke
+  interp
+  local0 the-reader poke
+  exit-frame
+end
 
 def load-comp
   " ./src/interp/boot/load.4th" drop load
@@ -285,6 +284,8 @@ def load-ops
   " ./src/interp/boot/load-ops.4th" drop load
   exit-frame
 end
+
+defcol ,h over write-hex-uint endcol
 
 0 defvar> initial-dict
 
