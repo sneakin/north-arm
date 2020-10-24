@@ -9,7 +9,7 @@ echo '</pre>'
 echo '<h1>Files</h1>'
 echo '<ul>'
 for path in $*; do
-    echo "<li><a href=\"$path\">$path</a></li>"
+    echo "<li><a href=\"#$path\">$path</a></li>"
 done
 echo '</ul>'
 
