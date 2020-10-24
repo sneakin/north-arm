@@ -2,7 +2,7 @@
   out' do-proper dict-entry-code uint32@
   over dict-entry-code uint32!
   4 align-data
-  dhere swap dict-entry-data uint32!  
+  dhere to-out-addr swap dict-entry-data uint32!  
 ;
 
 : defproper

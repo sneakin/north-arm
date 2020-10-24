@@ -9,19 +9,18 @@ r7 const> eip
   dup 0 int< IF negate THEN
 ;
 
-: rel-addr
-  dhere -
-;
-
-( Emits the assembly to jump to an op. )
-: emit-op-call
-  ( fixme: out' only returns the offset which is making exec-r1-abs segfault the compiler )
-  dict-entry-code uint32@ rel-addr cell-size -
+: emit-branch
   dup abs-int 0x400 int< IF
     branch ,uint16
   ELSE
     branch-long ,uint32
   THEN
+;
+
+( Emits the assembly to jump to an op. )
+: emit-op-call
+  dict-entry-code uint32@ dhere to-out-addr -
+  cell-size - emit-branch
 ;
 
 ( Core execution: )

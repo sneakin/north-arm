@@ -21,7 +21,7 @@
 
 : defcol-read
   defcol-read-init compiling-read
-  out' exit out-origin peek - swap 1 +
+  out' exit to-out-addr swap 1 +
   ( todo get rid of the terminator )
   read-terminator over 2 + set-overn
   here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
@@ -32,9 +32,9 @@
 ; out-immediate
 
 : does-col
-  out' do-col dict-entry-code uint32@ out-origin peek -
+  out' do-col dict-entry-code uint32@
   over dict-entry-code uint32!
   ( 4 align-data )
-  dhere out-origin peek - over dict-entry-data uint32!
+  dhere to-out-addr over dict-entry-data uint32!
   drop
 ;

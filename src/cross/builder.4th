@@ -12,6 +12,7 @@ src/cross/arch/thumb.4th load
 
 : builder-run/2 ( entry-fn files... count )
   " Building..." error-line
+  dhere set-out-origin
   write-elf32-header
   dhere set-code-origin
 
@@ -44,6 +45,6 @@ src/cross/arch/thumb.4th load
   1 + .s write-elf32-ending
 
   " Writing..." error-line
-  0 ddump-binary-bytes
+  out-origin .s ddump-binary-bytes
   dhere .s
 ;

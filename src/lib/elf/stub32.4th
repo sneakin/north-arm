@@ -192,12 +192,12 @@ swap ,uint32
 ;
   
 : rewrite-elf32-header ( entry section-headers program-headers )
-  32 uint32!
-  28 uint32!
-  24 uint32!
+  to-out-addr 32 from-out-addr uint32!
+  to-out-addr 28 from-out-addr uint32!
+  24 from-out-addr uint32!
 ;
 
-: write-elf32-ending ( code-start entry )
+: write-elf32-ending ( code-start entry ++  )
   dhere write-elf32-string-section
 
   0x10 pad-data
@@ -213,4 +213,3 @@ swap ,uint32
   4 overn elf32-code-segment +
   rot swap rewrite-elf32-header
 ;
-

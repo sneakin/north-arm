@@ -6,6 +6,13 @@
   -op-prefix ++ make-const
 ;
 
+( Output addresses: )
+
+0 var> out-origin
+
+: to-out-addr out-origin - ;
+: from-out-addr out-origin + ;
+
 ( The output dictionary: )
 
 0 var> out-dict

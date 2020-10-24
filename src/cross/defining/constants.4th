@@ -23,7 +23,7 @@
 ( Constants with string values: )
 
 : string-const>
-  dhere swap
+  dhere to-out-addr swap
   ,byte-string 4 pad-data defconst-offset>
 ;
 

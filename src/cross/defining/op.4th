@@ -4,7 +4,7 @@
 
 : does-code
   4 align-data
-  dhere swap dict-entry-code uint32!
+  dhere to-out-addr swap dict-entry-code uint32!
 ;
 
 : defop
