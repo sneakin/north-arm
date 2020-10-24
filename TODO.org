@@ -165,6 +165,23 @@ load needs file opening and reading with a reader stack.
 *** stage2
 **** compiler
 
+** code fields need to point at words, not code
+** Tension between output offsets and pointers; dhere is an offset or translate when needed?
+** null (last dictionary) lets lookup return a null, default object.
+** TODO string readers
+" returns a pointer & length when bash cross compiles.
+" returns just a pointer in interp
+Maintaining the length some where is good.
+s" c" tmp" d" ; some only make sense when interpreting at top level
+Touches words that take pointer or a pointer/length pair.
+** Zero copy reads with mmap / from strings; no copy if no more data is read when reading a token
+** mmap output and set data stack to write to a file.
+** save ELF runtime image
+** Make output functions take an fd argument.
+** Eliminate needless padding
+** map-seq, map-seqn: prefer lengths over terminator at end
+** back port compiling-read
+** DRY cross compiling code
 * Thoughts
 ** def syntax
 *** Current
@@ -210,3 +227,6 @@ Need to restore state. Globals make this tough, but compiler object with output 
 *** Inlining
 *** To assembly call threading
 *** repeated call sequences that have no side effects and return the same values each call can set a generated binding.
+** dict register -> this pointer
+Calls in a definition are indexed from the register.
+Dictionary specified at compile time by specifying a type.

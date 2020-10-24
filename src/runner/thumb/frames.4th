@@ -3,6 +3,7 @@ frame-byte-size defconst> frame-byte-size
 
 defop begin-frame
   ( Place FP on the stack and make FP the SP. )
+  ( todo more primitive: current-frame here set-current-frame )
   0 r0 bit-set pushr ,uint16
   0 fp r0 mov-lsl ,uint16
   sp fp mov-hilo ,uint16
@@ -13,6 +14,7 @@ endop
 
 defop end-frame
   ( Set FP to the frame's parent. )
+  ( todo more primitive: current-frame parent-frame set-current-frame )
   fp sp cmp-lohi ,uint16
   2 bhi ,uint16
   0 fp fp ldr-offset ,uint16
