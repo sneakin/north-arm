@@ -15,5 +15,18 @@ tmp" src/cross/defining/colon.4th" drop load
 tmp" src/runner/thumb/aliases.4th" drop load
 tmp" src/runner/thumb/frames.4th" drop load
 tmp" src/runner/frames.4th" drop load
-( tmp" src/cross/defining/frames.4th" drop load {
-( tmp" src/runner/thumb/linux.4th" drop load )
+tmp" src/cross/defining/frames-boot.4th" drop load
+tmp" src/runner/thumb/linux.4th" drop load
+tmp" src/runner/thumb/logic.4th" drop load
+tmp" src/runner/thumb/math.4th" drop load
+
+tmp" src/runner/thumb/proper.4th" drop load
+tmp" src/runner/proper.4th" drop load
+tmp" src/cross/defining/proper.4th" drop load
+
+tmp" src/interp/messages.4th" drop load
+tmp" src/interp/strings.4th" drop load
+tmp" src/interp/dictionary.4th" drop load
+tmp" src/interp/output.4th" drop load
+tmp" src/interp/reader.4th" drop load
+tmp" src/interp/interp.4th" drop load

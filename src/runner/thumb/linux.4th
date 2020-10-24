@@ -49,9 +49,9 @@
 512 defconst> O_TRUNC
 1024 defconst> O_APPEND
 2048 defconst> O_NONBLOCK
-alias> O_NDELAY	O_NONBLOCK
+defalias> O_NDELAY O_NONBLOCK
 4096 defconst> O_SYNC
-alias> O_FSYNC O_SYNC
+defalias> O_FSYNC O_SYNC
 8192 defconst> O_ASYNC
 0x20000 defconst> O_LARGEFILE
 

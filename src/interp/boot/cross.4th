@@ -20,7 +20,7 @@ def out-immediate/3 ( src-word name name-length )
 end
 
 : out-immediate/2 ( src-word name )
-  cstring-length out-immediate/3
+  dup cstring-length out-immediate/3
 ;
 
 : out-immediate dict out-immediate/1 ;

@@ -259,6 +259,7 @@ end
 
 symbol> read-terminator
 
+alias> endcol end-compile
 alias> -op-size op-size
 alias> -op-mask op-mask
 

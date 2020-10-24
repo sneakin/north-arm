@@ -11,7 +11,7 @@
   out' proper-exit ,op
 ;
 
-' endcol ' endproper out-immediate/2
+" endproper" ' endcol swap out-immediate/2
 
 : lookup-or-create
   cross-lookup LOOKUP-WORD equals UNLESS
