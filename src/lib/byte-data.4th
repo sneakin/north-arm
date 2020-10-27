@@ -82,5 +82,5 @@ alias> int32! uint32!
 ;
 
 : align-data
-  dhere over / IF pad-data ELSE drop THEN
+  dhere over mod IF pad-data ELSE drop THEN
 ;

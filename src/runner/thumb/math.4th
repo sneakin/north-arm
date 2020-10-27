@@ -89,3 +89,5 @@ defalias> sw/ int-divmod-sw
 defcol int-mod
   rot swap 2dup / * - swap
 endcol
+
+defalias> mod int-mod
