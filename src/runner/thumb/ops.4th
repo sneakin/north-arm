@@ -424,6 +424,12 @@ endop
 
 defop logior
   0 r1 bit-set popr ,uint16
+  r1 r0 orr ,uint16
+  emit-next
+endop
+
+defop logxor
+  0 r1 bit-set popr ,uint16
   r1 r0 eor ,uint16
   emit-next
 endop
