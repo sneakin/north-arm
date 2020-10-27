@@ -119,7 +119,14 @@ end
 : copies-entry-as ( link source-entry new-name )
   dhere swap ,byte-string
   rot swap copies-entry
-  swap over dict-entry-name to-out-addr uint32!
+  swap to-out-addr over dict-entry-name uint32!
+;
+
+: copies-entry-as> ( link src-entry -- new-entry )
+  next-token negative?
+  IF error 2 dropn
+  ELSE drop copies-entry-as
+  THEN
 ;
 
 ( Output quote: )
@@ -144,12 +151,18 @@ end
   POSTPONE out'
 ; immediate-as out'
 
+: [out-off'']
+  literal literal
+  POSTPONE out-off'
+; immediate-as out-off'
+
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
   s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap ( todo pointer or segment offset )
   dup to-out-addr swap cstring-length
   s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
+  dhere to-out-addr out-dict dict-entry-data poke
 ; out-immediate-as "
 
 def oword-printer

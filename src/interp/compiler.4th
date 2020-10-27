@@ -60,19 +60,17 @@ defcol end-compile
   int32 0 compiling poke
 endcol
 
-0 out' end-compile ' endcol copies-entry-as
-out' end-compile ' end copies-entry-as
-out' end-compile ' ; copies-entry-as
-out' ( ' ( copies-entry-as
-out' c" ' c" copies-entry-as
-defvar> immediates
+0 out' end-compile copies-entry-as> endcol
+out' end-compile copies-entry-as> end
+out' end-compile copies-entry-as> ;
+out' ( copies-entry-as> (
+out' c" copies-entry-as> c"
+to-out-addr defvar> immediates
 
 -1 defconst> COMPILING-ERROR
 0 defconst> COMPILING-INT
 1 defconst> COMPILING-WORD
 2 defconst> COMPILING-IMMED
-
-( todo dict-lookup with offset )
 
 def compile-lookup ( ptr length -- value exec? )
   arg1 arg0 compiling-dict peek compiling-offset peek interp-token/4

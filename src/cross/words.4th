@@ -82,6 +82,10 @@
   swap over dict-entry-name uint32!
 ;
 
+: copies-entry-as>
+  next-token copies-entry-as
+;
+
 ( Output quote: )
 
 : out'

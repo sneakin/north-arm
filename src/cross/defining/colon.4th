@@ -5,5 +5,6 @@
 : defcol
   create> does-col
   defcol-read
-  out' exit ,op
+  out' exit to-out-addr ,op
+  0 ,op
 ;

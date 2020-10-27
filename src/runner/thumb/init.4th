@@ -22,8 +22,8 @@ defop init
   out' exec-r1 emit-op-call
   ( data: )
   out-dict dict-entry-code uint32@ 6 + ,uint32
-  out-dict ,uint32
-  out' main ,uint32
+  out-dict to-out-addr ,uint32
+  out' main to-out-addr ,uint32
 endop
 
 ( todo pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. )

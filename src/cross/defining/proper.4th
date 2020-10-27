@@ -8,7 +8,8 @@
 : defproper
   create> does-proper
   defcol-read
-  out' proper-exit ,op
+  out' proper-exit to-out-addr ,op
+  0 ,op
 ;
 
 " endproper" ' endcol swap out-immediate/2

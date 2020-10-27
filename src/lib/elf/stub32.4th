@@ -64,9 +64,9 @@ elf32-code-segment ,uint32
 ( ' paddr uint32 field )
 elf32-code-segment ,uint32
 ( ' filesz uint32 field )
-dup ,uint32
+dup to-out-addr ,uint32
 ( ' memsz uint32 field )
-,uint32
+to-out-addr ,uint32
 ( ' flags uint32 field )
 7 ,uint32
 ( ' align uint32 field )
@@ -81,7 +81,7 @@ dup ,uint32
 ( ' flags uint32 field )
 7 ,uint32
 ( ' addr uint32 field )
-swap dup elf32-code-segment + ,uint32
+swap to-out-addr dup elf32-code-segment + ,uint32
 ( ' offset uint32 field )
 ,uint32
 ( ' size uint32 field )
@@ -106,7 +106,7 @@ swap dup elf32-code-segment + ,uint32
 ( ' addr uint32 field )
 0 ,uint32
 ( ' offset uint32 field )
-swap ,uint32
+swap to-out-addr ,uint32
 ( ' size uint32 field )
 ,uint32
 ( ' link uint32 field )
@@ -129,7 +129,7 @@ swap ,uint32
 ( ' addr uint32 field )
 0 ,uint32
 ( ' offset uint32 field )
-swap ,uint32
+swap to-out-addr ,uint32
 ( ' size uint32 field )
 ,uint32
 ( ' link uint32 field )
