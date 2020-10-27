@@ -23,7 +23,7 @@ DICT['decimal?']='if [[ "${STACK[0]}" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then fpush 1;
 DICT['hexadecimal?']='if [[ "${STACK[0]}" =~ ^-?(0x)[0-9a-fA-F]+(\.[0-9a-fA-F]+)?$ ]]; then fpush 1; else fpush 0; fi'
 DICT['number?']='feval decimal? over hexadecimal? swap drop logior'
 
-DICT['int<']='a="${STACK[1]}"; b="${STACK[0]}"; fpop 2; if [[ "$a" < "$b" ]]; then fpush 1; else fpush 0; fi'
+DICT['int<']='a="${STACK[1]}"; b="${STACK[0]}"; fpop 2; fpush "$(($a < $b))"'
 
 #
 # Stack ops
