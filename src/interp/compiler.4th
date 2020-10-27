@@ -77,7 +77,7 @@ def compile-lookup ( ptr length -- value exec? )
   set-arg0 set-arg1
 end
 
-( todo apply offset in reversal )
+( todo apply offset in reversal, token lists so lookup is done on reversal? immediate lookup during read? )
 
 def compile-token
   arg1 arg0 compiling-immediates peek dict-lookup

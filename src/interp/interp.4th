@@ -78,6 +78,10 @@ defcol read-token ( ptr len reader -- ptr read-length )
   drop swap drop
 endcol
 
+( todo use a list to store the reader stack. no need for readers to know. )
+( todo interp gets a reader argument, load uses a new reader and interp loop )
+( todo store file name and count lines in readers )
+
 def pop-the-reader
   the-reader peek
   dup reader-close

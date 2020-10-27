@@ -126,6 +126,7 @@ load needs file opening and reading with a reader stack.
 ** TODO Standard wording
 *** TODO c" returns a 2 string
 *** Returning from colon def vs frame's return
+*** return stack words
 ** map-string good candidate for cons on stack safety.
 ** word lists / modules
 *** `word-list word` where `word-list` is an immediate that looks `word` up in the named word list.
@@ -145,14 +146,19 @@ load needs file opening and reading with a reader stack.
 *** Move to defcol, def, ":" convention.
 ** Syscalls
 *** mmap memory
+*** data stack using brk
+*** mmap file
+**** Zero copy reads with mmap / from strings; no copy if no more data is read when reading a token
+**** mmap output and set data stack to write to a file.
 *** Catch segfaults & other errors
 *** Spawn a thread
+*** fork & exec
 ** Testing
 *** Move tests to assert-equals
 *** Test DSL
 ** TODO quit needs to reset dict in case words are on the stack
 ** TODO remove early uses of R3 to track calls and returns
-** Organization
+** DONE Organization
 *** bash forth
 **** compiler
 *** assemblers
@@ -174,8 +180,24 @@ load needs file opening and reading with a reader stack.
 Maintaining the length some where is good.
 s" c" tmp" d" ; some only make sense when interpreting at top level
 Touches words that take pointer or a pointer/length pair.
-** Zero copy reads with mmap / from strings; no copy if no more data is read when reading a token
-** mmap output and set data stack to write to a file.
+*** Currently
+| fn   | TL storage | def storage | returns               |
+| c"   | stack      |             | chars length          |
+| d"   | data       | data        | pointer length        |
+| s"   | stack      | data        | pointer length        |
+| tmp" | buffer     |             | pointer length        |
+| "    | ??         | ??          | bash: pointer         |
+|      |            |             | cross: pointer length |
+|      |            |             | interp: pointer!      |
+*** Desired
+| fn   | TL storage | def storage | returns               |
+| c"   | stack      |             | chars length          |
+| d"   | data       | data        | pointer length        |
+| s"   | stack      | data        | pointer length        |
+| tmp" | buffer     |             | pointer length        |
+| "    | stack      | data        | pointer |
+
+** load from strings
 ** save ELF runtime image
 ** Make output functions take an fd argument.
 ** Eliminate needless padding
