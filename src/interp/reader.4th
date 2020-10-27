@@ -4,6 +4,10 @@ defcol is-space?
   swap int32 0x20 equals? swap
 endcol
 
+defcol is-tab?
+  swap int32 0x09 equals? swap
+endcol
+
 defcol newline?
   swap int32 0x0A equals? swap
 endcol
@@ -21,11 +25,14 @@ defcol whitespace?
   ELSE
     over is-space? IF int32 1
     ELSE
-      over page-feed? IF int32 1
+      over is-tab? IF int32 1
       ELSE
         over line-return? IF int32 1
-        ELSE int32 0
-	THEN
+        ELSE
+          over page-feed? IF int32 1
+          ELSE int32 0
+          THEN
+        THEN
       THEN
     THEN
   THEN
