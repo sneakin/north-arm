@@ -267,8 +267,8 @@ end
 symbol> read-terminator
 
 alias> endcol end-compile
-alias> -op-size op-size
-alias> -op-mask op-mask
+op-size const> -op-size ( todo  needs to be variable )
+op-mask const> -op-mask
 
 ( todo load or provide iwords and words:
     to load: this-word get-word out_immediates

@@ -1,9 +1,3 @@
-( Cell & Op Constants: )
-
-cell-size defconst> cell-size
--op-size defconst> op-size
--op-mask defconst> op-mask
-
 ( Shorthands: )
 
 defalias> @ peek

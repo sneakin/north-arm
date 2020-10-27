@@ -25,12 +25,13 @@ src/cross/arch/thumb.4th load
   src/runner/thumb/frames.4th
   src/runner/aliases.4th
   src/cross/defining/variables.4th
+  src/cross/constants.4th
   src/cross/defining/constants.4th
   src/cross/defining/alias.4th
   src/cross/defining/colon.4th
   src/cross/defining/colon-bash.4th
   src/runner/thumb/ops.4th
-  13 load-sources
+  14 load-sources
 
   load-sources
 
