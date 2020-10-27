@@ -44,7 +44,7 @@ end
 def create>
   ( read in the name )
   next-token allot-byte-string/2
-  2dup write-string/2 nl
+  2dup error-line/2
   ( then... )
   create exit-frame
 end

@@ -1,17 +1,17 @@
 ( Debugging aids: )
 
 defcol print-caller-args
-  arg3 write-hex-int nl
-  arg2 write-hex-int nl
-  arg1 write-hex-int nl
-  arg0 write-hex-int nl nl
+  arg3 error-hex-int nl
+  arg2 error-hex-int nl
+  arg1 error-hex-int nl
+  arg0 error-hex-int nl nl
 endcol
 
 def print-args
-  arg3 write-hex-int nl
-  arg2 write-hex-int nl
-  arg1 write-hex-int nl
-  arg0 write-hex-int nl nl
+  arg3 error-hex-int nl
+  arg2 error-hex-int nl
+  arg1 error-hex-int nl
+  arg0 error-hex-int nl nl
 end
 
 ( Decompiling words: )

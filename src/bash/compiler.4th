@@ -209,3 +209,7 @@ alias> string-const> const>
   swap load .s
   1 - loop
 ;
+
+: error-line/2
+  drop error-line
+;

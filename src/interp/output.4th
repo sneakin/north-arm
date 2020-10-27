@@ -1,10 +1,8 @@
-( Standard Posix streams: )
-
-0 defvar> current-input
-1 defvar> current-output
-2 defvar> current-error
-
 ( String and byte output: )
+
+def write-string/3 ( string length fd -- )
+  arg1 arg2 arg0 write
+end
 
 defcol write-string/2 ( string length -- )
   rot current-output peek write drop
@@ -37,8 +35,7 @@ defcol error-byte
 endcol
 
 defcol error-line/2
-  rot swap error-string/2
-  int32 10 error-byte
+  rot swap error-string/2 enl
 endcol
 
 defcol error-line
@@ -111,26 +108,34 @@ def int->hex-string ( n out-ptr -- out-ptr length )
   return
 end
 
-def write-hex-uint/1 ( n )
+def write-hex-uint/2 ( n fd )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
-  arg0 over uint->hex-string
-  write-string/2
+  arg1 over uint->hex-string arg0 write-string/3
   return
 end
 
 defcol write-hex-uint
-  swap write-hex-uint/1
-  drop
+  swap current-output peek write-hex-uint/2
+  int32 2 dropn
 endcol
 
-def write-hex-int/1 ( n )
+defcol error-hex-uint
+  swap current-error peek write-hex-uint/2
+  int32 2 dropn
+endcol
+
+def write-hex-int/2 ( n fd )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
-  arg0 over int->hex-string
-  write-string/2
+  arg1 over int->hex-string arg0 write-string/3
   return
 end
 
 defcol write-hex-int
-  swap write-hex-int/1
-  drop
+  swap current-output peek write-hex-int/2
+  int32 2 dropn
+endcol
+
+defcol error-hex-int
+  swap current-error peek write-hex-int/2
+  int32 2 dropn
 endcol

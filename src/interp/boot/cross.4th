@@ -1,5 +1,7 @@
 ( todo adjust output dictionary and pointers by out-offset; or make dhere, dpoke, dpeek offset? )
 
+tmp" Loading cross compiling words..." error-line/2
+
 alias> exec-cs exec
 alias> exec exec-abs
 0 var> out-immediates
@@ -101,7 +103,7 @@ end
 
 : create ( ptr length -- )
   2dup error-line/2
-  drop make-dict-entry ( ,,h )
+  drop make-dict-entry dup to-out-addr error-hex-uint enl
   dup out-dictionary poke
 ;
 

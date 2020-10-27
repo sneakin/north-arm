@@ -76,9 +76,16 @@ defcol ''
   ['] swap
 end immediate-as '
 
+defcol ememdump
+  rot swap
+  current-output peek
+  standard-error current-output poke
+  rot swap memdump
+  current-output poke
+endcol
+
 def .s
-  args int32 64 memdump
-  return0
+  args int32 96 ememdump return0
 end immediate-as [.s]
 
 : symbol>
@@ -200,7 +207,7 @@ end
 def POSTPONE
   next-token compile-token
   ( todo adjust words by cs )
-  negative? IF not-found nl int32 0 return1
+  negative? IF not-found enl int32 0 return1
   ELSE
     ( TOKEN-INT equals? UNLESS cs - THEN )
     drop return1
@@ -293,11 +300,3 @@ def env
   top-frame frame-args cell-size 3 argc + arg0 + * +
   dup IF peek ELSE 0 THEN return1
 end
-
-def motd
-  nl
-  hello hello
-  nl
-end
-
-motd

@@ -8,13 +8,14 @@
 0 defvar> the-reader
 
 defcol prompt
-  prompt-here peek peek write-hex-uint nl
-  " Forth> " write-string/2
+  prompt-here peek peek error-hex-uint enl
+  " Forth> " error-string/2
 endcol
 
-defcol prompt-read
+defcol prompt-read ( reader buffer max-length )
   prompt
   ( fixme perfect spot for a tailcall )
+  ( todo store fd in reader data )
   over int32 4 overn current-input peek read
   rot drop
 endcol
@@ -227,7 +228,7 @@ end
 
 def [']
   next-token interp-token
-  negative? IF not-found nl int32 0 ELSE drop THEN
+  negative? IF not-found enl int32 0 ELSE drop THEN
   return1
 end
 
@@ -285,7 +286,7 @@ def load-ops
   exit-frame
 end
 
-defcol ,h over write-hex-uint endcol
+defcol ,h over error-hex-uint endcol
 
 0 defvar> initial-dict
 
