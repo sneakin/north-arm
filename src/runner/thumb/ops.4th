@@ -503,13 +503,13 @@ endop
 ( Dictionary helpers: )
 
 : emit-load-word ( offset reg )
-  2dup emit-load-int32
+  over to-out-addr over emit-load-int32
   cs-reg over dup add ,uint16
   int32 2 dropn
 ;
 
 : emit-get-word-data
-  2dup emit-load-word
+  over over emit-load-word
   swap drop
   0 dict-entry-data over dup ldr-offset ,uint16
   drop

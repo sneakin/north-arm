@@ -24,6 +24,7 @@
   next-token lookup-or-create does-proper
   defcol-read
   out' proper-exit ,op
+  0 ,op
 ;
 
 : out-loop

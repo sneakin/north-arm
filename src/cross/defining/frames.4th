@@ -18,6 +18,7 @@
 : def
   create> does-col def-read
   out' return ,op
+  0 ,op
 ;
 
 : end
