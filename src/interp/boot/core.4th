@@ -279,16 +279,22 @@ def top-frame-loop
   return0
 end
 
+0 var> -top-frame
+
 def top-frame
-  current-frame top-frame-loop return1
+  -top-frame peek
+  dup UNLESS
+    drop current-frame top-frame-loop
+    dup -top-frame poke
+  THEN return1
 end
 
 def argc
-  top-frame frame-args cell-size + peek return1
+  top-frame farg1 peek return1
 end
 
 def argv
-  top-frame frame-args cell-size 2 * + return1
+  top-frame farg2 return1
 end
 
 def argv/1
