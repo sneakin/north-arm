@@ -10,7 +10,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
 ** compile loop:
-*** relocate calls and pointers but not data literals
+*** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
 *** DONE compiler lookup
 *** DONE compile with different dictionaries
@@ -29,6 +29,7 @@ Call frames, stack & data pointer math
 **** EXE files
 *** extract strings from data into section
 *** symbol table section
+*** TODO Data RO and BSS sections
 ** Defining words
 *** DONE Compiled words: create & def -> :
 *** Compiler words: :
@@ -93,8 +94,8 @@ Threads too: offset & indirect.
 Data stack: relative or absolute?
 
 *** DONE argc/argv
-** Separate ops and definitions
-** Separate bash specific defs from the general
+** DONE Separate ops and definitions
+** TODO Separate bash specific defs from the general
 ** DONE Variables
 *** Move to own segment
 ** DONE Flip int-sub args in runner
@@ -113,11 +114,12 @@ revmap-stack? stack-find?
 *** Proper colon defs
 *** Framed calls
 ** TODO Reader needs its own token buffer; no need to return last char/status, negative happens next read
-** create> should return the entry, does-col should use it
+** TODO create> should return the entry, does-col should use it
+Bash specifically.
 ** DONE load: reader needs data slot and finalizer, and a stack of readers
 ** TODO stage1
 *** DONE Hexadecimal numbers for input
-*** Load or cat?
+*** DONE Load or cat?
 load needs file opening and reading with a reader stack.
 *** DONE definitions writen to the data stack
 *** definitions with code reuse
@@ -134,7 +136,7 @@ load needs file opening and reading with a reader stack.
 *** brings in name spacing: what word lists to search when compiling
 *** in-package & export/public & import interplays
 ** Lambda / Code blocks & lists: use [ ] to delineate
-** TODO To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
+** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
 *** ELF dynamic linking of imports
 *** ELF .o files with symbol table
@@ -200,10 +202,12 @@ Touches words that take pointer or a pointer/length pair.
 ** load from strings
 ** save ELF runtime image
 ** Make output functions take an fd argument.
-** Eliminate needless padding
+** TODO Eliminate needless padding
+Zero needed atbend of definitions for decompile.
 ** map-seq, map-seqn: prefer lengths over terminator at end
-** back port compiling-read
-** DRY cross compiling code
+** TODO back port compiling-read
+** TODO DRY cross compiling code
+*** TODO out-off' should be ' but using the compiling-dict; likewise with [']
 * Thoughts
 ** def syntax
 *** Current
