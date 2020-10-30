@@ -1,0 +1,22 @@
+body {
+    background: black;
+    color: white;
+}
+
+A { color: cyan; }
+A:visited { color: cyan; }
+A:hover, A:active { color: black; background: cyan; }
+
+H1, H1 A { color: white; }
+
+.comment { color: lime; }
+.string { color: magenta; }
+.immed { color: cyan; }
+.defining { color: #08f; font-weight: bold; }
+.end-defining { color: blue; font-weight: bold; }
+.delimiting, .end-delimiting { font-weight: bold; }
+.name { color: red; font-weight: bold; text-style: italic; }
+.number { color: magenta; font-weight: bold; }
+.subst { font-weight: bold; }
+.type { color: yellow; text-style: italic; }
+.comma { color: yellow; }

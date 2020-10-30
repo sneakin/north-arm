@@ -10,7 +10,10 @@ OUTPUTS=bin/interp$(EXECEXT) \
 DOCS=doc/html/bash.html \
 	doc/html/interp.html \
 	doc/html/interp-runtime.html \
-	doc/html/assembler-thumb.html
+	doc/html/assembler-thumb.html \
+	doc/html/all.html \
+	doc/html/style.css \
+	doc/html/white.css
 
 ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 	bin/tests/elf/bones/barest$(EXECEXT) \
@@ -32,6 +35,14 @@ doc: doc/html $(DOCS)
 
 doc/html:
 	mkdir -p doc/html
+
+doc/html/all.html: Makefile src/**/*.4th
+	$(HTMLER) `find src -name \*.4th` > $@
+
+doc/html/style.css: doc/style.css
+	cp $< $@
+doc/html/white.css: doc/white.css
+	cp $< $@
 
 FORTH_SRC=./src/bash/forth.sh \
 	./src/bash/reader.sh \
