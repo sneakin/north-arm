@@ -23,3 +23,5 @@ end
 def defproper
   create> does-proper> exit-frame
 end
+
+defalias> : defproper

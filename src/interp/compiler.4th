@@ -60,7 +60,8 @@ defcol end-compile
   int32 0 compiling poke
 endcol
 
-0 out' end-compile copies-entry-as> endcol
+0
+out' end-compile copies-entry-as> endcol
 out' end-compile copies-entry-as> end
 out' end-compile copies-entry-as> ;
 out' ( copies-entry-as> (

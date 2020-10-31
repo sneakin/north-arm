@@ -21,6 +21,7 @@ defcol line-return?
 endcol
 
 defcol whitespace?
+  ( fixme reader breaks at multiples of its buffer? )
   over newline? IF int32 1
   ELSE
     over is-space? IF int32 1
@@ -101,7 +102,7 @@ endcol
 ( todo read return 0 on EOF, not -1; could use 0 for length on eof but need a flag for the first read. )
 ( todo reader stack: pop off when EOF reached )
 
-def reader-read-more
+def reader-read-more ( reader ++ bytes-read )
   arg0 reader-reader-fn peek null? IF int32 -1 return1 THEN
   arg0
   arg0 reader-buffer peek

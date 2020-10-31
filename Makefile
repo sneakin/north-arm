@@ -3,6 +3,8 @@ HTMLER=./scripts/htmler.sh
 EXECEXT=.elf
 
 OUTPUTS=bin/interp$(EXECEXT) \
+	bin/interp.1$(EXECEXT) \
+	bin/interp.2$(EXECEXT) \
 	bin/assembler$(EXECEXT) \
 	bin/fforth.dict \
 	bin/assembler-thumb.sh \
@@ -121,6 +123,10 @@ INTERP_RUNTIME_SRC=\
 	src/interp/boot/cross.4th \
 	src/interp/boot/load.4th \
 	src/interp/boot/load-ops.4th \
+	src/interp/boot/builder.4th \
+	src/interp/boot/debug.4th \
+	src/interp/boot/cross/case.4th \
+	src/interp/boot/cross/iwords.4th \
 	$(THUMB_ASSEMBLER_SRC)
 
 doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
@@ -138,10 +144,18 @@ bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-bin/%.elf: src/bin/%.4th
+bin/%$(EXECEXT): src/bin/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
 bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
+	chmod u+x $@
+
+bin/interp.1$(EXECEXT): ./src/interp/boot/builder.4th ./bin/interp$(EXECEXT)
+	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | ./bin/interp$(EXECEXT) > $@
+	chmod u+x $@
+
+bin/interp.2$(EXECEXT): ./src/interp/boot/builder.4th ./bin/interp.1$(EXECEXT)
+	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | ./bin/interp.1$(EXECEXT) > $@
 	chmod u+x $@

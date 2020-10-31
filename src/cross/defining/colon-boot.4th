@@ -21,7 +21,6 @@
 
 : defcol-read
   defcol-read-init compiling-read
-  out' exit to-out-addr swap 1 +
   ( todo get rid of the terminator )
   read-terminator over 2 + set-overn
   here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn

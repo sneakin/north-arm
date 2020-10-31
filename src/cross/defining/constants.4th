@@ -26,5 +26,3 @@
   dhere to-out-addr swap
   ,byte-string 4 pad-data defconst-offset>
 ;
-
-: defsymbol> create> dup defconst ; ( todo portable without origin? )

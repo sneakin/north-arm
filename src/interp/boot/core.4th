@@ -1,21 +1,59 @@
 ( Todo To load the assembler: With create builtin, need a compiling-read and colon defining words. )
+tmp" Loading core words..." error-line/2
+
+def dict-drop
+  dict dict-entry-link peek cs +
+  set-dict
+end
+
+def alias
+  arg1 dict-entry-code peek arg0 dict-entry-code poke
+  arg1 dict-entry-data peek arg0 dict-entry-data poke
+end
+
+def alias>
+  create>
+  ['] dup 12 unless-jump swap alias exit-frame
+  not-found enl dict-drop return0
+end
+
+( create> : ' defproper swap alias )
+alias> return0 return
+alias> return proper-exit
+alias> equals equals?
+alias> speek peek
+alias> spoke poke
+alias> mult int-mul
 
 return-stack peek UNLESS
   128 proper-init
+  tmp" Initialized return stack" error-line/2
 THEN
 
 dhere UNLESS
   64 1024 * data-init-stack
+  tmp" Initialized data stack" error-line/2
 THEN
 
 def does-const
   pointer do-const dict-entry-code peek arg0 dict-entry-code poke
-  return0
+  ( return0 )
 end
 
 def const>
   create> does-const
   arg0 over dict-entry-data poke
+  exit-frame
+end
+
+def does-const-offset
+  pointer do-const-offset dict-entry-code peek arg0 dict-entry-code poke
+  return0
+end
+
+def symbol>
+  create> does-const
+  dup dict-entry-data poke
   exit-frame
 end
 
@@ -28,18 +66,6 @@ def var>
   create> does-var
   args peek over dict-entry-data poke
   exit-frame
-end
-
-def get-word ( name name-len ++ data )
-  arg1 arg0 dict dict-lookup int32 4 unless-jump return1
-  dict-entry-data peek cs + return1
-end
-
-def set-word ( value name name-len )
-  ( todo tokenize a string for the value )
-  arg1 arg0 dict dict-lookup int32 4 unless-jump return0
-  does-col
-  arg2 swap dict-entry-data cs + poke return0
 end
 
 def immediate/1
@@ -88,16 +114,6 @@ def .s
   args int32 96 ememdump return0
 end immediate-as [.s]
 
-: symbol>
-  create> does-const
-  dict dict dict-entry-data poke
-;
-
-symbol> if-placeholder
-( c" if-placeholder" drop here const> if-placeholder )
-
-( todo stack-find roll )
-
 defcol jump-data
   drop
   dict-entry-data peek jump-cs
@@ -108,21 +124,20 @@ end
   literal jump-data
 ; immediate
 
-def alias
-  arg1 dict-entry-code peek arg0 dict-entry-code poke
-  arg1 dict-entry-data peek arg0 dict-entry-data poke
+def shift ( a b c -- c a b )
+  arg0
+  arg1 set-arg0
+  arg2 set-arg1
+  set-arg2
+  return0
 end
 
-def dict-drop
-  dict dict-entry-link peek cs +
-  set-dict
-end
-
-def alias>
-  create>
-  ['] dup IF swap alias exit-frame
-  ELSE dict-drop return0
-  THEN
+def roll ( a b c -- b c a )
+  arg0
+  arg2 set-arg0
+  arg1 set-arg2
+  set-arg1
+  return0
 end
 
 : down-stack/2 cell-size * - ;
@@ -148,56 +163,47 @@ end
   here int32 2 up-stack/2 stack-find/2
 ;
 
-def shift ( a b c -- c a b )
-  arg0
-  arg1 set-arg0
-  arg2 set-arg1
-  set-arg2
-  return0
-end
-
-def roll ( a b c -- b c a )
-  arg0
-  arg2 set-arg0
-  arg1 set-arg2
-  set-arg1
-  return0
-end
+symbol> if-placeholder
 
 : IF
-  literal int32
-  literal if-placeholder
+  literal int32 if-placeholder
   literal unless-jump
 ; immediate
 
 : UNLESS
-  literal int32
-  literal if-placeholder
+  literal int32 if-placeholder
   literal if-jump
 ; immediate
 
 : ELSE
   literal int32
-  literal if-placeholder stack-find
-  literal if-placeholder literal jump-rel
+  if-placeholder stack-find
+  if-placeholder literal jump-rel
   roll
   dup here stack-delta int32 3 - op-size *
   swap spoke
 ; immediate
 
 : THEN
-  literal if-placeholder stack-find
+  if-placeholder stack-find
   dup here stack-delta int32 3 - op-size *
   swap spoke
 ; immediate
 
-: min
-  2dup int> IF swap THEN drop
-;
+def alias>
+  create>
+  ['] dup IF swap alias exit-frame
+  ELSE not-found enl dict-drop return0
+  THEN
+end
+
+: minmax 2dup int> IF swap THEN ;
+: min minmax drop ;
+: max minmax swap drop ;
 
 : repeat-frame
   literal int32
-  ( may not have a begin-frame to find. )
+  ( fixme may not have a begin-frame to find. )
   literal begin-frame stack-find
   current-frame min
   here stack-delta 1 + op-size * negate
@@ -269,10 +275,6 @@ symbol> read-terminator
 alias> endcol end-compile
 op-size const> -op-size ( todo  needs to be variable )
 op-mask const> -op-mask
-
-( todo load or provide iwords and words:
-    to load: this-word get-word out_immediates
-    to provide: output only immediates, POSTPONE, " to data stack, RECURSE, defcol and def that write to data stack )
 
 def top-frame-loop
   arg0 parent-frame dup IF set-arg0 repeat-frame THEN

@@ -6,6 +6,9 @@ alias> exec-cs exec
 alias> exec exec-abs
 0 var> out-immediates
 
+alias> cstring-length string-length
+alias> cstring-peek string-peek
+
 def out-immediate/1 ( word )
   arg0 copy-dict-entry
   out-immediates peek over dict-entry-link poke
@@ -87,7 +90,7 @@ end
   3 dropn
 ;
 
-: make-dict-entry/4 ( link data code name -- data-pointer )
+: make-dict-entry/4 ( link data code name -- pointer )
   dhere swap ,byte-string
   4 align-data
   dhere

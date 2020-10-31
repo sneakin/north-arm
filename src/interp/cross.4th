@@ -18,7 +18,6 @@ defcol down-stack
   swap int32 1 down-stack/2 swap
 endcol
 
-defalias> : defproper
 defalias> return0 return
 defalias> return proper-exit
 defalias> equals equals?
@@ -28,18 +27,7 @@ defalias> speek-byte peek-byte
 defalias> spoke poke
 defalias> spoke-byte poke-byte
 
-( alias> make-const defconst )
-( ' RECURSE ' loop out-immediate/2 )
-
-: def
-  create> does-col def-read
-  out' return0 ,op
-;
-
-alias> c: :
-alias> ;c ;
 alias> : defproper
-alias> ; endproper
 alias> :: redefproper
 
 ( alias> immediate out-immediate )
