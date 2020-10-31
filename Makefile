@@ -38,8 +38,8 @@ doc: doc/html $(DOCS)
 doc/html:
 	mkdir -p doc/html
 
-doc/html/all.html: Makefile src/**/*.4th
-	$(HTMLER) `find src -name \*.4th` > $@
+doc/html/all.html: Makefile src/**/*.4th scripts/*.4th
+	$(HTMLER) `find src -name \*.4th` `find scripts -name \*.4th` > $@
 
 doc/html/style.css: doc/style.css
 	cp $< $@

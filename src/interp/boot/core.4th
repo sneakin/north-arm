@@ -264,7 +264,21 @@ def does>
   ELSE drop does
   THEN
   return0
-end immediate
+end
+
+def copies-entry-as ( link source-entry new-name )
+  arg1 copy-dict-entry
+  arg0 cs - over dict-entry-name poke
+  arg2 dup IF cs - THEN over dict-entry-link poke
+  exit-frame
+end
+
+def copy-as> ( link src-entry -- new-entry )
+  next-token negative?
+  IF error 0 return1
+  ELSE allot-byte-string/2 drop arg1 swap arg0 swap copies-entry-as exit-frame
+  THEN
+end
 
 def error
   " Error" error-line
