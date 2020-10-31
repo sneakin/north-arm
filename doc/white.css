@@ -3,8 +3,8 @@
 .immed { font-weight: bold; }
 .defining, .end-defining { font-weight: bold; }
 .delimiting, .end-delimiting { font-weight: bold; }
-.name { color: blue; font-weight: bold; text-style: italic; }
+.name { color: blue; font-weight: bold; font-style: italic; }
 .number { color: green; font-weight: bold; }
 .subst { font-weight: bold; }
-.type { text-style: italic; }
-.comma { text-style: italic; }
+.type { font-style: italic; }
+.comma { font-style: italic; }

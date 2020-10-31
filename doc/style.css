@@ -9,14 +9,14 @@ A:hover, A:active { color: black; background: cyan; }
 
 H1, H1 A { color: white; }
 
-.comment { color: lime; }
-.string { color: magenta; }
-.immed { color: cyan; }
+.comment { color: magenta; }
+.string { color: lime; }
+.number { color: lime; font-weight: bold; }
+.immed { color: yellow; }
 .defining { color: #08f; font-weight: bold; }
 .end-defining { color: blue; font-weight: bold; }
 .delimiting, .end-delimiting { font-weight: bold; }
-.name { color: red; font-weight: bold; text-style: italic; }
-.number { color: magenta; font-weight: bold; }
+.name { color: red; font-weight: bold; font-style: italic; }
 .subst { font-weight: bold; }
-.type { color: yellow; text-style: italic; }
-.comma { color: yellow; }
+.type { color: cyan; }
+.comma { color: cyan; }
