@@ -2,14 +2,16 @@
     echo 'tmp" ./src/interp/boot/builder.4th" drop load c" interp-boot" here cell-size + swap builder-run' | ./bin/interp.elf > test.out 2>test.err
 )
 
-load-comp
+load-core
+load-thumb-asm
 
-( 4 const> cell-size
-4 const> -op-size )
-( Needs literals handled. )
-( 2 const> -op-size )
+4 const> cell-size
+4 const> -op-size
 ( Needs defconst sooner. )
-( 0xFFFFFFFF const> -op-mask )
+0xFFFFFFFF const> -op-mask
+( Needs literals handled. )
+( 2 const> -op-size
+0xFFFF const> -op-mask )
 
 0 var> code-origin
 
@@ -21,7 +23,8 @@ def builder-run ( entry )
   dhere code-origin poke
 
   ( The main stage: )
-  load-ops
+  load-runner
+  load-interp
   ( load-sources )
 
   " main" 4 create

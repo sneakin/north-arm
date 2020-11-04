@@ -152,10 +152,10 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-bin/interp.1$(EXECEXT): ./src/interp/boot/builder.4th ./bin/interp$(EXECEXT)
+bin/interp.1$(EXECEXT): ./src/interp/boot/builder.4th
 	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | ./bin/interp$(EXECEXT) > $@
 	chmod u+x $@
 
 bin/interp.2$(EXECEXT): ./src/interp/boot/builder.4th ./bin/interp.1$(EXECEXT)
-	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | ./bin/interp.1$(EXECEXT) > $@
+	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | LD_PRELOAD="" ./bin/interp.1$(EXECEXT) > $@
 	chmod u+x $@

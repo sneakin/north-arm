@@ -118,6 +118,11 @@ def next-token
   return2
 end
 
+def next-integer
+  next-token negative? IF 0 return1 THEN
+  parse-int return2
+end
+
 ( will need exec-abs to thread call )
 def make-noname ( data-ptr fn )
   alloc-dict-entry
@@ -280,13 +285,23 @@ def load
   exit-frame
 end
 
-def load-comp
-  " ./src/interp/boot/load.4th" drop load
+def load-core
+  " ./src/interp/boot/core.4th" drop load
   exit-frame
 end
 
-def load-ops
-  " ./src/interp/boot/load-ops.4th" drop load
+def load-thumb-asm
+  " ./src/interp/boot/load/thumb-asm.4th" drop load
+  exit-frame
+end
+
+def load-runner
+  " ./src/interp/boot/load/runner.4th" drop load
+  exit-frame
+end
+
+def load-interp
+  " ./src/interp/boot/load/interp.4th" drop load
   exit-frame
 end
 

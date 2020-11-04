@@ -11,4 +11,6 @@ src/cross/words.4th load
 src/cross/defining/op.4th load
 src/cross/case.4th load
 
+src/lib/list.4th load
 src/lib/elf/stub32.4th load
+
