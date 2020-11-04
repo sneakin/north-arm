@@ -208,6 +208,8 @@ Zero needed atbend of definitions for decompile.
 ** TODO back port compiling-read
 ** TODO DRY cross compiling code
 *** TODO out-off' should be ' but using the compiling-dict; likewise with [']
+dry up with comp' immediated as ' to use compiling-dict.
+** TODO move defining/*-boot files to interp/boot/defining
 * Thoughts
 ** def syntax
 *** Current
