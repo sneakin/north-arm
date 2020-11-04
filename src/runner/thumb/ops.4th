@@ -10,10 +10,11 @@ r7 const> eip
 ;
 
 : emit-branch
-  dup abs-int 0x400 int< IF
+  dup abs-int 0x800 int< IF
     branch ,uint16
   ELSE
-    branch-long ,uint32
+    ( alters LR unlike the above )
+    branch-link ,uint32
   THEN
 ;
 
@@ -32,7 +33,7 @@ defop exec-r1-abs
   ( add the base address )
   cs-reg r2 r2 add ,uint16
   ( jump to the code )
-  r2 pc mov-lohi ,uint16
+  r2 0 bx-lo ,uint16
 endop
 
 defop exec-r1

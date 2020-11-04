@@ -272,7 +272,7 @@ alias> sl r10
   bl-hi 11 bit-set
 ;
 
-: branch-long ( offset -- 32bit-ins )
+: branch-link ( offset -- 32bit-ins )
   dup 12 bsr bl-hi
   swap 1 bsr bl-lo 16 bsl
   logior

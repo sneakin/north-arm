@@ -1,19 +1,19 @@
 ( Comparisons: )
 
 defcol int>
-  rot int< IF int32 1 ELSE int32 0 THEN swap
+  rot int< swap
 endcol
 
 defcol int>=
-  rot int<= IF int32 1 ELSE int32 0 THEN swap
+  rot int<= swap
 endcol
 
 defcol uint>
-  rot uint< IF int32 1 ELSE int32 0 THEN swap
+  rot uint< swap
 endcol
 
 defcol uint>=
-  rot uint<= IF int32 1 ELSE int32 0 THEN swap
+  rot uint<= swap
 endcol
 
 defalias> > int>

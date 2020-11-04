@@ -96,6 +96,6 @@ r3 0xFF ldmia ,uint16
 0x10 branch ,uint16
 -4 branch ,uint16
 
-0x123456 dhere - 4 - branch-long ,uint32
+0x123456 dhere - 4 - branch-link ,uint32
 
 0 ddump-binary-bytes
