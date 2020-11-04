@@ -33,7 +33,7 @@ def builder-run ( entry )
   " init" 4 cross-lookup UNLESS " no init found" error-line not-found return THEN
   dict-entry-code uint32@
   ( finish the ELF file )
-  1 + .s write-elf32-ending
+  .s write-elf32-ending
 
   " Writing..." error-line
   out-origin peek ddump-binary-bytes

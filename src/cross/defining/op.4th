@@ -1,14 +1,12 @@
 ( Op definitions: )
 
-( todo needs to apply out-origin )
-
-: does-code
+: does-thumb-code
   4 align-data
-  dhere to-out-addr swap dict-entry-code uint32!
+  dhere to-out-addr 1 + swap dict-entry-code uint32!
 ;
 
 : defop
-  create> does-code
+  create> does-thumb-code
 ;
 
 : endop

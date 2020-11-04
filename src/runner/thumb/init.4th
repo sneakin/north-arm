@@ -21,7 +21,7 @@ defop init
   12 r1 ldr-pc ,uint16
   out' exec-r1 emit-op-call
   ( data: )
-  out-dict dict-entry-code uint32@ 6 + ,uint32
+  out-dict dict-entry-code uint32@ 5 + ,uint32
   out-dict to-out-addr ,uint32
   out' main to-out-addr ,uint32
 endop
