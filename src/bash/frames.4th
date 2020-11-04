@@ -20,16 +20,25 @@
 ( Frame argument accessors: )
 
 : args current-frame 1 - ;
+: locals current-frame 1 + ;
+
 : argn args swap - speek ;
-: set-argn args swap - spoke ;
 : arg0 args speek ;
 : arg1 args 1 - speek ;
 : arg2 args 2 - speek ;
 : arg3 args 3 - speek ;
+
+: set-argn args swap - spoke ;
 : set-arg0 args spoke ;
 : set-arg1 args 1 - spoke ;
 : set-arg2 args 2 - spoke ;
 : set-arg3 args 3 - spoke ;
+
+: localn locals swap + speek ;
+: local0 locals speek ;
+
+: set-localn locals swap - spoke ;
+: set-local0 locals spoke ;
 
 ( Framed definitions: )
 

@@ -6,6 +6,7 @@
 0xFFFFFFFF const> -op-mask
 
 src/bash/compiler.4th load
+src/bash/frames.4th load
 src/cross/arch/thumb.4th load
 
 0 var> code-origin
