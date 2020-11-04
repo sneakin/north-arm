@@ -1,12 +1,14 @@
 a.out
 *~
+\#*\#
 *.bak
 *.elf
 *.dict
 *.exe
 bin/runner-*
 bin/*.dict
+bin/assembler-thumb.sh
 *.out
 *.bin
 *.log
-
+doc/html
