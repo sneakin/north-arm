@@ -278,6 +278,7 @@ def load
   the-reader peek
   token-buffer-max stack-allot
   token-buffer-max
+  " Loading " error-string/2 arg0 error-line
   arg0 open-input-file negative? IF return THEN
   make-fd-reader the-reader poke
   interp
