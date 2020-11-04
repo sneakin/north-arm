@@ -138,7 +138,11 @@ load needs file opening and reading with a reader stack.
 ** Lambda / Code blocks & lists: use [ ] to delineate
 ** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
-*** ELF dynamic linking of imports
+*** TODO ELF dynamic linking of imports
+**** DONE Library loading
+**** DONE Function imports
+**** TODO Add symbols only once
+**** TODO Dynamically linked variables
 *** ELF .o files with symbol table
 *** ELF symbol table
 ** Runner's jumps op offset or byte offset?
