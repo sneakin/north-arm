@@ -8,8 +8,9 @@
 src/cross/builder.4th load
 
 ' assembler-boot
-src/lib/asm/thumb2.4th
-src/lib/asm/thumb.4th
+src/lib/asm/thumb/vfp.4th
+src/lib/asm/thumb/v2.4th
+src/lib/asm/thumb/v1.4th
 src/lib/strings.4th
 src/lib/stack-marker.4th
 src/lib/byte-data.4th
@@ -28,4 +29,4 @@ src/interp/output.4th
 src/interp/dictionary.4th
 src/interp/strings.4th
 src/interp/messages.4th
-20 builder-run/2
+21 builder-run/2

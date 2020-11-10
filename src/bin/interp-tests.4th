@@ -9,6 +9,7 @@ src/cross/builder.4th load
 
 ' interp-boot
 src/tests/lib/strings.4th
+src/runner/tests/float.4th
 src/runner/tests/proper.4th
 src/runner/tests/2dup.4th
 src/runner/tests/bsl.4th
@@ -41,4 +42,4 @@ src/interp/output.4th
 src/interp/dictionary.4th
 src/interp/strings.4th
 src/interp/messages.4th
-33 builder-run/2
+34 builder-run/2

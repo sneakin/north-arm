@@ -286,6 +286,16 @@ alias> sl r10
   0 bkpt/1
 ;
 
+( Change processor endian mode. )
+( 1 0 1 1 0 1 1 0 0 1 0 1 E 0 0 0 )
+: setend
+  0x1 logand
+  0xB65 4 bsl logior
+;
+
+: bigend 1 setend ;
+: lilend 0 setend ;
+
 ( Helpers: )
 
 : emit-load-int32 ( n reg )

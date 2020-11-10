@@ -18,6 +18,7 @@ src/cross/arch/thumb.4th load
   dhere set-code-origin
 
   ( The main stage: )
+  src/runner/math.4th
   src/runner/thumb/math.4th
   src/runner/thumb/logic.4th
   src/runner/thumb/linux.4th
@@ -31,8 +32,11 @@ src/cross/arch/thumb.4th load
   src/cross/defining/alias.4th
   src/cross/defining/colon.4th
   src/cross/defining/colon-bash.4th
+  src/runner/thumb/ffi.4th
+  src/runner/thumb/vfp.4th
+  src/runner/thumb/cpu.4th
   src/runner/thumb/ops.4th
-  14 load-sources
+  18 load-sources
 
   load-sources
 

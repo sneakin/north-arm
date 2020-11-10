@@ -62,8 +62,9 @@ THUMB_ASSEMBLER_SRC=\
 	src/lib/case.4th \
 	src/lib/stack-marker.4th \
 	src/lib/byte-data.4th \
-	src/lib/asm/thumb.4th \
-	src/lib/asm/thumb2.4th
+	src/lib/asm/thumb/v1.4th \
+	src/lib/asm/thumb/v2.4th \
+	src/lib/asm/thumb/vfp.4th
 
 doc/html/assembler-thumb.html: Makefile src/bin/assembler.4th $(THUMB_ASSEMBLER_SRC)
 	$(HTMLER) $^ > $@
@@ -88,6 +89,9 @@ RUNNER_THUMB_SRC=\
 	src/cross/defining/variables.4th \
 	src/cross/defining/constants.4th \
 	src/runner/thumb/ops.4th \
+	src/runner/thumb/cpu.4th \
+	src/runner/thumb/vfp.4th \
+	src/runner/thumb/ffi.4th \
 	src/runner/thumb/linux.4th \
 	src/runner/thumb/init.4th \
 	src/runner/thumb/math.4th \
