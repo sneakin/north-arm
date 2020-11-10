@@ -1,6 +1,16 @@
 ( Todo To load the assembler: With create builtin, need a compiling-read and colon defining words. )
 tmp" Loading core words..." error-line/2
 
+return-stack peek UNLESS
+  256 proper-init
+  tmp" Initialized return stack" error-line/2
+THEN
+
+dhere UNLESS
+  64 1024 * data-init-stack
+  tmp" Initialized data stack" error-line/2
+THEN
+
 def dict-drop
   dict dict-entry-link peek cs +
   set-dict
@@ -24,16 +34,6 @@ alias> equals equals?
 alias> speek peek
 alias> spoke poke
 alias> mult int-mul
-
-return-stack peek UNLESS
-  128 proper-init
-  tmp" Initialized return stack" error-line/2
-THEN
-
-dhere UNLESS
-  64 1024 * data-init-stack
-  tmp" Initialized data stack" error-line/2
-THEN
 
 def does-const
   pointer do-const dict-entry-code peek arg0 dict-entry-code poke
@@ -322,3 +322,29 @@ def env
   top-frame frame-args cell-size 3 argc + arg0 + * +
   dup IF peek ELSE 0 THEN return1
 end
+
+def fill-seq ( seq n value )
+  arg1 0 int> UNLESS return0 THEN
+  arg1 1 - set-arg1
+  arg0 arg2 arg1 seq-poke
+  repeat-frame
+end
+
+def stack-allot-zero
+  arg0 stack-allot
+  dup arg0 cell/ 0 fill-seq 3 dropn
+  exit-frame
+end
+
+def stack-allot-zero-seq
+  arg0 cell-size * stack-allot-zero
+  exit-frame
+end
+
+def safe-stack-find/2 ( ptr value -- addr found )
+  arg1 top-frame uint< UNLESS 0 set-arg0 return0 THEN
+  arg1 peek arg0 equals? IF 1 set-arg0 return0 THEN
+  arg1 up-stack set-arg1 repeat-frame
+end
+
+def tab 9 write-byte end

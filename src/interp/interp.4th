@@ -288,6 +288,12 @@ end
 
 def load-core
   " ./src/interp/boot/core.4th" drop load
+  " ./src/lib/list.4th" drop load
+  exit-frame
+end
+
+def load-debug
+  " ./src/interp/boot/debug.4th" drop load
   exit-frame
 end
 

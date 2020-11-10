@@ -18,11 +18,24 @@ def push-onto ( value pointer ++ cons... value )
   arg1 exit-frame
 end
 
-def make-seq args return1 end
-def seq-size arg0 peek set-arg0 end
 def first arg0 cell-size + peek set-arg0 end
-def rest arg0 cell-size 2 * + set-arg0 end
-def nth arg0 1 + cell-size * arg1 + return1 end
+def rest arg0 cell-size + set-arg0 end
+
+defcol seq-peek
+  swap cell-size *
+  swap rot + peek
+  swap
+endcol
+
+defcol seq-poke ( value base n -- )
+  swap cell-size * ( value base -- offset )
+  swap rot + ( value -- addr )
+  swap rot swap poke
+endcol
+
+def make-seqn args return1 end
+def seqn-size arg0 peek set-arg0 end
+def seqn-nth arg0 1 + cell-size * arg1 + return1 end
 
 def map-cons ( cons fn )
   arg1 UNLESS exit-frame THEN

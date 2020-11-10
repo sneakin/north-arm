@@ -50,3 +50,9 @@
 ;
 
 ' ; immediate-lookup ' end set-immediate!
+
+: repeat-frame
+  literal literal
+  read-terminator stack-find here stack-delta 1 + negate
+  literal jump-rel
+; immediate
