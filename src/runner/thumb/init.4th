@@ -11,6 +11,7 @@ defop init
   16 r3 ldr-pc ,uint16
   pc r5 mov-hilo ,uint16
   r3 r5 cs-reg sub ,uint16
+  dhere
   ( init registers )
   0 fp mov# ,uint16
   0 eip mov# ,uint16
@@ -21,7 +22,7 @@ defop init
   12 r1 ldr-pc ,uint16
   out' exec-r1 emit-op-call
   ( data: )
-  out-dict dict-entry-code uint32@ 5 + ,uint32
+  to-out-addr ,uint32
   out-dict to-out-addr ,uint32
   out' main to-out-addr ,uint32
 endop
