@@ -8,6 +8,8 @@ a.out
 bin/runner-*
 bin/*.dict
 bin/assembler-thumb.sh
+bin/*.png
+bin/*.raw
 *.out
 *.bin
 *.log

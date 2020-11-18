@@ -1,26 +1,26 @@
 ( Interpreter )
-tmp" src/interp/messages.4th" drop load
-tmp" src/interp/strings.4th" drop load
-tmp" src/interp/dictionary.4th" drop load
-tmp" src/interp/output.4th" drop load
-tmp" src/interp/reader.4th" drop load
-tmp" src/interp/interp.4th" drop load
+s[ src/interp/messages.4th
+   src/interp/strings.4th
+   src/interp/dictionary.4th
+   src/interp/output.4th
+   src/interp/reader.4th
+   src/interp/interp.4th ] load-list
 
 ( Compiling )
-tmp" src/interp/compiler.4th" drop load
-tmp" src/interp/debug.4th" drop load
+s[ src/interp/compiler.4th
+   src/interp/debug.4th ] load-list
 
 ( Used by core.4th )
-tmp" src/interp/data-stack.4th" drop load
+s[ src/interp/data-stack.4th ] load-list
 
 ( Standand Forth colons )
-tmp" src/runner/thumb/proper.4th" drop load
-tmp" src/runner/proper.4th" drop load
+s[ src/runner/thumb/proper.4th
+   src/runner/proper.4th ] load-list
 
 ( Extra fun )
-tmp" src/lib/list.4th" drop load
-tmp" src/interp/dynlibs.4th" drop load
-tmp" src/interp/libc.4th" drop load
+s[ src/lib/list.4th
+   src/interp/dynlibs.4th
+   src/interp/libc.4th ] load-list
 
 ( tmp" src/cross/defining/proper.4th" drop load )
 ( tmp" src/interp/cross.4th" drop load )

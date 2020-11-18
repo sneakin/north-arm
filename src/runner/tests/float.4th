@@ -1,5 +1,5 @@
-load-core
-tmp" src/lib/assert.4th" drop load
+( load-core )
+( tmp" src/lib/assert.4th" drop load )
 
 ( Float32 tests: )
 

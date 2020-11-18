@@ -81,6 +81,7 @@ bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_S
 
 RUNNER_THUMB_SRC=\
 	src/cross/builder.4th \
+	src/cross/builder/bash.4th \
 	src/runner/aliases.4th \
 	src/cross/defining/colon.4th \
 	src/cross/defining/colon-bash.4th \
@@ -99,6 +100,7 @@ RUNNER_THUMB_SRC=\
 	src/runner/proper.4th \
 	src/runner/thumb/proper.4th \
 	src/interp/data-stack.4th \
+	src/interp/data-stack-list.4th \
 	src/interp/interp.4th \
 	src/interp/compiler.4th \
 	src/interp/debug.4th \
@@ -118,6 +120,7 @@ RUNNER_THUMB_SRC=\
 	src/lib/stack.4th \
 	src/lib/assert.4th \
 	src/lib/strings.4th \
+	src/lib/list.4th \
 	src/lib/catch.4th \
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
@@ -128,7 +131,7 @@ INTERP_RUNTIME_SRC=\
 	src/interp/boot/load/interp.4th \
 	src/interp/boot/load/runner.4th \
 	src/interp/boot/load/thumb-asm.4th \
-	src/interp/boot/builder.4th \
+	src/cross/builder/interp.4th \
 	src/interp/boot/debug.4th \
 	src/interp/boot/cross/case.4th \
 	src/interp/boot/cross/iwords.4th \
@@ -157,10 +160,18 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-bin/interp.1$(EXECEXT): ./src/interp/boot/builder.4th
-	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | ./bin/interp$(EXECEXT) > $@
+STAGE0_FORTH=LD_PRELOAD='' ./bin/interp.elf
+STAGE1_FORTH=LD_PRELOAD='' ./bin/interp.1.elf
+STAGE2_FORTH=LD_PRELOAD='' ./bin/interp.2.elf
+
+bin/%.1$(EXECEXT): ./src/bin/%.4th
+	cat $< | $(STAGE0_FORTH) > $@
 	chmod u+x $@
 
-bin/interp.2$(EXECEXT): ./src/interp/boot/builder.4th ./bin/interp.1$(EXECEXT)
-	(cat $< ; echo ; echo 'c" interp-boot" here cell-size + swap builder-run') | LD_PRELOAD="" ./bin/interp.1$(EXECEXT) > $@
+bin/%.2$(EXECEXT): ./src/bin/%.4th
+	cat $< | $(STAGE1_FORTH) > $@
+	chmod u+x $@
+
+bin/%.3$(EXECEXT): ./src/bin/%.4th
+	cat $< | $(STAGE2_FORTH) > $@
 	chmod u+x $@

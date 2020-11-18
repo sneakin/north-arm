@@ -214,3 +214,10 @@ alias> string-const> const>
 : error-line/2
   drop error-line
 ;
+
+: s"
+  POSTPONE \" dup string-length
+;
+
+" src/bash/frames.4th" load
+" src/bash/list.4th" load

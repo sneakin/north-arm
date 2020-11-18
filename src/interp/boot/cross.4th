@@ -133,7 +133,7 @@ end
 ; out-immediate-as [']
 
 : out''
-  s" literal" cross-lookup-offset UNLESS not-found THEN
+  s" pointer" cross-lookup-offset UNLESS not-found THEN
   POSTPONE out-off'
 ; out-immediate-as '
 
@@ -155,6 +155,7 @@ end
   s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
   dhere to-out-addr out-dict dict-entry-data poke
 ; out-immediate-as "
+out-immediate-as s"
 
 def oword-printer
   arg0 dict-entry-name peek from-out-addr write-string space

@@ -1,21 +1,17 @@
-( Command line usage:
-    echo 'tmp" ./src/interp/boot/builder.4th" drop load c" interp-boot" here cell-size + swap builder-run' | ./bin/interp.elf > test.out 2>test.err
-)
+( todo constants need to be vars. single return strings. lists & strings on stack prevent straight arg ordering. )
 
-load-core
+( load-core )
 load-thumb-asm
 
 4 const> cell-size
 4 const> -op-size
+
 ( Needs defconst sooner. )
 0xFFFFFFFF const> -op-mask
-( Needs literals handled. )
-( 2 const> -op-size
-0xFFFF const> -op-mask )
 
 0 var> code-origin
 
-def builder-run ( entry )
+def builder-run ( entry len src-cons )
   " Building..." error-line
   4 align-data
   dhere out-origin poke
@@ -24,16 +20,14 @@ def builder-run ( entry )
 
   ( The main stage: )
   load-runner
-  load-interp
-  ( load-sources )
+  arg0 load-list
 
-  " main" 4 create
-  arg1 arg0 does-defalias
+  s" main" create arg2 arg1 does-defalias
   " ./src/runner/thumb/init.4th" load
 
   code-origin peek
   ( entry point: )
-  " init" 4 cross-lookup UNLESS " no init found" error-line not-found return THEN
+  s" init" cross-lookup UNLESS " no init found" error-line not-found return THEN
   dict-entry-code uint32@
   ( finish the ELF file )
   .s write-elf32-ending

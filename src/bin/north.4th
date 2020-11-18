@@ -1,18 +1,25 @@
-4 const> cell-size
-4 const> -op-size
-( Needs literals handled. )
-( 2 const> -op-size )
-( Needs defconst sooner. )
-0xFFFFFFFF const> -op-mask
+" src/cross/builder.4th" load
 
-src/cross/builder.4th load
-
-' north-boot
-../north/src/00/compiler.4th
-../north/src/00/core.4th
-src/north/north.4th
+(
 src/interp/data-stack.4th
-src/interp/output.4th
-src/interp/messages.4th
 src/interp/strings.4th
-6 builder-run/2
+src/interp/messages.4th
+src/interp/output.4th
+../north/src/00/shorthand.4th
+)
+
+s[ src/interp/data-stack.4th
+   src/interp/data-stack-list.4th
+   src/runner/thumb/proper.4th
+   src/runner/proper.4th
+   src/north/north.4th
+   ../north/src/00/list.4th
+   ../north/src/00/output.4th
+   ../north/src/00/core.4th
+   ../north/src/00/compiler.4th
+   ../north/src/00/assert.4th
+   ../north/src/00/about.4th
+   ../north/src/00/init.4th
+] const> sources
+
+s" boot" sources builder-run

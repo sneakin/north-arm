@@ -1,24 +1,38 @@
 ( Core ops )
-tmp" src/runner/thumb/ops.4th" drop load
-tmp" src/cross/dynlibs.4th" drop load
-tmp" src/interp/boot/cross/iwords.4th" drop load
+s[ src/runner/thumb/ops.4th
+   src/runner/thumb/cpu.4th
+   src/runner/thumb/vfp.4th
+   src/runner/thumb/ffi.4th
+   src/runner/thumb/state.4th
+   src/cross/dynlibs.4th
+ ] load-list
 
 ( Cross compiler )
-tmp" src/cross/defining/constants.4th" drop load
-tmp" src/cross/constants.4th" drop load
-tmp" src/cross/defining/variables.4th" drop load
-tmp" src/lib/stack.4th" drop load
-tmp" src/cross/defining/colon-boot.4th" drop load
-tmp" src/cross/defining/colon.4th" drop load
+s[
+   src/cross/list.4th
+   src/interp/boot/cross/iwords.4th
+   src/cross/defining/constants.4th
+   src/cross/constants.4th
+   src/cross/defining/variables.4th
+   src/lib/stack.4th
+   src/cross/defining/colon-boot.4th
+   src/cross/defining/colon.4th
 
-tmp" src/interp/boot/cross/case.4th" drop load
+   src/interp/boot/cross/case.4th
+ ] load-list
 
 ( Platform ops and words )
-tmp" src/runner/thumb/aliases.4th" drop load
-tmp" src/runner/aliases.4th" drop load
-tmp" src/runner/thumb/frames.4th" drop load
-tmp" src/runner/frames.4th" drop load
-tmp" src/cross/defining/frames-boot.4th" drop load
-tmp" src/runner/thumb/linux.4th" drop load
-tmp" src/runner/thumb/logic.4th" drop load
-tmp" src/runner/thumb/math.4th" drop load
+s[ src/runner/thumb/aliases.4th
+   src/runner/aliases.4th
+   src/runner/thumb/frames.4th
+   src/runner/frames.4th
+   src/cross/defining/frames-boot.4th
+   src/runner/thumb/linux.4th
+   src/runner/thumb/logic.4th
+   src/runner/thumb/math.4th
+   src/runner/math.4th
+   src/interp/data-stack.4th
+   src/lib/list.4th
+   src/interp/dynlibs.4th
+   src/interp/libc.4th
+] load-list
