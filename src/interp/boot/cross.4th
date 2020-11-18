@@ -78,18 +78,6 @@ end
 
 ( Dictionary words for output: )
 
-: ,byte-string/3
-  ( string length n )
-  2dup equals IF 0 ,uint8 return THEN
-  3 overn 2 overn cstring-peek ,uint8
-  1 + loop
-;
-
-: ,byte-string
-  dup cstring-length 0 ,byte-string/3
-  3 dropn
-;
-
 : make-dict-entry/4 ( link data code name -- pointer )
   dhere swap ,byte-string
   4 align-data

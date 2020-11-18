@@ -163,9 +163,20 @@ def dict-map ( dict fn )
   arg1 cs int32 0 arg0 dict-map/4
 end
 
+256 defconst> words-xy-pitch
+
+def tab 9 write-byte end
+
+defcol write-tabbed-hex-uint
+  swap dup write-hex-uint tab
+  0x100000 uint< IF tab THEN
+endcol
+
 def words-printer
-  arg0 dict-entry-name peek cs + write-string space
-  arg0 write-hex-uint nl
+  arg0 cs -
+  dup write-tabbed-hex-uint space
+  dup words-xy-pitch int-divmod write-tabbed-hex-uint space write-tabbed-hex-uint space
+  arg0 dict-entry-name peek cs + write-string nl
 end
 
 def words

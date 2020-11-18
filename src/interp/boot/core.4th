@@ -348,3 +348,20 @@ def safe-stack-find/2 ( ptr value -- addr found )
 end
 
 def tab 9 write-byte end
+
+defcol write-tabbed-hex-uint
+  swap dup write-hex-uint tab
+  0x10000 uint< IF tab THEN
+endcol
+
+: ,byte-string/3
+  ( string length n )
+  2dup equals IF 0 dpush-byte return THEN
+  3 overn 2 overn string-peek dpush-byte
+  1 + loop
+;
+
+: ,byte-string
+  dup string-length 0 ,byte-string/3
+  3 dropn
+;

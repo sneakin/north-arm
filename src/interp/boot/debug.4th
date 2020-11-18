@@ -26,11 +26,6 @@
 
 40 var> fancy-stack-cols
 
-defcol write-tabbed-hex-uint
-  swap dup write-hex-uint tab
-  0x10000 uint< IF tab THEN
-endcol
-
 def fancy-stack-link
   arg1 arg0 uint<= IF
     s" |" write-string/2

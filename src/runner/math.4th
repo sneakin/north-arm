@@ -72,4 +72,12 @@ defcol int-mod
   rot swap 2dup / * - swap
 endcol
 
+defcol int-divmod
+  rot swap
+  2dup / ( num den quot )
+  rot swap 3 overn * -
+  swap rot
+endcol
+
 defalias> mod int-mod
+defalias> divmod int-divmod
