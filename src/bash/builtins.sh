@@ -17,6 +17,7 @@ DICT['nop']='feval'
 #
 DICT['not']='STACK[0]=$(($STACK[0] == 0))'
 DICT['equals']='if [[ "${STACK[0]}" == "${STACK[1]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
+DICT['equals?']="${DICT['equals']}"
 
 DICT['null?']='if [[ "${STACK[0]}" == "" ]]; then fpush 1; else fpush 0; fi'
 DICT['decimal?']='if [[ "${STACK[0]}" =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then fpush 1; else fpush 0; fi'
@@ -169,7 +170,10 @@ DICT['return1']='tmp="${STACK[0]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" 
 #
 # Startup
 #
+DICT['NORTH-STAGE']='fpush 0'
 DICT['boot']='feval "Hello." error-line'
 
 DICT['argc']='fpush "${#ARGV[@]}"'
 DICT['argv']='n="${STACK[0]}"; fpop; fpush "${ARGV[$n]}"'
+
+DICT['load-core']='feval literal src/bash/compiler.4th load'

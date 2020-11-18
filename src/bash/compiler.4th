@@ -150,6 +150,7 @@ alias> :: :
 ;
 
 : immediate this-word immediate/1 ;
+: immediate-as this-word next-token immediate/2 ;
 
 ' ( immediate/1
 

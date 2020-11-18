@@ -37,7 +37,7 @@ def import> ( library : name symbol arity ++ library )
   next-token negative? IF error arg0 exit-frame THEN
   elf32-add-dynamic-symbol/2
   local0 dict-entry-data
-  swap .s elf32-add-dynamic-jump-slot
+  swap elf32-add-dynamic-jump-slot
   ( read arity & set word's code field )
   next-integer IF
     fficaller-for local0 dict-entry-code poke

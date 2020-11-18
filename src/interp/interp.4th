@@ -1,3 +1,5 @@
+1 defconst> NORTH-STAGE
+
 ( Input: )
 
 128 defconst> token-buffer-max
@@ -183,11 +185,25 @@ defcol tmp" ( ++ token-buffer-ptr bytes-read )
   the-reader peek reader-read-byte drop
 endcol
 
+def " ( ++ ...bytes ptr )
+  POSTPONE tmp"
+  swap drop 1 + stack-allot
+  string-buffer peek over string-buffer-length peek copy-byte-string/3
+  int32 4 dropn
+  here exit-frame
+end
+
 def c" ( ++ ...bytes length )
   POSTPONE tmp"
   swap drop 1 + stack-allot
   string-buffer peek over string-buffer-length peek copy-byte-string/3
   int32 4 dropn
+  string-buffer-length peek
+  exit-frame
+end
+
+def s" ( ++ ...bytes length )
+  POSTPONE "
   string-buffer-length peek
   exit-frame
 end

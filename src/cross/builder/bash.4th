@@ -52,5 +52,6 @@ src/cross/arch/thumb.4th load
 
   " Writing..." error-line
   out-origin .s ddump-binary-bytes
-  dhere .s
-;
+  dhere to-out-addr .s
+  exit-frame
+end

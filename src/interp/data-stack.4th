@@ -18,6 +18,8 @@ defalias> dpeek-byte peek-byte
 defalias> dpoke poke
 defalias> dpoke-byte poke-byte
 
+( todo bc & x86 runners move then poke )
+
 defcol dpush
   swap dhere poke
   dhere cell-size + dmove
@@ -44,7 +46,7 @@ endcol
 
 defcol dallot
   dhere rot
-  over cell-size * + dmove
+  cell-size * 3 overn + dmove
 endcol
 
 defcol data-init ( ptr size )

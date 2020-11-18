@@ -8,7 +8,7 @@
 : defproper
   create> does-proper
   defcol-read
-  out' proper-exit to-out-addr ,op
+  out-off' proper-exit ,op
   0 ,op
 ;
 
@@ -23,12 +23,12 @@
 : redefproper
   next-token lookup-or-create does-proper
   defcol-read
-  out' proper-exit ,op
+  out-off' proper-exit ,op
   0 ,op
 ;
 
 : out-loop
-  ' pointer
+  out-off' pointer
   out-dict dict-entry-data uint32@
-  ' jump
+  out-off' jump
 ; out-immediate-as loop

@@ -215,6 +215,7 @@ endop
 
 defop move
   r0 sp mov-lohi ,uint16
+  0 r0 bit-set popr ,uint16
   emit-next
 endop
 
@@ -560,8 +561,8 @@ endop
 ;
 
 : emit-set-word-data ( offset data-reg tmp-reg )
-  int32 3 overn int32 2 overn emit-load-word .s
-  0 dict-entry-data int32 2 overn int32 4 overn str-offset .s ,uint16
+  int32 3 overn int32 2 overn emit-load-word
+  0 dict-entry-data int32 2 overn int32 4 overn str-offset ,uint16
   int32 3 dropn
 ;
 
