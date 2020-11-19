@@ -37,16 +37,16 @@
 
 ( MRRC & MCRR registers: )
 ( 1 1 1 C 1 1 0 0 0 1 0 L Rt2:4 )
-: mcrr-lo ( rt2 -- ins16 )
+: mcrr-hi ( rt2 -- ins16 )
   0xF logand
   1 6 bsl logior
   coproc logior
 ;
 
-: mrrc-lo mcrr-lo 4 bit-set ;
+: mrrc-hi mcrr-hi 4 bit-set ;
 
 ( Rt Coproc OpC CRm )
-: mcrr-hi ( CRm Opc Coproc Rt -- ins16 )
+: mcrr-lo ( CRm Opc Coproc Rt -- ins16 )
   0xF logand 4 bsl
   swap 0xF logand logior 4 bsl
   swap 0xF logand logior 4 bsl
@@ -54,38 +54,50 @@
 ;
 
 : mcrr
-  mcrr-hi 16 bsl
-  swap mcrr-lo logior
+  mcrr-lo 16 bsl
+  swap mcrr-hi logior
 ;
 
 : mrrc
-  mcrr-hi 16 bsl
-  swap mrrc-lo logior
+  mcrr-lo 16 bsl
+  swap mrrc-hi logior
 ;
 
 ( Load & store: )
+
+: coproc-p 8 bit-set ;
+: coproc-u 7 bit-set ;
+: coproc-d 6 bit-set ;
+: coproc-w 5 bit-set ;
+
 ( 1 1 1 C 1 1 0 P U N W L Rn:4 )
-: coproc-str-lo ( Rn -- ins16 )
+: stc-hi ( Rn -- ins16 )
   0xF logand coproc logior
 ;
 
-: .coproc-ldr 1 5 bsl logior ;
+: .ldc 4 bit-set ;
+: ldc-hi stc-hi .ldc ;
 
-( CRd:4 coproc:4 imm:8 )
-: coproc-str-hi ( imm8 coproc CRd -- ins16 )
+( coproc:4 CRd:4 imm:8 )
+: stc-lo ( imm8 coproc CRd -- ins16 )
   0xF logand 4 bsl
   swap 0xF logand logior 8 bsl
   swap 0xFF logand logior
 ;
 
-: coproc-str
-  coproc-str-hi 16 bsl
-  swap coproc-str-lo logior
+: stc
+  stc-lo 16 bsl
+  swap stc-hi logior
+;
+
+: ldc
+  stc-lo 16 bsl
+  swap ldc-hi logior
 ;
 
 ( Data processing: )
 ( 1 1 1 C 1 1 1 0 Op1:4 CRn:4 )
-: cdp-lo ( CRn Op1 -- ins16 )
+: cdp-hi ( CRn Op1 -- ins16 )
   0xF logand 4 bsl
   swap 0xF logand logior
   coproc logior
@@ -93,7 +105,7 @@
 ;
 
 ( CRd:4 coproc:4 Opc2:3 0 CRm:4 )
-: cdp-hi ( CRm Opc2 coproc CRd -- ins16 )
+: cdp-lo ( CRm Opc2 coproc CRd -- ins16 )
   0xF logand 4 bsl
   swap 0xF logand logior 3 bsl
   swap 0x7 logand logior 5 bsl
@@ -101,24 +113,24 @@
 ;
 
 : cdp ( CRn Op1 CRm Opc2 coproc CRd -- ins32 )
-  cdp-hi 16 bsl
-  rot swap cdp-lo
+  cdp-lo 16 bsl
+  rot swap cdp-hi
   logior
 ;
 
 ( Register transfers: )
 ( 1 1 1 C 1 1 1 0 Op1:3 L CRn:4 )
-: mcr-lo ( CRn Op1 -- ins16 )
+: mcr-hi ( CRn Op1 -- ins16 )
   0x7 logand 5 bsl
   swap 0xF logand logior
   coproc logior
   9 bit-set
 ;
 
-: mrc-lo mcr-lo 4 bit-set ;
+: mrc-hi mcr-hi 4 bit-set ;
 
 ( Rxf:4 coproc:4 Op2:3 1 CRm:4 )
-: mcr-hi ( CRm Op2 coproc Rxf -- ins16 )
+: mcr-lo ( CRm Op2 coproc Rxf -- ins16 )
   0xF logand 4 bsl
   swap 0xF logand logior 3 bsl
   swap 0x7 logand logior 1 bsl
@@ -127,11 +139,11 @@
 ;
 
 : mcr ( CRn Op1 CRm Op2 coproc Rxf )
-  mcr-hi 16 bsl
-  rot swap mcr-lo logior
+  mcr-lo 16 bsl
+  rot swap mcr-hi logior
 ;
 
 : mrc ( CRn Op1 CRm Op2 coproc Rxf )
-  mcr-hi 16 bsl
-  rot swap mrc-lo logior
+  mcr-lo 16 bsl
+  rot swap mrc-hi logior
 ;

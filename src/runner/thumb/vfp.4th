@@ -23,36 +23,32 @@ endop
 ( Single precision: )
 
 defop float32-add
-  0 r1 bit-set popr ,uint16
   r0 0 fmsr.32 ,uint32
-  r1 1 fmsr.32 ,uint32
+  1 vpop ,uint32
   1 0 2 fadd.32 ,uint32
   2 r0 fmrs.32 ,uint32
   emit-next
 endop
 
 defop float32-sub
-  0 r1 bit-set popr ,uint16
   r0 0 fmsr.32 ,uint32
-  r1 1 fmsr.32 ,uint32
+  1 vpop ,uint32
   1 0 2 fsub.32 ,uint32
   2 r0 fmrs.32 ,uint32
   emit-next
 endop
 
 defop float32-mul
-  0 r1 bit-set popr ,uint16
   r0 0 fmsr.32 ,uint32
-  r1 1 fmsr.32 ,uint32
+  1 vpop ,uint32
   1 0 2 fmul.32 ,uint32
   2 r0 fmrs.32 ,uint32
   emit-next
 endop
 
 defop float32-div
-  0 r1 bit-set popr ,uint16
   r0 0 fmsr.32 ,uint32
-  r1 1 fmsr.32 ,uint32
+  1 vpop ,uint32
   1 0 2 fdiv.32 ,uint32
   2 r0 fmrs.32 ,uint32
   emit-next
@@ -73,9 +69,8 @@ defop float32-abs
 endop
 
 defop float32-equals?
-  0 r1 bit-set popr ,uint16
   r0 0 fmsr.32 ,uint32
-  r1 1 fmsr.32 ,uint32
+  1 vpop ,uint32
   0 1 fcmps ,uint32
   1 r15 fmrx.32 ,uint32
   ' beq emit-truther
@@ -83,9 +78,8 @@ defop float32-equals?
 endop
 
 defop float32<=>
-  0 r1 bit-set popr ,uint16
   r0 0 fmsr.32 ,uint32
-  r1 1 fmsr.32 ,uint32
+  1 vpop ,uint32
   0 1 fcmps ,uint32
   1 r15 fmrx.32 ,uint32
   emit-comparable-resulter
@@ -131,11 +125,14 @@ endop
 ( Double precision: )
 
 defop float64-add ( bh bl ah al -- rh rl )
-  0 r1 bit-set r2 bit-set r3 bit-set popr ,uint16
+  ( Could also do:
+  0 r1 bit-set popr ,uint16
   r0 0 fmdlr.64 ,uint32
   r1 0 fmdhr.64 ,uint32
-  r2 1 fmdlr.64 ,uint32
-  r3 1 fmdhr.64 ,uint32
+  1 vpopd ,uint32
+  )
+  0 r0 bit-set pushr ,uint16
+  2 0 vpopnd ,uint32
   1 0 2 fadd.64 ,uint32
   2 r0 fmrdl.64 ,uint32
   2 r1 fmrdh.64 ,uint32
@@ -144,11 +141,8 @@ defop float64-add ( bh bl ah al -- rh rl )
 endop
 
 defop float64-sub ( bh bl ah al -- rh rl )
-  0 r1 bit-set r2 bit-set r3 bit-set popr ,uint16
-  r0 0 fmdlr.64 ,uint32
-  r1 0 fmdhr.64 ,uint32
-  r2 1 fmdlr.64 ,uint32
-  r3 1 fmdhr.64 ,uint32
+  0 r0 bit-set pushr ,uint16
+  2 0 vpopnd ,uint32
   1 0 2 fsub.64 ,uint32
   2 r0 fmrdl.64 ,uint32
   2 r1 fmrdh.64 ,uint32
@@ -157,11 +151,8 @@ defop float64-sub ( bh bl ah al -- rh rl )
 endop
 
 defop float64-mul
-  0 r1 bit-set r2 bit-set r3 bit-set popr ,uint16
-  r0 0 fmdlr.64 ,uint32
-  r1 0 fmdhr.64 ,uint32
-  r2 1 fmdlr.64 ,uint32
-  r3 1 fmdhr.64 ,uint32
+  0 r0 bit-set pushr ,uint16
+  2 0 vpopnd ,uint32
   1 0 2 fmul.64 ,uint32
   2 r0 fmrdl.64 ,uint32
   2 r1 fmrdh.64 ,uint32
@@ -170,11 +161,8 @@ defop float64-mul
 endop
 
 defop float64-div
-  0 r1 bit-set r2 bit-set r3 bit-set popr ,uint16
-  r0 0 fmdlr.64 ,uint32
-  r1 0 fmdhr.64 ,uint32
-  r2 1 fmdlr.64 ,uint32
-  r3 1 fmdhr.64 ,uint32
+  0 r0 bit-set pushr ,uint16
+  2 0 vpopnd ,uint32
   1 0 2 fdiv.64 ,uint32
   2 r0 fmrdl.64 ,uint32
   2 r1 fmrdh.64 ,uint32
@@ -205,11 +193,8 @@ defop float64-abs
 endop
 
 defop float64-equals? ( ah al bh bl -- true? )
-  0 r1 bit-set r2 bit-set r3 bit-set popr ,uint16
-  r0 0 fmdlr.64 ,uint32
-  r1 0 fmdhr.64 ,uint32
-  r2 1 fmdlr.64 ,uint32
-  r3 1 fmdhr.64 ,uint32
+  0 r0 bit-set pushr ,uint16
+  2 0 vpopnd ,uint32
   0 1 fcmpd ,uint32
   1 r15 fmrx.32 ,uint32
   ' beq emit-truther
@@ -217,11 +202,8 @@ defop float64-equals? ( ah al bh bl -- true? )
 endop
 
 defop float64<=> ( ah al bh bl -- trival )
-  0 r1 bit-set r2 bit-set r3 bit-set popr ,uint16
-  r0 0 fmdlr.64 ,uint32
-  r1 0 fmdhr.64 ,uint32
-  r2 1 fmdlr.64 ,uint32
-  r3 1 fmdhr.64 ,uint32
+  0 r0 bit-set pushr ,uint16
+  2 0 vpopnd ,uint32
   0 1 fcmpd ,uint32
   1 r15 fmrx.32 ,uint32
   emit-comparable-resulter

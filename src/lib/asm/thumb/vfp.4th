@@ -1,5 +1,7 @@
 ( VFP: see ddi0100e_arm_arm.pdf )
 
+( Register transfers: )
+
 : fmsr.32 ( Rxf CRm -- ins32 )
   ( ARM to VFP float )
   ( CRn Op1 CRm Op2 coproc Rxf )
@@ -36,7 +38,141 @@
   rot 2 dropn
 ;
 
-( 32 & 64 bit only differs in coprocessor [and data size], and last bits fiddling )
+( Load & Store: )
+
+( Single precision L&S: )
+
+: fstores ( offset Rn Fd -- ins32 )
+  ( -> Rn imm8 coproc CRd -> ins32 )
+  2 overn 4 overn 10 4 overn 1 bsr stc
+  swap 1 logand IF coproc-d THEN
+  rot 2 dropn
+;
+
+: fsts- ( offset Rn Fd -- ins32 )
+  rot 2 bsr rot fstores coproc-p
+;
+
+: fsts+
+  rot 2 bsr rot fstores coproc-p coproc-u
+;
+
+: fsts
+  3 overn 0 int<
+  IF 3 overn negate 3 set-overn fsts-
+  ELSE fsts+
+  THEN
+;
+
+: flds- fsts- .ldc ;
+: flds+ fsts+ .ldc ;
+: flds fsts .ldc ;
+
+: fstms ( count Rn CRs -- ins32 )
+  fstores coproc-u
+;
+
+: fstms+ fstms coproc-w ;
+: fstms- fstores coproc-p coproc-w ;
+
+: fldms ( count Rn CRs -- ins32 )
+  fstms .ldc
+;
+
+: fldms+ fstms+ .ldc ;
+: fldms- fstms- .ldc ;
+
+: vpopn ( count Cr -- ins32 )
+  sp swap fldms+
+;
+
+: vpop ( Cr -- ins32 )
+  1 swap vpopn
+;
+
+: vpushn ( count Cr -- ins32 )
+  sp swap fstms+
+;
+
+: vpush ( Cr -- ins32 )
+  1 swap vpushn
+;
+
+( Double precision L&S: )
+
+: fstored ( offset Rn Fd -- ins32 )
+  ( -> Rn imm8 coproc CRd -> ins32 )
+  swap rot swap 11 swap stc
+;
+
+: fstd- rot 2 bsr rot fstored coproc-p ;
+: fstd+ rot 2 bsr rot fstored coproc-p coproc-u ;
+
+: fstd
+  3 overn 0 int<
+  IF 3 overn negate 3 set-overn fstd-
+  ELSE fstd+
+  THEN
+;
+
+: fldd+ fstd+ .ldc ;
+: fldd- fstd- .ldc ;
+: fldd fstd .ldc ;
+
+: fstmd ( count Rn CRs -- ins32 )
+  rot 1 bsl rot fstored coproc-u
+;
+
+: fstmd+ fstmd coproc-w ;
+: fstmd- fstored coproc-p coproc-w ;
+
+: fldmd ( count Rn CRs -- ins32 )
+  fstmd .ldc
+;
+
+: fldmd+ fstmd+ .ldc ;
+: fldmd- fstmd- .ldc ;
+
+: vpopnd ( count Cr -- ins32 )
+  sp swap fldmd+
+;
+
+: vpopd ( Cr -- ins32 )
+  1 swap vpopnd
+;
+
+: vpushnd ( count Cr -- ins32 )
+  sp swap fstmd+
+;
+
+: vpushd ( Cr -- ins32 )
+  1 swap vpushnd
+;
+
+( Offset[0] variant of L&S: )
+
+: fstorex ( count Rn CRs -- ins32 )
+  rot 1 bsl 1 logior rot
+  fstored
+;
+
+: fstmx ( count Rn CRs -- ins32 )
+  fstorex coproc-u
+;
+
+: fldmx ( count Rn CRs -- ins32 )
+  fstmx .ldc
+;
+
+: fstmx+ fstmx coproc-w ;
+: fstmx- fstorex coproc-p coproc-w ;
+
+: fldmx+ fstmx+ .ldc ;
+: fldmx- fstmx- .ldc ;
+
+( Data Processing: )
+
+( 32 & 64 bit only differs in coprocessor [and data size], and last bits fiddling; reuse with a32 and a64? )
 ( todo use ARM or GCC mneumonics? )
 ( ideally functions get a set of integer and a set of floating point args in registers w/o touching the stack. )
 
