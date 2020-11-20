@@ -7,7 +7,7 @@ declare -a STACK
 # Pushes the argument onto the Forth stack.
 function fpush()
 {
-    STACK=( "$1" "${STACK[@]}" )
+    STACK=( "$@" "${STACK[@]}" )
 }
 
 # Pops 1 or more values from the Forth stack.

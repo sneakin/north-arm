@@ -77,6 +77,7 @@ DICT['literal']='EIP=$(($EIP + 1)); i="$EIP"; fpush "${EVAL_EXPR[$i]}"'
 #
 DICT['read-until']='term="${STACK[0]}"; fpop; read_until "$term"; fpush "$TOKEN"'
 DICT['"']='read_until \" && fpush "${TOKEN}"'
+DICT['s"']='read_until \" && fpush "${#TOKEN}" "${TOKEN}"'
 DICT['(']='read_until ")"'
 DICT['read-file']='fpush "$(cat ${STACK[0]})"'
 
@@ -150,10 +151,10 @@ DICT['write-byte']='printf "\\x$(printf %x "${STACK[0]}")"; fpop'
 #IDICT['"']="${DICT['\"']}"
 #IDICT["\'"]="${DICT[\\\"\'\\\"]}"
 
-IDICT["'"]='next_token; fpush literal && fpush "${TOKEN}"'
-IDICT['"']='read_until \" && fpush literal && fpush "${TOKEN}"'
-IDICT['q"']='read_until \" && fpush literal && fpush "\"${TOKEN}\""'
-IDICT['s"']='read_until \" && fpush "${TOKEN}"'
+IDICT["'"]='next_token; fpush "${TOKEN}" literal'
+IDICT['"']='read_until \" && fpush "${TOKEN}" literal'
+IDICT['q"']='read_until \" && fpush "\"${TOKEN}\"" literal'
+IDICT['s"']='read_until \" && fpush "${#TOKEN}" int32 "${TOKEN}" literal'
 
 #
 # Frames

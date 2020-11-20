@@ -188,7 +188,7 @@ endcol
 def " ( ++ ...bytes ptr )
   POSTPONE tmp"
   swap drop 1 + stack-allot
-  string-buffer peek over string-buffer-length peek copy-byte-string/3
+  string-buffer peek over string-buffer-length peek 1 + copy-byte-string/3
   int32 4 dropn
   here exit-frame
 end
@@ -196,7 +196,7 @@ end
 def c" ( ++ ...bytes length )
   POSTPONE tmp"
   swap drop 1 + stack-allot
-  string-buffer peek over string-buffer-length peek copy-byte-string/3
+  string-buffer peek over string-buffer-length peek 1 + copy-byte-string/3
   int32 4 dropn
   string-buffer-length peek
   exit-frame

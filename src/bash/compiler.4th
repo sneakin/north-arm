@@ -215,9 +215,5 @@ alias> string-const> const>
   drop error-line
 ;
 
-: s"
-  POSTPONE \" dup string-length
-;
-
 " src/bash/frames.4th" load
 " src/bash/list.4th" load

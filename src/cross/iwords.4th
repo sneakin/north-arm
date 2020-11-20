@@ -15,19 +15,24 @@
 ' POSTPONE out-immediate/1
 
 : out-dq
-  ' \" read-until
-; out-immediate-as s"
+  ( Read until a double quote, writing the contained data to the data stack and pushing the calls to leave a pointer on the stack for a definition. )
+  literal pointer dhere to-out-addr ( todo pointer or segment offset )
+  ' \" read-until ,byte-string 4 align-data
+  ( Update the word being defined as it's definition will have moved. )
+  ( todo update when mapping the stack? )
+  dhere out-dict dict-entry-data uint32!
+; out-immediate-as "
 
 : out-dq-string
-  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
-  literal pointer dhere ( todo pointer or segment offset )
+  ( Read until a double quote, writing the contained data to the data stack and leaving a quoted pointer and length on the stack for a definition. )
+  literal pointer dhere to-out-addr ( todo pointer or segment offset )
   ' \" read-until
   dup string-length swap ,byte-string 4 align-data
   literal int32 swap
   ( Update the word being defined as it's definition will have moved. )
   ( todo update when mapping the stack? )
   dhere out-dict dict-entry-data uint32!
-; out-immediate-as "
+; out-immediate-as s"
 
 : out-IF
   literal int32
