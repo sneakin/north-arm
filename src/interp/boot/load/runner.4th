@@ -32,7 +32,5 @@ s[ src/runner/thumb/aliases.4th
    src/runner/thumb/math.4th
    src/runner/math.4th
    src/interp/data-stack.4th
-   src/lib/list.4th
-   src/interp/dynlibs.4th
-   src/interp/libc.4th
+   src/runner/imports.4th
 ] load-list

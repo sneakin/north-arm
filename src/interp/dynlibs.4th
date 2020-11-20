@@ -1,11 +1,5 @@
 ( will need two variants: using libdl in the interpreter and relocations in the compiler. Both need to add dictionary words that call / reference imports. )
 
-library> ld-android.so
-library> libdl.so
-import> dlopen dlopen 2
-import> dlsym dlsym 2
-import> dlclose dlclose 1
-
 0 defvar> *libraries*
 
 def library> ( : path ++ handle )

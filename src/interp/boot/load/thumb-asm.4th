@@ -10,6 +10,7 @@ s[
   src/interp/boot/cross.4th
   src/interp/boot/debug.4th
 
+  src/interp/dynlibs.4th
   src/lib/elf/stub32-dynamic.4th
 
   src/cross/defining/op.4th
