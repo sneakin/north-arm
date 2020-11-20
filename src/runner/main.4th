@@ -165,6 +165,10 @@ end
 
 256 defconst> words-xy-pitch
 
+def write-byte
+  arg0 1 write-string/2
+end
+
 def tab 9 write-byte end
 
 defcol write-tabbed-hex-uint

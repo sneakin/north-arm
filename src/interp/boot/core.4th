@@ -24,7 +24,7 @@ end
 def alias>
   create>
   ['] dup 12 unless-jump swap alias exit-frame
-  not-found enl dict-drop return0
+  not-found enl dict-drop return
 end
 
 ( create> : ' defproper swap alias )
@@ -259,6 +259,10 @@ def copies-entry-as ( link source-entry new-name )
   arg0 cs - over dict-entry-name poke
   arg2 dup IF cs - THEN over dict-entry-link poke
   exit-frame
+end
+
+def error
+  " Error" error-line
 end
 
 def copy-as> ( link src-entry -- new-entry )

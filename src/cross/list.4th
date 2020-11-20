@@ -8,7 +8,7 @@
 ;
 
 : ,out-string-list ( src-cons )
-  0 ' out-string-list-fn revmap-car/3 drop swap drop
+  0 ' out-string-list-fn revmap-cons/3 drop swap drop
 ;
 
 def out-read-list
