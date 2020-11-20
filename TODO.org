@@ -108,6 +108,7 @@ revmap-stack? stack-find?
 ** 16 bit op codes: needs int32, literal, etc. to be immediates that write proper sized bytes to op sequence.
 ** DONE make-noname: call a function with predetermined arguments like `equals?` with one argument.
 ** Dictionary entry code value: has to point to real code?
+** Variable data allocated on init, value outside the dictionary.
 ** Lisp style dictionary: assoc list of functions
 ** DONE Remove unasked output
 ** Tail call optimizations
@@ -214,6 +215,13 @@ Zero needed atbend of definitions for decompile.
 *** TODO out-off' should be ' but using the compiling-dict; likewise with [']
 dry up with comp' immediated as ' to use compiling-dict.
 ** TODO move defining/*-boot files to interp/boot/defining
+** TODO Towards Lisp
+*** Dictionary as argument
+*** Dictionary list & first class functions
+*** Types
+*** Structures
+*** Sequences
+*** Garbage collection
 * Thoughts
 ** def syntax
 *** Current
