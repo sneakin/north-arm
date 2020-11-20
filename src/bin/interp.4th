@@ -9,6 +9,9 @@ s[
    src/interp/dictionary.4th
    src/interp/output.4th
    src/interp/reader.4th
+   src/interp/linux/program-args.4th
+   src/interp/linux/auxvec.4th
+   src/interp/linux/hwcaps.4th
    src/interp/interp.4th
    src/interp/list.4th
    src/interp/compiler.4th

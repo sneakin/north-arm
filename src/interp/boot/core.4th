@@ -268,48 +268,11 @@ def copy-as> ( link src-entry -- new-entry )
   THEN
 end
 
-def error
-  " Error" error-line
-end
-
 symbol> read-terminator
 
 alias> endcol end-compile
 op-size const> -op-size ( todo  needs to be variable )
 op-mask const> -op-mask
-
-def top-frame-loop
-  arg0 parent-frame dup IF set-arg0 repeat-frame THEN
-  return0
-end
-
-0 var> -top-frame
-
-def top-frame
-  -top-frame peek
-  dup UNLESS
-    drop current-frame top-frame-loop
-    dup -top-frame poke
-  THEN return1
-end
-
-def argc
-  top-frame farg1 peek return1
-end
-
-def argv
-  top-frame farg2 return1
-end
-
-def argv/1
-  argv cell-size arg0 * +
-  dup IF peek ELSE 0 THEN return1
-end
-
-def env
-  top-frame frame-args cell-size 3 argc + arg0 + * +
-  dup IF peek ELSE 0 THEN return1
-end
 
 def fill-seq ( seq n value )
   arg1 0 int> UNLESS return0 THEN
