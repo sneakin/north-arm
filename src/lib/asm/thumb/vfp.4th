@@ -1,8 +1,22 @@
 ( VFP: see ddi0100e_arm_arm.pdf )
 
+( todo need these values at runtime. )
+
+0xFF 23 bsl const> float32-infinity
+0x1FF 23 bsl const> float32-negative-infinity
+0xFF 23 bsl 1 logior const> float32-nan
+0x1FF 23 bsl 1 logior 22 bit-set const> float32-quiet-nan
+0x80000000 const> float32-negative-zero
+
+: float64-infinity 0x7FF 20 bsl 0 ;
+: float64-negative-infinity 0x7FF 20 bsl 19 bit-set 0 ;
+: float64-nan 0x7FF 20 bsl 1 ;
+: float64-quiet-nan 0x7FF 20 bsl 19 bit-set 1 ;
+: float64-negative-zero 0x80000000 0 ;
+
 ( Register transfers: )
 
-: fmsr.32 ( Rxf CRm -- ins32 )
+: fmsrs ( Rxf CRm -- ins32 )
   ( ARM to VFP float )
   ( CRn Op1 CRm Op2 coproc Rxf )
   dup 1 bsr
@@ -14,7 +28,7 @@
   mcr rot 2 dropn
 ;
 
-: fmrs.32 ( VFP float to ARM )
+: fmrss ( VFP float to ARM )
   ( CRn Op1 CRm Op2 coproc Rxf )
   over 1 bsr
   0
@@ -25,15 +39,15 @@
   mrc rot 2 dropn
 ;
 
-: fmrx.32 ( fn rd )
-  ( ARm register to VFP status )
+: fmrxs ( fn rd )
+  ( VFP status to ARM )
   ( CRn Op1 CRm Op2 coproc Rxf )
   over 7 0 0 10 6 overn mrc
   rot 2 dropn
 ;
 
-: fmxr.32 ( rd fn )
-  ( VFP status to ARM )
+: fmxrs ( rd fn )
+  ( ARm register to VFP status )
   dup 7 0 0 10 7 overn mcr
   rot 2 dropn
 ;
@@ -57,6 +71,7 @@
   rot 2 bsr rot fstores coproc-p coproc-u
 ;
 
+( Store a single at Rn+offset. )
 : fsts
   3 overn 0 int<
   IF 3 overn negate 3 set-overn fsts-
@@ -66,20 +81,28 @@
 
 : flds- fsts- .ldc ;
 : flds+ fsts+ .ldc ;
+
+( Load a single at Rn+offset. )
 : flds fsts .ldc ;
 
+( Store multiple singles. )
 : fstms ( count Rn CRs -- ins32 )
   fstores coproc-u
 ;
 
+( Store multiple singles with auto-increment. )
 : fstms+ fstms coproc-w ;
+( Store multiple singles with auto-decrement. )
 : fstms- fstores coproc-p coproc-w ;
 
+( Load multiple singles. )
 : fldms ( count Rn CRs -- ins32 )
   fstms .ldc
 ;
 
+( Load multiple singles with auto-increment. )
 : fldms+ fstms+ .ldc ;
+( Load multiple singles with auto-decrement. )
 : fldms- fstms- .ldc ;
 
 : vpopn ( count Cr -- ins32 )
@@ -91,7 +114,7 @@
 ;
 
 : vpushn ( count Cr -- ins32 )
-  sp swap fstms+
+  sp swap fstms-
 ;
 
 : vpush ( Cr -- ins32 )
@@ -108,6 +131,7 @@
 : fstd- rot 2 bsr rot fstored coproc-p ;
 : fstd+ rot 2 bsr rot fstored coproc-p coproc-u ;
 
+( Store a double at Rn+offset. )
 : fstd
   3 overn 0 int<
   IF 3 overn negate 3 set-overn fstd-
@@ -117,20 +141,28 @@
 
 : fldd+ fstd+ .ldc ;
 : fldd- fstd- .ldc ;
+
+( Load a double at Rn+offset. )
 : fldd fstd .ldc ;
 
+( Store multiple doubles. )
 : fstmd ( count Rn CRs -- ins32 )
   rot 1 bsl rot fstored coproc-u
 ;
 
+( Store multiple doubles with auto-increment. )
 : fstmd+ fstmd coproc-w ;
+( Store multiple doubles with auto-decrement. )
 : fstmd- fstored coproc-p coproc-w ;
 
+( Load multiple doubles. )
 : fldmd ( count Rn CRs -- ins32 )
   fstmd .ldc
 ;
 
+( Load multiple doubles with auto-increment. )
 : fldmd+ fstmd+ .ldc ;
+( Load multiple doubles with auto-decrement. )
 : fldmd- fstmd- .ldc ;
 
 : vpopnd ( count Cr -- ins32 )
@@ -142,14 +174,14 @@
 ;
 
 : vpushnd ( count Cr -- ins32 )
-  sp swap fstmd+
+  sp swap fstmd-
 ;
 
 : vpushd ( Cr -- ins32 )
   1 swap vpushnd
 ;
 
-( Offset[0] variant of L&S: )
+( VFP internal format L&S: )
 
 : fstorex ( count Rn CRs -- ins32 )
   rot 1 bsl 1 logior rot
@@ -164,6 +196,7 @@
   fstmx .ldc
 ;
 
+( Auto incrementing: )
 : fstmx+ fstmx coproc-w ;
 : fstmx- fstorex coproc-p coproc-w ;
 
@@ -173,12 +206,13 @@
 ( Data Processing: )
 
 ( 32 & 64 bit only differs in coprocessor [and data size], and last bits fiddling; reuse with a32 and a64? )
-( todo use ARM or GCC mneumonics? )
+( todo use f* or v*.type mneumonics? )
 ( ideally functions get a set of integer and a set of floating point args in registers w/o touching the stack. )
 
-: vfp-cdp.32
+: vfp-cdps
   ( Register low bit gets placed into the op code fields. )
   ( CRn Op1 CRm Opc2 CRd )
+  ( Do bit gymnastics to place LSB in Op2 field. )
   5 overn 1 logand 2 bsl 4 overn 1 logand logior 3 overn logior 2 set-overn ( Opc2 ||= N s M 0 )
   1 overn 1 logand 2 bsl 5 overn logior 4 set-overn ( Op1 ||= P D Q R )
   5 overn 1 bsr 5 set-overn ( shift CRn )
@@ -187,137 +221,149 @@
   10 swap cdp
 ;
 
-: fadd.32 ( fm fn fd )
-  3 overn 3 4 overn 0 5 overn vfp-cdp.32
+: fadds ( fm fn fd )
+  3 overn 3 4 overn 0 5 overn vfp-cdps
   3 set-overn 2 dropn
 ;
 
-: fsub.32 ( fm fn fd )
-  3 overn 3 4 overn 2 5 overn vfp-cdp.32
+: fsubs ( fm fn fd )
+  3 overn 3 4 overn 2 5 overn vfp-cdps
   3 set-overn 2 dropn
 ;
 
-: fmul.32 ( fm fn fd )
-  3 overn 2 4 overn 0 5 overn vfp-cdp.32
+: fmuls ( fm fn fd )
+  3 overn 2 4 overn 0 5 overn vfp-cdps
   3 set-overn 2 dropn
 ;
 
-: fdiv.32 ( fm fn fd )
-  3 overn 8 4 overn 0 5 overn vfp-cdp.32
+: fdivs ( fm fn fd )
+  3 overn 8 4 overn 0 5 overn vfp-cdps
   3 set-overn 2 dropn
 ;
 
 : fnegs
-  2 0xB 4 overn 2 5 overn vfp-cdp.32
+  2 0xB 4 overn 2 5 overn vfp-cdps
+  rot 2 dropn
+;
+
+: fsqrts
+  3 0xB 4 overn 2 5 overn vfp-cdps
+  rot 2 dropn
+;
+
+: fcpys
+  0 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : fabss
-  1 0xB 4 overn 2 5 overn vfp-cdp.32
+  1 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : fcmps
-  8 0xB 4 overn 2 5 overn vfp-cdp.32
+  8 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : fcmpzs
-  10 0xB 0 2 5 overn vfp-cdp.32
+  10 0xB 0 2 5 overn vfp-cdps
   swap drop
 ;
 
+( Float32 conversions: )
+
 : fuitos ( fm fd )
   ( uint32 to float32 )
-  16 0xB 4 overn 2 5 overn vfp-cdp.32
+  16 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : fsitos ( fm fd )
   ( int32 to float32 )
-  17 0xB 4 overn 2 5 overn vfp-cdp.32
+  17 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : ftouis ( fm fd )
   ( float32 to uint32 )
-  0x18 0xB 4 overn 2 5 overn vfp-cdp.32
+  0x18 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : ftouizs ( fm fd )
   ( float32 to uint32, round to zero )
-  0x19 0xB 4 overn 2 5 overn vfp-cdp.32
+  0x19 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : ftosis ( fm fd )
   ( float32 to int32 )
-  0x1A 0xB 4 overn 2 5 overn vfp-cdp.32
+  0x1A 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : ftosizs ( fm fd )
   ( float32 to int32, round to zero )
-  0x1B 0xB 4 overn 2 5 overn vfp-cdp.32
+  0x1B 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 : fcvtds ( fm fd )
   ( float32 to float64 )
-  0xF 0xB 4 overn 2 5 overn vfp-cdp.32
+  0xF 0xB 4 overn 2 5 overn vfp-cdps
   rot 2 dropn
 ;
 
 ( Double precision: )
 
-: fmdlr.64 ( Rxf CRm -- ins32 )
+: fmdlrd ( Rxf CRm -- ins32 )
   ( ARM to VFP float64[0:31] )
   ( CRn Op1 CRm Op2 coproc Rxf )
   dup 0 0 0 11 7 overn mcr
   rot 2 dropn
 ;
 
-: fmrdl.64
+: fmrdld
   ( VFP float64[0:31] to ARM )
   ( CRn Op1 CRm Op2 coproc Rxf )
   over 0 0 0 11 6 overn mrc
   rot 2 dropn
 ;
 
-: fmdhr.64 ( Rxf CRm -- ins32 )
+: fmdhrd ( Rxf CRm -- ins32 )
   ( ARM to float64[32:63] )
   ( CRn Op1 CRm Op2 coproc Rxf )
   dup 1 0 0 11 7 overn mcr
   rot 2 dropn
 ;
 
-: fmrdh.64
+: fmrdhd
   ( VFP float64[32:63] to ARM )
   ( CRn Op1 CRm Op2 coproc Rxf )
   over 1 0 0 11 6 overn mrc
   rot 2 dropn
 ;
 
-: fadd.64 ( fm fn fd )
+: faddd ( fm fn fd )
   ( CRn Op1 CRm Opc2 coproc CRd )
   3 overn 3 4 overn 0 11 6 overn cdp
   3 set-overn 2 dropn
 ;
 
-: fsub.64 ( fm fn fd )
+: fsubd ( fm fn fd )
   ( CRn Op1 CRm Opc2 coproc CRd )
   3 overn 3 4 overn 2 11 6 overn cdp
   3 set-overn 2 dropn
 ;
 
-: fmul.64 ( fm fn fd )
+: fmuld ( fm fn fd )
   ( CRn Op1 CRm Opc2 coproc CRd )
   3 overn 2 4 overn 0 11 6 overn cdp
   3 set-overn 2 dropn
 ;
 
-: fdiv.64 ( fm fn fd )
+: fdivd ( fm fn fd )
   ( CRn Op1 CRm Opc2 coproc CRd )
   3 overn 8 4 overn 0 11 6 overn cdp
   3 set-overn 2 dropn
@@ -328,8 +374,18 @@
   rot 2 dropn
 ;
 
-: fabsd
+: fsqrtd
+  1 0xB 4 overn 2 11 6 overn cdp .cdp-n
+  rot 2 dropn
+;
+
+: fcpyd
   0 0xB 4 overn 6 11 6 overn cdp
+  rot 2 dropn
+;
+
+: fabsd
+  0 0xB 4 overn 6 11 6 overn cdp .cdp-n
   rot 2 dropn
 ;
 
@@ -342,6 +398,8 @@
   5 0xB 0 6 11 6 overn cdp
   swap drop
 ;
+
+( Float64 conversions: )
 
 : ftouid ( fm fd )
   ( float64 to uint32 )

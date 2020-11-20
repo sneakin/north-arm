@@ -25,7 +25,7 @@ alias> ip r12
 alias> fp r11
 alias> sl r10
 
-: nop 0 ;
+: thumb-nop 0 ;
 
 ( 0 0 0 Op:2 Offset:5 Rs:3 Rd:3 Move shifted register )
 : move-shifted-reg ( offset rs rd op )

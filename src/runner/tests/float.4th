@@ -52,11 +52,13 @@ def test-float32-math
   3 3 1 ' float32-div assert-float32-op
   6 3 2 ' float32-div assert-float32-op
 
-  3 int32->float32 float32-negate -3 int32->float32 assert-float32-equals
+  2 int32->float32 float32-negate -2 int32->float32 assert-float32-equals
   -3 int32->float32 float32-negate 3 int32->float32 assert-float32-equals
 
-  3 int32->float32 float32-abs 3 int32->float32 assert-float32-equals
-  -3 int32->float32 float32-abs 3 int32->float32 assert-float32-equals
+  4 int32->float32 float32-abs 4 int32->float32 assert-float32-equals
+  -5 int32->float32 float32-abs 5 int32->float32 assert-float32-equals
+
+  9 int32->float32 float32-sqrt 3 int32->float32 assert-float32-equals
 end
 
 def test-float32-conv
@@ -128,11 +130,13 @@ def test-float64-math
   3 3 1 ' float64-div assert-float64-op
   6 3 2 ' float64-div assert-float64-op
 
-  3 int32->float64 float64-negate -3 int32->float64 assert-float64-equals
+  2 int32->float64 float64-negate -2 int32->float64 assert-float64-equals
   -3 int32->float64 float64-negate 3 int32->float64 assert-float64-equals
 
-  3 int32->float64 float64-abs 3 int32->float64 assert-float64-equals
-  -3 int32->float64 float64-abs 3 int32->float64 assert-float64-equals
+  4 int32->float64 float64-abs 4 int32->float64 assert-float64-equals
+  -5 int32->float64 float64-abs 5 int32->float64 assert-float64-equals
+
+  9 int32->float64 float64-sqrt 3 int32->float64 assert-float64-equals
 end
 
 def test-float64-conv
@@ -156,6 +160,26 @@ def test-float64
   test-float64<=>
   test-float64-math
   test-float64-conv
+end
+
+def test-float32.2
+  ( set vector length )
+  vfpscr
+  dup 2 16 bsl logior dup vfpscr!
+  ( assert it changed )
+  vfpscr assert-equals
+  ( make our addends )
+  3 int32->float32 4 int32->float32
+  ( add the pair to itself )
+  2dup 2dup float32-add-2
+  8 int32->float32 assert-float32-equals 2 dropn
+  6 int32->float32 assert-float32-equals 2 dropn
+  ( add the pair 3 times )
+  2dup 2dup float32-add-2 float32-add-2
+  12 int32->float32 assert-float32-equals 2 dropn
+  9 int32->float32 assert-float32-equals 2 dropn
+  ( restore the vector length )
+  local0 vfpscr!
 end
 
 def test-float

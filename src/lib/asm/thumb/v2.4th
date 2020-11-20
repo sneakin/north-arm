@@ -118,6 +118,8 @@
   logior
 ;
 
+: .cdp-n 23 bit-set ;
+
 ( Register transfers: )
 ( 1 1 1 C 1 1 1 0 Op1:3 L CRn:4 )
 : mcr-hi ( CRn Op1 -- ins16 )
@@ -138,12 +140,24 @@
   swap 0xF logand logior
 ;
 
+( Transfer to coprocessor. )
 : mcr ( CRn Op1 CRm Op2 coproc Rxf )
   mcr-lo 16 bsl
   rot swap mcr-hi logior
 ;
 
+( Transfer from coprocessor. )
 : mrc ( CRn Op1 CRm Op2 coproc Rxf )
   mcr-lo 16 bsl
   rot swap mrc-hi logior
+;
+
+: cpuid-pfr0
+  0 0 1 0 0xF 6 overn mrc
+  swap drop
+;
+
+: cpuid-pfr1
+  0 0 1 1 0xF 6 overn mrc
+  swap drop
 ;
