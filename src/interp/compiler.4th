@@ -85,8 +85,11 @@ def compile-token
   IF cs - COMPILING-IMMED
   ELSE
     arg1 arg0 compile-lookup
-    IF compiling-offset peek - COMPILING-WORD
-    ELSE COMPILING-INT
+    negative? IF 0 COMPILING-ERROR
+    ELSE
+      IF compiling-offset peek - COMPILING-WORD
+      ELSE COMPILING-INT
+      THEN
     THEN
   THEN set-arg0 set-arg1
 end
@@ -108,11 +111,11 @@ def compiling-read/2 ( buffer max-length ++ list-words num-words )
     COMPILING-INT WHEN
       over compiling-offset peek + compiling-literalizes-fn peek exec-abs
       UNLESS
-        " int32" compile-token negative? IF not-found THEN
+        s" int32" compile-token negative? IF s" int32" not-found/2 THEN
         drop swap
       THEN
     ;;
-    negative? IF not-found int32 2 dropn ELSE drop THEN
+    negative? IF arg1 dup string-length not-found/2 int32 2 dropn ELSE drop THEN
   ESAC
   compiling peek IF repeat-frame ELSE locals-byte-size cell/ exit-frame THEN
 end

@@ -238,7 +238,16 @@ defcol THEN
   ( no need to do anything besides not crash )
 endcol
 
-( Work lookups: )
+( Word lookups: )
+
+defcol not-found/2
+  s" Not found: " error-string/2
+  rot swap error-line/2
+endcol
+
+def token-not-found
+  token-buffer peek token-buffer-length peek not-found/2
+end
 
 def interp-token/4 ( ptr length dict offset ++ value exec? )
   arg3 arg2 parse-int
@@ -253,7 +262,7 @@ end
 
 def [']
   next-token interp-token
-  negative? IF not-found enl int32 0 ELSE drop THEN
+  negative? IF token-not-found int32 0 ELSE drop THEN
   return1
 end
 
@@ -275,12 +284,12 @@ end
 
 def interp
   next-token negative? IF int32 2 dropn exit-frame THEN
-  trace-eval peek IF 2dup nl write-string/2 space THEN
+  trace-eval peek IF 2dup error-string/2 espace THEN
   interp-token
-  negative? IF not-found int32 2 dropn
+  negative? IF token-not-found int32 2 dropn
   ELSE IF exec-abs THEN
   THEN
-  trace-eval peek IF dup write-hex-uint THEN
+  trace-eval peek IF s" => " error-string/2 dup error-hex-uint enl THEN
   repeat-frame
 end
 
