@@ -22,8 +22,7 @@ s[
  ] load-list
 
 ( Platform ops and words )
-s[ src/runner/thumb/aliases.4th
-   src/runner/aliases.4th
+s[ src/runner/aliases.4th
    src/runner/thumb/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames-boot.4th
@@ -31,6 +30,7 @@ s[ src/runner/thumb/aliases.4th
    src/runner/thumb/logic.4th
    src/runner/thumb/math.4th
    src/runner/math.4th
+   src/runner/stack.4th
    src/interp/data-stack.4th
    src/runner/imports.4th
 ] load-list

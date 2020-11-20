@@ -12,7 +12,7 @@
 : map-stack-seq/3 read-terminator map-stack-seq/4 ;
 : map-stack-seq/2 0 swap read-terminator map-stack-seq/4 drop ;
 
-: revmap-stack-seq-loop
+: revmap-stack-seq-loop ( ptr acc fn down-iter )
   4 overn over equals IF return THEN
   3 overn over speek 4 overn exec
   3 set-overn

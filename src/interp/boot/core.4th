@@ -124,7 +124,8 @@ end
   literal jump-data
 ; immediate
 
-def shift ( a b c -- c a b )
+( tmp" src/runner/stack.4th" drop load
+def shift
   arg0
   arg1 set-arg0
   arg2 set-arg1
@@ -132,31 +133,18 @@ def shift ( a b c -- c a b )
   return0
 end
 
-def roll ( a b c -- b c a )
+def roll
   arg0
   arg2 set-arg0
   arg1 set-arg2
   set-arg1
   return0
 end
-
-: down-stack/2 cell-size * - ;
-: down-stack int32 1 down-stack/2 ;
-
-: up-stack/2 cell-size * + ;
-: up-stack int32 1 up-stack/2 ;
-
-defcol stack-delta
-  rot swap
-  - cell/
-  swap
-end
+)
 
 : stack-find/2
   2dup speek equals int32 3 op-size * unless-jump swap drop proper-exit
-  up-stack
-  dup int32 0 equals int32 1 op-size * unless-jump proper-exit
-  loop
+  up-stack loop
 ;
 
 : stack-find
@@ -365,3 +353,10 @@ endcol
   dup string-length 0 ,byte-string/3
   3 dropn
 ;
+
+tmp" ./src/lib/byte-data.4th" drop load
+tmp" ./src/lib/seq.4th" drop load
+tmp" ./src/lib/list.4th" drop load
+tmp" ./src/lib/assoc.4th" drop load
+tmp" ./src/interp/list.4th" drop load
+tmp" ./src/interp/data-stack-list.4th" drop load

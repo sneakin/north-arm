@@ -302,32 +302,6 @@ def load
   exit-frame
 end
 
-def load-core
-  " ./src/interp/boot/core.4th" drop load
-  " ./src/lib/byte-data.4th" drop load
-  " ./src/lib/list.4th" drop load
-  exit-frame
-end
-
-def load-debug
-  " ./src/interp/boot/debug.4th" drop load
-  exit-frame
-end
-
-def load-thumb-asm
-  " ./src/interp/boot/load/thumb-asm.4th" drop load
-  exit-frame
-end
-
-def load-runner
-  " ./src/interp/boot/load/runner.4th" drop load
-  exit-frame
-end
-
-def load-interp
-  " ./src/interp/boot/load/interp.4th" drop load
-  exit-frame
-end
 
 defcol ,h over error-hex-uint endcol
 

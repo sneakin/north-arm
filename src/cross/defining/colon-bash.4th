@@ -9,16 +9,6 @@
   1 +
 ;
 
-(
-: out-literalizes?
-  dup out' int32 equals
-  swap dup out' literal equals
-  swap dup out' pointer equals
-  swap dup out' offset32 equals
-  logior logior logior
-;
-)
-
 : defcol-state-fn
   over literalizes? UNLESS
     number? IF ' int32 swap THEN
