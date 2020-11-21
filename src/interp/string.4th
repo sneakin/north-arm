@@ -16,7 +16,7 @@ defcol string-index-of ( ptr len predicate -- index )
 endcol
 
 def test-string-index-of
-  " hello world"
+  s" hello world"
   2dup literal is-space? string-index-of IF int32 5 equals? IF what ELSE crap THEN ELSE crap THEN
   2dup literal whitespace? string-index-of IF int32 5 equals? IF what ELSE crap THEN ELSE crap THEN
   ( Todo

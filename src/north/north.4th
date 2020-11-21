@@ -134,6 +134,14 @@ defcol input-reset
   exit
 endcol
 
+defcol write-byte
+  swap here 1 swap 1 write 2 dropn
+endcol
+
+defcol write-word
+  swap here cell-size swap 1 write 2 dropn
+endcol
+
 defcol jump-entry-data
   swap cs + dict-entry-data peek jump-cs
 end

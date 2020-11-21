@@ -236,7 +236,7 @@ end
 
 defcol [s"]
   literal literal swap
-  s" ( ra ptr len )
+  POSTPONE s" ( ra ptr len )
   swap rot ( ptr len ra )
   literal int32 rot swap
 endcol immediate-as s"

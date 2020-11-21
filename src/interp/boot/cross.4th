@@ -35,7 +35,6 @@ end
 
 ' ( out-immediate/1
 ' POSTPONE out-immediate/1
-' s" out-immediate
 
 ( Output memory offseting: )
 
@@ -150,12 +149,19 @@ end
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
-  s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap ( todo pointer or segment offset )
-  dup to-out-addr swap cstring-length
-  s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
+  s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN
+  swap to-out-addr
   dhere to-out-addr out-dict dict-entry-data poke
 ; out-immediate-as "
-out-immediate-as s"
+
+: out-dq-stringn
+  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
+  POSTPONE d"
+  s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN
+  swap dup to-out-addr swap cstring-length
+  s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
+  dhere to-out-addr out-dict dict-entry-data poke
+; out-immediate-as s"
 
 def oword-printer
   arg0 dict-entry-name peek from-out-addr write-string space

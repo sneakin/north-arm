@@ -1,5 +1,5 @@
 def load-core
-  s" ./src/interp/boot/core.4th" drop load
+  s" ./src/interp/boot/init.4th" drop load
   exit-frame
 end
 

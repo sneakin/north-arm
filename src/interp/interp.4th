@@ -11,7 +11,7 @@
 
 defcol prompt
   prompt-here peek peek error-hex-uint enl
-  " Forth> " error-string/2
+  s" Forth> " error-string/2
 endcol
 
 defcol prompt-read ( reader buffer max-length )
@@ -211,11 +211,11 @@ end
 ( Interpreted conditions: )
 
 def else?
-  arg1 " ELSE" string-equals?/3 return1
+  arg1 s" ELSE" string-equals?/3 return1
 end
 
 def then?
-  arg1 " THEN" string-equals?/3 return1
+  arg1 s" THEN" string-equals?/3 return1
 end
 
 def else-or-then?
@@ -303,7 +303,7 @@ def load
   the-reader peek
   token-buffer-max stack-allot
   token-buffer-max
-  " Loading " error-string/2 arg0 error-line
+  s" Loading " error-string/2 arg0 error-line
   arg0 open-input-file negative? IF return THEN
   make-fd-reader the-reader poke
   interp
