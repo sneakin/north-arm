@@ -1,4 +1,4 @@
-1 defconst> NORTH-STAGE
+NORTH-STAGE 1 + defconst> NORTH-STAGE
 
 ( Input: )
 
