@@ -34,6 +34,7 @@ def load-runner
   src/runner/thumb/math.4th
   src/runner/math.4th
   src/runner/stack.4th
+  src/runner/thumb/vfp-constants.4th
   ] load-list exit-frame
 end
 

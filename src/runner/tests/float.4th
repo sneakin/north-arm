@@ -165,7 +165,7 @@ end
 def test-float32.2
   ( set vector length )
   vfpscr
-  dup 2 16 bsl logior dup vfpscr!
+  dup 2 15 bsl logior dup vfpscr!
   ( assert it changed )
   vfpscr assert-equals
   ( make our addends )

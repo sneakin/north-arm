@@ -30,6 +30,7 @@ s[ src/runner/aliases.4th
    src/runner/thumb/logic.4th
    src/runner/thumb/math.4th
    src/runner/math.4th
+   src/runner/thumb/vfp-constants.4th
    src/runner/stack.4th
    src/interp/data-stack.4th
    src/runner/imports.4th

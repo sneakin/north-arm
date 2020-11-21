@@ -1,19 +1,5 @@
 ( VFP: see ddi0100e_arm_arm.pdf )
 
-( todo need these values at runtime. )
-
-0xFF 23 bsl const> float32-infinity
-0x1FF 23 bsl const> float32-negative-infinity
-0xFF 23 bsl 1 logior const> float32-nan
-0x1FF 23 bsl 1 logior 22 bit-set const> float32-quiet-nan
-0x80000000 const> float32-negative-zero
-
-: float64-infinity 0x7FF 20 bsl 0 ;
-: float64-negative-infinity 0x7FF 20 bsl 19 bit-set 0 ;
-: float64-nan 0x7FF 20 bsl 1 ;
-: float64-quiet-nan 0x7FF 20 bsl 19 bit-set 1 ;
-: float64-negative-zero 0x80000000 0 ;
-
 ( Register transfers: )
 
 : fmsrs ( Rxf CRm -- ins32 )
