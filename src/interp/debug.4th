@@ -37,10 +37,22 @@ end
 
 def decompile ( entry )
   arg0 IF
-    " does> " write-string/2
-    arg0 dict-entry-code peek write-hex-uint nl
+    s" create> " write-string/2
+    arg0 dict-entry-name peek cs + write-string
+    nl
+    s" does> " write-string/2
+    arg0 dict-entry-code peek
+    s" ( " write-string/2
+    dup write-hex-uint
+    s"  ) " write-string/2
+    1 lognot logand
+    ( hope for no data in from of the assembly... )
+    cs + dict-entry-size - dict-entry-name peek cs + write-string
+    nl
+    ( todo switch on code word )
     arg0 dict-entry-data peek
     dup IF cs + decompile-loop THEN
+    nl
   THEN
 end
 
