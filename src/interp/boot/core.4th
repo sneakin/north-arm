@@ -1,6 +1,7 @@
 ( Todo To load the assembler: With create builtin, need a compiling-read and colon defining words. )
 tmp" Loading core words..." error-line/2
 
+(
 return-stack peek UNLESS
   256 proper-init
   tmp" Initialized return stack" error-line/2
@@ -10,6 +11,7 @@ dhere UNLESS
   128 1024 * data-init-stack
   tmp" Initialized data stack" error-line/2
 THEN
+)
 
 def dict-drop
   dict dict-entry-link peek cs +
