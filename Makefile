@@ -175,3 +175,9 @@ bin/%.2$(EXECEXT): ./src/bin/%.4th
 bin/%.3$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE2_FORTH) > $@
 	chmod u+x $@
+
+%.png: %.elf
+	./scripts/bintopng.sh e $< $@
+
+%.raw: %.png
+	./scripts/bintopng.sh d $< $@
