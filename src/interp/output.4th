@@ -139,3 +139,6 @@ defcol error-hex-int
   swap current-error peek write-hex-int/2
   int32 2 dropn
 endcol
+
+defalias> write-int write-hex-int
+defalias> write-uint write-hex-uint

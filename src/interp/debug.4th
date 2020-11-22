@@ -14,47 +14,7 @@ def print-args
   arg0 error-hex-int nl nl
 end
 
-( Decompiling words: )
-
-def dict-contains?
-  arg0 dict dict-contains?/2 IF int32 1 return1 THEN
-  arg0 immediates peek dict-contains?/2 return1
-end
-
-def decompile-loop
-  arg0 peek int32 0 equals? IF nl return THEN
-  arg0 peek cs +
-  dup dict-contains? UNLESS nl return THEN
-  dup dict-entry-name peek cs + write-string space
-  literalizes? IF
-    arg0 op-size +
-    dup set-arg0
-    peek write-hex-uint space
-  THEN
-  arg0 op-size + set-arg0
-  repeat-frame
-end
-
-def decompile ( entry )
-  arg0 IF
-    s" create> " write-string/2
-    arg0 dict-entry-name peek cs + write-string
-    nl
-    s" does> " write-string/2
-    arg0 dict-entry-code peek
-    s" ( " write-string/2
-    dup write-hex-uint
-    s"  ) " write-string/2
-    1 lognot logand
-    ( hope for no data in from of the assembly... )
-    cs + dict-entry-size - dict-entry-name peek cs + write-string
-    nl
-    ( todo switch on code word )
-    arg0 dict-entry-data peek
-    dup IF cs + decompile-loop THEN
-    nl
-  THEN
-end
+( Memory dumping: )
 
 def memdump/2 ( ptr num-bytes )
   arg1 peek write-hex-uint space

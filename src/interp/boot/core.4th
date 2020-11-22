@@ -113,7 +113,7 @@ defcol ememdump
 endcol
 
 def .s
-  args int32 96 ememdump return0
+  args int32 96 ememdump
 end immediate-as [.s]
 
 defcol jump-data
