@@ -215,5 +215,7 @@ alias> string-const> const>
   drop error-line
 ;
 
+: not-found " Not found." error-line ;
+
 " src/bash/frames.4th" load
 " src/bash/list.4th" load

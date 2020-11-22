@@ -3,7 +3,6 @@ s[ src/runner/thumb/ops.4th
    src/runner/thumb/cpu.4th
    src/runner/thumb/vfp.4th
    src/runner/thumb/ffi.4th
-   src/runner/thumb/state.4th
    src/cross/dynlibs.4th
  ] load-list
 
@@ -32,6 +31,8 @@ s[ src/runner/aliases.4th
    src/runner/math.4th
    src/runner/thumb/vfp-constants.4th
    src/runner/stack.4th
+   src/runner/thumb/proper.4th
+   src/runner/proper.4th
    src/interp/data-stack.4th
    src/runner/imports.4th
 ] load-list

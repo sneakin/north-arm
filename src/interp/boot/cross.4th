@@ -125,10 +125,14 @@ end
   next-token cross-lookup LOOKUP-NOT-FOUND equals IF
     not-found drop
   THEN
-;
+; immediate-as [out']
+
+: [out'']
+  literal literal POSTPONE [out']
+; immediate-as out'
 
 : out-off'
-  POSTPONE out' to-out-addr
+  POSTPONE [out'] to-out-addr
 ; out-immediate-as [']
 
 : out''
@@ -136,14 +140,8 @@ end
   POSTPONE out-off'
 ; out-immediate-as '
 
-: [out'']
-  literal literal
-  POSTPONE out'
-; immediate-as out'
-
-: [out-off'']
-  literal literal
-  POSTPONE out-off'
+: out-off''
+  literal literal POSTPONE out-off'
 ; immediate-as out-off'
 
 : out-dq-string

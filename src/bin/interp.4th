@@ -16,8 +16,7 @@ s[
    src/interp/list.4th
    src/interp/compiler.4th
    src/interp/data-stack.4th
-   src/runner/thumb/proper.4th
-   src/runner/proper.4th
+   src/interp/proper.4th
    src/interp/debug.4th
    src/interp/decompiler.4th
    src/interp/loaders.4th

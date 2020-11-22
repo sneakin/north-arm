@@ -201,13 +201,10 @@ end
 ; immediate
 
 def POSTPONE
-  next-token compile-token
-  ( todo adjust words by cs )
-  negative? IF not-found enl int32 0 return1
-  ELSE
-    ( TOKEN-INT equals? UNLESS cs - THEN )
-    drop return1
-  THEN
+  next-token 2dup compile-token
+  negative? IF 2 dropn not-found/2 int32 0
+  ELSE drop
+  THEN return1
 end immediate
 
 def "

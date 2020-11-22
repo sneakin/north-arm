@@ -14,6 +14,16 @@
 ' ( out-immediate/1
 ' POSTPONE out-immediate/1
 
+: out'
+  next-token cross-lookup LOOKUP-NOT-FOUND equals IF
+    not-found
+  THEN
+; immediate-as [out']
+
+: [out'']
+  literal literal POSTPONE out'
+; immediate-as out'
+
 : out-dq
   ( Read until a double quote, writing the contained data to the data stack and pushing the calls to leave a pointer on the stack for a definition. )
   literal pointer dhere to-out-addr ( todo pointer or segment offset )

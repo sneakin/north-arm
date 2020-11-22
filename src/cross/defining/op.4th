@@ -12,7 +12,7 @@
 : endop
   0 ,uint16
   4 align-data
-; immediate
+;
 
 : op@
   -op-size 2 equals IF uint16@ ELSE uint32@ THEN

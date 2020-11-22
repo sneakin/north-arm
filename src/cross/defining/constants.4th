@@ -26,3 +26,9 @@
   dhere to-out-addr swap
   ,byte-string 4 pad-data defconst-offset>
 ;
+
+( Self referential symbols: )
+: defsymbol>
+  create> does-const dup to-out-addr swap dict-entry-data poke
+;
+

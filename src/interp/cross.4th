@@ -1,22 +1,12 @@
-: defined?
-  make-label get-word null? swap drop
+( Aliases and definitions to make it possible to load Bash style definitions into the compiled output. )
+
+: load-stage0-fun
+  NORTH-STAGE UNLESS
+    " ./src/interp/cross/bash.4th" load
+  THEN
 ;
 
-defcol up-stack/2
-  rot swap cell-size int-mul int-add swap
-endcol
-
-defcol up-stack
-  swap int32 1 up-stack/2 swap
-endcol
-
-defcol down-stack/2
-  rot swap cell-size int-mul int-sub swap
-endcol
-
-defcol down-stack
-  swap int32 1 down-stack/2 swap
-endcol
+load-stage0-fun
 
 defalias> return0 return
 defalias> return proper-exit
@@ -29,10 +19,7 @@ defalias> spoke-byte poke-byte
 
 alias> : defproper
 alias> :: redefproper
-
-( alias> immediate out-immediate )
-( alias> immediate-as out-immediate-as )
-
 alias> var> defvar>
 alias> const> defconst>
+alias> symbol> defsymbol>
 alias> alias> defalias>

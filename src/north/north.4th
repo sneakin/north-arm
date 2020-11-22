@@ -168,7 +168,7 @@ alias> cdef def
 alias> : north-def
 
 alias> calias> alias>
-alias> alias> defalias>
+alias> alias defalias>
 
 ( alias> immediate out-immediate
 alias> immediate-as out-immediate-as )

@@ -86,21 +86,6 @@
   next-token copies-entry-as
 ;
 
-( Output quote: )
-
-: out'
-  next-token cross-lookup LOOKUP-NOT-FOUND equals IF
-    not-found
-  THEN
-; out-immediate-as [']
-
-: out''
-  literal literal
-  out'
-; out-immediate-as '
-
-' out'' ' out' immediate/2
-
 : literalizes?
   dup ' int32 equals
   swap dup ' literal equals

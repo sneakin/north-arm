@@ -1,6 +1,6 @@
 ( will need two variants: using libdl in the interpreter and relocations in the compiler. Both need to add dictionary words that call / reference imports. )
 
-0 defvar> *libraries*
+0 var> *libraries*
 
 def library> ( : path ++ handle )
   next-token negative? IF 0 return1 THEN

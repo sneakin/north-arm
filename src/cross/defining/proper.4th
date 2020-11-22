@@ -1,3 +1,5 @@
+( Proper Forth colon definitions for output: )
+
 : does-proper
   out' do-proper dict-entry-code uint32@
   over dict-entry-code uint32!

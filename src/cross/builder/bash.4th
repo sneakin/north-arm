@@ -18,7 +18,7 @@ def load-runner
   src/runner/thumb/cpu.4th
   src/runner/thumb/vfp.4th
   src/runner/thumb/ffi.4th
-  src/runner/thumb/state.4th
+  src/cross/owords.4th
   src/cross/defining/colon-bash.4th
   src/cross/defining/colon.4th
   src/cross/defining/alias.4th
@@ -35,6 +35,8 @@ def load-runner
   src/runner/math.4th
   src/runner/stack.4th
   src/runner/thumb/vfp-constants.4th
+  src/runner/thumb/proper.4th
+  src/runner/proper.4th
   ] load-list exit-frame
 end
 
