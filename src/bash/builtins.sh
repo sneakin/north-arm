@@ -62,6 +62,7 @@ DICT['set-immediate!']='feval literal IDICT dict-set!'
 DICT['iwords']='feval literal IDICT dict-list'
 
 declare -A out_immediates
+DICT['oiwords']='feval literal out_immediates dict-list'
 
 #
 # Reading tokens
