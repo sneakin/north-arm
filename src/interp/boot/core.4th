@@ -1,18 +1,6 @@
 ( Todo To load the assembler: With create builtin, need a compiling-read and colon defining words. )
 tmp" Loading core words..." error-line/2
 
-(
-return-stack peek UNLESS
-  256 proper-init
-  tmp" Initialized return stack" error-line/2
-THEN
-
-dhere UNLESS
-  128 1024 * data-init-stack
-  tmp" Initialized data stack" error-line/2
-THEN
-)
-
 def dict-drop
   dict dict-entry-link peek cs +
   set-dict
@@ -29,7 +17,6 @@ def alias>
   not-found enl dict-drop return
 end
 
-( create> : ' defproper swap alias )
 alias> return0 return
 alias> return proper-exit
 alias> equals equals?
@@ -39,7 +26,7 @@ alias> mult int-mul
 
 def does-const
   pointer do-const dict-entry-code peek arg0 dict-entry-code poke
-  ( return0 )
+  return0
 end
 
 def const>
@@ -125,24 +112,6 @@ end
   literal int32 dict
   literal jump-data
 ; immediate
-
-( tmp" src/runner/stack.4th" drop load
-def shift
-  arg0
-  arg1 set-arg0
-  arg2 set-arg1
-  set-arg2
-  return0
-end
-
-def roll
-  arg0
-  arg2 set-arg0
-  arg1 set-arg2
-  set-arg1
-  return0
-end
-)
 
 : stack-find/2
   2dup speek equals int32 3 op-size * unless-jump swap drop proper-exit
