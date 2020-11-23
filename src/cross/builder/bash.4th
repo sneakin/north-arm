@@ -19,6 +19,7 @@ def load-runner
   src/runner/thumb/vfp.4th
   src/runner/thumb/ffi.4th
   src/cross/owords.4th
+  src/cross/string-list.4th
   src/cross/defining/colon-bash.4th
   src/cross/defining/colon.4th
   src/cross/defining/alias.4th

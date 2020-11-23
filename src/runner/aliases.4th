@@ -3,6 +3,9 @@
 defalias> @ peek
 defalias> ! poke
 
+defalias> cstring pointer
+defalias> uint32 int32
+
 ( Math aliases: )
 
 defalias> + int-add

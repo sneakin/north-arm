@@ -94,7 +94,7 @@ def test-insert-string-before
   s" hello" make-indirect-string set-local0
   s" hey " make-indirect-string set-local1
   local1 local0 0 insert-string
-  " hey hello" assert-string-equals/3
+  s" hey hello" assert-string-equals/3
 end
 
 def test-split-string

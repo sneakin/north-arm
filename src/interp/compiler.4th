@@ -97,8 +97,10 @@ end
 def literalizes?
   arg0 pointer literal equals? IF int32 1 set-arg0 return THEN
   arg0 pointer int32 equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer uint32 equals? IF int32 1 set-arg0 return THEN
   arg0 pointer offset32 equals? IF int32 1 set-arg0 return THEN
   arg0 pointer pointer equals? IF int32 1 set-arg0 return THEN
+  arg0 pointer cstring equals? IF int32 1 set-arg0 return THEN
   int32 0 set-arg0
 end
 

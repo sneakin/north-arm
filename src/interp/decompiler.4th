@@ -9,15 +9,25 @@ defcol write-dict-entry-name
   swap dict-entry-name peek cs + write-string
 endcol
 
+34 defconst> dquote
+
+def write-quoted-string
+  dquote write-byte space arg0 write-string ( todo escaping ) dquote write-byte
+end
+
 def decompile-colon-data
   arg0 peek int32 0 equals? IF return THEN
   arg0 peek cs +
   dup dict-contains? UNLESS return THEN
   dup write-dict-entry-name space
-  literalizes? IF
-    arg0 op-size +
-    dup set-arg0
-    peek write-hex-uint space
+  dup literalizes? IF
+    arg0 op-size + dup set-arg0 peek
+    swap CASE
+      ' cstring WHEN cs + write-quoted-string space ;;
+      ' int32 WHEN write-int space ;;
+      drop write-hex-uint space
+    ESAC
+  ELSE drop
   THEN
   arg0 op-size + set-arg0
   repeat-frame
@@ -54,8 +64,8 @@ def decompile-proper
 end
 
 def decompile-var
-  arg2 dict-entry-data peek write-uint
-  arg1 arg0 write-string/2
+  arg2 dict-entry-data peek write-uint space
+  arg1 arg0 write-string/2 space
   arg2 write-dict-entry-name
   nl
 end
@@ -86,8 +96,8 @@ def decompile ( entry )
     arg0 dict-entry-code-word CASE
       ' do-col WHEN arg0 decompile-colon ;;
       ' do-proper WHEN arg0 decompile-proper ;;
-      ' do-const WHEN arg0 s" const> " decompile-var ;;
-      ' do-var WHEN arg0 s" var> " decompile-var ;;
+      ' do-const WHEN arg0 s" const>" decompile-var ;;
+      ' do-var WHEN arg0 s" var>" decompile-var ;;
         arg0 dict-entry-code-word arg0 equals?
 	IF arg0 decompile-op
 	ELSE arg0 decompile-unknown-entry
