@@ -121,33 +121,68 @@ end
 
 ( Output quote: )
 
-: out'
-  next-token cross-lookup LOOKUP-NOT-FOUND equals IF
-    not-found drop
+def dallot-next-token
+  next-token dup 0 int> IF
+    over dhere 3 overn copy-byte-string/3 3 dropn
+    dhere dup 3 overn + cell-size pad-addr dmove
+    swap
+  ELSE 0 0
+  THEN return2
+end
+
+: dallot-next-token>
+  literal literal
+  dallot-next-token
+  literal int32 swap
+; immediate
+
+: cross-lookup-or-break
+  2dup cross-lookup LOOKUP-NOT-FOUND equals IF
+    drop not-found/2
+    s" break" cross-lookup drop
+  ELSE
+    rot 2 dropn
   THEN
+;
+
+( There's out' and out-off' which return the next token's output
+address and relative offset. )
+
+: out'
+  ( Returns the address of the next token's output word. )
+  next-token cross-lookup-or-break
 ; immediate-as [out']
 
-: [out'']
-  literal literal POSTPONE [out']
+: out''
+  ( The immediate ~out'~ that delays the lookup of the next token until the containing definition is called. The output word's address will be on the stack. )
+  POSTPONE dallot-next-token>
+  literal cross-lookup-or-break
 ; immediate-as out'
 
 : out-off'
-  POSTPONE [out'] to-out-addr
-; out-immediate-as [']
+  ( Returns the offset of the outuut word named by the next token. )
+  next-token cross-lookup-or-break to-out-addr
+; immediate-as [out-off'] out-immediate-as [']
 
-: out''
-  s" pointer" cross-lookup-offset UNLESS not-found THEN
-  POSTPONE out-off'
+: out-out-off'
+  ( The immediate ~out-off'~ that delays the lookup of the next token until the containing definition is called. The output word's offset will be on the stack. )
+  POSTPONE dallot-next-token>
+  literal cross-lookup-or-break
+  literal to-out-addr
+; immediate-as out-off'
+
+: out-'
+  ( Quote for output definitions. Uses the output dictionary. )
+  out-off' pointer
+  POSTPONE [out-off']
 ; out-immediate-as '
 
-: out-off''
-  literal literal POSTPONE out-off'
-; immediate-as out-off'
+( String readers: )
 
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
-  s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN
+  out-off' cstring
   swap to-out-addr
   dhere to-out-addr out-dict dict-entry-data poke
 ; out-immediate-as "
@@ -155,11 +190,13 @@ end
 : out-dq-stringn
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
-  s" pointer" cross-lookup-offset UNLESS not-found drop int32 0 THEN
+  out-off' cstring
   swap dup to-out-addr swap cstring-length
-  s" int32" cross-lookup-offset UNLESS not-found drop int32 0 THEN swap
+  out-off' int32 swap
   dhere to-out-addr out-dict dict-entry-data poke
 ; out-immediate-as s"
+
+( Output dictionary listings: )
 
 def oword-printer
   arg0 dict-entry-name peek from-out-addr write-string space
