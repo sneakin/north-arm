@@ -66,6 +66,7 @@ def test-str-equals
   local0 empty-string str-equals 0 assert-equals
   empty-string local0 str-equals 0 assert-equals
   s" hello" make-indirect-string local0 str-equals 0 assert-equals
+  ( todo try other types of strings )
 end
 
 def test-split-string-before
