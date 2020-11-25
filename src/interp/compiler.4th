@@ -1,9 +1,5 @@
 ( Utility functions: )
 
-defcol cell/
-  swap int32 2 bsr swap
-endcol
-
 defcol locals-byte-size
   here locals swap - swap
 endcol

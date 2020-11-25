@@ -27,7 +27,6 @@ def load-runner
   src/cross/defining/constants.4th
   src/cross/constants.4th
   src/cross/defining/variables.4th
-  src/runner/aliases.4th
   src/runner/thumb/frames.4th
   src/runner/frames.4th
   src/cross/defining/frames.4th
@@ -39,6 +38,7 @@ def load-runner
   src/runner/thumb/vfp-constants.4th
   src/runner/thumb/proper.4th
   src/runner/proper.4th
+  src/runner/aliases.4th
   ] load-list exit-frame
 end
 
