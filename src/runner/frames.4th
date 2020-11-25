@@ -3,17 +3,17 @@ defcol parent-frame
 endcol
 
 defcol frame-args
-  swap frame-byte-size +
+  swap frame-byte-size int-add
   swap
 endcol
 
 defcol farg0 swap frame-args swap endcol
-defcol farg1 swap frame-args cell-size + swap endcol
-defcol farg2 swap frame-args cell-size 2 * + swap endcol
-defcol farg3 swap frame-args cell-size 3 * + swap endcol
+defcol farg1 swap frame-args cell-size int-add swap endcol
+defcol farg2 swap frame-args cell-size 2 int-mul int-add swap endcol
+defcol farg3 swap frame-args cell-size 3 int-mul int-add swap endcol
 
 defcol fargn ( n frame -- ptr )
-  rot cell-size * swap frame-args + swap
+  rot cell-size * swap frame-args int-add swap
 endcol
 
 defcol args current-frame frame-args swap endcol
@@ -36,7 +36,7 @@ defcol set-argn ( v n )
 endcol
 
 defcol locals
-  current-frame cell-size -
+  current-frame cell-size int-sub
   swap
 endcol
 
@@ -49,15 +49,15 @@ defcol set-local0
 endcol
 
 defcol local1
-  locals cell-size - peek swap
+  locals cell-size int-sub peek swap
 endcol
 
 defcol set-local1
-  swap locals cell-size - poke
+  swap locals cell-size int-sub poke
 endcol
 
 defcol return-address
-  swap cell-size + swap
+  swap cell-size int-add swap
 endcol
 
 defcol exit-frame

@@ -301,6 +301,9 @@ defop pointer
   emit-next
 endop
 
+defalias> cstring pointer
+defalias> uint32 int32
+
 ( Constants: )
 
 defop do-const
@@ -353,13 +356,13 @@ defop int-mul
   emit-next
 endop
 
-defop int-div
+defop int-div-v2
   0 r1 bit-set popr ,uint16
   r0 r1 r0 sdiv ,uint32
   emit-next
 endop
 
-defop uint-div
+defop uint-div-v2
   0 r1 bit-set popr ,uint16
   r0 r1 r0 udiv ,uint32
   emit-next
