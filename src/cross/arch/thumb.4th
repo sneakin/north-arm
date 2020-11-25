@@ -7,8 +7,9 @@ src/lib/asm/thumb/v1.4th load
 src/lib/asm/thumb/v2.4th load
 src/lib/asm/thumb/vfp.4th load
 
-src/cross/iwords.4th load
 src/cross/words.4th load
+src/cross/iwords.4th load
+src/cross/owords.4th load
 src/cross/list.4th load
 src/cross/defining/op.4th load
 src/cross/case.4th load

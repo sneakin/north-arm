@@ -30,7 +30,8 @@
 ;
 
 : out-loop
-  out-off' pointer
+  ( north-bash needs the token on the stack and not the offset, but stage1+ needs the output word's offset. )
+  ' pointer
   out-dict dict-entry-data uint32@
-  out-off' jump
+  ' jump
 ; out-immediate-as loop

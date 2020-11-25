@@ -16,22 +16,6 @@
 ' ( out-immediate/1
 ' POSTPONE out-immediate/1
 
-( Output word quoting. Order is important with postpones in the output variants in owords.4th. )
-
-: out'
-  next-token cross-lookup LOOKUP-NOT-FOUND equals IF
-    not-found
-  THEN
-; immediate-as [out'] immediate ( for postpone safety )
- 
-: out-off'
-  POSTPONE out' to-out-addr
-; out-immediate-as ['] immediate ( for postpone safety )
-
-: out''
-  literal literal POSTPONE out'
-; immediate-as out'
-
 : out-dq
   ( Read until a double quote, writing the contained data to the data stack and pushing the calls to leave a pointer on the stack for a definition. )
   literal cstring dhere to-out-addr
@@ -82,7 +66,7 @@
 ; out-immediate-as THEN
 
 : out-RECURSE
-  literal int32
+  ' pointer
   out-dict dict-entry-data peek
-  literal jump-cs
+  ' jump
 ; out-immediate
