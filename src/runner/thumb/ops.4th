@@ -521,6 +521,12 @@ endop
 
 ( Registers: )
 
+defop eip
+  0 r0 bit-set pushr ,uint16
+  0 eip r0 mov-lsl ,uint16
+  emit-next
+endop
+
 defop cs
   0 r0 bit-set pushr ,uint16
   0 cs-reg r0 mov-lsl ,uint16
