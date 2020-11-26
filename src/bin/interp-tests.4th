@@ -31,7 +31,6 @@ s[
    src/runner/tests/rot.4th
    src/interp/tests/reader.4th
    src/runner/tests/overn.4th
-   src/runner/tests/math.4th
    src/runner/tests/lognot.4th
    src/runner/tests/logior.4th
    src/runner/tests/logand.4th
@@ -41,7 +40,10 @@ s[
    src/runner/tests/bsl.4th
    src/runner/tests/2dup.4th
    src/runner/tests/proper.4th
+   src/runner/tests/int32.4th
+   src/runner/tests/uint32.4th
    src/runner/tests/float.4th
+   src/runner/tests/math.4th
    src/tests/lib/strings.4th
 ] const> sources
 

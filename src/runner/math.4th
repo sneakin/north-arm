@@ -1,9 +1,5 @@
 ( Numbers: )
 
-defcol negative?
-  over uint32 0x80000000 logand swap
-endcol
-
 defcol one
   int32 1 swap
 endcol

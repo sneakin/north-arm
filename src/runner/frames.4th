@@ -13,7 +13,7 @@ defcol farg2 swap frame-args cell-size 2 int-mul int-add swap endcol
 defcol farg3 swap frame-args cell-size 3 int-mul int-add swap endcol
 
 defcol fargn ( n frame -- ptr )
-  rot cell-size * swap frame-args int-add swap
+  rot cell-size int-mul swap frame-args int-add swap
 endcol
 
 defcol args current-frame frame-args swap endcol
