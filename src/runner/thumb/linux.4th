@@ -1,18 +1,10 @@
 ( System calls: )
 
 0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
-4 cell-size mult const> state-byte-size
-
-: emit-push-state
-  state-register-mask pushr ,uint16
-;
-
-: emit-pop-state
-  state-register-mask popr ,uint16
-;
+5 cell-size mult const> state-byte-size
 
 : syscall-gen-loaders
-  over 1 equals IF swap drop return THEN
+  over 1 int<= IF swap drop return THEN
   swap 1 - swap
   over dup 1 - cell-size mult state-byte-size + swap ldr-sp ,uint16
   loop
@@ -21,16 +13,20 @@
 : emit-syscaller ( syscall# num-args )
   ( save registers )
   ( 0 r0 bit-set pushr ,uint16 )
-  emit-push-state
+  state-register-mask r0 bit-set pushr ,uint16
   ( load args into registers )
   dup syscall-gen-loaders
   ( make syscall )
   swap r7 mov# ,uint16
   0 swi ,uint16
   ( restore registers, keep return value in R0 )
-  emit-pop-state
-  1 - cell-size mult r1 mov# ,uint16
-  r1 sp add-lohi ,uint16
+  state-register-mask r1 bit-set popr ,uint16
+  ( drop the arguments )
+  dup IF
+    1 - cell-size mult r1 mov# ,uint16
+    r1 sp add-lohi ,uint16
+  ELSE drop
+  THEN
 ;
 
 ( Input & output: )
