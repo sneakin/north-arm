@@ -70,7 +70,7 @@ to-out-addr ,uint32
 ( ' flags uint32 field )
 7 ,uint32
 ( ' align uint32 field )
-0x10000 ,uint32
+0x1000 ,uint32
 ;
 
 : write-elf32-code-section-header
