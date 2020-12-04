@@ -7,6 +7,13 @@ defop aarch32-midr
   emit-next
 endop
 
+defop aarch32-acr
+  ( works in qemu )
+  0 r0 bit-set pushr ,uint16
+  1 0 0 2 0xF r0 mrc ,uint32
+  emit-next
+endop
+
 defop cpuid-pfr0
   0 r0 bit-set pushr ,uint16
   r0 cpuid-pfr0 ,uint32
