@@ -1,4 +1,4 @@
-( todo start with software division and detect vfp from the HWCAPS. )
+( todo start with software division and detect Thumb2 from HWCAPS or /proc/cpuinfo, or trapping illegal instructions. going to need aklist ofkinit functions. )
 
 defcol patch-math-operators
   ' int-div ' / dict-entry-clone-fields

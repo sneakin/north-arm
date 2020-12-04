@@ -3,12 +3,18 @@
 * Goals
 ** Ultimate:
 ELF file that only has an offset thread into a dynamically linked symbol table and interpreter.
-** Primary:
+** DONE Primary:
 Build an ELF file that can execute the code to build itself.
 ** Secondary:
 North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
+** TODO abs-int or int-abs?
+** Pi Zero
+Lacks thumb2 and therefore division.
+*** TODO Start with software divide
+*** TODO Swap to/from HW & SW
+*** TODO Detect thumb2 in HWCAPS on start
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
@@ -124,7 +130,7 @@ Bash specifically.
 load needs file opening and reading with a reader stack.
 *** DONE definitions writen to the data stack
 *** definitions with code reuse
-*** definition definability for macros
+*** DONE definition definability for macros
 *** DONE String concatenation: ++
 ** TODO Standard wording
 *** TODO c" returns a 2 string
@@ -140,12 +146,13 @@ load needs file opening and reading with a reader stack.
 ** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
 *** TODO ELF dynamic linking of imports
+**** Proper symbol flags
 **** DONE Library loading
 **** DONE Function imports
 **** TODO Add symbols only once
-**** TODO Dynamically linked variables
+**** TODO Dynamically linked variable
 *** ELF .o files with symbol table
-*** ELF symbol table
+*** TODO ELF symbol table
 ** Runner's jumps op offset or byte offset?
 ** Compile list of words into list of assembly calls.
 ** North
@@ -157,13 +164,14 @@ load needs file opening and reading with a reader stack.
 *** mmap file
 **** Zero copy reads with mmap / from strings; no copy if no more data is read when reading a token
 **** mmap output and set data stack to write to a file.
-*** Catch segfaults & other errors
+*** TODO Catch segfaults & other errors
 *** Spawn a thread
 *** fork & exec
 ** Testing
 *** Move tests to assert-equals
 *** Test DSL
 ** TODO quit needs to reset dict in case words are on the stack
+*** Variables stored outside dictionary.
 ** TODO remove early uses of R3 to track calls and returns
 ** DONE Organization
 *** bash forth
@@ -217,11 +225,21 @@ dry up with comp' immediated as ' to use compiling-dict.
 ** TODO move defining/*-boot files to interp/boot/defining
 ** TODO Towards Lisp
 *** Dictionary as argument
+**** DONE to compiler
+**** to interpreter
 *** Dictionary list & first class functions
 *** Types
 *** Structures
 *** Sequences
 *** Garbage collection
+** after loop
+*** Exports, symbol table
+*** builder executable that's passed files to build
+**** immediate list built for executable
+**** flags to toggle static/dynamic, linux/android, elf32/64
+*** sigill trap to detect cpu ops
+** x86
+
 * Thoughts
 ** def syntax
 *** Current
