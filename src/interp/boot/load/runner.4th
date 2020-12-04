@@ -25,6 +25,7 @@ s[ src/runner/thumb/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames-boot.4th
    src/runner/thumb/linux.4th
+   src/runner/thumb/linux/signals/syscalls.4th
    src/runner/thumb/logic.4th
    src/runner/thumb/math.4th
    src/runner/thumb/state.4th

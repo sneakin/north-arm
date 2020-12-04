@@ -56,6 +56,14 @@ defcol set-local1
   swap locals cell-size int-sub poke
 endcol
 
+defcol local2
+  locals cell-size int-sub cell-size int-sub peek swap
+endcol
+
+defcol set-local2
+  swap locals cell-size int-sub cell-size int-sub poke
+endcol
+
 defcol return-address
   swap cell-size int-add swap
 endcol

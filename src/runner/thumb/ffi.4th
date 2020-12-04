@@ -97,3 +97,43 @@ defop do-fficall-4-1
   0 dict-entry-data r1 r0 ldr-offset ,uint16
   out' fficall-4-1 emit-op-call
 endop
+
+( Callbacks: )
+
+: emit-exec-pc ( offset -- )
+  r1 ldr-pc ,uint16
+  out' exec-r1-abs dict-entry-code uint32@ r2 emit-load-int32
+  cs-reg r2 r2 add ,uint16
+  r2 pc mov-lohi ,uint16
+;
+
+: emit-exec-uint32
+  cell-size 4 * emit-exec-pc
+;
+
+( Ops to be copied in trampolines that are called from C with args are in registers: )
+
+defop ffi-callback-0
+  0 pushr .pclr ,uint16
+  emit-exec-uint32
+endop
+
+defop ffi-callback-1
+  0 pushr .pclr ,uint16
+  emit-exec-uint32
+endop
+
+defop ffi-callback-2
+  0 r1 bit-set pushr .pclr ,uint16
+  emit-exec-uint32
+endop
+
+defop ffi-callback-3
+  0 r1 bit-set r2 bit-set pushr .pclr ,uint16
+  emit-exec-uint32
+endop
+
+defop ffi-return
+  0 r0 eip mov-lsl ,uint16
+  0 popr .pclr ,uint16
+endop
