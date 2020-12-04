@@ -93,6 +93,7 @@ RUNNER_THUMB_SRC=\
 	src/runner/thumb/cpu.4th \
 	src/runner/thumb/vfp.4th \
 	src/runner/thumb/ffi.4th \
+	src/runner/thumb/state.4th \
 	src/runner/thumb/linux.4th \
 	src/runner/thumb/init.4th \
 	src/runner/thumb/math.4th \
