@@ -178,7 +178,7 @@ elf32-code-segment + ,uint32
 
 22 const> R_ARM_JUMP_SLOT
 
-def elf32-add-dynamic-symbol/2
+def elf32-add-dynamic-symbol/2 ( name length ++ index )
   arg1 arg0 allot-byte-string/2 drop
   0 swap cons
   *out-dynamic-symbols* push-onto

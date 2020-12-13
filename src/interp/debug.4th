@@ -34,7 +34,7 @@ def print-regs-loop ( highs lows n )
 end
 
 def print-regs
-  0 save-low-regs set-local0
+  0 dup save-low-regs set-local0
   save-high-regs local0 0 print-regs-loop
 end
 

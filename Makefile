@@ -1,6 +1,8 @@
 FORTH=bash ./src/bash/forth.sh
 HTMLER=./scripts/htmler.sh
 EXECEXT=.elf
+SOEXT=.so
+SO_CFLAGS=-m32 -shared -nostdlib -g
 
 OUTPUTS=bin/interp$(EXECEXT) \
 	bin/interp.1$(EXECEXT) \
@@ -8,7 +10,9 @@ OUTPUTS=bin/interp$(EXECEXT) \
 	bin/assembler$(EXECEXT) \
 	bin/fforth.dict \
 	bin/assembler-thumb.sh \
-	bin/assembler-thumb.dict
+	bin/assembler-thumb.dict \
+	lib/ffi-test-lib$(SOEXT)
+
 DOCS=doc/html/bash.html \
 	doc/html/interp.html \
 	doc/html/interp-runtime.html \
@@ -148,6 +152,9 @@ bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
 bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
+
+lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
+	mkdir -p lib && $(CC) $(SO_CFLAGS) -o $@ $<
 
 %$(EXECEXT): %.4th
 	cat $< | $(FORTH) > $@

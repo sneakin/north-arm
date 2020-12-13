@@ -9,17 +9,16 @@ load-core
 
 defcol test-signal-usr1
   over test-signals-flag poke
-  (
   s" Caught signal " error-string/2
   over error-hex-uint enl
   s" From frame: " error-string/2
   current-frame cell-size 4 * - 64 ememdump
   s" Signal stack: " error-string/2
   here here 64 ememdump drop
-  )
-  ( drop args )
+  ( drop args, keep return addresses )
   3 set-overn 2 dropn
-  ffi-return
+  what dump-stack
+  ( ffi-return )
 endcol
 
 def test-signals
@@ -27,7 +26,7 @@ def test-signals
   ( trap USR1 )
   make-sigaction set-local0
   make-sigaction set-local1
-  ' test-signal-usr1 3 ffi-callback local0 sa-handler poke
+  ' test-signal-usr1 3 0 ffi-callback local0 sa-handler poke
   SA-SIGINFO local0 sa-flags poke
   local1 local0 SIGUSR1 sigaction
   ( check handler was changed )
@@ -37,7 +36,7 @@ def test-signals
   local2 sa-flags peek SA-SIGINFO assert-equals
   ( send USR1 )
   123 SIGUSR1 getpid
-  ( here here 64 ememdump drop )
+  here here 64 ememdump drop
   kill 0 assert-equals
   123 assert-equals
   ( check result )

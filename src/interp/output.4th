@@ -12,6 +12,10 @@ defcol write-string
   swap dup string-length write-string/2
 endcol
 
+defcol write-line/2
+  rot swap write-string/2 nl
+endcol
+
 defcol write-line
   swap write-string nl
 endcol
