@@ -1,13 +1,17 @@
-  ( todo fix up a CASE for the interpreter; or make jump-rel & if-jump consistent on cell-size multiplier )
+( FFI helpers: )
+
+( Lookup tables of callers: )
 
 0
-' ffi-callback-3
-' ffi-callback-2
-' ffi-callback-1
-' ffi-callback-0
+' ffi-callback-4-0
+' ffi-callback-3-0
+' ffi-callback-2-0
+' ffi-callback-1-0
+' ffi-callback-0-0
 here const> ffi-callbacks-0
 
 0
+' ffi-callback-4-1
 ' ffi-callback-3-1
 ' ffi-callback-2-1
 ' ffi-callback-1-1
