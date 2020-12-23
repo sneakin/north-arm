@@ -250,7 +250,7 @@ defcol => defcolon
 def
 :
 
-***  General def and lists
+*** General def and lists
 Scheme style symbol table
 
 **** Dictionary
@@ -265,9 +265,9 @@ Tail points to the definition sequence.
 
 **** Variables
 def name value
-def name [ exprs... ]
+def name s[ exprs... ]
 **** Colon definitions
-def name '[ exprs... ]
+def name [ exprs... ]
 def name colon[ exprs... ]
 **** Framed colon definitions
 def name fun[ exprs... ]
@@ -278,6 +278,8 @@ def name fun exprs... end
 def name begin exprs... end
 def name fun( args... )[ exprs... ]
 
+def name [ args... ] do exprs... end
+def name [ args... ] { exprs... }
 *** Cross compiling reads
 Need to restore state. Globals make this tough, but compiler object with output stack, immediates, and words can handle that.
 ** Optimizations
