@@ -136,18 +136,6 @@ endcol
 
 ( Iteration: )
 
-defcol dict-entry-name
-  exit
-endcol
-
-defcol dict-entry-data
-  swap cell-size + cell-size + swap
-endcol
-
-defcol dict-entry-link
-  swap cell-size int32 3 * + swap
-endcol
-
 def dict-map/4 ( dict origin state fn )
   arg3 null? UNLESS
     arg1 arg3 arg0 exec-abs set-arg1
