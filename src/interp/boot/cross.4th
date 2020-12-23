@@ -206,6 +206,8 @@ def owords
   out-dict out-origin peek 0 ' oword-printer dict-map/4
 end
 
+( todo return is aliased to proper-exit; migrate frames to return0 )
+
 def oiwords
-  out-immediates peek cs + ' words-printer dict-map
+  out-immediates peek dup IF cs + ' words-printer dict-map THEN
 end
