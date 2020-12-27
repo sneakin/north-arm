@@ -9,3 +9,7 @@ dhere UNLESS
 THEN
 
 tmp" src/interp/boot/core.4th" drop load
+tmp" src/runner/ffi.4th" drop load
+tmp" src/interp/dynlibs.4th" drop load
+tmp" src/interp/signals.4th" drop load
+tmp" src/interp/tty.4th" drop load

@@ -243,6 +243,11 @@ defop peek-byte
   emit-next
 endop
 
+defop peek-short
+  0 r0 r0 ldrh ,uint16
+  emit-next
+endop
+
 defop poke
   0 r1 bit-set popr ,uint16
   0 r0 r1 str-offset ,uint16
@@ -253,6 +258,13 @@ endop
 defop poke-byte
   0 r1 bit-set popr ,uint16
   0 r0 r1 str-offset .offset-byte ,uint16
+  0 r0 bit-set popr ,uint16
+  emit-next
+endop
+
+defop poke-short
+  0 r1 bit-set popr ,uint16
+  0 r0 r1 strh ,uint16
   0 r0 bit-set popr ,uint16
   emit-next
 endop

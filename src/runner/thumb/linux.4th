@@ -102,6 +102,11 @@ defop pwrite64 ( offset len ptr fd -- result )
   emit-next
 endop
 
+defop ioctl ( arg cmd fd -- result )
+  54 3 emit-syscaller
+  emit-next
+endop
+
 ( Exit to system: )
 
 defop sysexit
