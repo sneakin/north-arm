@@ -77,3 +77,20 @@ def allot-byte-string/2
   2dup null-terminate
   exit-frame
 end
+
+def string-index-of/4 ( ptr len predicate position )
+  arg0 arg2 int<= UNLESS int32 0 return1 THEN
+  arg3 arg0 string-peek arg1 exec IF int32 1 return1 THEN
+  arg0 int32 1 + set-arg0
+  drop-locals repeat-frame
+end
+
+defcol string-index-of ( ptr len predicate -- index )
+  int32 4 overn int32 4 overn int32 4 overn
+  int32 0
+  string-index-of/4 ( ptr len pred ra ptr len pred index match )
+  int32 7 set-overn
+  int32 7 set-overn
+  int32 3 dropn
+  swap drop
+endcol
