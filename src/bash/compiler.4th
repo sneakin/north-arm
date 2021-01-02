@@ -158,55 +158,32 @@ alias> :: :
 
 symbol> if-placeholder
 
-: [IF]
+: IF
   literal literal
   literal if-placeholder
   literal unless-jump
-; immediate-as IF
+; immediate
 
-: [UNLESS]
+: UNLESS
   literal literal
   literal if-placeholder
   literal if-jump
-; immediate-as UNLESS
+; immediate
 
-: [ELSE]
+: ELSE
   literal literal
   literal if-placeholder stack-find
   literal if-placeholder literal jump-rel
   roll
   dup here stack-delta 3 -
   swap spoke
-; immediate-as ELSE
+; immediate
 
-: [THEN]
+: THEN
   literal if-placeholder stack-find
   dup here stack-delta 3 -
   swap spoke
-; immediate-as THEN
-
-: IF-loop
-  next-token
-  dup " IF" equals IF drop 1 + loop THEN
-  dup " THEN" equals IF
-    drop dup IF
-      1 - loop
-    ELSE drop return
-    THEN
-  THEN
-  over 0 equals IF dup " ELSE" equals IF 2 dropn return THEN THEN
-  drop loop
-;
-
-: IF UNLESS 0 IF-loop THEN ;
-: UNLESS IF 0 IF-loop THEN ;
-: THEN " Warning: extra THEN" error-line ;
-
-: ELSE
-  " Warning: missing IF" error-line
-  next-token " THEN" equals IF return THEN
-  loop
-;
+; immediate
 
 ( Numerics: )
 
