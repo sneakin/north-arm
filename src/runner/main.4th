@@ -23,30 +23,6 @@ defcol nl
   int32 1 nl-s current-output peek write drop
 endcol
 
-defcol string-peek ( string index -- byte )
-  rot + peek-byte swap
-endcol
-
-defcol string-poke ( value string index )
-  rot +
-  swap rot swap poke-byte
-endcol
-
-defcol null-terminate
-  rot int32 0 rot string-poke
-endcol
-
-def string-length-loop
-  arg1 arg0 string-peek int32 0 equals? IF return THEN
-  arg0 int32 1 + set-arg0
-  repeat-frame
-end
-
-def string-length ( ptr -- length )
-  arg0 int32 0 string-length-loop
-  set-arg0
-end
-
 def write-string/2
   arg0 arg1 current-output peek write drop
 end

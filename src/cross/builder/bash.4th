@@ -17,8 +17,6 @@ def load-runner
   src/runner/thumb/ops.4th
   src/runner/thumb/cpu.4th
   src/runner/thumb/vfp.4th
-  src/runner/thumb/ffi.4th
-  src/cross/dynlibs.4th
   src/cross/string-list.4th
   src/cross/defining/colon-bash.4th
   src/cross/defining/colon.4th
@@ -38,8 +36,13 @@ def load-runner
   src/runner/thumb/proper.4th
   src/runner/proper.4th
   src/runner/aliases.4th
+  src/runner/thumb/state.4th
   ] load-list exit-frame
 end
+
+(   src/runner/thumb/ffi.4th
+  src/cross/dynlibs.4th
+)
 
 def builder-run ( entry-fn fn-length files-cons ++ )
   " Building..." error-line
