@@ -41,7 +41,9 @@ def load-runner
 end
 
 (   src/runner/thumb/ffi.4th
-  src/cross/dynlibs.4th
+  src/runner/ffi.4th
+)
+(   src/cross/dynlibs.4th
 )
 
 def builder-run ( entry-fn fn-length files-cons ++ )
