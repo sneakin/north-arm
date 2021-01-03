@@ -57,6 +57,7 @@ def builder-run ( entry-fn fn-length files-cons ++ )
   arg0 load-list
 
   ' main create arg2 does-defalias
+  " version.4th" load
   " src/runner/thumb/init.4th" load
 
   code-origin

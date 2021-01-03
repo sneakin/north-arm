@@ -25,6 +25,7 @@ def builder-run ( entry len src-cons )
   arg0 load-list
 
   s" main" create arg2 arg1 does-defalias
+  " version.4th" load
   " ./src/runner/thumb/init.4th" load
 
   code-origin peek

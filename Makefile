@@ -29,7 +29,18 @@ all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all
+.PHONY: clean doc all release
+
+bootstrap:
+	mkdir release
+	git clone . release/root
+	make -C release/root version.4th bin/interp.elf bin/interp.1.elf bin/interp.2.elf
+	mkdir bootstrap
+	cp release/root/bin/interp.elf bootstrap/interp.static.elf
+	cp release/root/bin/interp.2.elf bootstrap/interp.dyn.elf
+
+version.4th: .git/refs/heads/master
+	echo "\" $$(cat $<)\" string-const> *north-git-ref*" > $@
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
@@ -84,6 +95,7 @@ bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_S
 	echo -e "$< load $@ save-dict\n" | $(FORTH)
 
 RUNNER_THUMB_SRC=\
+	version.4th \
 	src/cross/builder.4th \
 	src/cross/builder/bash.4th \
 	src/runner/aliases.4th \
