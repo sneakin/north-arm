@@ -29,15 +29,25 @@ all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all release
+.PHONY: clean doc all
+
+release:
+	mkdir -p release
+release/root: .git/refs/heads/master release
+	if [ -d release/root ]; then cd release/root && git pull; else git clone . release/root; fi
 
 bootstrap:
-	mkdir release
-	git clone . release/root
-	make -C release/root version.4th bin/interp.elf bin/interp.1.elf bin/interp.2.elf
-	mkdir bootstrap
+	mkdir -p bootstrap
+
+bootstrap/interp.static.elf: release/root bootstrap
+	make -C release/root version.4th bin/interp.elf bin/interp.1.elf
 	cp release/root/bin/interp.elf bootstrap/interp.static.elf
+
+bootstrap/interp.dyn.elf: release/root bootstrap/interp.static.elf
+	make -C release/root version.4th bin/interp.2.elf
 	cp release/root/bin/interp.2.elf bootstrap/interp.dyn.elf
+
+boot: bootstrap/interp.static.elf bootstrap/interp.dyn.elf
 
 version.4th: .git/refs/heads/master
 	echo "\" $$(cat $<)\" string-const> *north-git-ref*" > $@
