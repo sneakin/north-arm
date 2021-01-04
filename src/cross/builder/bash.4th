@@ -28,6 +28,8 @@ def load-runner
   src/runner/frames.4th
   src/cross/defining/frames.4th
   src/runner/thumb/linux.4th
+  src/runner/thumb/linux/signals/syscalls.4th
+  src/runner/thumb/ffi.4th
   src/runner/thumb/logic.4th
   src/runner/thumb/math.4th
   src/runner/math.4th
