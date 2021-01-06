@@ -40,6 +40,7 @@ def signals-init
   0 signals-abort-sigaction peek SIGILL sigaction
   0 signals-abort-sigaction peek SIGBUS sigaction
   0 signals-abort-sigaction peek SIGSEGV sigaction
+  0 signals-abort-sigaction peek SIGSYS sigaction
   0 signals-trace-sigaction peek SIGUSR1 sigaction
   exit-frame
 end

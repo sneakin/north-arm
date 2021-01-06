@@ -12,7 +12,7 @@ load-thumb-asm
 0 var> code-origin
 
 def builder-run ( entry len src-cons )
-  elf32-dynamic-stub
+  NORTH-STAGE 2 int> IF elf32-dynamic-stub THEN
   
   " Building..." error-line
   4 align-data
