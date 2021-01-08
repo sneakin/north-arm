@@ -110,7 +110,7 @@ endcol
   ( todo ldr-pc )
   dict-entry-data uint32@ eip emit-load-int32
   cs-reg eip eip add ,uint16
-  cell-size 4 * emit-exec-pc ( fixme possible shift on where instruction is )
+  cell-size 4 mult emit-exec-pc ( fixme possible shift on where instruction is )
 ;
 
 : ffi-callback-exec-0
