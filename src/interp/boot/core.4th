@@ -6,10 +6,6 @@ def dict-drop
   set-dict
 end
 
-def error
-  s" Error" error-line/2
-end
-
 def alias
   arg1 dict-entry-code peek arg0 dict-entry-code poke
   arg1 dict-entry-data peek arg0 dict-entry-data poke
@@ -214,6 +210,10 @@ def ["]
   literal literal
   POSTPONE d" return2
 end immediate-as "
+
+def error
+  s" Error" error-line/2
+end
 
 def does>
   arg0 next-token interp-token negative?
