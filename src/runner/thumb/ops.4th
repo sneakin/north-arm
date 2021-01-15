@@ -163,6 +163,16 @@ defop swap
   emit-next
 endop
 
+defop swapn ( sp+n+1 ... value n -- value ... sp+n+1 )
+  ( Swaps ToS with the value N cells up the stack. `1 swopn` is equivalent to `swap`. )
+  2 r0 r1 mov-lsl ,uint16
+  sp r1 add-hilo ,uint16 ( r1 addr )
+  0 r2 bit-set popr ,uint16 ( r2 near value )
+  0 r1 r0 ldr-offset ,uint16 ( r0 far value ) 
+  0 r1 r2 str-offset ,uint16
+  emit-next
+endop
+
 defop 2swap ( a b c d -- c d a b )
   ( d <-> b )
   cell-size 1 mult r1 ldr-sp ,uint16

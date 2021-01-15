@@ -60,6 +60,18 @@ defop return1
   emit-next
 endop
 
+defop return1-n
+  ( Restore FP and SP before exiting, dropping N args, but keep the next on stack. )
+  2 r0 r1 mov-lsl ,uint16
+  0 r0 bit-set popr ,uint16
+  fp sp mov-lohi ,uint16
+  0 fp bit-set popr ,uint16
+  0 eip bit-set popr ,uint16
+  r1 sp add-lohi ,uint16
+  1 r3 sub# ,uint16
+  emit-next
+endop
+
 defop return2
   ( Restore FP and SP before exiting, but keep the ToS and next on stack. )
   0 r1 bit-set popr ,uint16
