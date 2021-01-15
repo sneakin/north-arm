@@ -1,39 +1,31 @@
-defop getpid ( ++ pid )
-  20 0 emit-syscaller
-  emit-next
-endop
+def getpid ( ++ pid )
+  args 0 20 syscall return1
+end
 
-defop pause
-  29 0 emit-syscaller
-  emit-next
-endop
+def pause
+  args 0 29 syscall return1
+end
 
-defop kill ( signal pid -- result )
-  37 2 emit-syscaller
-  emit-next
-endop
+def kill ( signal pid -- result )
+  args 2 37 syscall 2 return1-n
+end
 
-defop sigaction ( old-ptr sigaction signal -- result )
-  67 3 emit-syscaller
-  emit-next
-endop
+def sigaction ( old-ptr sigaction signal -- result )
+  args 3 67 syscall 3 return1-n
+end
 
-defop setitimer
-  104 3 emit-syscaller
-  emit-next
-endop
+def setitimer
+  args 3 104 syscall 3 return1-n
+end
 
-defop getitimer
-  105 2 emit-syscaller
-  emit-next
-endop
+def getitimer
+  args 2 105 syscall 2 return1-n
+end
 
-defop sigreturn
-  119 0 emit-syscaller
-  emit-next
-endop
+def sigreturn
+  args 0 119 syscall return1
+end
 
-defop sigprocmask
-  126 3 emit-syscaller
-  emit-next
-endop
+def sigprocmask
+  args 3 126 syscall 3 return1-n
+end
