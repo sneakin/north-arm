@@ -20,7 +20,7 @@ here const> ffi-callbacks-1
 
 def ffi-callback-for ( returns num-args -- calling-word )
   arg1 IF ffi-callbacks-1 ELSE ffi-callbacks-0 THEN
-  arg0 4 uint< IF cell-size arg0 * + THEN
+  arg0 5 uint< IF arg0 ELSE 4 THEN cell-size * + THEN
   peek return1
 end
 

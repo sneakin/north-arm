@@ -32,7 +32,7 @@ here const> do-fficalls-1
 
 def fficaller-for ( returns arity ++ code-word )
   arg1 IF do-fficalls-1 ELSE do-fficalls-0 THEN
-  arg0 5 uint< IF cell-size arg0 * + THEN
+  arg0 5 uint< IF arg0 ELSE 4 THEN cell-size * + THEN
   peek dict-entry-code peek return1
 end
 
