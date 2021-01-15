@@ -1,18 +1,18 @@
-( System calls: )
+( System calls: arguments go into R1-R4 with the syscall number in R7. )
 
 0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
 4 cell-size mult const> state-byte-size
 
-: syscall-gen-loaders
+: syscall-gen-loaders ( num-args count-down -- )
   over 1 int<= IF swap drop return THEN
   swap 1 - swap
+  ( load SP+[state + n] into Rn )
   over dup 1 - cell-size mult state-byte-size + swap ldr-sp ,uint16
   loop
 ;
 
 : emit-syscaller-0
   ( save registers )
-  ( 0 r0 bit-set pushr ,uint16 )
   state-register-mask r0 bit-set pushr ,uint16
   ( make syscall )
   r7 mov# ,uint16
@@ -25,7 +25,6 @@
 
 : emit-syscaller-n
   ( save registers )
-  ( 0 r0 bit-set pushr ,uint16 )
   state-register-mask pushr ,uint16
   ( load args into registers )
   dup syscall-gen-loaders
@@ -44,6 +43,64 @@
   ELSE drop emit-syscaller-0
   THEN
 ;
+
+defop syscall ( argn... arg0 num-args syscall -- result )
+  ( save registers )
+  state-register-mask pushr ,uint16
+  ( load args into registers )
+  0 r0 r7 mov-lsl ,uint16
+  sp r0 mov-hilo ,uint16
+  cell-size state-byte-size + r0 add# ,uint16
+  r0 0x7F ldmia ,uint16 ( 4 cycles to blindly load )
+  ( make syscall )
+  0 swi ,uint16
+  ( restore registers, keep return value in R0 )
+  state-register-mask popr ,uint16
+  ( drop the arguments )
+  cell-size r1 ldr-sp ,uint16
+  2 r1 r1 mov-lsl ,uint16
+  r1 sp add-lohi ,uint16
+  emit-next
+endop
+
+defop syscall ( args num-args syscall -- result )
+  ( save registers )
+  state-register-mask pushr ,uint16
+  ( load args into registers )
+  0 r0 r7 mov-lsl ,uint16
+  cell-size state-byte-size + r0 ldr-sp ,uint16
+  r0 0x7F ldmia ,uint16 ( 4 cycles to blindly load )
+  ( make syscall )
+  0 swi ,uint16
+  ( restore registers, keep return value in R0 )
+  state-register-mask popr ,uint16
+  ( drop the arguments )
+  2 cell-size mult inc-sp ,uint16
+  emit-next
+endop
+
+def write ( len ptr fd -- bytes-or-error )
+  args 3 4 syscall
+  3 return1-n
+end
+
+def read ( len ptr fd -- bytes-or-error )
+  args 3 3 syscall
+  3 return1-n
+end
+
+def dyn-exit
+  args 1 1 syscall
+end
+
+def getpid
+  args 0 20 syscall return1
+end
+
+def test-dyn-write
+  s" syscall called
+" swap 1 write return1
+end
 
 ( Input & output: )
 
@@ -82,12 +139,12 @@ defop lseek ( whence offset fd -- result )
   emit-next
 endop
 
-defop read ( len ptr fd -- result )
+defop old-read ( len ptr fd -- result )
   3 3 emit-syscaller
   emit-next
 endop
 
-defop write ( len ptr fd -- result )
+defop old-write ( len ptr fd -- result )
   4 3 emit-syscaller
   emit-next
 endop
