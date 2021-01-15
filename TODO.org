@@ -10,11 +10,19 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
 ** TODO abs-int or int-abs?
+** runner ops
+*** exec -> exec-cs
+*** call ops and return to next
+*** variables on stack
+*** array index interpreter
+*** array of words common with x86 to boot strap a full list of words
 ** Pi Zero
-Lacks thumb2 and therefore division.
+Lacks thumb2 and therefore division and coprocessor ops.
 *** TODO Start with software divide
 *** TODO Swap to/from HW & SW
 *** TODO Detect thumb2 in HWCAPS on start
+**** trap SIGILL
+*** TODO A32 coprocessor ops
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
@@ -152,7 +160,8 @@ load needs file opening and reading with a reader stack.
 **** TODO Add symbols only once
 **** TODO Dynamically linked variable
 *** ELF .o files with symbol table
-*** TODO ELF symbol table
+*** TODO ELF symbol table of imports
+*** TODO proper DT_HASH
 ** Runner's jumps op offset or byte offset?
 ** Compile list of words into list of assembly calls.
 ** North
@@ -164,7 +173,7 @@ load needs file opening and reading with a reader stack.
 *** mmap file
 **** Zero copy reads with mmap / from strings; no copy if no more data is read when reading a token
 **** mmap output and set data stack to write to a file.
-*** TODO Catch segfaults & other errors
+*** DONE Catch segfaults & other errors
 *** Spawn a thread
 *** fork & exec
 ** Testing
@@ -214,6 +223,12 @@ Touches words that take pointer or a pointer/length pair.
 
 ** load from strings
 ** save ELF runtime image
+** dump loadable source code
+** generic next that calls a function to get the next word depending on source or flavor
+*** immediates
+*** check if literals and pointers are words
+** include textual source in binary
+** error handling that quits and/or starts a new interpreter loop
 ** Make output functions take an fd argument.
 ** TODO Eliminate needless padding
 Zero needed atbend of definitions for decompile.
