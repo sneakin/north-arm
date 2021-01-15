@@ -7,7 +7,7 @@ def print-signal-state
   s" Registers:" error-string/2 enl
   print-regs
   s" From frame: " error-string/2
-  current-frame parent-frame 64 ememdump
+  current-frame error-hex-uint enl ( parent-frame 64 ememdump )
   s" Signal stack: " error-string/2
   current-frame 512 ememdump
   s" Signal info: " error-string/2

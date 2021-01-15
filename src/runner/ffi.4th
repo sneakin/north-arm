@@ -24,21 +24,21 @@ def ffi-callback-for ( returns num-args -- calling-word )
   peek return1
 end
 
-defcol ffi-callback-with ( word code-word -- ...assembly ptr )
-  .s
-  ( allot 8 less args+return cells )
-  0 rot 0 rot
-  0 rot 0 rot
-  0 rot 0 rot
-  0 rot 0 rot
-  0 rot
-  here cell-size 2 * + rot
-  ( needs to return a call to an op that'll push args & jump to the next word. )
+def ffi-callback-with ( word code-word -- ...assembly ptr )
+  ( returns a call to an op that'll push args & jump to the next word. )
+  0
+  ( copy code-word's code into a new buffer )
+  12 cell-size * stack-allot-zero set-local0
   here .s drop
-  swap dict-entry-code peek cs + 1 -
-  3 overn cell-size 9 * copy-byte-string/3 3 dropn
-  swap 1 + swap .s
-endcol
+  arg0 dict-entry-code peek cs + 1 -
+  local0 cell-size 9 * copy-byte-string/3 3 dropn
+  ( FFI callbacks expect dict, cs, and word to call after the copied code. )
+  arg1 local0 11 seq-poke
+  cs local0 10 seq-poke
+  dict local0 9 seq-poke
+  ( offset for thumb and exit )
+  local0 1 + .s exit-frame
+end
 
 defcol ffi-callback ( word arity returns -- ...assembly ptr )
   rot ffi-callback-for rot 2 dropn

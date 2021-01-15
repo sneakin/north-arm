@@ -81,10 +81,10 @@ endop
 
 ( Callbacks: )
 
-: emit-exec-pc ( offset -- )
-  r1 ldr-pc ,uint16
+: emit-exec-pc ( cell-offset -- )
   out' exec-r1-abs dict-entry-code uint32@ r2 emit-load-int32
   cs-reg r2 r2 add ,uint16
+  cell-size mult r1 ldr-pc ,uint16
   r2 0 bx-lo ,uint16
 ;
 
@@ -105,12 +105,19 @@ defcol ffi-callback-lz-1
   ffi-return
 endcol
 
-: ffi-callback-exec
+( todo push the ABI's locals in cs-reg and dict-reg, but before the callback's args. )
+
+: ffi-callback-exec ( landing-zone -- )
   ( set eip to callback landing zone, will get pushed on call )
-  ( todo ldr-pc )
   dict-entry-data uint32@ eip emit-load-int32
+  ( syscalls wipe the registers. State needs to be loaded from after the branch. )
+  dhere 0 ,uint16
+  dhere 0 ,uint16
   cs-reg eip eip add ,uint16
-  cell-size 4 mult emit-exec-pc ( fixme possible shift on where instruction is )
+  2 emit-exec-pc
+  ( patch in PC relative state loading )
+  dhere over - cs-reg ldr-pc swap uint16!
+  dhere over - dict-reg ldr-pc swap uint16!
 ;
 
 : ffi-callback-exec-0

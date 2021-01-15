@@ -164,6 +164,7 @@ address and relative offset. )
   next-token cross-lookup-or-break to-out-addr
 ; immediate-as [out-off'] out-immediate-as [']
 
+( fixme word ends up in the binary. )
 : out-out-off'
   ( The immediate ~out-off'~ that delays the lookup of the next token until the containing definition is called. The output word's offset will be on the stack. )
   POSTPONE dallot-next-token>
