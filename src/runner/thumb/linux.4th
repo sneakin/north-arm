@@ -1,4 +1,4 @@
-( System calls: arguments go into R1-R4 with the syscall number in R7. )
+( System calls: arguments go into R0-R6 with the syscall number in R7. )
 
 0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
 4 cell-size mult const> state-byte-size
