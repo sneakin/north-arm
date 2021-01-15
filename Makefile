@@ -43,11 +43,11 @@ bootstrap/interp.static.elf: release/root bootstrap
 	make -C release/root version.4th bin/interp.elf bin/interp.1.elf
 	cp release/root/bin/interp.elf bootstrap/interp.static.elf
 
-bootstrap/interp.dyn.elf: release/root bootstrap/interp.static.elf
+bootstrap/interp.android.elf: release/root bootstrap/interp.static.elf
 	make -C release/root version.4th bin/interp.2.elf
-	cp release/root/bin/interp.2.elf bootstrap/interp.dyn.elf
+	cp release/root/bin/interp.2.elf bootstrap/interp.android.elf
 
-boot: bootstrap/interp.static.elf bootstrap/interp.dyn.elf
+boot: bootstrap/interp.static.elf bootstrap/interp.android.elf
 
 version.4th: .git/refs/heads/master
 	echo "\" $$(cat $<)\" string-const> *north-git-ref*" > $@

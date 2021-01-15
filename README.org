@@ -1,0 +1,138 @@
+#+TITLE: Nolan's Forth for Linux on ARM processors.
+
+Using only a shell, statically and dynamically linked ELF files are
+built that can load an assembler and cross compiler to rebuild
+themselves.
+
+Copyright (C) 2021 Nolan Eakins [mailto:sneakin+at+semanticgap.com]. All rights reserved.
+
+* Dependencies
+** Runtime
+- One of:
+  - Termux on Android
+  - GNU/Linux
+- Thumb capable ARM, with Thumb 2 preferred
+** Build
+- Bash
+- Make
+- Git
+
+* Quick Start
+
+Building with the shell script is quite slow.
+The prebuilt binaries under ~./bootstrap/~ can be used to skip steps.
+
+~./bootstrap/interp.static.elf~ only requires a Linux kernel, but can not load dynamic libraries.
+~./bootstrap/interp.android.elf~ is built to use Android's dynamic linker.
+
+Termux sets ~$LD_PRELOAD~ which requires unsetting it: ~LD_PRELOAD='' ./bin/interp.elf~
+
+* Building
+
+~make~ is the preferred build tool.
+
+The default task, ~make all~, will use Bash to boot strap a static executable: ~bin/interp.elf~.
+This will then be used to rebuild itself as ~bin/interp.1.elf~ which then builds a dynamically linked ~bin/interp.2.elf~.
+Be prepared to wait.
+
+The build script ~src/bin/${root}.4th~ can be built by running ~make bin/${root}.elf~.
+
+~make boot~ will rebuild ~./bootstrap/~ from a clean clone of the repository.
+
+* Running
+
+All executables built can be found in ~./bin/~.
+
+** Bash
+
+~./src/bash/forth.sh~ is Forth writen for Bash.
+It is used before any binary is available.
+
+~load-core~ will load the compiling words.
+
+Build scripts under ~src/bin/~ can be ~cat~ into it and writen to a file:
+~cat src/bin/interp.4th | ./src/bash/forth.sh > interp.elf~
+
+** Boot strapped
+
+A list of words can be printed with ~words~. Compiling words with ~iwords~.
+
+*** Loaders
+
+Once running, various sets of functionality can be loaded with the following words:
+
+**** load-core
+Very essential functions mostly found in ~./src/interp/boot/core.4th~.
+
+**** load-debug
+Collection of value printers found in ~./src/interp/boot/debug/~.
+
+**** load-thumb-asm
+Words to assemble Thumb code and cross compile.
+
+**** load-runner
+Starts the self build of the ops needed for an interpreter.
+
+**** load-interp
+Loads the bare interpreter when building.
+
+* Programming
+
+** Scripts
+*** In binaries
+*** Interpreting
+**** load
+
+** Documentation
+*** ( comments )
+
+** Definitions
+*** defcol
+*** exit
+*** def
+*** exit-frame
+*** return
+*** :
+*** alias>
+
+** Conditions
+*** IF
+*** UNLESS
+*** ELSE
+*** THEN
+
+** Looping
+*** loop
+*** repeat-frame
+
+** Data
+*** Words
+**** '
+**** literal
+**** pointer
+*** Numbers
+*** Strings
+**** "
+**** s"
+**** c"
+**** d"
+**** tmp"
+
+** Variables
+*** var>
+*** poke
+*** peek
+
+** Constants
+*** const>
+*** symbol>
+
+** Cross Compiling
+*** :
+*** defcol
+*** def
+*** defvar>
+*** defconst>
+*** out-immediate
+*** out'
+*** out-off'
