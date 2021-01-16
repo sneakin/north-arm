@@ -5,18 +5,18 @@
 
 defop syscall ( args num-args syscall -- result )
   ( save registers )
-  state-register-mask pushr ,uint16
+  state-register-mask pushr ,ins
   ( load args into registers )
-  0 r0 r7 mov-lsl ,uint16
-  cell-size state-byte-size + r0 ldr-sp ,uint16
+  0 r0 r7 mov-lsl ,ins
+  cell-size state-byte-size + r0 ldr-sp ,ins
   ( erasing state requires that interpreted handlers have state to load. )
-  r0 0x3F ldmia ,uint16 ( # registers / 2 = # cycles to load )
+  r0 0x3F ldmia ,ins ( # registers / 2 = # cycles to load )
   ( make syscall )
-  0 swi ,uint16
+  0 swi ,ins
   ( restore registers, keep return value in R0 )
-  state-register-mask popr ,uint16
+  state-register-mask popr ,ins
   ( drop the arguments )
-  2 cell-size mult inc-sp ,uint16
+  2 cell-size mult inc-sp ,ins
   emit-next
 endop
 
@@ -77,8 +77,8 @@ end
 ( Exit to system: )
 
 defop sysexit
-  1 r7 mov# ,uint16
-  0 swi ,uint16
+  1 r7 mov# ,ins
+  0 swi ,ins
 endop
 
 defcol abort

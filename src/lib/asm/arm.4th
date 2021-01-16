@@ -374,3 +374,7 @@ op2: 12 bits of a register or immediate value.
   swap 255 logand
   logior a#
 ;
+
+alias> ,ins ,uint32
+alias> ins! uint32!
+alias> ins@ uint32@
