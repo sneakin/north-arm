@@ -31,32 +31,33 @@ alias> ip r12
 
 : generate-arm-conditions
   dup read-terminator equals IF return THEN
-  generate-arm-condition
+  ( double quote gets a literal placed before it )
+  swap drop generate-arm-condition
   loop
 ;
 
 : arm-conditions:
-  compiling-read generate-arm-conditions
+  read-terminator compiling-read generate-arm-conditions
   drop
 ;
 
 arm-conditions:
   ( Code Suffix Flags Meaning )
-  0000 eq Z s" set equal"
-  0001 ne Z s" clear not equal"
-  0010 cs C s" set unsigned higher or same"
-  0011 cc C s" clear unsigned lower"
-  0100 mi N s" set negative"
-  0101 pl N s" clear positive or zero"
-  0110 vs V s" set overflow"
-  0111 vc V s" clear no overflow"
-  1000 hi C s" set and Z clear unsigned higher"
-  1001 ls C s" clear or Z set unsigned lower or same"
-  1010 ge N s" equals V greater or equal"
-  1011 lt N s" not equal to V less than"
-  1100 gt Z s" clear AND [N equals V] greater than"
-  1101 le Z s" set OR [N not equal to V] less than or equal"
-  1110 al _ s" always"
+  0000 eq Z " set equal"
+  0001 ne Z " clear not equal"
+  0010 cs C " set unsigned higher or same"
+  0011 cc C " clear unsigned lower"
+  0100 mi N " set negative"
+  0101 pl N " clear positive or zero"
+  0110 vs V " set overflow"
+  0111 vc V " clear no overflow"
+  1000 hi C " set and Z clear unsigned higher"
+  1001 ls C " clear or Z set unsigned lower or same"
+  1010 ge N " equals V greater or equal"
+  1011 lt N " not equal to V less than"
+  1100 gt Z " clear AND [N equals V] greater than"
+  1101 le Z " set OR [N not equal to V] less than or equal"
+  1110 al _ " always"
 ;
 
 ( ARM instructions:
@@ -209,33 +210,34 @@ SWP Swap register with memory Rd := [Rn], [Rn] := Rm 4.12
 
 : generate-arm-data-ops
   dup read-terminator equals IF return THEN
-  generate-arm-data-op
+  ( double quote gets a literal placed before it )
+  swap drop generate-arm-data-op
   loop
 ;
 
 : arm-data-ops:
-  compiling-read generate-arm-data-ops
+  read-terminator compiling-read generate-arm-data-ops
   drop
 ;
 
 arm-data-ops:
 ( Mnemonic OpCode Action )
-AND 0000 s" operand1 AND operand2"
-EOR 0001 s" operand1 EOR operand2"
-SUB 0010 s" operand1 - operand2"
-RSB 0011 s" operand2 - operand1"
-ADD 0100 s" operand1 + operand2"
-ADC 0101 s" operand1 + operand2 + carry"
-SBC 0110 s" operand1 - operand2 + carry - 1"
-RSC 0111 s" operand2 - operand1 + carry - 1"
-TST 1000 s" as AND, but result is not written"
-TEQ 1001 s" as EOR, but result is not written"
-CMP 1010 s" as SUB, but result is not written"
-CMN 1011 s" as ADD, but result is not written"
-ORR 1100 s" operand1 OR operand2"
-MOV 1101 s" operand2, operand1 is ignored"
-BIC 1110 s" operand1 AND NOT operand2, Bit clear"
-MVN 1111 s" NOT operand2, operand1 is ignored"
+AND 0000 " operand1 AND operand2"
+EOR 0001 " operand1 EOR operand2"
+SUB 0010 " operand1 - operand2"
+RSB 0011 " operand2 - operand1"
+ADD 0100 " operand1 + operand2"
+ADC 0101 " operand1 + operand2 + carry"
+SBC 0110 " operand1 - operand2 + carry - 1"
+RSC 0111 " operand2 - operand1 + carry - 1"
+TST 1000 " as AND, but result is not written"
+TEQ 1001 " as EOR, but result is not written"
+CMP 1010 " as SUB, but result is not written"
+CMN 1011 " as ADD, but result is not written"
+ORR 1100 " operand1 OR operand2"
+MOV 1101 " operand2, operand1 is ignored"
+BIC 1110 " operand1 AND NOT operand2, Bit clear"
+MVN 1111 " NOT operand2, operand1 is ignored"
 ;
 
 ( MOV,MVN [single operand instructions.]
