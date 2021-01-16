@@ -36,6 +36,8 @@ This will then be used to rebuild itself as ~bin/interp.1.elf~ which then builds
 Be prepared to wait.
 
 The build script ~src/bin/${root}.4th~ can be built by running ~make bin/${root}.elf~.
+This build will be done with Bash. ~make bin/${root}.1.elf~ will use ~bin/interp.1.elf~.
+The ~1~ can be changed to any value with 1, 2, and 3 typically used.
 
 ~make boot~ will rebuild ~./bootstrap/~ from a clean clone of the repository.
 
