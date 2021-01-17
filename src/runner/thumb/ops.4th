@@ -5,10 +5,6 @@ r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip
 
-: abs-int
-  dup 0 int< IF negate THEN
-;
-
 : emit-branch
   dup abs-int 0x800 int< IF
     branch ,ins

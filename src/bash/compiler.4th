@@ -195,6 +195,10 @@ symbol> if-placeholder
   0 swap -
 ;
 
+: abs-int
+  dup 0 int< IF negate THEN
+;
+
 ( Comparisons: )
 
 : int> swap int<= ;
