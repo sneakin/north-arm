@@ -2,7 +2,6 @@
 s[ src/runner/thumb/ops.4th
    src/runner/thumb/cpu.4th
    src/runner/thumb/vfp.4th
-   src/runner/thumb/ffi.4th
    src/cross/dynlibs.4th
  ] load-list
 
@@ -21,14 +20,17 @@ s[
  ] load-list
 
 ( Platform ops and words )
-s[ src/runner/aliases.4th
-   src/runner/thumb/frames.4th
+s[ src/runner/thumb/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames-boot.4th
    src/runner/thumb/linux.4th
+   src/runner/thumb/linux/signals/syscalls.4th
+   src/runner/thumb/ffi.4th
    src/runner/thumb/logic.4th
    src/runner/thumb/math.4th
+   src/runner/thumb/state.4th
    src/runner/math.4th
+   src/runner/aliases.4th
    src/runner/thumb/vfp-constants.4th
    src/runner/stack.4th
    src/runner/thumb/proper.4th

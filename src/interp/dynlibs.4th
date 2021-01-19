@@ -14,25 +14,54 @@ def library> ( : path ++ handle )
   THEN
 end
 
-def fficaller-for
-  pointer do-fficall-0-1
-  arg0 1 equals? IF pointer do-fficall-1-1 THEN
-  arg0 2 equals? IF pointer do-fficall-2-1 THEN
-  arg0 3 equals? IF pointer do-fficall-3-1 THEN
-  arg0 4 int>= IF pointer do-fficall-4-1 THEN
-  dict-entry-code peek set-arg0
+0
+' do-fficall-4-0
+' do-fficall-3-0
+' do-fficall-2-0
+' do-fficall-1-0
+' do-fficall-0-0
+here const> do-fficalls-0
+
+0
+' do-fficall-4-1
+' do-fficall-3-1
+' do-fficall-2-1
+' do-fficall-1-1
+' do-fficall-0-1
+here const> do-fficalls-1
+
+def fficaller-for ( returns arity ++ code-word )
+  arg1 IF do-fficalls-1 ELSE do-fficalls-0 THEN
+  arg0 5 uint< IF arg0 ELSE 4 THEN cell-size * + THEN
+  peek dict-entry-code peek return1
 end
 
-def import> ( library : name symbol arity ++ )
-  0
-  create> set-local0
-  ( read & resolve symbol )
-  next-token negative? IF arg0 exit-frame THEN
-  drop arg0 dlsym dup UNLESS not-found arg0 exit-frame THEN
-  local0 dict-entry-data poke
+def does-import ( word returns fn arity ++ )
   ( set code field to ffi caller )
+  arg2 arg0 fficaller-for arg3 dict-entry-code poke
+  ( data to fn )
+  arg1 arg3 dict-entry-data poke
+end
+
+def import> ( library : name returns symbol arity ++ )
+  0 0
+  create> set-local0
   next-integer IF
-    fficaller-for local0 dict-entry-code poke
+    set-local1
+    next-token negative? UNLESS
+      ( resolve symbolknow since next-integer clobbers )
+      drop arg0 dlsym dup IF
+        local1 local0 rot
+        next-integer IF
+          does-import 4 dropn
+          arg0 exit-frame
+	THEN
+      ELSE
+        not-found
+      THEN
+    THEN
   THEN
+  ( todo drop dict on error )
+  error
   arg0 exit-frame
 end

@@ -17,30 +17,57 @@ def library> ( : path ++ )
   THEN
 end
 
-def fficaller-for
+def out-fficaller-for-0 ( returns arity ++ out-word )
+  out' do-fficall-0-0
+  arg0 1 equals? IF out' do-fficall-1-0 THEN
+  arg0 2 equals? IF out' do-fficall-2-0 THEN
+  arg0 3 equals? IF out' do-fficall-3-0 THEN
+  arg0 4 int>= IF out' do-fficall-4-0 THEN
+  set-arg0 return0
+end
+
+def out-fficaller-for-1 ( returns arity ++ out-word )
   out' do-fficall-0-1
   arg0 1 equals? IF out' do-fficall-1-1 THEN
   arg0 2 equals? IF out' do-fficall-2-1 THEN
   arg0 3 equals? IF out' do-fficall-3-1 THEN
   arg0 4 int>= IF out' do-fficall-4-1 THEN
-  dict-entry-code peek set-arg0 return0
+  set-arg0 return0
+end
+
+def out-fficaller-for ( returns arity ++ out-word )
+  arg0 arg1 IF out-fficaller-for-1 ELSE out-fficaller-for-0 THEN
+  dict-entry-code peek return1
 end
 
   ( todo find any prior import entry. single symbol w/ multiple relocs )
   ( todo add relocation to list, symbol to another )
   ( store name, data, library, and space for a string table address to import list )
 
-def import> ( library : name symbol arity ++ library )
-  0
+def out-import ( word returns symbol-index arity ++ )
+  ( make relocation for data )
+  arg3 dict-entry-data arg1 elf32-add-dynamic-jump-slot
+  ( set code to ffi caller )
+  arg2 arg0 out-fficaller-for rot 2 dropn
+  arg3 dict-entry-code poke
+  exit-frame
+end
+
+def import> ( library : name returns symbol arity ++ library )
+  0 0
   create> set-local0
-  ( read name )
-  next-token negative? IF error arg0 exit-frame THEN
-  elf32-add-dynamic-symbol/2
-  local0 dict-entry-data
-  swap elf32-add-dynamic-jump-slot
-  ( read arity & set word's code field )
   next-integer IF
-    fficaller-for local0 dict-entry-code poke
+    set-local1
+    next-token negative? UNLESS
+      ( register symbol for importing before next-integer over writes )
+      elf32-add-dynamic-symbol/2 local1 local0 rot
+      next-integer IF
+        out-import
+        arg0 exit-frame
+      THEN
+    THEN
   THEN
+  error
+  ( todo drop out-dict )
   arg0 exit-frame
 end

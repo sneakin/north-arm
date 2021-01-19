@@ -317,3 +317,14 @@ alias> sl r10
   dup 0 equals IF drop ELSE 2 overn add# ,uint16 ( add byte to reg<<8 ) THEN
   2 dropn
 ;
+
+alias> ,ins1 ,uint16
+alias> ins1@ uint16@
+alias> ins1! uint16!
+
+alias> ,ins2 ,uint32
+alias> ins2@ uint32@
+alias> ins2! uint32!
+
+: ,ins dup 0xFFFF uint<= IF ,ins1 ELSE ,ins2 THEN ;
+: ins! over 0xFFFF uint<= IF ins1! ELSE ins2! THEN ;

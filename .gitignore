@@ -14,3 +14,6 @@ bin/*.raw
 *.bin
 *.log
 doc/html
+version.4th
+release
+lib/*.so

@@ -25,8 +25,7 @@ alias> spoke poke
 alias> mult int-mul
 
 def does-const
-  pointer do-const dict-entry-code peek arg0 dict-entry-code poke
-  return0
+  arg0 pointer do-const does
 end
 
 def const>
@@ -38,8 +37,7 @@ end
 alias> string-const> const>
 
 def does-const-offset
-  pointer do-const-offset dict-entry-code peek arg0 dict-entry-code poke
-  return0
+  arg0 pointer do-const-offset does
 end
 
 def symbol>
@@ -49,8 +47,7 @@ def symbol>
 end
 
 def does-var
-  pointer do-var dict-entry-code peek arg0 dict-entry-code poke
-  return0
+  arg0 pointer do-var does
 end
 
 def var>
@@ -71,39 +68,6 @@ def immediate
   dict immediate/1
   exit-frame
 end
-
-def immediate-as/1
-  arg0 immediate/1
-  next-token allot-byte-string/2
-  IF
-    cs -
-    immediates peek cs + dict-entry-name poke
-    exit-frame
-  ELSE return0
-  THEN
-end
-
-def immediate-as
-  dict immediate-as/1
-  exit-frame
-end
-
-defcol ''
-  literal literal swap
-  ['] swap
-end immediate-as '
-
-defcol ememdump
-  rot swap
-  current-output peek
-  standard-error current-output poke
-  rot swap memdump
-  current-output poke
-endcol
-
-def .s
-  args int32 96 ememdump
-end immediate-as [.s]
 
 defcol jump-data
   drop
@@ -150,6 +114,39 @@ symbol> if-placeholder
   dup here stack-delta int32 3 - op-size *
   swap spoke
 ; immediate
+
+def immediate-as/1
+  arg0 immediate/1
+  next-token allot-byte-string/2
+  IF
+    cs -
+    immediates peek cs + dict-entry-name poke
+    exit-frame
+  ELSE return0
+  THEN
+end
+
+def immediate-as
+  dict immediate-as/1
+  exit-frame
+end
+
+defcol ''
+  literal literal swap
+  ['] swap
+end immediate-as '
+
+defcol ememdump
+  rot swap
+  current-output peek
+  standard-error current-output poke
+  rot swap memdump
+  current-output poke
+endcol
+
+def .s
+  args int32 96 ememdump
+end immediate-as [.s]
 
 def alias>
   create>
@@ -216,23 +213,23 @@ def ["]
   POSTPONE d" return2
 end immediate-as "
 
+def error
+  s" Error" error-line/2
+end
+
 def does>
   arg0 next-token interp-token negative?
   IF not-found
   ELSE drop does
   THEN
   return0
-end
+end immediate
 
 def copies-entry-as ( link source-entry new-name )
   arg1 copy-dict-entry
   arg0 cs - over dict-entry-name poke
   arg2 dup IF cs - THEN over dict-entry-link poke
   exit-frame
-end
-
-def error
-  " Error" error-line
 end
 
 def copy-as> ( link src-entry -- new-entry )

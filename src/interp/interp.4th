@@ -193,6 +193,8 @@ def " ( ++ ...bytes ptr )
   here exit-frame
 end
 
+defalias> ["] "
+
 def c" ( ++ ...bytes length )
   POSTPONE tmp"
   swap drop 1 + stack-allot
@@ -203,7 +205,7 @@ def c" ( ++ ...bytes length )
 end
 
 def s" ( ++ ...bytes length )
-  POSTPONE "
+  ["]
   string-buffer-length peek
   exit-frame
 end

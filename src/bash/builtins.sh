@@ -25,6 +25,7 @@ DICT['hexadecimal?']='if [[ "${STACK[0]}" =~ ^-?(0x)[0-9a-fA-F]+(\.[0-9a-fA-F]+)
 DICT['number?']='feval decimal? over hexadecimal? swap drop logior'
 
 DICT['int<']='a="${STACK[1]}"; b="${STACK[0]}"; fpop 2; fpush "$(($a < $b))"'
+DICT['int<=']='a="${STACK[1]}"; b="${STACK[0]}"; fpop 2; fpush "$(($a <= $b))"'
 
 #
 # Stack ops

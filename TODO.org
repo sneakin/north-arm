@@ -3,7 +3,7 @@
 * Goals
 ** Ultimate:
 ELF file that only has an offset thread into a dynamically linked symbol table and interpreter.
-** Primary:
+** DONE Primary:
 Build an ELF file that can execute the code to build itself.
 ** Secondary:
 North Runner compatible with the x86 runner that can mmap a file to execute.
@@ -14,6 +14,20 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 **** .dynstr section header for the dynamic string table
 **** find what's keeping relocations from using actual symbol addresses
 **** Android / GNU switch
+** TODO abs-int or int-abs?
+** runner ops
+*** exec -> exec-cs
+*** call ops and return to next
+*** variables on stack
+*** array index interpreter
+*** array of words common with x86 to boot strap a full list of words
+** Pi Zero
+Lacks thumb2 and therefore division and coprocessor ops.
+*** TODO Start with software divide
+*** TODO Swap to/from HW & SW
+*** TODO Detect thumb2 in HWCAPS on start
+**** trap SIGILL
+*** TODO A32 coprocessor ops
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
@@ -130,7 +144,7 @@ Bash specifically.
 load needs file opening and reading with a reader stack.
 *** DONE definitions writen to the data stack
 *** definitions with code reuse
-*** definition definability for macros
+*** DONE definition definability for macros
 *** DONE String concatenation: ++
 ** TODO Standard wording
 *** TODO c" returns a 2 string
@@ -146,12 +160,14 @@ load needs file opening and reading with a reader stack.
 ** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
 *** TODO ELF dynamic linking of imports
+**** Proper symbol flags
 **** DONE Library loading
 **** DONE Function imports
 **** TODO Add symbols only once
-**** TODO Dynamically linked variables
+**** TODO Dynamically linked variable
 *** ELF .o files with symbol table
-*** ELF symbol table
+*** TODO ELF symbol table of imports
+*** TODO proper DT_HASH
 ** Runner's jumps op offset or byte offset?
 ** Compile list of words into list of assembly calls.
 ** North
@@ -163,13 +179,14 @@ load needs file opening and reading with a reader stack.
 *** mmap file
 **** Zero copy reads with mmap / from strings; no copy if no more data is read when reading a token
 **** mmap output and set data stack to write to a file.
-*** Catch segfaults & other errors
+*** DONE Catch segfaults & other errors
 *** Spawn a thread
 *** fork & exec
 ** Testing
 *** Move tests to assert-equals
 *** Test DSL
 ** TODO quit needs to reset dict in case words are on the stack
+*** Variables stored outside dictionary.
 ** TODO remove early uses of R3 to track calls and returns
 ** DONE Organization
 *** bash forth
@@ -212,6 +229,12 @@ Touches words that take pointer or a pointer/length pair.
 
 ** load from strings
 ** save ELF runtime image
+** dump loadable source code
+** generic next that calls a function to get the next word depending on source or flavor
+*** immediates
+*** check if literals and pointers are words
+** include textual source in binary
+** error handling that quits and/or starts a new interpreter loop
 ** Make output functions take an fd argument.
 ** TODO Eliminate needless padding
 Zero needed atbend of definitions for decompile.
@@ -223,11 +246,21 @@ dry up with comp' immediated as ' to use compiling-dict.
 ** TODO move defining/*-boot files to interp/boot/defining
 ** TODO Towards Lisp
 *** Dictionary as argument
+**** DONE to compiler
+**** to interpreter
 *** Dictionary list & first class functions
 *** Types
 *** Structures
 *** Sequences
 *** Garbage collection
+** after loop
+*** Exports, symbol table
+*** builder executable that's passed files to build
+**** immediate list built for executable
+**** flags to toggle static/dynamic, linux/android, elf32/64
+*** sigill trap to detect cpu ops
+** x86
+
 * Thoughts
 ** def syntax
 *** Current
@@ -238,7 +271,7 @@ defcol => defcolon
 def
 :
 
-***  General def and lists
+*** General def and lists
 Scheme style symbol table
 
 **** Dictionary
@@ -253,9 +286,9 @@ Tail points to the definition sequence.
 
 **** Variables
 def name value
-def name [ exprs... ]
+def name s[ exprs... ]
 **** Colon definitions
-def name '[ exprs... ]
+def name [ exprs... ]
 def name colon[ exprs... ]
 **** Framed colon definitions
 def name fun[ exprs... ]
@@ -266,6 +299,8 @@ def name fun exprs... end
 def name begin exprs... end
 def name fun( args... )[ exprs... ]
 
+def name [ args... ] do exprs... end
+def name [ args... ] { exprs... }
 *** Cross compiling reads
 Need to restore state. Globals make this tough, but compiler object with output stack, immediates, and words can handle that.
 ** Optimizations

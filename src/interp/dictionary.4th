@@ -34,6 +34,15 @@ def make-dict-entry ( name-ptr length ++ ...memory entry-ptr )
   exit-frame
 end
 
+( Copying: )
+
+defcol dict-entry-clone-fields
+  rot swap
+  over dict-entry-code peek over dict-entry-code poke
+  over dict-entry-data peek over dict-entry-data poke
+  2 dropn
+endcol
+
 ( Iteration: )
 
 def dict-map/4 ( dict origin state fn )

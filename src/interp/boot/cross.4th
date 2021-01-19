@@ -164,6 +164,7 @@ address and relative offset. )
   next-token cross-lookup-or-break to-out-addr
 ; immediate-as [out-off'] out-immediate-as [']
 
+( fixme word ends up in the binary. )
 : out-out-off'
   ( The immediate ~out-off'~ that delays the lookup of the next token until the containing definition is called. The output word's offset will be on the stack. )
   POSTPONE dallot-next-token>
@@ -206,6 +207,8 @@ def owords
   out-dict out-origin peek 0 ' oword-printer dict-map/4
 end
 
+( todo return is aliased to proper-exit; migrate frames to return0 )
+
 def oiwords
-  out-immediates peek cs + ' words-printer dict-map
+  out-immediates peek dup IF cs + ' words-printer dict-map THEN
 end

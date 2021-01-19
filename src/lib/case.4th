@@ -6,6 +6,9 @@
       drop " not 1 or 2"
     ESAC
 )
+
+( todo fix up a CASE for the interpreter; or make jump-rel & if-jump consistent on cell-size multiplier )
+
 symbol> case-start-marker
 symbol> case-marker
 

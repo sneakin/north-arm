@@ -8,6 +8,8 @@ FORTH ?= bash ./src/bash/forth.sh
 HTMLER ?= ./scripts/htmler.sh
 
 EXECEXT=.elf
+SOEXT=.so
+SO_CFLAGS=-m32 -shared -nostdlib -g
 
 OUTPUTS=bin/interp$(EXECEXT) \
 	bin/interp.1$(EXECEXT) \
@@ -20,7 +22,9 @@ OUTPUTS=bin/interp$(EXECEXT) \
 	bin/assembler$(EXECEXT) \
 	bin/fforth.dict \
 	bin/assembler-thumb.sh \
-	bin/assembler-thumb.dict
+	bin/assembler-thumb.dict \
+	lib/ffi-test-lib$(SOEXT)
+
 DOCS=doc/html/bash.html \
 	doc/html/interp.html \
 	doc/html/interp-runtime.html \
@@ -38,6 +42,27 @@ tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
 .PHONY: clean doc all env
+
+release:
+	mkdir -p release
+release/root: .git/refs/heads/master release
+	if [ -d release/root ]; then cd release/root && git pull; else git clone . release/root; fi
+
+bootstrap:
+	mkdir -p bootstrap
+
+bootstrap/interp.static.elf: release/root bootstrap
+	make -C release/root version.4th bin/interp.elf bin/interp.1.elf
+	cp release/root/bin/interp.elf bootstrap/interp.static.elf
+
+bootstrap/interp.android.elf: release/root bootstrap/interp.static.elf
+	make -C release/root version.4th bin/interp.2.elf
+	cp release/root/bin/interp.2.elf bootstrap/interp.android.elf
+
+boot: bootstrap/interp.static.elf bootstrap/interp.android.elf
+
+version.4th: .git/refs/heads/master
+	echo "\" $$(cat $<)\" string-const> *north-git-ref*" > $@
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
@@ -92,6 +117,7 @@ bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_S
 	echo -e "$< load $@ save-dict\n" | $(FORTH)
 
 RUNNER_THUMB_SRC=\
+	version.4th \
 	src/cross/builder.4th \
 	src/cross/builder/bash.4th \
 	src/runner/aliases.4th \
@@ -105,6 +131,7 @@ RUNNER_THUMB_SRC=\
 	src/runner/thumb/cpu.4th \
 	src/runner/thumb/vfp.4th \
 	src/runner/thumb/ffi.4th \
+	src/runner/thumb/state.4th \
 	src/runner/thumb/linux.4th \
 	src/runner/thumb/init.4th \
 	src/runner/thumb/math.4th \
@@ -159,6 +186,9 @@ bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
 bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
+
+lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
+	mkdir -p lib && $(CC) $(SO_CFLAGS) -o $@ $<
 
 %$(EXECEXT): %.4th
 	cat $< | $(FORTH) > $@

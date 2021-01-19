@@ -1,12 +1,12 @@
-defcol down-stack/2 rot swap cell-size * - swap endcol
+defcol down-stack/2 rot swap cell-size int-mul int-sub swap endcol
 defcol down-stack swap int32 1 down-stack/2 swap endcol
 
-defcol up-stack/2 rot swap cell-size * + swap endcol
+defcol up-stack/2 rot swap cell-size int-mul int-add swap endcol
 defcol up-stack swap int32 1 up-stack/2 swap endcol
 
 defcol stack-delta
   rot swap
-  - cell-size /
+  int-sub cell/
   swap
 endcol
 

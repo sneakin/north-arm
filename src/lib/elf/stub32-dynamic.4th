@@ -2,7 +2,7 @@
 
 0x80000 const> elf32-code-segment
 
-: write-elf32-header
+: write-elf32-dynamic-header
 ( ' id uint8 16 array-field )
 ( EI_MAG0 0 File identification )
 0x7f ,uint8
@@ -56,118 +56,7 @@
 2 ,uint16
 ;
 
-: write-elf32-program-code-header
-( ' type uint32 field )
-1 ,uint32
-( ' offset uint32 field )
-swap ,uint32
-( ' vaddr uint32 field )
-elf32-code-segment ,uint32
-( ' paddr uint32 field )
-elf32-code-segment ,uint32
-( ' filesz uint32 field )
-dup to-out-addr ,uint32
-( ' memsz uint32 field )
-to-out-addr ,uint32
-( ' flags uint32 field )
-7 ,uint32
-( ' align uint32 field )
-0x1000 ,uint32
-;
-
-: write-elf32-code-section-header
-( ' name uint32 field )
-1 ,uint32
-( ' type uint32 field )
-1 ,uint32
-( ' flags uint32 field )
-0x10000007 ,uint32
-( ' addr uint32 field )
-swap to-out-addr dup elf32-code-segment + ,uint32
-( ' offset uint32 field )
-,uint32
-( ' size uint32 field )
-,uint32
-( ' link uint32 field )
-0 ,uint32
-( ' info uint32 field )
-0 ,uint32
-( ' addralign uint32 field )
-4096 ,uint32
-( ' entsize uint32 field )
-0 ,uint32
-;
-
-: write-elf32-string-section-header
-( ' name uint32 field )
-13 ,uint32
-( ' type uint32 field )
-3 ,uint32
-( ' flags uint32 field )
-0x20 ,uint32
-( ' addr uint32 field )
-0 ,uint32
-( ' offset uint32 field )
-swap to-out-addr ,uint32
-( ' size uint32 field )
-,uint32
-( ' link uint32 field )
-0 ,uint32
-( ' info uint32 field )
-0 ,uint32
-( ' addralign uint32 field )
-4096 ,uint32
-( ' entsize uint32 field )
-0 ,uint32
-;
-
-: write-elf32-abi-tag-section-header
-( ' name uint32 field )
-23 ,uint32
-( ' type uint32 field )
-7 ,uint32
-( ' flags uint32 field )
-0 ,uint32
-( ' addr uint32 field )
-0 ,uint32
-( ' offset uint32 field )
-swap to-out-addr ,uint32
-( ' size uint32 field )
-,uint32
-( ' link uint32 field )
-0 ,uint32
-( ' info uint32 field )
-0 ,uint32
-( ' addralign uint32 field )
-4 ,uint32
-( ' entsize uint32 field )
-0 ,uint32
-;
-
-: write-elf32-zero-section-header
-( ' name uint32 field )
-0 ,uint32
-( ' type uint32 field )
-0 ,uint32
-( ' flags uint32 field )
-0 ,uint32
-( ' addr uint32 field )
-0 ,uint32
-( ' offset uint32 field )
-0 ,uint32
-( ' size uint32 field )
-0 ,uint32
-( ' link uint32 field )
-0 ,uint32
-( ' info uint32 field )
-0 ,uint32
-( ' addralign uint32 field )
-4096 ,uint32
-( ' entsize uint32 field )
-0 ,uint32
-;
-
-: write-elf32-string-section
+: write-elf32-dynamic-string-section
   " " ,byte-string
   " .text" ,byte-string
   " .data" ,byte-string
@@ -179,24 +68,6 @@ swap to-out-addr ,uint32
   " .dynamic" ,byte-string
   " .dynstr" ,byte-string
   " .dyn.rel" ,byte-string
-;
-
-: write-elf32-code
-  1 r7 mov# ,uint16
-  13 r0 mov# ,uint16
-  0 swi ,uint16
-  0 swi ,uint16
-;
-
-: write-elf32-abi-tag
-  4 ,uint32 ( name )
-  16 ,uint32 ( desc )
-  1 ,uint32 ( type )
-  " GNU" ,byte-string
-  0 ,uint32 ( OS )
-  4 ,uint32 ( major )
-  20 ,uint32 ( minor)
-  0 ,uint32 ( revision )
 ;
 
 : write-elf32-phdr-program-header
@@ -311,7 +182,7 @@ elf32-code-segment + ,uint32
 
 22 const> R_ARM_JUMP_SLOT
 
-def elf32-add-dynamic-symbol/2
+def elf32-add-dynamic-symbol/2 ( name length ++ index )
   arg1 arg0 allot-byte-string/2 drop
   0 swap cons
   *out-dynamic-symbols* push-onto
@@ -539,15 +410,8 @@ end
   write-elf32-dynamic-symbol-table
 ;
 
-: rewrite-elf32-header ( entry section-headers program-headers )
-  ( todo use offset vars )
-  to-out-addr 32 from-out-addr uint32!
-  to-out-addr 28 from-out-addr uint32!
-  24 from-out-addr uint32!
-;
-
-: write-elf32-ending ( code-start entry ++  )
-  dhere write-elf32-string-section
+: write-elf32-dynamic-ending ( code-start entry ++  )
+  dhere write-elf32-dynamic-string-section
   dhere write-elf32-interp
   write-elf32-dynamic
   dhere

@@ -195,6 +195,16 @@ symbol> if-placeholder
   0 swap -
 ;
 
+( Comparisons: )
+
+: int> swap int<= ;
+: int>= swap int< ;
+
+alias> uint< int<
+alias> uint<= int<=
+alias> uint> int>
+alias> uint>= int>=
+
 ( Misc: )
 
 alias> ! dpoke

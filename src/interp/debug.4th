@@ -14,6 +14,36 @@ def print-args
   arg0 error-hex-int nl nl
 end
 
+def print-regs-loop ( highs lows n )
+  arg0 8 int< IF
+    s" r" error-string/2
+    arg0 error-hex-uint
+    s"   " error-string/2
+    arg1 peek error-hex-uint
+    s"   r" error-string/2
+    arg0 8 + error-hex-uint
+    s"   " error-string/2
+    arg2 peek error-hex-uint enl
+    arg1 cell-size + set-arg1
+    arg2 cell-size + set-arg2
+    arg0 1 + set-arg0 repeat-frame
+  ELSE
+    s" LR " error-string/2
+    arg1 peek error-hex-uint enl
+  THEN
+end
+
+def print-regs
+  0 dup save-low-regs set-local0
+  save-high-regs local0 0 print-regs-loop
+end
+
+def print-env/1
+  arg0 env dup IF write-line arg0 1 + set-arg0 drop repeat-frame THEN
+end
+
+def print-env 0 print-env/1 end
+
 ( Memory dumping: )
 
 def memdump/2 ( ptr num-bytes )

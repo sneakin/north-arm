@@ -8,18 +8,18 @@ The dynamic linker passes a function in r0.
 
 defop init
   ( calculate CS: pc - dhere; in r10? )
-  16 r3 ldr-pc ,uint16
-  pc r5 mov-hilo ,uint16
-  r3 r5 cs-reg sub ,uint16
+  16 r3 ldr-pc ,ins
+  pc r5 mov-hilo ,ins
+  r3 r5 cs-reg sub ,ins
   dhere
   ( init registers )
-  0 fp mov# ,uint16
-  0 eip mov# ,uint16
+  0 fp mov# ,ins
+  0 eip mov# ,ins
   ( set the dictionary )
-  12 dict-reg ldr-pc ,uint16
-  cs-reg dict-reg dict-reg add ,uint16
+  12 dict-reg ldr-pc ,ins
+  cs-reg dict-reg dict-reg add ,ins
   ( exec main[fini, argc, argv, env] )
-  12 r1 ldr-pc ,uint16
+  12 r1 ldr-pc ,ins
   out' exec-r1 emit-op-call
   ( data: )
   to-out-addr ,uint32

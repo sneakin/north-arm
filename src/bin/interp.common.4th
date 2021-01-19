@@ -7,6 +7,7 @@ s[
    src/lib/assoc.4th
    src/interp/messages.4th
    src/interp/dictionary.4th
+   src/runner/thumb/math-init.4th
    src/interp/output.4th
    src/interp/reader.4th
    src/interp/linux/program-args.4th

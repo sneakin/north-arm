@@ -1,37 +1,24 @@
-( System calls: )
+( System calls: arguments go into R0-R6 with the syscall number in R7. )
 
 0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
 4 cell-size mult const> state-byte-size
 
-: emit-push-state
-  state-register-mask pushr ,uint16
-;
-
-: emit-pop-state
-  state-register-mask popr ,uint16
-;
-
-: syscall-gen-loaders
-  over 1 equals IF swap drop return THEN
-  swap 1 - swap
-  over dup 1 - cell-size mult state-byte-size + swap ldr-sp ,uint16
-  loop
-;
-
-: emit-syscaller ( syscall# num-args )
+defop syscall ( args num-args syscall -- result )
   ( save registers )
-  ( 0 r0 bit-set pushr ,uint16 )
-  emit-push-state
+  state-register-mask pushr ,ins
   ( load args into registers )
-  dup syscall-gen-loaders
+  0 r0 r7 mov-lsl ,ins
+  cell-size state-byte-size + r0 ldr-sp ,ins
+  ( erasing state requires that interpreted handlers have state to load. )
+  r0 0x3F ldmia ,ins ( # registers / 2 = # cycles to load )
   ( make syscall )
-  swap r7 mov# ,uint16
-  0 swi ,uint16
+  0 swi ,ins
   ( restore registers, keep return value in R0 )
-  emit-pop-state
-  1 - cell-size mult r1 mov# ,uint16
-  r1 sp add-lohi ,uint16
-;
+  state-register-mask popr ,ins
+  ( drop the arguments )
+  2 cell-size mult inc-sp ,ins
+  emit-next
+endop
 
 ( Input & output: )
 
@@ -55,46 +42,43 @@ defalias> O_FSYNC O_SYNC
 8192 defconst> O_ASYNC
 0x20000 defconst> O_LARGEFILE
 
-defop open ( mode flags path -- result )
-  5 3 emit-syscaller
-  emit-next
-endop
+def open ( mode flags path -- result )
+  args 3 5 syscall 3 return1-n
+end
 
-defop close ( fd -- result )
-  6 1 emit-syscaller
-  emit-next
-endop
+def close ( fd -- result )
+  args 1 6 syscall 1 return1-n
+end
 
-defop lseek ( whence offset fd -- result )
-  19 3 emit-syscaller
-  emit-next
-endop
+def lseek ( whence offset fd -- result )
+  args 3 19 syscall 3 return1-n
+end
 
-defop read ( len ptr fd -- result )
-  3 3 emit-syscaller
-  emit-next
-endop
+def read ( len ptr fd -- bytes-or-error )
+  args 3 3 syscall 3 return1-n
+end
 
-defop write ( len ptr fd -- result )
-  4 3 emit-syscaller
-  emit-next
-endop
+def write ( len ptr fd -- bytes-or-error )
+  args 3 4 syscall 3 return1-n
+end
 
-defop pread64 ( offset len ptr fd -- result )
-  180 4 emit-syscaller
-  emit-next
-endop
+def pread64 ( offset len ptr fd -- result )
+  args 4 180 syscall 4 return1-n
+end
 
-defop pwrite64 ( offset len ptr fd -- result )
-  181 4 emit-syscaller
-  emit-next
-endop
+def pwrite64 ( offset len ptr fd -- result )
+  args 4 181 syscall 4 return1-n
+end
+
+def ioctl ( arg cmd fd -- result )
+  args 3 54 syscall 3 return1-n
+end
 
 ( Exit to system: )
 
 defop sysexit
-  1 r7 mov# ,uint16
-  0 swi ,uint16
+  1 r7 mov# ,ins
+  0 swi ,ins
 endop
 
 defcol abort
@@ -107,12 +91,10 @@ endcol
 
 ( Memory: )
 
-defop brk ( amount )
-  0x2D 1 emit-syscaller
-  emit-next
-endop
+def brk ( amount )
+  args 1 0x2D syscall 1 return1-n
+end
 
-defop mmap2 ( addr length prot flags fd pgoffset -- addr )
-  0xC0 6 emit-syscaller
-  emit-next
-endop
+def mmap2 ( addr length prot flags fd pgoffset -- addr )
+  args 6 0xC0 syscall 6 return1-n
+end
