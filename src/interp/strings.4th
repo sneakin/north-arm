@@ -35,7 +35,7 @@ defcol string-poke ( value string index )
   swap rot swap poke-byte
 endcol
 
-defcol null-terminate
+defcol null-terminate ( str length -- )
   rot int32 0 rot string-poke
 endcol
 

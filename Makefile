@@ -1,10 +1,22 @@
-FORTH=bash ./src/bash/forth.sh
-HTMLER=./scripts/htmler.sh
+HOST_ARCH ?= x86
+HOST_PLATFORM ?= linux
+TARGET_ARCH ?= thumb
+TARGET_PLATFORM ?= android
+TARGET_STATIC ?= true
+
+FORTH ?= bash ./src/bash/forth.sh
+HTMLER ?= ./scripts/htmler.sh
+
 EXECEXT=.elf
 
 OUTPUTS=bin/interp$(EXECEXT) \
 	bin/interp.1$(EXECEXT) \
-	bin/interp.2$(EXECEXT) \
+	bin/interp.android$(EXECEXT) \
+	bin/interp.android.1$(EXECEXT) \
+	bin/interp.android.2$(EXECEXT) \
+	bin/interp.linux$(EXECEXT) \
+	bin/interp.linux.1$(EXECEXT) \
+	bin/interp.linux.2$(EXECEXT) \
 	bin/assembler$(EXECEXT) \
 	bin/fforth.dict \
 	bin/assembler-thumb.sh \
@@ -25,7 +37,7 @@ all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all
+.PHONY: clean doc all env
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
@@ -160,9 +172,36 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-STAGE0_FORTH=LD_PRELOAD='' ./bin/interp.elf
-STAGE1_FORTH=LD_PRELOAD='' ./bin/interp.1.elf
-STAGE2_FORTH=LD_PRELOAD='' ./bin/interp.2.elf
+
+ifndef STAGE_RUNNER
+  ifeq ($(HOST_PLATFORM), android)
+    STAGE_RUNNER=LD_PRELOAD=\"\"
+  endif
+
+  ifeq ($(TARGET_ARCH), thumb)
+    ifneq ($(HOST_ARCH), arm)
+      STAGE_RUNNER+=qemu-arm -L /usr/arm-linux-gnueabi
+    endif
+  else
+    ifeq ($(TARGET_ARCH), x86)
+      ifneq ($(HOST_ARCH), $(TARGET_ARCH))
+        ifneq ($(HOST_ARCH), x86_64)
+          STAGE_RUNNER+=qemu-i386
+        endif
+      endif
+    else
+      ifeq ($(TARGET_ARCH), x86_64)
+        ifneq ($(HOST_ARCH), $(TARGET_ARCH))
+          STAGE_RUNNER+=qemu-x86_64
+        endif
+      endif
+    endif
+  endif
+endif
+
+STAGE0_FORTH=$(STAGE_RUNNER) ./bin/interp.elf
+STAGE1_FORTH=$(STAGE_RUNNER) ./bin/interp.$(HOST_PLATFORM).1.elf
+STAGE2_FORTH=$(STAGE_RUNNER) ./bin/interp.$(HOST_PLATFORM).2.elf
 
 bin/%.1$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE0_FORTH) > $@
@@ -181,3 +220,9 @@ bin/%.3$(EXECEXT): ./src/bin/%.4th
 
 %.raw: %.png
 	./scripts/bintopng.sh d $< $@
+
+env:
+	@echo Host: $(HOST_ARCH) $(HOST_PLATFORM)
+	@echo Target: $(TARGET_ARCH) $(TARGET_PLATFORM) $(TARGET_STATIC)
+	@echo Runner: $(STAGE_RUNNER)
+	@echo Make: $(MAKE_HOST)

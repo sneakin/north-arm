@@ -35,6 +35,8 @@ def const>
   exit-frame
 end
 
+alias> string-const> const>
+
 def does-const-offset
   pointer do-const-offset dict-entry-code peek arg0 dict-entry-code poke
   return0

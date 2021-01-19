@@ -237,8 +237,12 @@ dup ,uint32
 0 ,uint32
 ;
 
+" /system/bin/linker" string-const> elf32-interp-android
+" /lib/ld-linux-armhf.so.3" string-const> elf32-interp-linux
+elf32-interp-android var> *elf32-interp*
+
 : write-elf32-interp
-  " /system/bin/linker" ,byte-string
+  *elf32-interp* peek ,byte-string
 ;
 
 : write-elf32-dynamic-section-header

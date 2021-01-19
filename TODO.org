@@ -9,6 +9,11 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
+** dynamic linking
+*** GNU
+**** .dynstr section header for the dynamic string table
+**** find what's keeping relocations from using actual symbol addresses
+**** Android / GNU switch
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
@@ -40,6 +45,7 @@ Call frames, stack & data pointer math
 *** TODO athumb
 **** TODO Branching and return in Thumb; to call ops in ops and call threading
 **** Thumb Assembler meta words: mov checks arg range
+**** TODO On thumb, use aarch32 ops to access coprocessor
 *** TODO aarch32
 **** TODO Status register and coprocessor ops
 *** aarch64
