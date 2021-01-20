@@ -251,6 +251,12 @@ alias> sl r10
 ( Branch if Z set, or N set and V clear, or N clear and V set, less than or equal )
 : ble beq 13 set-branch-cond ;
 
+( 0 1 0 0 0 1 1 1 1 Rm 0 0 0 )
+: blx
+  0xF logand 3 bsl
+  0x4780 logior
+;
+
 ( 1 1 0 1 1 1 1 1 Value:8 Software Interrupt )
 : swi ( value )
   0xFF logand

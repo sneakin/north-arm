@@ -5,12 +5,25 @@ r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip
 
+0 var> *arm-thumb2*
+
 : emit-branch
   dup abs-int 0x800 int< IF
     branch ,ins
   ELSE
-    ( alters LR unlike the above )
-    branch-link ,ins
+    *arm-thumb2* peek IF
+      ( factor in PC alignment )
+      dhere to-out-addr 2 logand 2 +
+      ( load the PC relative address into PC )
+      ip ldr-pc.w ,ins
+      ip pc add-hihi ,ins
+      ( the address offset )
+      cell-size - ,uint32
+    ELSE
+      ( always branch... )
+      dup bw ,ins
+      cell-size - bw .bne ,ins
+    THEN
   THEN
 ;
 

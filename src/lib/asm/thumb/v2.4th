@@ -2,6 +2,40 @@
   see ARM Architecture Reference Manual: Thumb-2 Supplement
 )
 
+: swap-short
+  dup 16 bsr 0xFFFF logand
+  swap 0xFFFF logand 16 bsl logior
+;
+
+( 1 1 1 1 0 S cond:4 imm:6 1 0 J1 0 J2 imm:11 )
+: bw
+  negative? IF 0 26 bit-set ELSE 0 THEN
+  over 17 bit-set? IF 11 bit-set THEN
+  over 16 bit-set? IF 13 bit-set THEN
+  swap
+  ( dup error-hex-uint espace
+  dup 0x1f + error-hex-uint )
+  1 bsr
+  dup 0x7FF logand
+  swap 11 bsr 0x3F logand 16 bsl logior
+  0xF0008000 logior logior
+  swap-short
+  s" branch at " error-line/2
+;
+
+: .bne 1 6 bsl logior ;
+: .bcs 2 6 bsl logior ;
+
+( 1 1 1 1, 1 0 0 0, U 1 0 1, 1 1 1 1, Rt:4 imm:12 )
+: ldr-pc.w ( imm reg -- ins32 )
+  swap negative? IF abs-int 0 ELSE 0x80 THEN
+  0xF85F logior
+  rot  ( ins imm reg )
+  0xF logand 12 bsl
+  swap 0xFFF logand
+  logior 16 bsl logior
+;
+
 ( 1 1 1 1, 1 0 1 1, 1 0 0 1, Rn:4 | [1] [1] [1] [1] Rd:4 1 1 1 1 Rm:4 )
 : sdiv-hi ( rn -- half-op )
   0xFB90 logior
