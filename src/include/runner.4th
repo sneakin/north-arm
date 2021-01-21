@@ -37,6 +37,3 @@ s[ src/runner/thumb/frames.4th
    src/runner/proper.4th
    src/interp/data-stack.4th
 ] load-list
-
-( fixme need to use imports/{android,linux}.4th depending on target platform )
-" src/runner/imports/linux.4th" load

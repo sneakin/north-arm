@@ -21,4 +21,4 @@ s[
    src/interp/debug.4th
    src/interp/decompiler.4th
    src/interp/loaders.4th
-] const> sources
+] var> sources
