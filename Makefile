@@ -3,13 +3,14 @@ HOST_PLATFORM ?= linux
 TARGET_ARCH ?= thumb
 TARGET_PLATFORM ?= android
 TARGET_STATIC ?= true
+TARGET_CC?=gcc -m32
 
 FORTH ?= bash ./src/bash/forth.sh
 HTMLER ?= ./scripts/htmler.sh
 
 EXECEXT=.elf
 SOEXT=.so
-SO_CFLAGS=-m32 -shared -nostdlib -g
+SO_CFLAGS=-shared -nostdlib -g
 
 OUTPUTS=bin/interp$(EXECEXT) \
 	bin/interp.1$(EXECEXT) \
@@ -188,7 +189,7 @@ bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
 
 lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
-	mkdir -p lib && $(CC) $(SO_CFLAGS) -o $@ $<
+	mkdir -p lib && $(TARGET_CC) $(SO_CFLAGS) -o $@ $<
 
 %$(EXECEXT): %.4th
 	cat $< | $(FORTH) > $@
