@@ -39,4 +39,4 @@ s[ src/runner/thumb/frames.4th
 ] load-list
 
 ( fixme need to use imports/{android,linux}.4th depending on target platform )
-( " src/runner/imports/linux.4th" load )
+" src/runner/imports/linux.4th" load
