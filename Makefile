@@ -49,6 +49,9 @@ release:
 release/root: .git/refs/heads/master release
 	if [ -d release/root ]; then cd release/root && git pull; else git clone . release/root; fi
 
+quick:
+	cp bootstrap/interp.static.elf bin/interp.elf
+
 bootstrap:
 	mkdir -p bootstrap
 
