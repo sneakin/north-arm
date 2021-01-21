@@ -190,9 +190,23 @@ def elf32-add-dynamic-symbol/2 ( name length ++ index )
   exit-frame
 end
 
+0x00 const> ELF32-STB-LOCAL
+0x10 const> ELF32-STB-GLOBAL
+0x20 const> ELF32-STB-WEAK
+0xD0 const> ELF32-STB-LOPROC
+0xF0 const> ELF32-STB-HIPROC
+
+0x0 const> ELF32-STT-NOTYPE
+0x1 const> ELF32-STT-OBJECT
+0x2 const> ELF32-STT-FUNC
+0x3 const> ELF32-STT-SECTION
+0x4 const> ELF32-STT-FILE
+0xD const> ELF32-STT-LOPROC
+0xF const> ELF32-STT-HIPROC
+
 def write-elf32-import-symbols ( dynstr-offset imports -- )
   arg0 UNLESS return0 THEN
-  2 2 0 0
+  2 ELF32-STB-GLOBAL ELF32-STT-FUNC logior 0 0
   arg0 car cdr arg1 -
   write-elf32-symbol
   arg0 cdr set-arg0 drop-locals repeat-frame
@@ -378,6 +392,7 @@ end
   DT_SYMTAB ,uint32 0 ,uint32
   DT_SYMENT ,uint32 16 ,uint32
   ( procedure linkage )
+  ( DT_PLTREL ,uint32 DT_REL ,uint32 )
   dhere 4 + elf32-offset-got poke
   DT_PLTGOT ,uint32 dup ,uint32
   ( relocations )
