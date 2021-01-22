@@ -1,9 +1,4 @@
-HOST_ARCH ?= x86
-HOST_PLATFORM ?= linux
-TARGET_ARCH ?= thumb
-TARGET_PLATFORM ?= android
-TARGET_STATIC ?= true
-TARGET_CC?=gcc -m32
+include ./Makefile.arch
 
 FORTH ?= bash ./src/bash/forth.sh
 HTMLER ?= ./scripts/htmler.sh
@@ -36,13 +31,13 @@ DOCS=doc/html/bash.html \
 
 ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 	bin/tests/elf/bones/barest$(EXECEXT) \
-	bin/tests/elf/bones/thumb$(EXECEXT) \
+	bin/tests/elf/bones/thumb$(EXECEXT)
 
 all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all env
+.PHONY: clean doc all
 
 release:
 	mkdir -p release
@@ -206,36 +201,9 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-
-ifndef STAGE_RUNNER
-  ifeq ($(HOST_PLATFORM), android)
-    STAGE_RUNNER=LD_PRELOAD=\"\"
-  endif
-
-  ifeq ($(TARGET_ARCH), thumb)
-    ifneq ($(HOST_ARCH), arm)
-      STAGE_RUNNER+=qemu-arm -L /usr/arm-linux-gnueabi
-    endif
-  else
-    ifeq ($(TARGET_ARCH), x86)
-      ifneq ($(HOST_ARCH), $(TARGET_ARCH))
-        ifneq ($(HOST_ARCH), x86_64)
-          STAGE_RUNNER+=qemu-i386
-        endif
-      endif
-    else
-      ifeq ($(TARGET_ARCH), x86_64)
-        ifneq ($(HOST_ARCH), $(TARGET_ARCH))
-          STAGE_RUNNER+=qemu-x86_64
-        endif
-      endif
-    endif
-  endif
-endif
-
-STAGE0_FORTH=$(STAGE_RUNNER) ./bin/interp.elf
-STAGE1_FORTH=$(STAGE_RUNNER) ./bin/interp.$(HOST_PLATFORM).1.elf
-STAGE2_FORTH=$(STAGE_RUNNER) ./bin/interp.$(HOST_PLATFORM).2.elf
+STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp.elf
+STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).1.elf
+STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).2.elf
 
 bin/%.1$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE0_FORTH) > $@
@@ -254,9 +222,3 @@ bin/%.3$(EXECEXT): ./src/bin/%.4th
 
 %.raw: %.png
 	./scripts/bintopng.sh d $< $@
-
-env:
-	@echo Host: $(HOST_ARCH) $(HOST_PLATFORM)
-	@echo Target: $(TARGET_ARCH) $(TARGET_PLATFORM) $(TARGET_STATIC)
-	@echo Runner: $(STAGE_RUNNER)
-	@echo Make: $(MAKE_HOST)

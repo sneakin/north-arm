@@ -1,0 +1,67 @@
+TARGETS=arm-linux arm-linux-gnueabi arm-linux-android
+
+HOST?=$(MAKE_HOST)
+TARGET?=arm-linux
+
+define platform_vars # (var_prefix)
+ifneq (,$(findstring x86_64,$($(1))))
+	$(1)_ARCH=x86_64
+	$(1)_BITS=64
+else ifneq (,$(findstring x86,$($(1))))
+	$(1)_ARCH=x86
+	$(1)_BITS=32
+else ifneq (,$(findstring arm,$($(1))))
+	$(1)_ARCH=arm
+	$(1)_BITS=32
+else ifneq (,$(findstring aarch64,$($(1))))
+	$(1)_ARCH=aarch64
+	$(1)_BITS=64
+endif
+
+ifneq (,$(findstring android,$($(1))))
+	$(1)_OS=android
+else ifneq (,$(findstring linux,$($(1))))
+	$(1)_OS=linux
+else ifneq (,$(findstring windows,$($(1))))
+	$(1)_OS=windows
+endif
+
+ifneq (,$(findstring gnueabi,$($(1))))
+	$(1)_STATIC?=false
+else ifneq (,$(findstring android,$($(1))))
+	$(1)_STATIC?=false
+endif
+$(1)_STATIC?=true
+
+endef
+
+$(eval $(call platform_vars,HOST))
+$(eval $(call platform_vars,TARGET))
+
+ifneq ($(HOST_ARCH), $(TARGET_ARCH))
+	TARGET_CC?=$(TARGET)-gcc
+	ifneq (32,$(TARGET_BITS))
+		TARGET_CFLAGS?=-m32
+	endif
+	TARGET_RUNNER?=qemu-$(TARGET_ARCH)
+else
+	TARGET_CC?=$(CC)
+endif
+
+TARGET_VALID=true
+ifneq ($(TARGET),$(filter $(TARGET),$(TARGETS)))
+	TARGET_VALID=false
+endif
+
+.PHONY: env targets
+
+targets:
+	@echo $(TARGETS)
+
+env:
+	@echo Make: $(MAKE_HOST)
+	@echo Host: $(HOST) - $(HOST_ARCH) $(HOST_OS) $(HOST_BITS)
+	@echo Target: $(TARGET) - $(TARGET_ARCH) $(TARGET_OS) $(TARGET_BITS) $(TARGET_STATIC)
+	@echo Target CC: $(TARGET_CC)
+	@echo Valid target: $(TARGET_VALID)
+	@echo Runner: $(TARGET_RUNNER)
