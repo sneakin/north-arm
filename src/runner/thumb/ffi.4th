@@ -8,16 +8,13 @@
   0 r0 bit-set pushr ,ins
   ( Load the import's [r1] address into r0 )
   0 dict-entry-data r1 r0 ldr-offset ,ins
-  r0 r12 mov-lohi ,ins
-  ( LR needs + 1 to return to thumb mode )
-  1 r0 mov# ,ins
-  r0 lr mov-lohi ,ins
+  r0 ip mov-lohi ,ins
   ( pop arguments )
   ( tbd load the called address at end? )
   dup IF popr ELSE r0 mov# THEN ,ins
   ( make the call )
-  pc lr add-hihi ,ins ( straight to next? )
-  r12 0 bx-hi ,ins
+  ( ip 0 bx-hi ,ins )
+  ip blx ,ins
 ;
 
 ( Void callees: )
@@ -25,58 +22,58 @@
 defop do-fficall-0-0
   0 emit-fficaller-r1
   0 r0 bit-set popr ,ins
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-1-0
   0 r0 bit-set emit-fficaller-r1
   0 r0 bit-set popr ,ins
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-2-0
   0 r0 bit-set r1 bit-set emit-fficaller-r1
   0 r0 bit-set popr ,ins
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-3-0
   0 r0 bit-set r1 bit-set r2 bit-set emit-fficaller-r1
   0 r0 bit-set popr ,ins
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-4-0
   0 r0 bit-set r1 bit-set r2 bit-set r3 bit-set emit-fficaller-r1
   0 r0 bit-set popr ,ins
-  emit-next
+  out' next emit-op-jump
 endop
 
 ( Integer and pointer returning callees: )
 
 defop do-fficall-0-1
   0 emit-fficaller-r1
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-1-1
   0 r0 bit-set emit-fficaller-r1
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-2-1
   0 r0 bit-set r1 bit-set emit-fficaller-r1
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-3-1
   0 r0 bit-set r1 bit-set r2 bit-set emit-fficaller-r1
-  emit-next
+  out' next emit-op-jump
 endop
 
 defop do-fficall-4-1
   0 r0 bit-set r1 bit-set r2 bit-set r3 bit-set emit-fficaller-r1
-  emit-next
+  out' next emit-op-jump
 endop
 
 ( Callbacks: )
@@ -107,6 +104,8 @@ endcol
 
 ( todo push the ABI's locals in cs-reg and dict-reg, but before the callback's args. )
 
+( fixme FFI callbacks are loading state from wrong offsets. changes depending on how the trampoline's length. )
+
 : ffi-callback-exec ( landing-zone -- )
   ( set eip to callback landing zone, will get pushed on call )
   dict-entry-data uint32@ eip emit-load-int32
@@ -114,10 +113,10 @@ endcol
   dhere 0 ,ins
   dhere 0 ,ins
   cs-reg eip eip add ,ins
-  2 emit-exec-pc
+  3 emit-exec-pc
   ( patch in PC relative state loading )
-  dhere over - cs-reg ldr-pc swap ins!
-  dhere over - dict-reg ldr-pc swap ins!
+  dhere over - cell-size + cs-reg ldr-pc swap ins!
+  dhere over - cell-size + dict-reg ldr-pc swap ins!
 ;
 
 : ffi-callback-exec-0
@@ -138,6 +137,7 @@ defop ffi-callback-0-0
   ( save eip & lr )
   0 eip r0 mov-lsl ,ins
   0 pushr .pclr ,ins
+  ( 0 r0 r0 mov-lsl ,ins ) ( alignment adjustment )
   ffi-callback-exec-0
 endop
 
@@ -167,6 +167,7 @@ endop
 defop ffi-callback-0-1
   0 eip r0 mov-lsl ,ins
   0 pushr .pclr ,ins  
+  ( 0 r0 r0 mov-lsl ,ins ) ( alignment adjustment )
   ffi-callback-exec-1
 endop
 

@@ -28,9 +28,17 @@ r7 const> eip
 ;
 
 ( Emits the assembly to jump to an op. )
-: emit-op-call
+: emit-op-jump
   dict-entry-code uint32@ dhere to-out-addr -
   cell-size - emit-branch
+;
+
+( tbd to push LR befare calls or in prologue. )
+
+( Emits the assembly to call an op with the PC stored in LR. )
+: emit-op-call
+  dict-entry-code uint32@ dhere to-out-addr -
+  cell-size - branch-link ,ins
 ;
 
 ( Core execution: )
@@ -48,21 +56,21 @@ endop
 defop exec-r1
   ( load a word from a CS offset and jump to the word's code field, leaving word in r0 )
   cs-reg r1 r1 add ,ins
-  out' exec-r1-abs emit-op-call
+  out' exec-r1-abs emit-op-jump
 endop
 
 defop exec
   ( Move the ToS to r1, lower stack, and exec the word offset. )
   0 r0 r1 mov-lsl ,ins
   0 r0 bit-set popr ,ins
-  out' exec-r1 emit-op-call
+  out' exec-r1 emit-op-jump
 endop
 
 defop exec-abs
   ( Move the ToS to r1, lower stack, and exec the word pointer. )
   0 r0 r1 mov-lsl ,ins
   0 r0 bit-set popr ,ins
-  out' exec-r1-abs emit-op-call
+  out' exec-r1-abs emit-op-jump
 endop
 
 defop next
@@ -72,10 +80,13 @@ defop next
   ( increase eip )
   -op-size eip add# ,ins
   out' exec-r1 emit-op-call
+  -12 branch ,ins
 endop
 
 : emit-next
-  out' next emit-op-call
+  ( out' next emit-op-jump )
+  ( lr pc mov-hihi ,ins )
+  lr 0 bx-hi ,ins
 ;
 
 ( Calling words: )
@@ -108,14 +119,15 @@ defop enter-r1
   0 eip r0 mov-lsl ,ins
   ( load r1 into eip )
   0 r1 eip mov-lsl ,ins
-  emit-next
+  ( emit-next )
+  out' next emit-op-jump
 endop
 
 defop enter-r0
   ( Call the ToS. )
   0 r0 r1 mov-lsl ,ins
   0 r0 bit-set popr ,ins
-  out' enter-r1 emit-op-call
+  out' enter-r1 emit-op-jump
 endop
 
 defop do-col
@@ -123,7 +135,7 @@ defop do-col
   ( load r1's data+cs into r1 )
   0 dict-entry-data r1 r1 ldr-offset ,ins
   cs-reg r1 r1 add ,ins
-  out' enter-r1 emit-op-call
+  out' enter-r1 emit-op-jump
 endop
 
 defop exit

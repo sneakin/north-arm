@@ -115,7 +115,7 @@ def test-ffi-ret-callbacks
   ' test-ffi-cb-1-1 1 1 ffi-callback 10 swap test-lib-ffi-cb-1-1 .s 10 assert-equals
   9 .s test-lib-arg-0 .s 0x55 assert-equals
   9 assert-equals
-  ' test-ffi-cb-0-1 0 1 ffi-callback 11 swap test-lib-ffi-cb-0-1 .s 11 assert-equals
+  ' test-ffi-cb-0-1 0 1 ffi-callback 11 swap .s test-lib-ffi-cb-0-1 11 .s assert-equals
   test-lib-arg-0 0x56 assert-equals
 end
 

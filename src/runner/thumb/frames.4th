@@ -48,7 +48,7 @@ defop return
   0 fp bit-set popr ,ins
   0 r0 bit-set popr ,ins
   1 r3 sub# ,ins
-  out' exit emit-op-call
+  out' exit emit-op-jump
 endop
 
 defop return1
