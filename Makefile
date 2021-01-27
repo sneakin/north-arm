@@ -5,16 +5,22 @@ EXECEXT=.elf
 SOEXT=.so
 SO_CFLAGS=-shared -nostdlib -g
 
-OUTPUTS=bin/interp$(EXECEXT) \
-	bin/interp.android.1$(EXECEXT) \
+OUTPUTS=bin/interp.android.1$(EXECEXT) \
 	bin/interp.android.2$(EXECEXT) \
+	bin/interp.android.3$(EXECEXT) \
 	bin/interp.linux.1$(EXECEXT) \
 	bin/interp.linux.2$(EXECEXT) \
+	bin/interp.linux.3$(EXECEXT) \
 	bin/assembler.1$(EXECEXT) \
-	bin/fforth.dict \
 	bin/assembler-thumb.sh \
-	bin/assembler-thumb.dict \
 	lib/ffi-test-lib$(SOEXT)
+
+ifneq ($(QUICK),)
+	OUTPUTS+=\
+		bin/interp$(EXECEXT) \
+		bin/fforth.dict \
+		bin/assembler-thumb.dict
+endif
 
 DOCS=doc/html/bash.html \
 	doc/html/interp.html \
