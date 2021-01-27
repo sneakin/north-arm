@@ -1,5 +1,3 @@
-include ./Makefile.arch
-
 FORTH ?= bash ./src/bash/forth.sh
 HTMLER ?= ./scripts/htmler.sh
 
@@ -8,14 +6,11 @@ SOEXT=.so
 SO_CFLAGS=-shared -nostdlib -g
 
 OUTPUTS=bin/interp$(EXECEXT) \
-	bin/interp.1$(EXECEXT) \
-	bin/interp.android$(EXECEXT) \
 	bin/interp.android.1$(EXECEXT) \
 	bin/interp.android.2$(EXECEXT) \
-	bin/interp.linux$(EXECEXT) \
 	bin/interp.linux.1$(EXECEXT) \
 	bin/interp.linux.2$(EXECEXT) \
-	bin/assembler$(EXECEXT) \
+	bin/assembler.1$(EXECEXT) \
 	bin/fforth.dict \
 	bin/assembler-thumb.sh \
 	bin/assembler-thumb.dict \
@@ -37,7 +32,9 @@ all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all
+include ./Makefile.arch
+
+.PHONY: clean doc all quick
 
 release:
 	mkdir -p release
