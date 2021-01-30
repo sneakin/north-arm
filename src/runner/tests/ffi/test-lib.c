@@ -55,8 +55,10 @@ int ffi_test_1_1(int x)
 void ffi_cb_0_0(void (*cb)())
 {
   int x = -3;
+  nputs("cb-0-0 start");
   cb();
   n_args = x*x;
+  nputs("cb-0-0 done");
 }
 
 static void (*nullf)() = 0;

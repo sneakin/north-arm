@@ -1,3 +1,5 @@
+dhere const> origin
+
 8 r4 r0 mov-lsl ,uint16
 16 r3 r1 mov-lsr ,uint16
 16 r2 r2 mov-asr ,uint16
@@ -73,10 +75,10 @@ r3 r2 r1 ldsh ,uint16
 45 dec-sp ,uint16
 
 0xFF pushr ,uint16
-0x80 pushr .pclr .uint16
+0x80 pushr .pclr ,uint16
 
 0xFF popr ,uint16
-0x80 popr .pclr .uint16
+0x80 popr .pclr ,uint16
 
 r2 0xFF stmia ,uint16
 r3 0xFF ldmia ,uint16
@@ -98,4 +100,4 @@ r3 0xFF ldmia ,uint16
 
 0x123456 dhere - 4 - branch-link ,uint32
 
-0 ddump-binary-bytes
+origin ddump-binary-bytes

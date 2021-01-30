@@ -27,6 +27,5 @@ defop do-proper
   ( load r1's data+cs into r1 )
   0 dict-entry-data r1 r1 ldr-offset ,ins
   cs-reg r1 r1 add ,ins
-  out' proper-enter-r1 emit-op-call
-  emit-next
+  out' proper-enter-r1 emit-op-jump
 endop

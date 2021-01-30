@@ -62,7 +62,7 @@ alias> sl r10
 
 ( 0 0 1 Op:2 Rd:3 Offset:8 Move/compare/add/subtract immediate )
 : mov# ( offset rd )
-  8 bsl
+  0x7 logand 8 bsl
   swap 0xFF logand logior
   1 13 bsl logior
 ;
@@ -123,7 +123,7 @@ alias> sl r10
 
 ( 0 1 0 0 1 Rd Word:8 PC-relative load )
 : ldr-pc ( value rd )
-  8 bsl
+  0x7 logand 8 bsl
   swap 2 bsr 0xFF logand logior
   9 11 bsl logior
 ;
@@ -250,6 +250,12 @@ alias> sl r10
 : bgt beq 12 set-branch-cond ;
 ( Branch if Z set, or N set and V clear, or N clear and V set, less than or equal )
 : ble beq 13 set-branch-cond ;
+
+( 0 1 0 0 0 1 1 1 1 Rm 0 0 0 )
+: blx
+  0xF logand 3 bsl
+  0x4780 logior
+;
 
 ( 1 1 0 1 1 1 1 1 Value:8 Software Interrupt )
 : swi ( value )
