@@ -97,7 +97,7 @@ defop exec-r1-abs
   ( add the base address )
   cs-reg r2 r2 add ,ins
   ( jump to the code )
-  r2 0 bx-lo ,ins
+  r2 bx ,ins
 endop
 
 defop exec-r1
@@ -132,7 +132,7 @@ endop
 
 : emit-next
   ( out' next emit-op-jump )
-  lr 0 bx-hi ,ins
+  lr bx ,ins
 ;
 
 ( Calling words: )
