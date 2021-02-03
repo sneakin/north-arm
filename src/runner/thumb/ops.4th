@@ -14,10 +14,10 @@ r7 const> eip
   ( preserve thumb mode, using r0 for scratch )
   0 r0 bit-set pushr ,ins
   1 r0 mov# ,ins
-  r0 lr mov-lohi ,ins
+  r0 lr movrr ,ins
   0 r0 bit-set popr ,ins
   ( add PC into LR )
-  pc lr add-hihi ,ins
+  pc lr addrr ,ins
   ( do branch to register argument )
   bx ,ins
 ;
@@ -49,7 +49,7 @@ r7 const> eip
       dhere to-out-addr 2 logand 2 +
       ( load the PC relative address into PC )
       ip ldr-pc.w ,ins
-      ip pc add-hihi ,ins
+      ip pc addrr ,ins
       ( the address offset )
       cell-size - ,uint32
     ELSE
@@ -58,11 +58,11 @@ r7 const> eip
       dhere to-out-addr 2 logand
       dup 6 + r0 ldr-pc ,ins
       ( stash the offset in IP and restore R0 )
-      r0 ip mov-lohi ,ins
+      r0 ip movrr ,ins
       0 r0 bit-set popr ,ins
       ( jump to the offset )
       dhere to-out-addr 2 logand
-      ip pc add-hihi ,ins
+      ip pc addrr ,ins
       ( align the data? )
       swap IF
         2 + ( add padding to offset's offset )
@@ -132,7 +132,6 @@ endop
 
 : emit-next
   ( out' next emit-op-jump )
-  ( lr pc mov-hihi ,ins )
   lr 0 bx-hi ,ins
 ;
 
@@ -207,7 +206,7 @@ endop
 
 defop dropn
   2 r0 r0 mov-lsl ,ins
-  r0 sp add-lohi ,ins
+  r0 sp addrr ,ins
   0 r0 bit-set popr ,ins
   emit-next
 endop
@@ -234,7 +233,7 @@ endop
 defop swapn ( sp+n+1 ... value n -- value ... sp+n+1 )
   ( Swaps ToS with the value N cells up the stack. `1 swopn` is equivalent to `swap`. )
   2 r0 r1 mov-lsl ,ins
-  sp r1 add-hilo ,ins ( r1 addr )
+  sp r1 addrr ,ins ( r1 addr )
   0 r2 bit-set popr ,ins ( r2 near value )
   0 r1 r0 ldr-offset ,ins ( r0 far value ) 
   0 r1 r2 str-offset ,ins
@@ -269,7 +268,7 @@ endop
 
 defop overn
   2 r0 r0 mov-lsl ,ins
-  sp r0 add-hilo ,ins
+  sp r0 addrr ,ins
   cell-size r0 sub# ,ins
   0 r0 r0 ldr-offset ,ins
   emit-next
@@ -278,7 +277,7 @@ endop
 defop set-overn
   0 r1 bit-set popr ,ins
   2 r0 r0 mov-lsl ,ins
-  sp r0 add-hilo ,ins
+  sp r0 addrr ,ins
   cell-size r0 sub# ,ins
   0 r0 r1 str-offset ,ins
   0 r0 bit-set popr ,ins
@@ -287,25 +286,25 @@ endop
 
 defop here
   0 r0 bit-set pushr ,ins
-  sp r0 mov-hilo ,ins
+  sp r0 movrr ,ins
   emit-next
 endop
 
 defop move
-  r0 sp mov-lohi ,ins
+  r0 sp movrr ,ins
   0 r0 bit-set popr ,ins
   emit-next
 endop
 
 defop stack-allot
-  sp r1 mov-hilo ,ins
+  sp r1 movrr ,ins
   ( align stack )
   cell-size 1 - r0 add# ,ins
   2 r0 r0 mov-lsr ,ins
   2 r0 r0 mov-lsl ,ins
   ( move stack )
   r0 r1 r0 sub ,ins
-  r0 sp mov-lohi ,ins
+  r0 sp movrr ,ins
   emit-next
 endop
 
@@ -667,6 +666,6 @@ endop
 
 defop push-lr
   0 r0 bit-set pushr ,ins
-  lr r0 mov-hilo ,ins
+  lr r0 movrr ,ins
   emit-next
 endop

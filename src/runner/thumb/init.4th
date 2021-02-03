@@ -9,11 +9,10 @@ The dynamic linker passes a function in r0.
 defop init
   ( calculate CS: pc - dhere; in r10? )
   20 r3 ldr-pc ,ins
-  pc r5 mov-hilo ,ins
+  pc r5 movrr ,ins
   r3 r5 cs-reg sub ,ins
   dhere
   ( init registers )
-  ( lr r0 mov-hilo ,ins )
   0 fp mov# ,ins
   0 eip mov# ,ins
   ( set the dictionary )

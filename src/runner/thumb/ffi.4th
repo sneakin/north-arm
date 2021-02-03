@@ -8,7 +8,10 @@
   0 r0 bit-set pushr ,ins
   ( Load the import's [r1] address into r0 )
   0 dict-entry-data r1 r0 ldr-offset ,ins
-  r0 ip mov-lohi ,ins
+  r0 ip movrr ,ins
+  ( LR needs + 1 to return to thumb mode )
+  1 r0 mov# ,ins
+  r0 lr movrr ,ins
   ( pop arguments )
   dup IF popr ELSE r0 mov# THEN ,ins
   ( make the call )
