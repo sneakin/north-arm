@@ -52,7 +52,7 @@ def import> ( library : name returns symbol arity ++ )
   next-integer IF
     set-local1
     next-token negative? UNLESS
-      ( resolve symbolknow since next-integer clobbers )
+      ( resolve symbol now since next-integer clobbers )
       drop arg0 dlsym dup IF
         local1 local0 rot
         next-integer IF
