@@ -7,6 +7,12 @@
   swap 0xFFFF logand 16 bsl logior
 ;
 
+( 0 1 0 0 0 1 1 1 1 Rm 0 0 0 )
+: blx
+  0xF logand 3 bsl
+  0x4780 logior
+;
+
 ( 1 1 1 1 0 S cond:4 imm:6 1 0 J1 0 J2 imm:11 )
 : bw
   negative? IF 0 26 bit-set ELSE 0 THEN
@@ -20,7 +26,6 @@
   swap 11 bsr 0x3F logand 16 bsl logior
   0xF0008000 logior logior
   swap-short
-  s" branch at " error-line/2
 ;
 
 : .bne 1 6 bsl logior ;

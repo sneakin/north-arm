@@ -7,7 +7,40 @@ r7 const> eip
 
 0 var> *arm-thumb2*
 
+( Branch helpers: )
+
+: emit-fake-blx ( reg -- )
+  ( Emits the equivalunt to a BLX dnstruction: set LR to PC + next instruction, then set PC to the specified register. )
+  ( preserve thumb mode, using r0 for scratch )
+  0 r0 bit-set pushr ,ins
+  1 r0 mov# ,ins
+  r0 lr mov-lohi ,ins
+  0 r0 bit-set popr ,ins
+  ( add PC into LR )
+  pc lr add-hihi ,ins
+  ( do branch to register argument )
+  bx ,ins
+;
+
+: emit-blx ( reg -- )
+  ( Emit a BLX or equivalent instruction sequence depending on if ~*arm-thumb2*~ is set. )
+  *arm-thumb2* peek IF
+    blx ,ins
+  ELSE
+    emit-fake-blx
+  THEN
+;
+
+: print-branch-info
+  s" Branch at " error-string/2
+  dhere to-out-addr error-hex-uint
+  s"  -> " error-string/2
+  dup error-hex-int espace
+  dhere to-out-addr + error-hex-uint enl
+;
+
 : emit-branch
+  dup print-branch-info
   dup abs-int 0x800 int< IF
     branch ,ins
   ELSE
@@ -20,9 +53,23 @@ r7 const> eip
       ( the address offset )
       cell-size - ,uint32
     ELSE
-      ( always branch... )
-      dup bw ,ins
-      cell-size - bw .bne ,ins
+      0 r0 bit-set pushr ,ins
+      ( ldr-pc is 4 byte aligned. Determine if the offset will be padded: )
+      dhere to-out-addr 2 logand
+      dup 6 + r0 ldr-pc ,ins
+      ( stash the offset in IP and restore R0 )
+      r0 ip mov-lohi ,ins
+      0 r0 bit-set popr ,ins
+      ( jump to the offset )
+      dhere to-out-addr 2 logand
+      ip pc add-hihi ,ins
+      ( align the data? )
+      swap IF
+        2 + ( add padding to offset's offset )
+	0 ,uint16 ( the padding )
+      THEN
+      ( the offset: adjusted for padding & add pc address )
+      - 6 - ,uint32 
     THEN
   THEN
 ;
@@ -33,7 +80,7 @@ r7 const> eip
   cell-size - emit-branch
 ;
 
-( tbd to push LR befare calls or in prologue. )
+( tbd to push LR before calls or in prologue. )
 
 ( Emits the assembly to call an op with the PC stored in LR. )
 : emit-op-call

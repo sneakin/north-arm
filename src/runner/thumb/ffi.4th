@@ -10,11 +10,9 @@
   0 dict-entry-data r1 r0 ldr-offset ,ins
   r0 ip mov-lohi ,ins
   ( pop arguments )
-  ( tbd load the called address at end? )
   dup IF popr ELSE r0 mov# THEN ,ins
   ( make the call )
-  ( ip 0 bx-hi ,ins )
-  ip blx ,ins
+  ip emit-blx
 ;
 
 ( Void callees: )
@@ -82,7 +80,7 @@ endop
   out' exec-r1-abs dict-entry-code uint32@ r2 emit-load-int32
   cs-reg r2 r2 add ,ins
   cell-size mult r1 ldr-pc ,ins
-  r2 0 bx-lo ,ins
+  r2 bx ,ins
 ;
 
 ( The C ABI returns by putting LR back in the PC. Callbacks are made to return to a definition that moves LR to PC. )

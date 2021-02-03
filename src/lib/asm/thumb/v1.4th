@@ -96,7 +96,7 @@ alias> sl r10
 : mvn 15 alu-op ;
 
 ( 0 1 0 0 0 1 Op H1 H2 Rs/Hs:3 Rd/Hd:3 Hi register operations/branch exchange )
-: hi-reg-op ( rs rd op )
+: hi-reg-op ( rs rd op -- ins )
   8 bsl
   swap 0x7 logand logior
   swap 0x7 logand 3 bsl logior
@@ -109,19 +109,49 @@ alias> sl r10
 : add-hilo 0 hi-reg-op .hi2 ;
 : add-lohi 0 hi-reg-op .hi1 ;
 : add-hihi 0 hi-reg-op .hi1 .hi2 ;
+: addrr ( R1 R2 -- ins )
+  over r7 uint>
+  IF dup r7 uint> IF add-hihi ELSE add-hilo THEN
+  ELSE dup r7 uint> IF add-lohi ELSE dup add THEN
+  THEN
+;
 
 : cmp-hilo 1 hi-reg-op .hi2 ;
 : cmp-lohi 1 hi-reg-op .hi1 ;
 : cmp-hihi 1 hi-reg-op .hi1 .hi2 ;
+: cmprr ( R1 R2 -- ins )
+  over r7 uint>
+  IF dup r7 uint> IF cmp-hihi ELSE cmp-hilo THEN
+  ELSE dup r7 uint> IF cmp-lohi ELSE cmp THEN
+  THEN
+;
 
 : mov-hilo 2 hi-reg-op .hi2 ;
 : mov-lohi 2 hi-reg-op .hi1 ;
 : mov-hihi 2 hi-reg-op .hi1 .hi2 ;
+: movrr ( R1 R2 -- ins )
+  over r7 uint>
+  IF dup r7 uint> IF mov-hihi ELSE mov-hilo THEN
+  ELSE dup r7 uint> IF mov-lohi ELSE swap 0 rot mov-lsl THEN
+  THEN
+;
 
-: bx-lo 3 hi-reg-op ;
-: bx-hi 3 hi-reg-op .hi2 ;
+: bx-lo ( reg 0 -- ins )
+  3 hi-reg-op
+;
+: bx-hi ( reg 0 -- ins )
+  3 hi-reg-op .hi2
+;
+: bx ( reg -- ins )
+  dup r7 uint> IF 0 bx-hi ELSE 0 bx-lo THEN
+;
 
-( 0 1 0 0 1 Rd Word:8 PC-relative load )
+( 0 1 0 0 1 Rd Word:8 -- PC relative load. Be aware that ldr-pc only loads on 4 byte alignment and that PC is +4 or +2 depending on if the load is located on a 4 or 2 byte boundary:
+  0: 0 r0 ldr-pc ; loads from @4, PC+0
+  2: 0 r0 ldr-pc ; loads from @4, PC+0
+  4: 0 r0 ldr-pc ; loads from @8, PC+0
+  6: 0 r0 ldr-pc ; loads from @8, PC+0
+)
 : ldr-pc ( value rd )
   0x7 logand 8 bsl
   swap 2 bsr 0xFF logand logior
@@ -250,12 +280,6 @@ alias> sl r10
 : bgt beq 12 set-branch-cond ;
 ( Branch if Z set, or N set and V clear, or N clear and V set, less than or equal )
 : ble beq 13 set-branch-cond ;
-
-( 0 1 0 0 0 1 1 1 1 Rm 0 0 0 )
-: blx
-  0xF logand 3 bsl
-  0x4780 logior
-;
 
 ( 1 1 0 1 1 1 1 1 Value:8 Software Interrupt )
 : swi ( value )
