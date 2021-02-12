@@ -1,7 +1,8 @@
 ( Basic interface to liblz4 that provides lz4-compress and lz4-decompress. )
 
 library> liblz4.so
-dup UNLESS library> liblz4.so.1 THEN
+( fixme top level IF gets shadowed by core.4th's IF )
+( dup UNLESS library> liblz4.so.1 THEN )
 import> LZ4_compress_default 1 LZ4_compress_default 4
 import> LZ4_compressBound 1 LZ4_compressBound 1
 import> LZ4_decompress_safe 1 LZ4_decompress_safe 4

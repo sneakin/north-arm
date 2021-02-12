@@ -1,5 +1,8 @@
 ( String and byte output: )
 
+0 defvar> *debug*
+defcol debug? *debug* peek swap endcol
+
 def write-string/3 ( string length fd -- )
   arg1 arg2 arg0 write
 end

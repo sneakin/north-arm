@@ -116,6 +116,21 @@ alias> int64! uint64!
   3 dropn
 ;
 
+: byte-swap-uint32
+  dup 0xFF logand 24 bsl
+  swap dup 0xFF00 logand 8 bsl logior
+  swap dup 0xFF0000 logand 8 bsr logior
+  swap dup 0xFF000000 logand 24 bsr logior
+;
+
+( Big endian: )
+
+: UINT32@
+  uint32@ byte-swap-uint32
+;
+
+( Data stack alignment & padding: )
+
 : pad-addr ( addr alignment )
   2dup + over / over mult
   rot 2 dropn

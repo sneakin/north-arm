@@ -204,9 +204,16 @@ end
 0xD const> ELF32-STT-LOPROC
 0xF const> ELF32-STT-HIPROC
 
+( Android likes: )
+ELF32-STT-FUNC var> *elf32-import-flags*
+( ld-linux needs GLOBAL, see elf32-target-linux! )
+( ELF32-STT-FUNC ELF32-STB-GLOBAL logior var> *elf32-import-flags* )
+
 def write-elf32-import-symbols ( dynstr-offset imports -- )
   arg0 UNLESS return0 THEN
-  2 ELF32-STB-GLOBAL ELF32-STT-FUNC logior 0 0
+  2
+  *elf32-import-flags* peek
+  0 0
   arg0 car cdr arg1 -
   write-elf32-symbol
   arg0 cdr set-arg0 drop-locals repeat-frame
@@ -233,6 +240,7 @@ end
 def write-elf32-dynamic-strings
   dhere
   dup elf32-offset-dynstr poke
+  0 ,uint8
   *out-libs* peek ' ,byte-string map-car
   *out-dynamic-symbols* peek ' write-elf32-symbol-name map-car
   ( print the list )
@@ -284,7 +292,7 @@ end
 
 : write-elf32-dynamic-relocations
   dhere
-  1 *out-dynamic-relocs* peek write-elf32-import-relocations 2 dropn
+  *out-dynamic-relocs* peek write-elf32-import-relocations drop
 ;
 
 0 const> DT_NULL
@@ -318,7 +326,7 @@ def write-elf32-dt-needed
   DT_NEEDED ,uint32 arg0 ,uint32
 end
 
-def write-elf32-dynamic-libs-loop
+def write-elf32-dynamic-libs-loop ( string-section-idx lib-list ++ )
   arg0 UNLESS return0 THEN
   arg1 write-elf32-dt-needed
   arg0 car string-length 1 + arg1 + set-arg1
@@ -327,7 +335,7 @@ end
 
 def write-elf32-dynamic-libs
   ( todo use a reduce function )
-  0 *out-libs* peek write-elf32-dynamic-libs-loop
+  1 *out-libs* peek write-elf32-dynamic-libs-loop
 end
 
 def elf32-hash-loop ( string-ptr h g ++ hash )
@@ -360,10 +368,10 @@ end
 
 def write-elf32-symbol-hash
   *out-dynamic-symbols* peek
-  *out-dynamic-num-symbols* peek
+  *out-dynamic-num-symbols* peek 1 +
   ( write the table )
   1 ,uint32 ( one bucket )
-  dup ,uint32 ( chain length == num symbols )
+  dup ,uint32 ( chain length == blank + num symbols )
   1 ,uint32 ( the 1 bucket )
   1 1 write-elf32-symbol-hash-loop
   0 ,uint32
@@ -451,3 +459,13 @@ end
   7 overn elf32-code-segment +
   rot swap rewrite-elf32-header
 ;
+
+def elf32-target-android!
+  elf32-interp-android *elf32-interp* poke
+  ELF32-STT-FUNC *elf32-import-flags* poke
+end
+
+def elf32-target-linux!
+  elf32-interp-linux *elf32-interp* poke
+  ELF32-STT-FUNC ELF32-STB-GLOBAL logior *elf32-import-flags* poke
+end

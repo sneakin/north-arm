@@ -1,5 +1,3 @@
-load-core
-
 library> libpng.so
 import> png-image-begin-read-from-file 1 png_image_begin_read_from_file 2
 import> png-image-begin-read-from-memory 1 png_image_begin_read_from_memory 3
@@ -24,9 +22,6 @@ def write-png-image-error
   arg0 png-image-is-error peek write-hex-uint space
   arg0 png-image-message write-line
 end
-
-0 var> *debug*
-: debug? *debug* peek ;
 
 1 const> PNG-FORMAT-FLAG-ALPHA
 2 const> PNG-FORMAT-FLAG-COLOR
@@ -85,28 +80,4 @@ def png-load-mem ( data num-bytes ++ header pixels )
   THEN
   local0 png-image-free
   local0 move local0 0 exit-frame
-end
-
-def test-libpng-read
-  0 0
-  *debug* peek
-  1 *debug* poke
-  " misc/star.png" png-load-file .s dup IF
-    set-local1 set-local0
-    s" Loaded" write-line/2
-    local1 128 memdump
-  THEN
-  local2 *debug* poke
-end
-
-def byte-swap-uint32
-  arg0 0xFF logand 24 bsl
-  arg0 0xFF00 logand 8 bsl logior
-  arg0 0xFF0000 logand 8 bsr logior
-  arg0 0xFF000000 logand 24 bsr logior
-  set-arg0
-end
-
-def UINT32@
-  arg0 uint32@ byte-swap-uint32 set-arg0
 end
