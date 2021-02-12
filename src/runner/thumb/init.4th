@@ -16,6 +16,11 @@ defcol init-return
   ( drop set-pc )
 endcol
 
+: emit-init-data-padding
+  *arm-thumb2* peek IF 0 ,uint32 THEN
+  4 pad-data
+;
+
 defop init
   ( stack env, argv[], argc, LR, fini )
   0 pushr .pclr ,ins
@@ -36,7 +41,7 @@ defop init
   ( without main calling bye, exit restores eip to the initial value above. LR gets lost in ~next~ so this does not get reached: )
   out' bye emit-op-jump
   ( data: dictionary main return-fn )
-  4 pad-data
+  emit-init-data-padding
   out-dict to-out-addr ,uint32
   out' main to-out-addr ,uint32
   out' init-return to-out-addr ,uint32
