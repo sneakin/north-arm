@@ -36,5 +36,4 @@ s[ src/runner/thumb/frames.4th
    src/runner/thumb/proper.4th
    src/runner/proper.4th
    src/interp/data-stack.4th
-   src/runner/imports.4th
 ] load-list

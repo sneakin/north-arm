@@ -8,13 +8,14 @@
   0 r0 bit-set pushr ,ins
   ( Load the import's [r1] address into r0 )
   0 dict-entry-data r1 r0 ldr-offset ,ins
-  r0 ip mov-lohi ,ins
+  r0 ip movrr ,ins
+  ( LR needs + 1 to return to thumb mode )
+  1 r0 mov# ,ins
+  r0 lr movrr ,ins
   ( pop arguments )
-  ( tbd load the called address at end? )
   dup IF popr ELSE r0 mov# THEN ,ins
   ( make the call )
-  ( ip 0 bx-hi ,ins )
-  ip blx ,ins
+  ip emit-blx
 ;
 
 ( Void callees: )
@@ -82,7 +83,7 @@ endop
   out' exec-r1-abs dict-entry-code uint32@ r2 emit-load-int32
   cs-reg r2 r2 add ,ins
   cell-size mult r1 ldr-pc ,ins
-  r2 0 bx-lo ,ins
+  r2 bx ,ins
 ;
 
 ( The C ABI returns by putting LR back in the PC. Callbacks are made to return to a definition that moves LR to PC. )
@@ -106,7 +107,7 @@ endcol
 
 ( fixme FFI callbacks are loading state from wrong offsets. changes depending on how the trampoline's length. )
 
-: ffi-callback-exec ( landing-zone -- )
+: ffi-callback-exec-lo ( landing-zone -- )
   ( set eip to callback landing zone, will get pushed on call )
   dict-entry-data uint32@ eip emit-load-int32
   ( syscalls wipe the registers. State needs to be loaded from after the branch. )
@@ -114,9 +115,29 @@ endcol
   dhere 0 ,ins
   cs-reg eip eip add ,ins
   3 emit-exec-pc
-  ( patch in PC relative state loading )
+  ( above is variable length, so patch in PC relative state loading of dict and cs. )
+  dhere over - cell-size + cs-reg ldr-pc swap ins!
+  dhere over - dict-reg ldr-pc swap ins!
+;
+
+: ffi-callback-exec-hi ( landing-zone -- )
+  ( set eip to callback landing zone, will get pushed on call )
+  dict-entry-data uint32@ eip emit-load-int32
+  ( syscalls wipe the registers. State needs to be loaded from after the branch. )
+  dhere 0 ,ins
+  dhere 0 ,ins
+  cs-reg eip eip add ,ins
+  3 emit-exec-pc
+  ( above is variable length, so patch in PC relative state loading of dict and cs. )
   dhere over - cell-size + cs-reg ldr-pc swap ins!
   dhere over - cell-size + dict-reg ldr-pc swap ins!
+;
+
+: ffi-callback-exec ( landing-zone -- )
+  dhere to-out-addr 2 logand
+  IF ffi-callback-exec-hi
+  ELSE ffi-callback-exec-lo
+  THEN
 ;
 
 : ffi-callback-exec-0
@@ -137,7 +158,6 @@ defop ffi-callback-0-0
   ( save eip & lr )
   0 eip r0 mov-lsl ,ins
   0 pushr .pclr ,ins
-  ( 0 r0 r0 mov-lsl ,ins ) ( alignment adjustment )
   ffi-callback-exec-0
 endop
 
@@ -167,7 +187,6 @@ endop
 defop ffi-callback-0-1
   0 eip r0 mov-lsl ,ins
   0 pushr .pclr ,ins  
-  ( 0 r0 r0 mov-lsl ,ins ) ( alignment adjustment )
   ffi-callback-exec-1
 endop
 

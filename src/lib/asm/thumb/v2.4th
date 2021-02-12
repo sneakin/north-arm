@@ -7,6 +7,12 @@
   swap 0xFFFF logand 16 bsl logior
 ;
 
+( 0 1 0 0 0 1 1 1 1 Rm 0 0 0 )
+: blx
+  0xF logand 3 bsl
+  0x4780 logior
+;
+
 ( 1 1 1 1 0 S cond:4 imm:6 1 0 J1 0 J2 imm:11 )
 : bw
   negative? IF 0 26 bit-set ELSE 0 THEN
@@ -20,7 +26,6 @@
   swap 11 bsr 0x3F logand 16 bsl logior
   0xF0008000 logior logior
   swap-short
-  s" branch at " error-line/2
 ;
 
 : .bne 1 6 bsl logior ;
@@ -62,6 +67,55 @@
   swap udiv-hi
   rot swap sdiv-lo
   16 bsl logior
+;
+
+( CPU Status: )
+
+( Status bits: N Z C V Q IT[1:0] J Reserved GE[3:0] IT[7:2] E A I F T M[4:0]
+  N negative
+  Z zero
+  C carry
+  V overflow
+  Q saturated
+  GE SIMD greater than or equal
+  IT condition flags for IT blocks
+  J Jazelle mode
+  T Thumb mode
+  E Big endian mode
+  A async abort disabled
+  I interrupt disable
+  F fast interrupt disable
+  M mode bits
+)
+
+0x1 const> CPSR-C ( write bits 7:0 )
+0x2 const> CPSR-X ( bits 15:8 )
+0x4 const> CPSR-S ( bits 23:16 )
+0x8 const> CPSR-F ( bits 31:24 )
+
+0x10 const> CPSR-MODE-USER
+0x11 const> CPSR-MODE-FIQ
+0x12 const> CPSR-MODE-IRQ
+0x13 const> CPSR-MODE-SUPERVISOR
+0x16 const> CPSR-MODE-MONITOR
+0x17 const> CPSR-MODE-ABORT
+0x1B const> CPSR-MODE-UNDEF
+0x1F const> CPSR-MODE-SYSTEM
+
+
+( 1 1 1 1, 0 0 1 1, 1 1 1 R, 1 1 1 1; 1 0 0 0, Rd:4, 0:8 )
+: mrs ( reg -- ins )
+  0xF logand 24 bsl 0x8000F3EF logior
+;
+
+: .spsr 20 bit-set ; ( saved CPSR state )
+
+( 1 1 1 1, 0 0 1 1, 1 0 0 R, Rn:4; 1 0 0 0, mask:4, 0:8 )
+: msr ( reg mask -- ins )
+  0xF logand 24 bsl
+  swap 0xF logand
+  0x8000F380
+  logior logior
 ;
 
 ( Coprocessor: )

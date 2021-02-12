@@ -169,14 +169,18 @@ DICT['exit-frame']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
 DICT['return0']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
 DICT['return1']='tmp="${STACK[0]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp"'
 
+#
+# Environment access
+#
+DICT['argc']='fpush "${#ARGV[@]}"'
+DICT['argv']='n="${STACK[0]}"; fpop; if [[ "$n" == 0 ]]; then fpush "$0"; else fpush "${ARGV[$((n - 1))]}"; fi'
+
+DICT['getenv']='n="${STACK[0]}"; fpop; fpush "$(eval echo "\$$n")"'
+DICT['setenv']='n="${STACK[0]}"; v="${STACK[1]}"; fpop 2; export $n="$v"'
 
 #
 # Startup
 #
 DICT['NORTH-STAGE']='fpush 0'
 DICT['boot']='feval "Hello." error-line'
-
-DICT['argc']='fpush "${#ARGV[@]}"'
-DICT['argv']='n="${STACK[0]}"; fpop; fpush "${ARGV[$n]}"'
-
 DICT['load-core']='feval literal src/bash/compiler.4th load'

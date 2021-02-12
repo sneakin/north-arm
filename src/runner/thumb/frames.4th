@@ -6,7 +6,7 @@ defop begin-frame
   ( todo more primitive: current-frame here set-current-frame )
   0 r0 bit-set pushr ,ins
   0 fp r0 mov-lsl ,ins
-  sp fp mov-hilo ,ins
+  sp fp movrr ,ins
   cell-size fp sub# ,ins
   1 r3 add# ,ins
   emit-next
@@ -15,7 +15,7 @@ endop
 defop end-frame
   ( Set FP to the frame's parent. )
   ( todo more primitive: current-frame parent-frame set-current-frame )
-  fp sp cmp-lohi ,ins
+  fp sp cmprr ,ins
   2 bhi ,ins
   0 fp fp ldr-offset ,ins
   0 branch ,ins
@@ -24,7 +24,7 @@ defop end-frame
 endop
 
 defop drop-locals
-  fp sp mov-lohi ,ins
+  fp sp movrr ,ins
   0 r0 bit-set popr ,ins
   emit-next
 endop
@@ -44,7 +44,7 @@ endop
 defop return
   ( Restore FP and SP before exiting. )
   0 r0 bit-set pushr ,ins
-  fp sp mov-lohi ,ins
+  fp sp movrr ,ins
   0 fp bit-set popr ,ins
   0 r0 bit-set popr ,ins
   1 r3 sub# ,ins
@@ -53,7 +53,7 @@ endop
 
 defop return1
   ( Restore FP and SP before exiting, but keep the ToS. )
-  fp sp mov-lohi ,ins
+  fp sp movrr ,ins
   0 fp bit-set popr ,ins
   0 eip bit-set popr ,ins
   1 r3 sub# ,ins
@@ -64,10 +64,10 @@ defop return1-n
   ( Restore FP and SP before exiting, dropping N args, but keep the next on stack. )
   2 r0 r1 mov-lsl ,ins
   0 r0 bit-set popr ,ins
-  fp sp mov-lohi ,ins
+  fp sp movrr ,ins
   0 fp bit-set popr ,ins
   0 eip bit-set popr ,ins
-  r1 sp add-lohi ,ins
+  r1 sp addrr ,ins
   1 r3 sub# ,ins
   emit-next
 endop
@@ -75,7 +75,7 @@ endop
 defop return2
   ( Restore FP and SP before exiting, but keep the ToS and next on stack. )
   0 r1 bit-set popr ,ins
-  fp sp mov-lohi ,ins
+  fp sp movrr ,ins
   0 fp bit-set popr ,ins
   0 eip bit-set popr ,ins
   0 r1 bit-set pushr ,ins

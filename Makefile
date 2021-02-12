@@ -1,17 +1,26 @@
-FORTH=bash ./src/bash/forth.sh
-HTMLER=./scripts/htmler.sh
+FORTH ?= bash ./src/bash/forth.sh
+HTMLER ?= ./scripts/htmler.sh
+
 EXECEXT=.elf
 SOEXT=.so
-SO_CFLAGS=-m32 -shared -nostdlib -g
+SO_CFLAGS=-shared -nostdlib -g
 
-OUTPUTS=bin/interp$(EXECEXT) \
-	bin/interp.1$(EXECEXT) \
-	bin/interp.2$(EXECEXT) \
-	bin/assembler$(EXECEXT) \
-	bin/fforth.dict \
+OUTPUTS=bin/interp.android.1$(EXECEXT) \
+	bin/interp.android.2$(EXECEXT) \
+	bin/interp.android.3$(EXECEXT) \
+	bin/interp.linux.1$(EXECEXT) \
+	bin/interp.linux.2$(EXECEXT) \
+	bin/interp.linux.3$(EXECEXT) \
+	bin/assembler.1$(EXECEXT) \
 	bin/assembler-thumb.sh \
-	bin/assembler-thumb.dict \
 	lib/ffi-test-lib$(SOEXT)
+
+ifneq ($(QUICK),)
+	OUTPUTS+=\
+		bin/interp$(EXECEXT) \
+		bin/fforth.dict \
+		bin/assembler-thumb.dict
+endif
 
 DOCS=doc/html/bash.html \
 	doc/html/interp.html \
@@ -23,18 +32,23 @@ DOCS=doc/html/bash.html \
 
 ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 	bin/tests/elf/bones/barest$(EXECEXT) \
-	bin/tests/elf/bones/thumb$(EXECEXT) \
+	bin/tests/elf/bones/thumb$(EXECEXT)
 
 all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all
+include ./Makefile.arch
+
+.PHONY: clean doc all quick
 
 release:
 	mkdir -p release
 release/root: .git/refs/heads/master release
 	if [ -d release/root ]; then cd release/root && git pull; else git clone . release/root; fi
+
+quick:
+	cp bootstrap/interp.static.elf bin/interp.elf
 
 bootstrap:
 	mkdir -p bootstrap
@@ -176,7 +190,7 @@ bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
 
 lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
-	mkdir -p lib && $(CC) $(SO_CFLAGS) -o $@ $<
+	mkdir -p lib && $(TARGET_CC) $(SO_CFLAGS) -o $@ $<
 
 %$(EXECEXT): %.4th
 	cat $< | $(FORTH) > $@
@@ -190,9 +204,9 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-STAGE0_FORTH=LD_PRELOAD='' ./bin/interp.elf
-STAGE1_FORTH=LD_PRELOAD='' ./bin/interp.1.elf
-STAGE2_FORTH=LD_PRELOAD='' ./bin/interp.2.elf
+STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp.elf
+STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).1.elf
+STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).2.elf
 
 bin/%.1$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE0_FORTH) > $@

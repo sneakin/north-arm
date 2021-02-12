@@ -35,17 +35,21 @@ r2 r1 mvn ,uint16
 r10 r2 add-hilo ,uint16
 r2 r10 add-lohi ,uint16
 r10 r11 add-hihi ,uint16
+r10 r11 addrr ,uint16
 
 r10 r2 cmp-hilo ,uint16
 r2 r10 cmp-lohi ,uint16
 r10 r11 cmp-hihi ,uint16
+r10 r11 cmprr ,uint16
 
 r10 r2 mov-hilo ,uint16
 r2 r10 mov-lohi ,uint16
 r10 r11 mov-hihi ,uint16
+r10 r11 movrr ,uint16
 
-r2 r3 bx-lo ,uint16
-r10 r4 bx-hi ,uint16
+r2 0 bx-lo ,uint16
+r10 0 bx-hi ,uint16
+r10 bx ,uint16
 
 123 r2 ldr-pc ,uint16
 

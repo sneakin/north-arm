@@ -34,6 +34,8 @@ def const>
   exit-frame
 end
 
+alias> string-const> const>
+
 def does-const-offset
   arg0 pointer do-const-offset does
 end

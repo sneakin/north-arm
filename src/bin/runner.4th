@@ -1,3 +1,5 @@
+( todo split like interp for android and linux )
+
 " src/cross/builder.4th" load
 
 s[ src/interp/strings.4th

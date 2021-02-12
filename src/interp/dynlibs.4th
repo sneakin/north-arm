@@ -1,5 +1,8 @@
 ( will need two variants: using libdl in the interpreter and relocations in the compiler. Both need to add dictionary words that call / reference imports. )
 
+1 const> RTLD-LAZY
+2 const> RTLD-NOW
+
 0 var> *libraries*
 
 def library> ( : path ++ handle )
@@ -8,7 +11,7 @@ def library> ( : path ++ handle )
   IF return1
   ELSE
     drop allot-byte-string/2 drop
-    0 over dlopen dup UNLESS not-found 0 return1 THEN
+    RTLD-NOW over dlopen dup UNLESS not-found 0 return1 THEN
     swap cons *libraries* push-onto
     *libraries* peek car cdr current-frame drop exit-frame
   THEN
@@ -49,7 +52,7 @@ def import> ( library : name returns symbol arity ++ )
   next-integer IF
     set-local1
     next-token negative? UNLESS
-      ( resolve symbolknow since next-integer clobbers )
+      ( resolve symbol now since next-integer clobbers )
       drop arg0 dlsym dup IF
         local1 local0 rot
         next-integer IF
