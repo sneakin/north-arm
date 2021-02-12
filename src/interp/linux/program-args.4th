@@ -15,11 +15,11 @@ def top-frame
 end
 
 def argc
-  top-frame farg1 peek return1
+  top-frame farg2 peek return1
 end
 
 def argv
-  top-frame farg2 return1
+  top-frame farg3 return1
 end
 
 def get-argv
@@ -28,7 +28,7 @@ def get-argv
 end
 
 def env-addr
-  top-frame frame-args cell-size 3 argc + * +
+  top-frame frame-args cell-size 4 argc + * +
   return1
 end
 

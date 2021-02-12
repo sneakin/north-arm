@@ -1,33 +1,45 @@
 ( OS entry point: sets initial state and calls main. )
 ( todo save lr, mark data )
 
-( Linux calls with args on the stack and in registers.
+( Linux calls with args on the stack and in registers. 
+The dynamic linker passes a finalization function in r0 that appears to reinitialize and restart.
 The arguments are argc, argv as a sequence of pointers, and env as a sequence of pointers.
-The dynamic linker passes a function in r0.
+Having the program's entry call the finalizer or the value in LR results in program restart.
 )
 
+defcol init-return
+  ( stack is the top-frame: ... argc system-LR finalizer )
+  ( s" Goodbye." error-line/2
+  current-frame error-hex-uint enl
+  dump-stack )
+  0 sysexit
+  ( drop set-pc )
+endcol
+
 defop init
-  ( calculate CS: pc - dhere; in r10? )
-  20 r3 ldr-pc ,ins
-  pc r5 mov-hilo ,ins
-  r3 r5 cs-reg sub ,ins
-  dhere
+  ( stack env, argv[], argc, LR, fini )
+  0 pushr .pclr ,ins
   ( init registers )
-  ( lr r0 mov-hilo ,ins )
+  out' calc-cs emit-op-call
+  0 r0 cs-reg mov-lsl ,ins
   0 fp mov# ,ins
-  0 eip mov# ,ins
+  0 r0 bit-set popr ,ins
+  ( init-return )
+  36 eip ldr-pc ,ins
+  eip eip emit-get-reg-word-data
   ( set the dictionary )
-  16 dict-reg ldr-pc ,ins
+  20 dict-reg ldr-pc ,ins
   cs-reg dict-reg dict-reg add ,ins
-  ( exec main[fini, argc, argv, env] )
-  16 r1 ldr-pc ,ins
+  ( exec main[fini, system-LR, argc, argv, env] -> init-return )
+  20 r1 ldr-pc ,ins
   out' exec-r1 emit-op-call
-  0 popr .pclr ,ins ( todo test & push LR at start )
-  0 r0 r0 mov-lsl ,ins
-  ( data: )
-  to-out-addr ,uint32
+  ( without main calling bye, exit restores eip to the initial value above. LR gets lost in ~next~ so this does not get reached: )
+  out' bye emit-op-jump
+  ( data: dictionary main return-fn )
+  4 pad-data
   out-dict to-out-addr ,uint32
   out' main to-out-addr ,uint32
+  out' init-return to-out-addr ,uint32
 endop
 
 ( todo pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. )

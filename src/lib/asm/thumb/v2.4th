@@ -155,6 +155,8 @@
 : .cdp-n 23 bit-set ;
 
 ( Register transfers: )
+( todo reorder args to match actual asm )
+
 ( 1 1 1 C 1 1 1 0 Op1:3 L CRn:4 )
 : mcr-hi ( CRn Op1 -- ins16 )
   0x7 logand 5 bsl

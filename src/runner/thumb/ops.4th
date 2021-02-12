@@ -33,7 +33,7 @@ r7 const> eip
   cell-size - emit-branch
 ;
 
-( tbd to push LR befare calls or in prologue. )
+( tbd to push LR before calls or in prologue. )
 
 ( Emits the assembly to call an op with the PC stored in LR. )
 : emit-op-call
@@ -374,6 +374,34 @@ defop do-var
   emit-next
 endop
 
+( Dictionary helpers: )
+
+: emit-load-word ( offset reg )
+  over to-out-addr over emit-load-int32
+  cs-reg over dup add ,ins
+  int32 2 dropn
+;
+
+: emit-get-word-data
+  over over emit-load-word
+  swap drop
+  0 dict-entry-data over dup ldr-offset ,ins
+  drop
+;
+
+: emit-get-reg-word-data ( src-reg dest-reg -- )
+  cs-reg 3 overn 3 overn add ,ins
+  0 dict-entry-data over dup ldr-offset ,ins
+  cs-reg over dup add ,ins
+  2 dropn
+;
+
+: emit-set-word-data ( offset data-reg tmp-reg )
+  int32 3 overn int32 2 overn emit-load-word
+  0 dict-entry-data int32 2 overn int32 4 overn str-offset ,ins
+  int32 3 dropn
+;
+
 ( Integer Math: )
 
 defop negate
@@ -579,6 +607,24 @@ defop cs
   emit-next
 endop
 
+defop set-cs
+  0 r0 cs-reg mov-lsl ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop
+
+defop calc-cs
+  0 r0 bit-set pushr ,ins
+  ( calculate CS: pc - dhere )
+  4 r0 ldr-pc ,ins
+  pc r0 add-hilo ,ins
+  dhere
+  emit-next
+  ( data: )
+  ( 0 ,uint16 )
+  to-out-addr 2 + negate ,uint32
+endop
+
 defop dict
   0 r0 bit-set pushr ,ins
   0 dict-reg r0 mov-lsl ,ins
@@ -591,35 +637,27 @@ defop set-dict
   emit-next
 endop
 
-( Misc: )
-
-defop nop
-  emit-next
-endop
-
-( Dictionary helpers: )
-
-: emit-load-word ( offset reg )
-  over to-out-addr over emit-load-int32
-  cs-reg over dup add ,ins
-  int32 2 dropn
-;
-
-: emit-get-word-data
-  over over emit-load-word
-  swap drop
-  0 dict-entry-data over dup ldr-offset ,ins
-  drop
-;
-
-: emit-set-word-data ( offset data-reg tmp-reg )
-  int32 3 overn int32 2 overn emit-load-word
-  0 dict-entry-data int32 2 overn int32 4 overn str-offset ,ins
-  int32 3 dropn
-;
-
 defop push-lr
   0 r0 bit-set pushr ,ins
   lr r0 mov-hilo ,ins
+  emit-next
+endop
+
+defop set-pc
+  r0 ip movrr ,ins
+  0 r0 bit-set popr ,ins
+  ip bx ,ins
+endop
+
+defop set-eip-pc
+  0 r0 r1 mov-lsl ,ins
+  0 eip bit-set popr ,ins
+  0 r0 bit-set popr ,ins
+  r1 0 bx-lo ,ins
+endop
+
+( Misc: )
+
+defop nop
   emit-next
 endop
