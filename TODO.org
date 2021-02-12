@@ -9,6 +9,8 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
+** Makefile needs TARGET and HOST documented
+** Makefile detection for HOST defaulted to aarch64 forcing use of qemu.
 ** For op specific data: if the word is in R1, can that be used to address the data field for...? perhaps not for init.
 ** dynamic linking
 *** GNU
