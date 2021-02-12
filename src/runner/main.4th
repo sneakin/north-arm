@@ -127,8 +127,6 @@ def dict-map ( dict fn )
   arg1 cs int32 0 arg0 dict-map/4
 end
 
-256 defconst> words-xy-pitch
-
 def write-byte
   arg0 1 write-string/2
 end
@@ -143,7 +141,6 @@ endcol
 def words-printer
   arg0 cs -
   dup write-tabbed-hex-uint space
-  dup words-xy-pitch int-divmod write-tabbed-hex-uint space write-tabbed-hex-uint space
   arg0 dict-entry-name peek cs + write-string nl
 end
 
