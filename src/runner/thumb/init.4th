@@ -25,13 +25,13 @@ defop init
   0 fp mov# ,ins
   0 r0 bit-set popr ,ins
   ( init-return )
-  36 eip ldr-pc ,ins
+  40 eip ldr-pc ,ins
   eip eip emit-get-reg-word-data
   ( set the dictionary )
-  20 dict-reg ldr-pc ,ins
+  24 dict-reg ldr-pc ,ins
   cs-reg dict-reg dict-reg add ,ins
   ( exec main[fini, system-LR, argc, argv, env] -> init-return )
-  20 r1 ldr-pc ,ins
+  24 r1 ldr-pc ,ins
   out' exec-r1 emit-op-call
   ( without main calling bye, exit restores eip to the initial value above. LR gets lost in ~next~ so this does not get reached: )
   out' bye emit-op-jump
