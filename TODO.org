@@ -9,9 +9,10 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
+** For op specific data: if the word is in R1, can that be used to address the data field for...? perhaps not for init.
 ** TODO abs-int or int-abs?
 ** runner ops
-*** exec -> exec-cs
+*** exec -> exec-cs-offset
 *** call ops and return to next
 *** variables on stack
 *** array index interpreter
@@ -23,6 +24,7 @@ Lacks thumb2 and therefore division and coprocessor ops.
 *** TODO Detect thumb2 in HWCAPS on start
 **** trap SIGILL
 *** TODO A32 coprocessor ops
+*** TODO Do new branch ops work?
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
@@ -49,16 +51,24 @@ Call frames, stack & data pointer math
 *** Compiler words: :
 *** DONE Immediates: immediate
 ** Assemblers
-*** Bacaw
-*** x86
-*** TODO athumb
-**** TODO Branching and return in Thumb; to call ops in ops and call threading
-**** Thumb Assembler meta words: mov checks arg range
-*** TODO aarch32
-**** TODO Status register and coprocessor ops
-*** aarch64
-**** assembler
-**** ELF64
+*** TODO Two passes with labels
+*** TODO New-lines write instructions; one per line
+*** TODO Binary lacks features to compile a bare bones program.
+**** Seg faults
+**** constants
+**** load-core features
+**** ISAs
+***** Bacaw
+***** x86
+***** TODO athumb
+****** TODO Branching and return in Thumb; to call ops in ops and call threading
+****** Thumb Assembler meta words: mov checks arg range
+***** TODO aarch32
+****** TODO Status register and coprocessor ops
+****** TODO More op coverage
+***** aarch64
+****** assembler
+****** ELF64
 ** DONE jumps & loops
 *** DONE relative jumps
 *** DONE returns
@@ -67,7 +77,7 @@ Call frames, stack & data pointer math
 ** DONE load needs to be callable from definitions.
 Needs to interpret input when called while not reading additional input.
 ** DONE Building needs to allow different program inclusions
-** Returns
+** Returns that eat frame args and shift return values
 #+BEGIN
 def f ( x y z -- a b )
   a b returns 3 2
@@ -108,10 +118,11 @@ Threads too: offset & indirect.
 Data stack: relative or absolute?
 
 *** DONE argc/argv
+**** TODO getopt like function
 ** DONE Separate ops and definitions
 ** TODO Separate bash specific defs from the general
 ** DONE Variables
-*** Move to own segment
+*** TODO Move to own segment
 ** DONE Flip int-sub args in runner
 ** Use just 'end' instead of 'end.*'?
 ** defcol & def can share more code
@@ -194,7 +205,6 @@ load needs file opening and reading with a reader stack.
 **** thumb forth + assembler
 *** stage2
 **** compiler
-
 ** code fields need to point at words, not code
 ** Tension between output offsets and pointers; dhere is an offset or translate when needed?
 ** null (last dictionary) lets lookup return a null, default object.
@@ -237,7 +247,8 @@ Zero needed atbend of definitions for decompile.
 ** TODO DRY cross compiling code
 *** TODO out-off' should be ' but using the compiling-dict; likewise with [']
 dry up with comp' immediated as ' to use compiling-dict.
-** TODO move defining/*-boot files to interp/boot/defining
+*** TODO word op sized jumps instead of bytes
+** TODO move defining/*-boot files to interp/boot/defining, or put arch specific files under a cross/${arch}/
 ** TODO Towards Lisp
 *** Dictionary as argument
 **** DONE to compiler
@@ -254,7 +265,27 @@ dry up with comp' immediated as ' to use compiling-dict.
 **** flags to toggle static/dynamic, linux/android, elf32/64
 *** sigill trap to detect cpu ops
 ** x86
-
+** Interpreted IF & UNLESS in Bash coild not be postponed
+** Called ops & LR
+Calling ops like any other procedure makes subroutine call threading easy.
+*** LR only needs to be pushed if an op makes a call.
+**** Returns are popping into PC
+**** For an op without calls just a mov PC, LR.
+*** Ops can get back to next if next sets LR.
+*** When does next exit??
+Needs an explicit BYE. exit gets out of a thread, restoring eip.
+*** Where LR should be restored?
+**** Only save LR with an outer-exec? Exit by clearing stack and setting PC. Or exit up all the way.
+**** Mixing threading types? Puts responsibility on enter and exit to return to the right procedure caller.
+***** Requires defcol to factor in a multiple valued return record. swap-call-frame
+EIP, LR
+*** Assembling Call threading
+**** Ops & Compiled definitions
+branch-link
+possible jump table
+**** Interpreted words
+Inline exec
+**** Should be the same so runtime changes can happen.
 * Thoughts
 ** def syntax
 *** Current
