@@ -1,38 +1,58 @@
-TARGETS=arm-linux arm-linux-gnueabi arm-linux-android
+TARGETS=bash-linux-static thumb-linux-static thumb-linux-gnueabi thumb-linux-android \
+	thumb2-linux-static thumb2-linux-gnueabi thumb2-linux-android
+HOSTS=$(TARGETS)
 
 HOST?=$(MAKE_HOST)
-TARGET?=arm-linux
+TARGET?=arm-linux-static
+
+platform_tuple = $($(1)_ARCH)-$($(1)_OS)-$($(1)_ABI)
 
 define platform_vars # (var_prefix)
-ifneq (,$(findstring x86_64,$($(1))))
-	$(1)_ARCH=x86_64
-	$(1)_BITS=64
-else ifneq (,$(findstring x86,$($(1))))
-	$(1)_ARCH=x86
-	$(1)_BITS=32
-else ifneq (,$(findstring arm,$($(1))))
-	$(1)_ARCH=arm
-	$(1)_BITS=32
-else ifneq (,$(findstring aarch64,$($(1))))
-	$(1)_ARCH=aarch64
-	$(1)_BITS=64
-endif
+	ifneq (,$$(findstring x86_64,$($(1))))
+		$(1)_ARCH?=x86_64
+		$(1)_BITS?=64
+	else ifneq (,$$(findstring x86,$($(1))))
+		$(1)_ARCH?=x86
+		$(1)_BITS?=32
+	else ifneq (,$$(findstring arm,$($(1))))
+		$(1)_ARCH?=arm
+		$(1)_BITS?=32
+	else ifneq (,$$(findstring thumb2,$($(1))))
+		$(1)_ARCH?=thumb2
+		$(1)_BITS?=32
+	else ifneq (,$$(findstring thumb,$($(1))))
+		$(1)_ARCH?=thumb
+		$(1)_BITS?=32
+	else ifneq (,$$(findstring aarch64,$($(1))))
+		$(1)_ARCH?=aarch64
+		$(1)_BITS?=64
+	else ifneq (,$$(findstring bash,$($(1))))
+		$(1)_ARCH?=bash
+		$(1)_BITS?=32
+	else
+		$$(error "Bad arch: $($(1))")	
+	endif
 
-ifneq (,$(findstring android,$($(1))))
-	$(1)_OS=android
-else ifneq (,$(findstring linux,$($(1))))
-	$(1)_OS=linux
-else ifneq (,$(findstring windows,$($(1))))
-	$(1)_OS=windows
-endif
+	ifneq (,$$(findstring linux,$($(1))))
+		$(1)_OS?=linux
+	else ifneq (,$$(findstring windows,$($(1))))
+		$(1)_OS?=windows
+	else
+		$$(error "Bad OS: $($(1))")	
+	endif
 
-ifneq (,$(findstring gnueabi,$($(1))))
-	$(1)_STATIC?=false
-else ifneq (,$(findstring android,$($(1))))
-	$(1)_STATIC?=false
-endif
-$(1)_STATIC?=true
-
+	ifneq (,$$(findstring gnueabi,$($(1))))
+		$(1)_ABI?=gnueabi
+		$(1)_STATIC?=false
+	else ifneq (,$$(findstring android,$($(1))))
+		$(1)_ABI?=android
+		$(1)_STATIC?=false
+	else ifneq (,$$(findstring static,$($(1))))
+		$(1)_ABI?=static
+		$(1)_STATIC?=true
+	else
+	$$(error "Bad ABI: $($(1))")	
+	endif
 endef
 
 $(eval $(call platform_vars,HOST))
@@ -53,15 +73,29 @@ ifneq ($(TARGET),$(filter $(TARGET),$(TARGETS)))
 	TARGET_VALID=false
 endif
 
-.PHONY: env targets
+.PHONY: env targets hosts
 
+hosts:
+	@echo $(HOSTS)
 targets:
 	@echo $(TARGETS)
 
+define tuple_printer
+	@echo "  tuple: " $(call platform_tuple,$(1))
+	@echo "   arch: " $($(1)_ARCH)
+	@echo "     OS: " $($(1)_OS)
+	@echo "   bits: " $($(1)_BITS)
+	@echo " static: " $($(1)_STATIC)
+endef
+
 env:
-	@echo Make: $(MAKE_HOST)
-	@echo Host: $(HOST) - $(HOST_ARCH) $(HOST_OS) $(HOST_BITS)
-	@echo Target: $(TARGET) - $(TARGET_ARCH) $(TARGET_OS) $(TARGET_BITS) $(TARGET_STATIC)
-	@echo Target CC: $(TARGET_CC)
+	@echo "   Host: " $(HOST)
+	$(call tuple_printer,HOST)
+	@echo
+	@echo " Target: " $(TARGET)
+	$(call tuple_printer,TARGET)
+	@echo
+	@echo "Make host: " $(MAKE_HOST)
+	@echo Target CC: $(TARGET_CC) $(TARGET_CFLAGS)
 	@echo Valid target: $(TARGET_VALID)
 	@echo Runner: $(TARGET_RUNNER)
