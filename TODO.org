@@ -9,6 +9,63 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
+** Standard Forth
+*** Comma & period words
+Standard Forth uses these for stream output.
+Switching to < or > like standard stack ops.
+**** byte data
+**** asm ops
+*** CASE
+#+BEGIN_SRC forth
+CASE
+  N OF ... ENDOF
+  else...
+ENDCASE
+#+END_SRC
+*** Loops
+#+BEGIN_SRC forth
+begin ... condition until
+begin ... while condition... repeat
+max init do ... loop
+leave
+return
++loop
+#+END_SRC
+*** Misc
+0sp - zero stack to init
+rot a b c -- b c a
+-rot a b c -- c a b
+pick -> overn
+nip -> swap drop
+tuck a b -- b a b
+
+lshift rshift arshift
+
+include file : loads file
+include? file : loads file if it's not already loaded
+forget file : unload the file's definitions
+anew : called when entering a new file for bookkeeping for forget.
+? +!
+*** struct
+#+BEGIN_SRC forth
+:struct name
+  type field-name
+  ...
+;struct
+#+END_SRC
+*** defer
+Executable words that can be rebound with IS.
+#+BEGIN_SRC forth
+defer motd
+' hello is motd
+motd ( calls hello )
+what's motd ( -> ' hello )
+#+END_SRC
+*** [IF]
+[IF] and other bracketed conditions behave like #if in C.
+*** locals
+{ arg1 arg0 | local0 -- result }
+** Postpone lookup with and without immediates
 ** Makefile cross compile support
 *** Makefile needs TARGET and HOST documented
 *** Makefile detection for HOST defaulted to aarch64 forcing use of qemu.
