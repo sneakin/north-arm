@@ -5,13 +5,13 @@
 declare -a STACK
 
 # Pushes the argument onto the Forth stack.
-function fpush()
+fpush()
 {
     STACK=( "$@" "${STACK[@]}" )
 }
 
 # Pops 1 or more values from the Forth stack.
-function fpop()
+fpop()
 {
     local n="${1:-1}"
     STACK=( "${STACK[@]:$n}" )
@@ -26,7 +26,7 @@ EVAL_EXPR=() # current expression being evaluated
 EIP=0 # current evaluated word's index
 
 # Execute the word passed as an argument.
-function fsysexec()
+fsysexec()
 {
     local entry="${1}"
     # echo "fexec $1 -> '$entry'" 1>&2
@@ -34,7 +34,7 @@ function fsysexec()
 }
 
 # Lookup and execute the word passed as an argument.
-function fexec()
+fexec()
 {
     local entry=""
     if [[ "${1:-}" != "" ]]; then
@@ -49,7 +49,7 @@ function fexec()
 }
 
 # Execute each token of read input.
-function finterp()
+finterp()
 {
     local fin=0
     local input_streamed="${INPUT_STREAMED}"
@@ -71,7 +71,7 @@ function finterp()
 }
 
 # Execute all the arguments.
-function feval()
+feval()
 {
     # Save caller state
     local last_expr=( "${EVAL_EXPR[@]}" )

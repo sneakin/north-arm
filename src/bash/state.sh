@@ -7,7 +7,7 @@ DICT['save-dict']='dump_dicts > "${STACK[0]}"; fpop'
 DICT['load-dict']='source "${STACK[0]}"; fpop'
 DICT['reload-dicts']='DICT=(); IDICT=(); source "${STACK[0]}"; fpop'
 
-function quote_value()
+quote_value()
 {
     if [[ "$1" =~ "'" ]]; then
 	printf %q "$1"
@@ -16,7 +16,7 @@ function quote_value()
     fi
 }
 
-function dump_dicts()
+dump_dicts()
 {
     #echo -e "unset DICT; declare -A DICT\n"
     for i in "${!DICT[@]}"; do

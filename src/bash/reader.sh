@@ -8,7 +8,7 @@ INPUT_STREAMED="1"
 TOKEN=""
 
 # Read a full of input into $INPUT.
-function read_input_line()
+read_input_line()
 {
     local prompt="$1"
     [[ "$prompt" == "" ]] && prompt="${#STACK[@]} > "
@@ -21,7 +21,7 @@ function read_input_line()
 
 # Read one byte from the input line, possibly
 # reading a new line when no input is available.
-function read_byte()
+read_byte()
 {
     if [[ "${INPUT}" == "" ]]; then
 	if [[ "${INPUT_BYTE}" == "" ]]; then
@@ -41,7 +41,7 @@ function read_byte()
 
 # Read bytes into $TOKEN until the read byte
 # matches the argument.
-function read_until()
+read_until()
 {
     TOKEN=""
     while read_byte "... > "; do
@@ -63,7 +63,7 @@ function read_until()
 #
 
 # Return success if the argument is whitespace.
-function isspace()
+isspace()
 {
     case "$1" in
 	"
@@ -73,7 +73,7 @@ function isspace()
 }
 
 # Read the next Forth token. Returned in $TOKEN.
-function next_token()
+next_token()
 {
     TOKEN=""
     while read_byte; do
