@@ -231,5 +231,9 @@ alias> string-const> const>
 
 : not-found " Not found." error-line ;
 
+: write-hex-uint ,h drop ;
+: write-string/2 drop write-string ;
+: write-line/2 drop write-line ;
+
 " src/bash/frames.4th" load
 " src/bash/list.4th" load

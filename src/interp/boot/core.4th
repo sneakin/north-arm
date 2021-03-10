@@ -213,6 +213,14 @@ def ["]
   POSTPONE d" return2
 end immediate-as "
 
+: ."
+  [s"] literal write-string/2
+; immediate
+
+def ."
+  POSTPONE tmp" write-string/2
+end
+
 def error
   s" Error" error-line/2
 end

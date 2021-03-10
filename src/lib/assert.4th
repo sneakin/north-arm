@@ -7,6 +7,8 @@
   THEN
 ;
 
+: assert-not lognot assert ;
+
 : assert-equals
   2dup equals dup assert IF
     2 dropn
@@ -15,14 +17,16 @@
   THEN
 ;
 
-def assert-byte-string-equals/3
-  arg2 arg1 arg0 byte-string-equals?/3
-  IF assertion-passed
+: assertion-message
+  IF assertion-passed 2 dropn
   ELSE assertion-failed
-    arg2 arg0 error-string/2
-    s" != " error-string/2
-    arg1 arg0 error-string/2
+       write-string "  != " write-string write-string nl
   THEN
+;
+
+def assert-byte-string-equals/3
+  arg2 arg1 arg0 byte-string-equals?/3 swap drop
+  assertion-message
 end
 
 def assert-byte-string-equals/4
@@ -31,3 +35,11 @@ def assert-byte-string-equals/4
   ELSE assertion-failed
   THEN
 end
+
+: assert-contains
+  2dup contains? assertion-message
+;
+
+: assert-contains-not
+  2dup contains? not assertion-message
+;

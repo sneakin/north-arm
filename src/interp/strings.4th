@@ -3,19 +3,28 @@
 ( fixme "boo" == "boot"? Need to check lengths on both. Checking for 0 byte at end works, but not perfect. )
 
 def byte-string-equals?/3 ( a-str b-str length )
+  arg0 int32 0 uint> UNLESS int32 1 return1 THEN
   arg2 peek-byte
   arg1 peek-byte
   equals? UNLESS int32 0 return1 THEN
-  arg0 int32 0 int<= IF int32 1 return1 THEN
   arg0 int32 1 - set-arg0
   arg1 int32 1 + set-arg1
   arg2 int32 1 + set-arg2
   repeat-frame
 end
 
+def byte-string0-equals?/3 ( a-str b-str length )
+  arg2 arg1 arg0 byte-string-equals?/3 IF
+    drop peek-byte
+    swap peek-byte
+    equals?
+  ELSE int32 0
+  THEN return1
+end
+
 def string-equals?/3 ( a-str b-str length )
   arg0 cell-size int< IF
-    arg2 arg1 arg0 byte-string-equals?/3 return1
+    arg2 arg1 arg0 byte-string0-equals?/3 return1
   THEN
   arg2 peek
   arg1 peek
@@ -94,3 +103,18 @@ defcol string-index-of ( ptr len predicate -- index )
   int32 3 dropn
   swap drop
 endcol
+
+def string-contains?/5 ( string str-length needle ndl-length index ++ )
+  arg3 arg0 - arg1 uint< IF -1 5 return1-n THEN
+  4 argn arg0 + arg2 arg1 byte-string-equals?/3
+  IF arg0 5 return1-n
+  ELSE 3 dropn arg0 arg3 uint< IF arg0 1 + set-arg0 repeat-frame THEN
+  THEN
+end
+
+def contains? ( string needle -- yes? )
+  arg1 dup string-length
+  arg0 dup string-length
+  0 string-contains?/5
+  negative? IF false ELSE true THEN 2 return1-n
+end

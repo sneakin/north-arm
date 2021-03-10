@@ -136,6 +136,7 @@ DICT['string-peek']="v=\"\${STACK[1]}\"; n=\"\${STACK[0]}\"; fpop 2; fpush \$(pr
 DICT['char-code']="v=\$(printf %d \"'\${STACK[0]}\"); fpop; fpush \$v"
 DICT['has-spaces?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([ \t\n\r\v]) ]]; then fpush 1; else fpush 0; fi'
 DICT['quote-string']='v="${STACK[0]}"; fpop; fpush "$(printf %q "$v")"'
+DICT['contains?']='if [[ "${STACK[1]}" =~ "${STACK[0]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
 
 #
 # Output
@@ -149,9 +150,8 @@ DICT['write-string']='echo -n -e "${STACK[0]}"; fpop'
 DICT['write-line']='echo -e "${STACK[0]}"; fpop'
 DICT['error-line']='echo -e "${STACK[0]}" 1>&2; fpop'
 DICT['write-byte']='printf "\\x$(printf %x "${STACK[0]}")"; fpop'
-
-#IDICT['"']="${DICT['\"']}"
-#IDICT["\'"]="${DICT[\\\"\'\\\"]}"
+DICT['nl']='echo -e "\n"'
+DICT['space']='echo -n " "'
 
 IDICT["'"]='next_token; fpush "${TOKEN}" literal'
 IDICT['"']='read_until \" && fpush "${TOKEN}" literal'
