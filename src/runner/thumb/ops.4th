@@ -231,7 +231,7 @@ defop swap
 endop
 
 defop swapn ( sp+n+1 ... value n -- value ... sp+n+1 )
-  ( Swaps ToS with the value N cells up the stack. `1 swopn` is equivalent to `swap`. )
+  ( Swaps ToS with the value N cells up the stack. `1 swapn` is equivalent to `swap`. )
   2 r0 r1 mov-lsl ,ins
   sp r1 addrr ,ins ( r1 addr )
   0 r2 bit-set popr ,ins ( r2 near value )

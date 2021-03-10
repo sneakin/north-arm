@@ -57,6 +57,10 @@ defcol end-compile
 endcol
 
 0
+out' [THEN] copies-entry-as> [THEN]
+out' [ELSE] copies-entry-as> [ELSE]
+out' [UNLESS] copies-entry-as> [UNLESS]
+out' [IF] copies-entry-as> [IF]
 out' end-compile copies-entry-as> endcol
 out' end-compile copies-entry-as> end
 out' end-compile copies-entry-as> ;

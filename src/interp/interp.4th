@@ -212,31 +212,76 @@ end
 
 ( Interpreted conditions: )
 
-def else?
-  arg1 s" ELSE" string-equals?/3 return1
+def [if?]
+  arg1 s" [IF]" string-equals?/3 return1
 end
 
-def then?
-  arg1 s" THEN" string-equals?/3 return1
+def [unless?]
+  arg1 s" [UNLESS]" string-equals?/3 return1
 end
 
-def else-or-then?
-  arg1 arg0 else? rot swap then? rot int32 2 dropn or return1
+def [else?]
+  arg1 s" [ELSE]" string-equals?/3 return1
 end
 
-defcol IF
-  swap UNLESS pointer else-or-then? skip-tokens-until drop THEN
+def [then?]
+  arg1 s" [THEN]" string-equals?/3 return1
+end
+
+def [else-or-then?]
+  arg1 arg0 [else?] rot swap [then?] rot int32 2 dropn or return1
+end
+
+def [if-or-unless?]
+  arg1 arg0 [if?] rot swap [unless?] rot int32 2 dropn or return1
+end
+
+( todo top level IF nesting, reuse bash version? )
+( todo bring back IF )
+( todo does int32 get left behind for numbers as [IF] conditions? )
+( todo detect comments; switch to leader, terminator pairs? )
+
+def nested-skip-tokens-until/4 ( lead-fn term-fn inner-term-fn depth ++ )
+  next-token
+  negative? IF ( todo error ) return THEN
+  over s" (" string-equals?/3 IF POSTPONE ( THEN 3 dropn
+  2dup
+  arg0 0 uint> IF arg1 ELSE arg2 THEN exec-abs
+  IF arg0 0 uint> IF arg0 1 - set-arg0 ELSE return THEN THEN
+  arg3 exec-abs IF arg0 1 + set-arg0 THEN
+  drop-locals repeat-frame
+end
+
+defcol nested-skip-tokens-until ( lead-fn term-fn inner-term-fn -- )
+  3 swapn rot swap 0 nested-skip-tokens-until/4 4 dropn
 endcol
 
-defcol UNLESS
-  swap IF pointer else-or-then? skip-tokens-until drop THEN
+defcol [IF]
+  swap UNLESS
+    pointer [if-or-unless?]
+    pointer [else-or-then?]
+    pointer [then?]
+    nested-skip-tokens-until
+  THEN
 endcol
 
-defcol ELSE
-  pointer then? skip-tokens-until drop
+defcol [UNLESS]
+  swap IF
+    pointer [if-or-unless?]
+    pointer [else-or-then?]
+    pointer [then?]
+    nested-skip-tokens-until
+  THEN
 endcol
 
-defcol THEN
+defcol [ELSE]
+  pointer [if-or-unless?]
+  pointer [then?]
+  pointer [then?]
+  nested-skip-tokens-until
+endcol
+
+defcol [THEN]
   ( no need to do anything besides not crash )
 endcol
 

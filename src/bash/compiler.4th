@@ -185,6 +185,42 @@ symbol> if-placeholder
   swap spoke
 ; immediate
 
+( Compile time conditions: )
+
+: [if-or-unless?]
+  dup " [IF]" equals
+  swap " [UNLESS]" equals
+  logior
+;
+
+: [IF-loop] ( depth-counter -- )
+  next-token
+  dup [if-or-unless?] IF drop 1 +
+  ELSE
+    dup " [THEN]" equals IF
+      drop dup IF 1 - ELSE drop return THEN
+    ELSE
+      dup " [ELSE]" equals IF
+	over 0 equals IF 2 dropn return THEN
+      THEN drop
+    THEN
+  THEN loop
+;
+
+: [ELSE-loop] ( depth-counter -- )
+  next-token
+  dup " [THEN]" equals IF
+    over 0 equals IF 2 dropn return ELSE drop 1 - THEN
+  ELSE
+    dup [if-or-unless?] IF drop 1 + ELSE drop THEN
+  THEN loop
+;
+
+: [IF] UNLESS 0 [IF-loop] THEN ; immediate
+: [UNLESS] IF 0 [IF-loop] THEN ; immediate
+: [THEN] ( nop ) ; immediate
+: [ELSE] 0 [ELSE-loop] ; immediate
+
 ( Numerics: )
 
 : unsigned-integer/2

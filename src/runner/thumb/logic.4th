@@ -1,19 +1,22 @@
 ( Logic: )
 
+0 defconst> false
+-1 defconst> true
+
 defcol not
-  swap IF int32 0 ELSE int32 1 THEN
+  swap IF false ELSE true THEN
   swap
 endcol
 
 defcol and
   rot IF
-    IF int32 1 swap exit THEN
+    IF true swap exit THEN
   ELSE drop THEN
-  int32 0 swap
+  false swap
 endcol
 
 defcol or
-  rot IF drop int32 1 swap exit THEN
-  IF int32 1 swap exit THEN
-  int32 0 swap
+  rot IF drop true swap exit THEN
+  IF true swap exit THEN
+  false swap
 endcol
