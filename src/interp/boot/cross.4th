@@ -34,7 +34,6 @@ end
 ' end-compile tmp" ;" out-immediate/3
 
 ' ( out-immediate/1
-' POSTPONE out-immediate/1
 
 ( Output memory offseting: )
 
@@ -65,7 +64,7 @@ end
 def cross-lookup
   arg1 arg0 parse-int
   IF LOOKUP-INT
-  ELSE drop arg1 arg0 out-dict-lookup IF LOOKUP-WORD ELSE LOOKUP-NOT-FOUND THEN
+  ELSE drop arg1 arg0 out-dict-lookup IF LOOKUP-WORD ELSE LOOKUP-NOT-FOUND THEN THEN
   THEN set-arg0 set-arg1 return0
 end
 
@@ -74,6 +73,18 @@ def cross-lookup-offset
   negative? UNLESS swap to-out-addr swap THEN
   set-arg0 set-arg1
 end
+
+: cross-lookup-or-break/3 ( str length lookup-fn -- lookup )
+  2 overn 4 overn rot exec LOOKUP-NOT-FOUND equals IF
+    drop not-found/2
+    s" break" cross-lookup drop
+  ELSE
+    2 swapn 2 dropn
+  THEN
+;
+
+: cross-lookup-or-break ' cross-lookup cross-lookup-or-break/3 ;
+: cross-lookup-offset-or-break ' cross-lookup-offset cross-lookup-or-break/3 ;
 
 ( Dictionary words for output: )
 
@@ -136,15 +147,6 @@ end
   literal int32 swap
 ; immediate
 
-: cross-lookup-or-break
-  2dup cross-lookup LOOKUP-NOT-FOUND equals IF
-    drop not-found/2
-    s" break" cross-lookup drop
-  ELSE
-    rot 2 dropn
-  THEN
-;
-
 ( There's out' and out-off' which return the next token's output
 address and relative offset. )
 
@@ -160,16 +162,17 @@ address and relative offset. )
 ; immediate-as out'
 
 : out-off'
-  ( Returns the offset of the outuut word named by the next token. )
-  next-token cross-lookup-or-break to-out-addr
-; immediate-as [out-off'] out-immediate-as [']
+  ( Returns the offset of the outuut word named by the next token. Doubles as POSTPONE when cross compiling. )
+  next-token cross-lookup-offset-or-break
+; immediate-as [out-off'] out-immediate-as ['] out-immediate-as POSTPONE
+
+( fixme POSTPONE needs immediate lookup, but immediate support in the output is needed. )
 
 ( fixme word ends up in the binary. )
 : out-out-off'
   ( The immediate ~out-off'~ that delays the lookup of the next token until the containing definition is called. The output word's offset will be on the stack. )
   POSTPONE dallot-next-token>
-  literal cross-lookup-or-break
-  literal to-out-addr
+  literal cross-lookup-offset-or-break
 ; immediate-as out-off'
 
 : out-'
