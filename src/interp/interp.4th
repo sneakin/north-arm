@@ -62,7 +62,7 @@ end
 defcol read-line ( ptr len -- ptr read-length )
   over int32 4 overn current-input peek read
   negative? UNLESS
-    int32 1 swap -
+    int32 1 -
     int32 4 overn over null-terminate
   THEN
   rot drop
