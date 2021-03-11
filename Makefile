@@ -64,7 +64,9 @@ bootstrap/interp.android.elf: release/root bootstrap/interp.static.elf
 boot: bootstrap/interp.static.elf bootstrap/interp.android.elf
 
 version.4th: .git/refs/heads/master
-	echo "\" $$(cat $<)\" string-const> *north-git-ref*" > $@
+	echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
+	echo "\" $(call platform_tuple,TARGET)\" string-const> NORTH-TARGET" >> $@
+	echo "$(TARGET_BITS) defconst> NORTH-BITS" >> $@
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
