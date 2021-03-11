@@ -5,6 +5,8 @@ EXECEXT=.elf
 SOEXT=.so
 SO_CFLAGS=-shared -nostdlib -g
 
+RELEASE_BRANCH?=master
+
 OUTPUTS=bin/interp.android.1$(EXECEXT) \
 	bin/interp.android.2$(EXECEXT) \
 	bin/interp.android.3$(EXECEXT) \
@@ -40,12 +42,22 @@ north: bin/north$(EXECEXT)
 
 include ./Makefile.arch
 
-.PHONY: clean doc all quick
+.PHONY: clean doc all quick git-info
+
+ifeq ($(GIT_BRANCH),)
+  GIT_REF?=$(shell cat .git/HEAD | sed -e 's/.*: \(.*\)/\1/')
+  GIT_BRANCH=$(shell basename $(GIT_REF))
+else
+  GIT_REF=refs/heads/$(GIT_BRANCH)
+endif
+
+git-info:
+	@echo $(GIT_BRANCH) $(GIT_REF)
 
 release:
 	mkdir -p release
-release/root: .git/refs/heads/master release
-	if [ -d release/root ]; then cd release/root && git pull; else git clone . release/root; fi
+release/root: .git/refs/heads/$(RELEASE_BRANCH) release
+	if [ -d release/root ]; then cd release/root && git fetch; else git clone . release/root && cd release/root; fi && git checkout $(RELEASE_BRANCH)
 
 quick:
 	cp bootstrap/interp.static.elf bin/interp.elf
@@ -54,16 +66,16 @@ bootstrap:
 	mkdir -p bootstrap
 
 bootstrap/interp.static.elf: release/root bootstrap
-	make -C release/root version.4th bin/interp.elf bin/interp.1.elf
+	$(MAKE) -C release/root version.4th bin/interp.elf bin/interp.1.elf
 	cp release/root/bin/interp.elf bootstrap/interp.static.elf
 
 bootstrap/interp.android.elf: release/root bootstrap/interp.static.elf
-	make -C release/root version.4th bin/interp.2.elf
+	$(MAKE) -C release/root version.4th bin/interp.2.elf
 	cp release/root/bin/interp.2.elf bootstrap/interp.android.elf
 
 boot: bootstrap/interp.static.elf bootstrap/interp.android.elf
 
-version.4th: .git/refs/heads/master
+version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
 	echo "\" $(call platform_tuple,TARGET)\" string-const> NORTH-TARGET" >> $@
 	echo "$(TARGET_BITS) defconst> NORTH-BITS" >> $@
