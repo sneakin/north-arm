@@ -358,6 +358,14 @@ def load
   exit-frame
 end
 
+def load-string/2
+  s" Loading string: " error-string/2 arg1 arg0 error-line/2
+  the-reader peek
+  arg1 arg0 make-string-reader the-reader poke
+  interp
+  local0 the-reader poke
+  exit-frame
+end
 
 defcol ,h over error-hex-uint endcol
 

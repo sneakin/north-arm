@@ -9,7 +9,9 @@ s[
    src/interp/dictionary.4th
    src/runner/thumb/math-init.4th
    src/interp/output.4th
+   src/interp/characters.4th
    src/interp/reader.4th
+   src/interp/numbers.4th
    src/interp/linux/program-args.4th
    src/interp/linux/auxvec.4th
    src/interp/linux/hwcaps.4th
