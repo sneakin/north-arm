@@ -1,5 +1,10 @@
 NORTH-STAGE 1 + defconst> NORTH-STAGE
 
+defcol jump-data
+  drop
+  dict-entry-data peek jump-cs
+end
+
 ( Input: )
 
 128 defconst> token-buffer-max
@@ -9,31 +14,7 @@ NORTH-STAGE 1 + defconst> NORTH-STAGE
 0 defvar> prompt-here
 0 defvar> the-reader
 
-defcol prompt
-  prompt-here peek peek error-hex-uint enl
-  s" Forth> " error-string/2
-endcol
-
-defcol prompt-read ( reader buffer max-length )
-  prompt
-  ( fixme perfect spot for a tailcall )
-  ( todo store fd in reader data )
-  over int32 4 overn current-input peek read
-  rot drop
-endcol
-
-( todo input token stream that is a list of ops )
-( todo supply input and output fds )
-
-def make-prompt-reader
-  make-reader
-  arg0 over reader-buffer-length poke
-  arg1 over reader-buffer poke
-  literal prompt-read over reader-reader-fn poke
-  exit-frame
-end
-
-defcol read-fd ( reader ptr len -- reader ptr read-length )
+defcol fd-reader-fn ( reader ptr len -- reader ptr read-length )
   over int32 4 overn int32 6 overn reader-reader-data peek read
   rot drop
 endcol
@@ -48,12 +29,30 @@ def make-fd-reader
   arg1 over reader-buffer-length poke
   arg0 over reader-reader-data poke
   literal fd-reader-close over reader-reader-finalizer poke
-  literal read-fd over reader-reader-fn poke
+  literal fd-reader-fn over reader-reader-fn poke
   exit-frame
 end
 
-def make-stdin-reader
-  arg1 arg0 current-input peek make-fd-reader
+defcol prompt
+  prompt-here peek peek error-hex-uint enl
+  s" Forth> " error-string/2
+endcol
+
+defcol prompt-read ( reader buffer max-length )
+  prompt
+  ( fixme perfect spot for a tailcall / continue> )
+  ' fd-reader-fn jump-data
+endcol
+
+defcol make-stdin-reader
+  current-input peek swap ' make-fd-reader jump-data
+endcol
+
+( todo supply input and output fds )
+
+def make-prompt-reader
+  arg1 arg0 make-stdin-reader
+  literal prompt-read over reader-reader-fn poke
   exit-frame
 end
 
