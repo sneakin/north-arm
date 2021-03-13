@@ -1,6 +1,6 @@
 ( Basic interface to liblz4 that provides lz4-compress and lz4-decompress. )
 
-NORTH-TARGET tmp" android" drop contains? [IF]
+NORTH-PLATFORM tmp" android" drop contains? [IF]
   library> liblz4.so
 [ELSE]
   library> liblz4.so.1
