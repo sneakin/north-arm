@@ -1,5 +1,6 @@
 FORTH ?= bash ./src/bash/forth.sh
 HTMLER ?= ./scripts/htmler.sh
+GIT?=git
 
 EXECEXT=.elf
 SOEXT=.so
@@ -52,12 +53,12 @@ else
 endif
 
 git-info:
-	@echo $(GIT_BRANCH) $(GIT_REF)
+	@echo $(GIT) $(GIT_BRANCH) $(GIT_REF)
 
 release:
 	mkdir -p release
 release/root: .git/refs/heads/$(RELEASE_BRANCH) release
-	if [ -d release/root ]; then cd release/root && git fetch; else git clone . release/root && cd release/root; fi && git checkout $(RELEASE_BRANCH) && git pull origin $(RELEASE_BRANCH)
+	if [ -d release/root ]; then cd release/root && $(GIT) fetch; else $(GIT) clone . release/root && cd release/root; fi && $(GIT) checkout $(RELEASE_BRANCH) && $(GIT) pull origin $(RELEASE_BRANCH)
 
 quick:
 	cp bootstrap/interp.static.elf bin/interp.elf
@@ -86,7 +87,7 @@ version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	@echo "\" $(call platform_tuple,TARGET)\" string-const> NORTH-PLATFORM" >> $@
 	@echo "$(TARGET_BITS) defconst> NORTH-BITS" >> $@
 	@echo "$$(date -u +%s) defconst> NORTH-BUILD-TIME" >> $@
-	@echo "\" $$(git config --get user.name) <$$(git config --get user.email)>\" string-const> NORTH-BUILDER" >> $@
+	@echo "\" $$($(GIT) config --get user.name) <$$($(GIT) config --get user.email)>\" string-const> NORTH-BUILDER" >> $@
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
