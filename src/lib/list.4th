@@ -42,7 +42,7 @@ end
 
 def push-onto ( value pointer ++ cons... value )
   arg0 peek arg1 cons dup arg0 poke ( fixme for bash: no poke )
-  arg1 exit-frame
+  exit-frame
 end
 
 def pop-from ( pointer -- item )

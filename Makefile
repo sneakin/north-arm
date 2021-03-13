@@ -66,14 +66,20 @@ bootstrap:
 	mkdir -p bootstrap
 
 bootstrap/interp.static.elf: release/root bootstrap
-	$(MAKE) -C release/root version.4th bin/interp.elf bin/interp.1.elf
+	$(MAKE) -C release/root version.4th bin/interp.elf
 	cp release/root/bin/interp.elf bootstrap/interp.static.elf
 
-bootstrap/interp.android.elf: release/root bootstrap/interp.static.elf
-	$(MAKE) -C release/root version.4th bin/interp.2.elf
-	cp release/root/bin/interp.2.elf bootstrap/interp.android.elf
+bootstrap/interp.linux.elf: release/root bootstrap
+	$(MAKE) -C release/root version.4th bin/interp.elf bin/interp.linux.1.elf bin/interp.linux.2.elf bin/interp.linux.3.elf
+	cp release/root/bin/interp.linux.3.elf bootstrap/interp.linux.elf
 
-boot: bootstrap/interp.static.elf bootstrap/interp.android.elf
+# todo static & dynamic
+
+bootstrap/interp.android.elf: release/root bootstrap
+	$(MAKE) -C release/root version.4th bin/interp.android.1.elf bin/interp.android.2.elf bin/interp.android.3.elf
+	cp release/root/bin/interp.android.3.elf bootstrap/interp.android.elf
+
+boot: bootstrap/interp.static.elf bootstrap/interp.linux.elf bootstrap/interp.android.elf
 
 version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
@@ -218,7 +224,7 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp.elf
+STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp.static.elf
 STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).1.elf
 STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).2.elf
 

@@ -67,6 +67,6 @@
 
 : out-RECURSE
   ' pointer
-  out-dict dict-entry-data peek
+  out-dict dict-entry-data dpeek
   ' jump
 ; out-immediate

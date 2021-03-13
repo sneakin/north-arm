@@ -5,7 +5,7 @@ r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip
 
-0 var> *arm-thumb2*
+: thumb2? 0 ;
 
 ( Branch helpers: )
 
@@ -24,7 +24,7 @@ r7 const> eip
 
 : emit-blx ( reg -- )
   ( Emit a BLX or equivalent instruction sequence depending on if ~*arm-thumb2*~ is set. )
-  *arm-thumb2* peek IF
+  thumb2? IF
     blx ,ins
   ELSE
     emit-fake-blx
@@ -44,7 +44,7 @@ r7 const> eip
   dup abs-int 0x800 int< IF
     branch ,ins
   ELSE
-    *arm-thumb2* peek IF
+    thumb2? IF
       ( factor in PC alignment )
       dhere to-out-addr 2 logand 2 +
       ( load the PC relative address into PC )
@@ -389,9 +389,6 @@ defop pointer
   cell-size eip add# ,ins
   emit-next
 endop
-
-defalias> cstring pointer
-defalias> uint32 int32
 
 ( Constants: )
 
