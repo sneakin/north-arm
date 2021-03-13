@@ -57,7 +57,7 @@ git-info:
 release:
 	mkdir -p release
 release/root: .git/refs/heads/$(RELEASE_BRANCH) release
-	if [ -d release/root ]; then cd release/root && git fetch; else git clone . release/root && cd release/root; fi && git checkout $(RELEASE_BRANCH)
+	if [ -d release/root ]; then cd release/root && git fetch; else git clone . release/root && cd release/root; fi && git checkout $(RELEASE_BRANCH) && git pull origin $(RELEASE_BRANCH)
 
 quick:
 	cp bootstrap/interp.static.elf bin/interp.elf
