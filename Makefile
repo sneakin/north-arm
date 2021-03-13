@@ -227,9 +227,9 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp.static.elf
-STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).1.elf
-STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).2.elf
+STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp$(EXECEXT)
+STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).1$(EXECEXT)
+STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).2$(EXECEXT)
 
 bin/%.1$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE0_FORTH) > $@
@@ -243,7 +243,7 @@ bin/%.3$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE2_FORTH) > $@
 	chmod u+x $@
 
-%.png: %.elf
+%.png: %$(EXECEXT)
 	./scripts/bintopng.sh e $< $@
 
 %.raw: %.png
