@@ -82,9 +82,11 @@ bootstrap/interp.android.elf: release/root bootstrap
 boot: bootstrap/interp.static.elf bootstrap/interp.linux.elf bootstrap/interp.android.elf
 
 version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
-	echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
-	echo "\" $(call platform_tuple,TARGET)\" string-const> NORTH-TARGET" >> $@
-	echo "$(TARGET_BITS) defconst> NORTH-BITS" >> $@
+	@echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
+	@echo "\" $(call platform_tuple,TARGET)\" string-const> NORTH-PLATFORM" >> $@
+	@echo "$(TARGET_BITS) defconst> NORTH-BITS" >> $@
+	@echo "$$(date -u +%s) defconst> NORTH-BUILD-TIME" >> $@
+	@echo "\" $$(git config --get user.name) <$$(git config --get user.email)>\" string-const> NORTH-BUILDER" >> $@
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
