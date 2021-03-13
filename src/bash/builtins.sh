@@ -99,6 +99,17 @@ fpush "fpush \"fpush \\\"\${STACK[0]}\\\"\"; fpush \"$TOKEN\"; feval set-word!; 
 fpush "set-$TOKEN";
 feval set-word!'
 
+DICT['svar>']='HERE="${#STACK[@]}";
+next_token;
+fpush "fpush \"$HERE\"";
+fpush "$TOKEN";
+feval set-word!;
+fpush "feval \"$TOKEN\" spoke";
+fpush "set-$TOKEN";
+feval set-word!'
+
+# todo var> needs to store value on stack by making a const> to here.
+
 #
 # Arithmetic
 #

@@ -4,6 +4,8 @@
 
 declare -a STACK
 
+# todo try using a variable to track here. with zeroing out on pop. no quoting truncation. 
+
 # Pushes the argument onto the Forth stack.
 fpush()
 {
