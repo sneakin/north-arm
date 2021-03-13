@@ -62,7 +62,7 @@
 
 : create
   dup error-line
-  dup make-dict-entry ,,h
+  dup make-dict-entry dup error-hex-uint enl
   dup rot make-label
   dup set-out-dict
 ;

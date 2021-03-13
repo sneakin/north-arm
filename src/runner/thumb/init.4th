@@ -17,7 +17,7 @@ defcol init-return
 endcol
 
 : emit-init-data-padding
-  *arm-thumb2* peek IF 0 ,uint32 THEN
+  thumb2? IF 0 ,uint32 THEN
   4 pad-data
 ;
 

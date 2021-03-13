@@ -1,9 +1,13 @@
 ( Adds a colon definition that supports immediate words. Comments only work on the top level until colon is defined. )
 
-0 var> compiling
-0 var> compiling-immediates
-0 var> compiling-state
-0 var> this-word
+0 const> null
+0 const> false
+-1 const> true
+
+false var> compiling
+null var> compiling-immediates
+null var> compiling-state
+null var> this-word
 
 ( Defining words: )
 
@@ -223,17 +227,10 @@ symbol> if-placeholder
 
 ( Numerics: )
 
-: unsigned-integer/2
-  q" #" swap ++ ++ 0 +
-;
-
-: negate
-  0 swap -
-;
-
-: abs-int
-  dup 0 int< IF negate THEN
-;
+: unsigned-integer/2 q" #" swap ++ ++ 0 + ;
+: negate 0 swap - ;
+: negative? dup 0 int< ;
+: abs-int negative? IF negate THEN ;
 
 ( Comparisons: )
 
@@ -261,15 +258,19 @@ alias> string-const> const>
   1 - loop
 ;
 
-: error-line/2
-  drop error-line
-;
+: error-line/2 drop error-line ;
+: error-hex-int negative? IF " -" error-string abs-int THEN ,,h drop ;
+: error-hex-uint ,,h drop ;
+: error-string/2 drop error-string ;
 
 : not-found " Not found." error-line ;
 
 : write-hex-uint ,h drop ;
 : write-string/2 drop write-string ;
 : write-line/2 drop write-line ;
+
+: peek " warning: peeker" error-line ;
+: poke " warning: poker" error-line ;
 
 " src/bash/frames.4th" load
 " src/bash/list.4th" load

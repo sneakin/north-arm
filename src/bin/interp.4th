@@ -1,4 +1,3 @@
-( todo build static binary with this build script )
 " src/bin/interp.common.4th" load
-elf32-interp-android *elf32-interp* poke
+( " src/runner/imports/linux.4th" sources push-onto )
 s" interp-boot" sources builder-run

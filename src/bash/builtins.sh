@@ -99,6 +99,17 @@ fpush "fpush \"fpush \\\"\${STACK[0]}\\\"\"; fpush \"$TOKEN\"; feval set-word!; 
 fpush "set-$TOKEN";
 feval set-word!'
 
+DICT['svar>']='HERE="${#STACK[@]}";
+next_token;
+fpush "fpush \"$HERE\"";
+fpush "$TOKEN";
+feval set-word!;
+fpush "feval \"$TOKEN\" spoke";
+fpush "set-$TOKEN";
+feval set-word!'
+
+# todo var> needs to store value on stack by making a const> to here.
+
 #
 # Arithmetic
 #
@@ -145,13 +156,16 @@ DICT[".s"]='echo "Stack ${#STACK[@]}: ${STACK[@]}" 1>&2'
 DICT[","]='echo -e "${STACK[0]}"'
 DICT['.']='feval , drop'
 DICT[',h']='printf "%x\n" "${STACK[0]}"'
-DICT[',,h']='printf "%x\n" "${STACK[0]}" 1>&2'
-DICT['write-string']='echo -n -e "${STACK[0]}"; fpop'
+DICT['write-string']='echo -ne "${STACK[0]}"; fpop'
 DICT['write-line']='echo -e "${STACK[0]}"; fpop'
-DICT['error-line']='echo -e "${STACK[0]}" 1>&2; fpop'
 DICT['write-byte']='printf "\\x$(printf %x "${STACK[0]}")"; fpop'
-DICT['nl']='echo -e "\n"'
+DICT['nl']='echo -ne "\n"'
 DICT['space']='echo -n " "'
+DICT[',,h']='printf "%x" "${STACK[0]}" 1>&2'
+DICT['error-string']='echo -ne "${STACK[0]}" 1>&2; fpop'
+DICT['error-line']='echo -e "${STACK[0]}" 1>&2; fpop'
+DICT['enl']='echo -ne "\n" 1>&2'
+DICT['espace']='echo -n " " 1>&2'
 
 IDICT["'"]='next_token; fpush "${TOKEN}" literal'
 IDICT['"']='read_until \" && fpush "${TOKEN}" literal'
@@ -165,7 +179,7 @@ FP=0
 
 DICT['current-frame']='fpush $FP'
 DICT['set-current-frame']='FP="${STACK[0]}"; fpop'
-DICT['exit-frame']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
+DICT['exit-frame']='feval end-frame ; EIP="${#EVAL_EXPR[@]}"'
 DICT['return0']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
 DICT['return1']='tmp="${STACK[0]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp"'
 
