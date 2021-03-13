@@ -32,7 +32,8 @@ fsysexec()
 {
     local entry="${1}"
     # echo "fexec $1 -> '$entry'" 1>&2
-    eval "${entry}" || return $?
+    eval "${entry}"
+    return $?
 }
 
 # Lookup and execute the word passed as an argument.
@@ -44,9 +45,9 @@ fexec()
     fi
     if [[ "${entry}" == "" ]]; then
 	fpush "$1"
-	#echo "Warning: not found '${1:-}'" 1>&2
     else
 	fsysexec "${entry}"
+        return $?
     fi
 }
 
@@ -67,6 +68,10 @@ finterp()
 	fexec "$TOKEN" || fin=1
     done
 
+    if [[ "$fin" == 1 ]]; then
+        fexec .s
+    fi
+
     INPUT_STREAMED="${input_streamed}"
     
     return $fin
@@ -83,8 +88,13 @@ feval()
     EIP=0
     # Evaluate each word:
     while [[ "$EIP" -lt "${#EVAL_EXPR[@]}" ]]; do
-	fexec "${EVAL_EXPR[$EIP]}"
-	EIP=$(($EIP + 1))
+	if fexec "${EVAL_EXPR[$EIP]}"; then
+	    EIP=$(($EIP + 1))
+        else
+            echo "Error evaling at ${EIP}: ${EVAL_EXPR[@]}" 1>&2
+            echo "Caller at ${last_eip}: ${last_expr[@]}"
+            return -1
+        fi
     done
     # Restore caller state
     EVAL_EXPR=( "${last_expr[@]}" )
