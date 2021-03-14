@@ -1,3 +1,3 @@
 " src/bin/interp.common.4th" load
-( " src/runner/imports/linux.4th" sources push-onto )
+" thumb-linux-static" string-const> BUILDER-TARGET
 s" interp-boot" sources builder-run

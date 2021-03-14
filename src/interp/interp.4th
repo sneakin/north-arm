@@ -1,5 +1,3 @@
-NORTH-STAGE 1 + defconst> NORTH-STAGE
-
 defcol jump-data
   drop
   dict-entry-data peek jump-cs

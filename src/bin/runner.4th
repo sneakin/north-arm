@@ -2,6 +2,8 @@
 
 " src/cross/builder.4th" load
 
+" thumb-linux-static" string-const> BUILDER-TARGET
+
 s[ src/interp/strings.4th
    src/interp/dictionary.4th
    src/runner/thumb/math-init.4th

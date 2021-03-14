@@ -84,7 +84,6 @@ boot: bootstrap/interp.static.elf bootstrap/interp.linux.elf bootstrap/interp.an
 
 version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	@echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
-	@echo "\" $(call platform_tuple,TARGET)\" string-const> NORTH-PLATFORM" >> $@
 	@echo "$(TARGET_BITS) defconst> NORTH-BITS" >> $@
 	@echo "$$(date -u +%s) defconst> NORTH-BUILD-TIME" >> $@
 	@echo "\" $$($(GIT) config --get user.name) <$$($(GIT) config --get user.email)>\" string-const> NORTH-BUILDER" >> $@
@@ -227,9 +226,16 @@ bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
+T_OS=static
+ifeq ($(TARGET_ABI),android)
+	T_OS=android
+else ifeq ($(TARGET_ABI),gnueabi)
+	T_OS=linux
+endif
+
 STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp$(EXECEXT)
-STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).1$(EXECEXT)
-STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(TARGET_OS).2$(EXECEXT)
+STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(T_OS).1$(EXECEXT)
+STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(T_OS).2$(EXECEXT)
 
 bin/%.1$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE0_FORTH) > $@

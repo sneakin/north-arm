@@ -5,7 +5,13 @@ r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip
 
-: thumb2? 0 ;
+BUILDER-TARGET tmp" thumb2" drop contains? [IF]
+  tmp" Compiling for thumb2" error-line/2
+  : thumb2? 1 ;
+[ELSE]
+  tmp" Compiling for thumb" error-line/2
+  : thumb2? 0 ;
+[THEN]
 
 ( Branch helpers: )
 
