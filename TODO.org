@@ -9,6 +9,31 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 
 * Tasks
+** Sooner than later
+*** TODO [#A] structures
+*** TODO [#A] variables with data on stack. initialized on load
+*** [#B] ELF exports
+*** TODO [#A] Build improvement
+**** Multiple targets: thumb 1 & 2, a32, a64, x86, bacaw; android, linux, baremetal; static, dynamic
+**** Dependencies: only execute/scan for load
+*** North porting
+*** [#B] Error handler
+*** [#C] Zero copy reading
+Would only work when the token does not span reads.
+*** Compiling to assembly
+*** egl & TTY drawing
+*** bare metal
+*** Ports
+**** x86
+**** bacaw
+*** quine
+The ability to dump the program to source code into a loadable and buildable format.
+**** Disasm
+**** immediates
+**** hexadecimal prefixes
+**** cstring needs to not appear before string literals
+*** [#A] builder binary
+**** Needs immediate dictionary writing and overrides.
 ** Standard Forth
 *** Comma & period words
 Standard Forth uses these for stream output.
@@ -79,24 +104,23 @@ what's motd ( -> ' hello )
 ** TODO abs-int or int-abs?
 ** runner ops
 *** exec -> exec-cs-offset
-*** call ops and return to next
+*** DONE call ops and return to next
 *** variables on stack
 *** array index interpreter
 *** array of words common with x86 to boot strap a full list of words
 ** Pi Zero
 Lacks thumb2 and therefore division and coprocessor ops.
-*** TODO Start with software divide
+*** DONE Start with software divide
 *** TODO Swap to/from HW & SW
 *** TODO Detect thumb2 in HWCAPS on start
 **** trap SIGILL
 *** TODO A32 coprocessor ops
-*** TODO Do new branch ops work?
+*** DONE Do new branch ops work?
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
 *** DONE immediate / compiling words & dictionary
 *** DONE compiler lookup
 *** DONE compile with different dictionaries
-*** compile with linked dictionary for output
 *** DONE Base offset for word addresses
 ** Reader
 *** DONE Rewrite from bash to Forth?
@@ -114,7 +138,7 @@ Call frames, stack & data pointer math
 *** TODO Data RO and BSS sections
 ** Defining words
 *** DONE Compiled words: create & def -> :
-*** Compiler words: :
+*** DONE Compiler words: :
 *** DONE Immediates: immediate
 ** Assemblers
 *** TODO Two passes with labels
@@ -137,8 +161,8 @@ Call frames, stack & data pointer math
 ****** ELF64
 *** Bacaw
 *** x86
-*** TODO athumb
-**** TODO Branching and return in Thumb; to call ops in ops and call threading
+*** athumb
+**** DONE Branching and return in Thumb; to call ops in ops and call threading
 **** Thumb Assembler meta words: mov checks arg range
 **** TODO On thumb, use aarch32 ops to access coprocessor
 *** TODO aarch32
@@ -155,6 +179,8 @@ Call frames, stack & data pointer math
 Needs to interpret input when called while not reading additional input.
 ** DONE Building needs to allow different program inclusions
 ** Returns that eat frame args and shift return values
+Have return1-n now.
+
 #+BEGIN
 def f ( x y z -- a b )
   a b returns 3 2
@@ -173,7 +199,7 @@ end
 ** Building
 Need to better handle targets and loading their sources. Too much duplication.
 Pass sources in as args from Makefile? Every file requires what it needs?
-*** Loading the assembler words into a Bash generated bunary vs. catting them in and dumping?
+*** Loading the assembler words into a Bash generated binary vs. catting them in and dumping?
 **** Words needed for catting:
 Cat in the better compiler.
 Cat in just the assembler.
@@ -209,9 +235,11 @@ concat-seq down-stack uses
 revmap-stack? stack-find?
 ** 16 bit op codes: needs int32, literal, etc. to be immediates that write proper sized bytes to op sequence.
 ** DONE make-noname: call a function with predetermined arguments like `equals?` with one argument.
-** Dictionary entry code value: has to point to real code?
-** Variable data allocated on init, value outside the dictionary.
-** Lisp style dictionary: assoc list of functions
+*** TODO Rename to curry?
+** TODO [#A] Dictionary entry code value: has to point to real code?
+Would be nice to have colon definitions as code words.
+** TODO Variable data allocated on init, value outside the dictionary.
+** TODO Lisp style dictionary: assoc list of functions
 ** DONE Remove unasked output
 ** Tail call optimizations
 *** Proper colon defs
@@ -233,7 +261,7 @@ load needs file opening and reading with a reader stack.
 *** Returning from colon def vs frame's return
 *** return stack words
 ** map-string good candidate for cons on stack safety.
-** word lists / modules
+** Dictionary lookup with word lists / modules
 *** `word-list word` where `word-list` is an immediate that looks `word` up in the named word list.
 *** import for use in current module
 *** brings in name spacing: what word lists to search when compiling
@@ -241,8 +269,9 @@ load needs file opening and reading with a reader stack.
 ** Lambda / Code blocks & lists: use [ ] to delineate
 ** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
+*** TODO Exports
 *** TODO ELF dynamic linking of imports
-**** Proper symbol flags
+**** DONE Proper symbol flags
 **** DONE Library loading
 **** DONE Function imports
 **** TODO Add symbols only once
@@ -285,7 +314,7 @@ load needs file opening and reading with a reader stack.
 ** code fields need to point at words, not code
 ** Tension between output offsets and pointers; dhere is an offset or translate when needed?
 ** null (last dictionary) lets lookup return a null, default object.
-** TODO string readers
+** DONE string readers
 " returns a pointer & length when bash cross compiles.
 " returns just a pointer in interp
 Maintaining the length some where is good.
@@ -308,14 +337,16 @@ Touches words that take pointer or a pointer/length pair.
 | tmp" | buffer     |             | pointer length        |
 | "    | stack      | data        | pointer |
 
-** load from strings
+** DONE load from strings
 ** save ELF runtime image
-** dump loadable source code
+*** Needs .data size
+** Quine: dump loadable source code
 ** generic next that calls a function to get the next word depending on source or flavor
+To unify interpretation of tokens and indirect threads.
 *** immediates
 *** check if literals and pointers are words
-** include textual source in binary
-** error handling that quits and/or starts a new interpreter loop
+** include textual source in binary?
+** TODO error handling that quits and/or starts a new interpreter loop
 ** Make output functions take an fd argument.
 ** TODO Eliminate needless padding
 Zero needed atbend of definitions for decompile.
@@ -324,15 +355,15 @@ Zero needed atbend of definitions for decompile.
 ** TODO DRY cross compiling code
 *** TODO out-off' should be ' but using the compiling-dict; likewise with [']
 dry up with comp' immediated as ' to use compiling-dict.
-*** TODO word op sized jumps instead of bytes
+*** TODO op sized jumps instead of bytes
 ** TODO move defining/*-boot files to interp/boot/defining, or put arch specific files under a cross/${arch}/
 ** TODO Towards Lisp
 *** Dictionary as argument
 **** DONE to compiler
 **** to interpreter
 *** Dictionary list & first class functions
-*** Types
-*** Structures
+*** TODO Types
+*** TODO Structures
 *** Sequences
 *** Garbage collection
 ** after loop
@@ -342,8 +373,8 @@ dry up with comp' immediated as ' to use compiling-dict.
 **** flags to toggle static/dynamic, linux/android, elf32/64
 *** sigill trap to detect cpu ops
 ** x86
-** Interpreted IF & UNLESS in Bash coild not be postponed
-** Called ops & LR
+** Interpreted IF & UNLESS in Bash could not be postponed
+** DONE Called ops & LR
 Calling ops like any other procedure makes subroutine call threading easy.
 *** LR only needs to be pushed if an op makes a call.
 **** Returns are popping into PC
@@ -351,7 +382,7 @@ Calling ops like any other procedure makes subroutine call threading easy.
 *** Ops can get back to next if next sets LR.
 *** When does next exit??
 Needs an explicit BYE. exit gets out of a thread, restoring eip.
-*** Where LR should be restored?
+*** TODO Where LR should be restored?
 **** Only save LR with an outer-exec? Exit by clearing stack and setting PC. Or exit up all the way.
 **** Mixing threading types? Puts responsibility on enter and exit to return to the right procedure caller.
 ***** Requires defcol to factor in a multiple valued return record. swap-call-frame
@@ -363,6 +394,12 @@ possible jump table
 **** Interpreted words
 Inline exec
 **** Should be the same so runtime changes can happen.
+
+** Numbers
+*** Prefixed hexadecimal output
+*** Arbitrary base output
+*** Floating point input
+*** Floating point output
 * Thoughts
 ** def syntax
 *** Current
@@ -413,3 +450,34 @@ Need to restore state. Globals make this tough, but compiler object with output 
 ** dict register -> this pointer
 Calls in a definition are indexed from the register.
 Dictionary specified at compile time by specifying a type.
+** Next words
+*** Current
+func> tokens+
+func: tokens+
+*** Possible
+Difference in the itherpretation of what gets read and returned.
+
+**** Compiling state with lookup and immediates.
+func[ tokens... ]
+func [ tokens... ]
+
+Reads in a colon definition.
+
+**** less than compiling. With immediates?
+func< (types|atoms)+ >
+func < (types|atoms)+ >
+
+Needed for creating generic types via generator functions.
+Interpretation semantics: at minimum, words looked up, value placed on stack.
+'>' completes the read with word values on stack.
+
+**** Other syntaxes
+***** Lists
+func( tokens+ )
+func{ tokens+ }
+
+Immediates?
+
+***** Strings
+func" chars*"
+func/ chars*/
