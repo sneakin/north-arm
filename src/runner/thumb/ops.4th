@@ -705,6 +705,34 @@ defop set-eip-pc
   r1 0 bx-lo ,ins
 endop
 
+( Structures: )
+
+defop field-accessor
+  ( with a word in R1, add the field's offset to ToS )
+  0 dict-entry-data r1 r1 ldr-offset ,ins
+  ( 0 struct-field-offset ) 2 cell-size * r1 r1 ldr-offset ,ins
+  r1 r0 r0 add ,ins
+  emit-next
+endop
+
+defop seq-field-accessor
+  ( with a word in R1, add the field's offset + ToS * the array's element
+    type's size to ToS )
+  0 dict-entry-data r1 r1 ldr-offset ,ins
+  ( 0 struct-field-offset ) 2 cell-size * r1 r2 ldr-offset ,ins
+  ( 0 struct-field-type ) 1 cell-size * r1 r3 ldr-offset ,ins
+  ( r3 cdr ) cell-size r3 r3 ldr-offset ,ins
+  ( 0 array-type-element-type ) 4 cell-size * r3 r3 ldr-offset ,ins
+  ( r3 cdr ) cell-size r3 r3 ldr-offset ,ins
+  ( 0 type-byte-size ) cell-size r3 r3 ldr-offset ,ins
+  ( nth:r0 * el-size:r3 + offset:r2 + ptr:sp[0] )
+  r0 r3 mul ,ins
+  r3 r2 r0 add ,ins
+  0 r1 bit-set popr ,ins
+  r1 r0 r0 add ,ins
+  emit-next
+endop
+
 ( Misc: )
 
 defop nop

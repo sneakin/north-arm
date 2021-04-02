@@ -1,9 +1,9 @@
 ( Cons cells: )
 def cons args return1 end
 
-def car arg0 peek set-arg0 end
+def car arg0 dup IF peek set-arg0 THEN end
 defcol set-car! rot swap poke endcol
-def cdr arg0 cell-size + peek set-arg0 end
+def cdr arg0 dup IF cell-size + peek set-arg0 THEN end
 defcol set-cdr! rot swap cell-size + poke endcol
 
 def cons-count/2
