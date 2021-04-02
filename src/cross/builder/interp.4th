@@ -27,6 +27,7 @@ def builder-run ( entry len src-cons )
   s" main" create arg2 arg1 does-defalias
   " version.4th" load
   " ./src/runner/thumb/init.4th" load
+  s" *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! THEN
 
   code-origin peek
   ( entry point: )
