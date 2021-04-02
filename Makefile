@@ -191,9 +191,9 @@ RUNNER_THUMB_SRC=\
 INTERP_RUNTIME_SRC=\
 	src/interp/boot/core.4th \
 	src/interp/boot/cross.4th \
-	src/interp/boot/load/interp.4th \
-	src/interp/boot/load/runner.4th \
-	src/interp/boot/load/thumb-asm.4th \
+	src/include/interp.4th \
+	src/include/runner.4th \
+	src/include/thumb-asm.4th \
 	src/cross/builder/interp.4th \
 	src/interp/boot/debug.4th \
 	src/interp/boot/cross/case.4th \
