@@ -16,8 +16,8 @@ null var> this-word
   swap set-word!
 ;
 
-: alias
-  get-word swap
+: alias ( src dest -- )
+  swap get-word swap
   dup set-this-word
   set-word!
 ;
@@ -139,7 +139,7 @@ alias> up-stack/2 -
 alias> :: :
 
 : defined?
-  get-word null? swap drop
+  get-word null? not swap drop
 ;
 
 ( Now that immediates can execute: )
