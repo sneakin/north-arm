@@ -355,6 +355,10 @@ def load
   exit-frame
 end
 
+def load/2
+  arg1 load exit-frame
+end
+
 def load-string/2
   s" Loading string: " error-string/2 arg1 arg0 error-line/2
   the-reader peek
