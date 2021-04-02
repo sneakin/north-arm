@@ -40,29 +40,22 @@ defcol locals
   swap
 endcol
 
-defcol local0
-  locals peek swap
+defcol localn
+  swap cell-size int-mul locals int-add peek swap
 endcol
 
-defcol set-local0
-  swap locals poke
+defcol set-localn
+  rot swap cell-size int-mul locals int-add poke
 endcol
 
-defcol local1
-  locals cell-size int-sub peek swap
-endcol
-
-defcol set-local1
-  swap locals cell-size int-sub poke
-endcol
-
-defcol local2
-  locals cell-size int-sub cell-size int-sub peek swap
-endcol
-
-defcol set-local2
-  swap locals cell-size int-sub cell-size int-sub poke
-endcol
+defcol local0 locals peek swap endcol
+defcol set-local0 swap locals poke endcol
+defcol local1 locals cell-size int-sub peek swap endcol
+defcol set-local1 swap locals cell-size int-sub poke endcol
+defcol local2 locals cell-size int-sub cell-size int-sub peek swap endcol
+defcol set-local2 swap locals cell-size int-sub cell-size int-sub poke endcol
+defcol local3 locals cell-size int-sub cell-size int-sub cell-size int-sub peek swap endcol
+defcol set-local3 swap locals cell-size int-sub cell-size int-sub cell-size int-sub poke endcol
 
 defcol return-address
   swap cell-size int-add swap
