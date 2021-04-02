@@ -46,21 +46,35 @@ def print-env 0 print-env/1 end
 
 ( Memory dumping: )
 
-def memdump/2 ( ptr num-bytes )
-  arg1 peek write-hex-uint space
-  arg1 cell-size + set-arg1
-  arg0 cell-size int>= IF
-    arg0 cell-size - set-arg0
+def memdump/3 ( ptr num-bytes printer )
+  arg1 cell-size int>= IF
+    arg2 peek arg0 exec-abs space
+    arg2 cell-size + set-arg2
+    arg1 cell-size - set-arg1
     repeat-frame
   ELSE
     nl
   THEN
 end
 
+def cmemdump/2 ( ptr num-bytes )
+  arg1 arg0 ' write-hex-uint memdump/3
+end
+
+defcol cmemdump
+  rot swap cmemdump/2
+  int32 2 dropn
+endcol
+
+def memdump/2 ( ptr num-bytes )
+  arg1 arg0 ' write-cell-lsb memdump/3
+end
+
 defcol memdump
   rot swap memdump/2
   int32 2 dropn
 endcol
+
 
 def dump-stack
   args write-hex-uint nl

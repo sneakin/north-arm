@@ -149,3 +149,16 @@ endcol
 
 defalias> write-int write-hex-int
 defalias> write-uint write-hex-uint
+
+defcol write-hex-uint8
+  swap dup
+  4 bsr 0xF logand write-hex-uint
+  0xF logand write-hex-uint 
+endcol
+
+def write-cell-lsb
+  arg0 dup write-hex-uint8
+  8 bsr dup write-hex-uint8
+  8 bsr dup write-hex-uint8
+  8 bsr dup write-hex-uint8
+end

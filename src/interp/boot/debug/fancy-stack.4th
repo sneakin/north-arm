@@ -42,13 +42,8 @@ end
 
 def fancy-stack/4 ( stop-ptr start-ptr links next-fp )
   arg2 arg3 uint<= UNLESS return0 THEN
-  arg2 arg0 equals? IF
-    s" * " write-string/2
-    arg0 parent-frame set-arg0
-  ELSE
-    space space
-    arg2 arg0 uint> IF arg2 arg0 parent-frame-above set-arg0 drop THEN
-  THEN
+  arg2 arg0 equals? IF s" * " ELSE s"   " THEN write-string/2
+  arg2 arg0 uint>= IF arg2 arg0 parent-frame-above set-arg0 drop THEN
   arg2 write-hex-uint space
   arg2 peek write-tabbed-hex-uint
   arg2 peek arg1 uint>= IF
