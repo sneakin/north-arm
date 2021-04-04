@@ -136,16 +136,25 @@ defcol ''
   ['] swap
 end immediate-as '
 
-defcol ememdump
-  rot swap
+def ememdump/3
   current-output peek
   standard-error current-output poke
-  rot swap memdump
+  arg2 arg1 arg0 exec-abs
   current-output poke
 endcol
 
+defcol ememdump
+  rot swap pointer memdump ememdump/3
+  3 dropn
+endcol
+
+defcol ecmemdump
+  rot swap pointer cmemdump ememdump/3
+  3 dropn
+endcol
+
 def .s
-  args int32 96 ememdump
+  args int32 96 ecmemdump
 end immediate-as [.s]
 
 def alias>
