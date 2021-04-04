@@ -209,13 +209,13 @@ alias> sl r10
 : ldr-sp str-sp .load ;
 
 ( 1 0 1 0 SP Rd:3 Word:8 Load address )
-: add-pc ( addr rd )
+: addr-pc ( addr rd )
   8 bsl
   swap 2 bsr 0xFF logand logior
   10 12 bsl logior
 ;
 
-: add-sp add-pc 11 bit-set ;
+: addr-sp addr-pc 11 bit-set ;
 
 ( 1 0 1 1 0 0 0 0 S SWord:7 Add offset to stack pointer )
 : inc-sp ( offset )
@@ -236,10 +236,10 @@ alias> sl r10
 
 : popr pushr .load ;
 
-( 1 1 0 0 L Rb Rlist Multiple load/store )
+( 1 1 0 0 L Rb Rlist Multiple load/store with auto increment )
 : stmia ( rb rlist )
   0xFF logand
-  swap 3 bsl logior
+  swap 0x7 logand 8 bsl logior
   12 12 bsl logior
 ;
 

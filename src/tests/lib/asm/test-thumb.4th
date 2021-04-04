@@ -72,8 +72,8 @@ r3 r2 r1 ldsh ,uint16
 127 r2 str-sp ,uint16
 127 r2 ldr-sp ,uint16
 
-120 r2 add-pc ,uint16
-121 r1 add-sp ,uint16
+120 r2 addr-pc ,uint16
+121 r1 addr-sp ,uint16
 
 55 inc-sp ,uint16
 45 dec-sp ,uint16
