@@ -52,7 +52,7 @@ endop
 ;
 
 ( Copies from low to high memory by 8 bytes, 2 cells. )
-defop copy-up-8z
+defop copy-up-8
   cell-size 2 int-mul
   0 r4 bit-set r5 bit-set
   emit-copy-up
