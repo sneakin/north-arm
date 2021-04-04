@@ -16,7 +16,7 @@ null var> this-word
   swap set-word!
 ;
 
-: alias ( src dest -- )
+: alias
   swap get-word swap
   dup set-this-word
   set-word!
