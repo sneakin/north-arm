@@ -59,72 +59,19 @@ def string-length ( ptr -- length )
   set-arg0
 end
 
-( todo copy down, misaligned start, misaligned src & dest? )
-( todo copy by cell instead of bytes )
-
-def copy-byte-string-down-loop
-  arg0 0 uint> UNLESS return THEN
-  arg0 1 - set-arg0
-  arg1 1 - set-arg1
-  arg2 1 - set-arg2
-  arg2 peek-byte arg1 poke-byte
-  repeat-frame
-end
-
-def copy-byte-string-down/3 ( src dest length )
-  arg2 arg0 +
-  arg1 arg0 +
-  arg0 copy-byte-string-down-loop
-end
-
-def copy-byte-string-finals/3 ( src dest length )
-  arg0 int32 0 int<= IF return THEN
-  arg2 peek-byte arg1 poke-byte
-  arg0 int32 1 - set-arg0
-  arg1 int32 1 + set-arg1
-  arg2 int32 1 + set-arg2
-  repeat-frame
-end
-
-def copy-byte-string-up/3 ( src dest length )
-  arg0 cell-size int< IF
-    arg2 arg1 arg0 copy-byte-string-finals/3 return
-  THEN
-  arg2 peek arg1 poke
-  arg0 cell-size - set-arg0
-  arg1 cell-size + set-arg1
-  arg2 cell-size + set-arg2
-  repeat-frame
-end
-
 def copy-byte-string/3 ( src dest length )
-  (
-[src... ]
-[dest...]
-          [ src... ]
-        -->
-      [ dest.. ]
- [ src... ]
-       <---
-     [ dest... ]
-)
-  arg2 arg1 equals? IF return THEN
-  arg2 arg0 + arg1 uint>
-  arg1 arg2 uint> logand
-  IF arg2 arg1 arg0 copy-byte-string-down/3
-  ELSE arg2 arg1 arg0 copy-byte-string-up/3
-  THEN
+  arg2 arg1 arg0 copy
 end
 
 def string-append/5 ( dest max-len front front-len back back-len -- dest len )
   4 argn arg2 min
   4 argn arg2 - 2 - arg0 min
   arg1 5 argn dup 4 argn + swap in-range? IF
-    arg1 5 argn arg2 + local1 copy-byte-string/3    
-    arg3 5 argn local0 copy-byte-string/3
+    arg1 5 argn arg2 + local1 copy-byte-string/3 3 dropn
+    arg3 5 argn local0 copy-byte-string/3 3 dropn
   ELSE
-    arg3 5 argn local0 copy-byte-string/3
-    arg1 5 argn arg2 + local1 copy-byte-string/3
+    arg3 5 argn local0 copy-byte-string/3 3 dropn
+    arg1 5 argn arg2 + local1 copy-byte-string/3 3 dropn
   THEN
   local1 local0 +
   5 argn over null-terminate

@@ -24,6 +24,8 @@ s[ src/runner/thumb/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames-boot.4th
    src/runner/constants.4th
+   src/runner/thumb/copiers.4th
+   src/runner/copy.4th
    src/runner/thumb/linux.4th
    src/runner/thumb/linux/signals/syscalls.4th
    src/runner/thumb/ffi.4th
