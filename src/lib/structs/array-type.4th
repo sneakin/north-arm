@@ -1,7 +1,7 @@
 ( A base type for arrays of a contiguous memory region: )
 struct: array-type
 inherits: struct
-field: element-type pointer<any>
+pointer<any> field: element-type
 
 def array-type-element-size
   arg0 array-type -> element-type peek type -> byte-size peek set-arg0

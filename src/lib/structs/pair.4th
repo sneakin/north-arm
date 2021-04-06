@@ -1,3 +1,3 @@
 struct: pair
-field: car value
-field: cdr value
+value field: car
+value field: cdr

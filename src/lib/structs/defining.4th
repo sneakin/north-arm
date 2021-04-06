@@ -4,8 +4,8 @@
 
 ( struct: point2d
     inherits: numeric
-    field: x int32
-    field: y int32
+    int32 field: x
+    int32 field: y
 
   alloc-point2d
   3 over point-2d-x !
@@ -76,9 +76,9 @@ end
 ( todo initializers for structs and each field )
 
 ( Add a new field to the current structure. )
-def field: ( : name type )
+def field: ( type : name )
   next-token allot-byte-string/2
-  next-type
+  arg0
   *this-struct* peek value-of
   struct-create-field
   ( generate accessor )

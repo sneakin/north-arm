@@ -3,8 +3,8 @@ tmp" src/lib/structs.4th" load/2
 tmp" src/tests/lib/structs/assert.4th" load/2
 
 struct: test-struct
-seq-field: name uint<8> 16
-seq-field: pos uint<32> 4
+uint<8> 16 seq-field: name
+uint<32> 4 seq-field: pos
 
 def test-seq-field-type
   ( field types )

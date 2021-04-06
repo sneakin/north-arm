@@ -3,10 +3,10 @@
 0 const> null
 ( Base structure to define a type: )
 ( struct: type
-field: name pointer<string>
-field: byte-size value
-field: super type
-field: data value
+pointer<string> field: name
+value field: byte-size
+type field: super
+value field: data
 )
 
 " type"
@@ -15,6 +15,10 @@ null swap
 4 cell-size * swap
 here 0 here swap drop dup const> type
 
+( The type returned for null values: )
+( struct: null-type
+    value field: data
+)
 " null-type"
 null swap
 null swap

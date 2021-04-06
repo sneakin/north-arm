@@ -1,10 +1,10 @@
 ( Fields of a structure: )
 
 ( struct: struct-field
-field: name pointer<string>
-field: type type
-field: offset value
-field: byte-size value
+pointer<string> field: name
+type field: type
+value field: offset
+value field: byte-size
 )
 
 null null cell-size 4 * type: struct-field

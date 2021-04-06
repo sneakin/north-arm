@@ -5,38 +5,38 @@ tmp" src/lib/structs.4th" load/2
 
 ( value fields )
 struct: vec4
-field: x float<32>
-field: y float<32>
-field: z float<32>
-field: w float<32>
+float<32> field: x
+float<32> field: y
+float<32> field: z
+float<32> field: w
 
 ( complex fields )
 struct: time-integrated
-field: current vec4
-field: velocity vec4
-field: accel vec4
+vec4 field: current
+vec4 field: velocity
+vec4 field: accel
 
 ( reference fields )
 struct: thing
-field: parent pointer<any>
-field: position time-integrated
-field: rotation time-integrated
+pointer<any> field: parent
+time-integrated field: position
+time-integrated field: rotation
 
 struct: date
-field: year uint<32>
-field: month uint<8>
-field: day uint<8>
+uint<32> field: year
+uint<8> field: month
+uint<8> field: day
 
 ( array fields )
 struct: record
-field: id value
-seq-field: first-name uint<8> 64
-seq-field: last-name value 16
-field: dob date
+value field: id
+uint<8> 64 seq-field: first-name
+value 16 seq-field: last-name
+date field: dob
 
 struct: pet-record
 inherits: record
-field: species uint<32>
+uint<32> field: species
 
 def test-struct-manually
   nl s" Meta types" write-line/2

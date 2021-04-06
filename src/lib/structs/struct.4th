@@ -1,10 +1,10 @@
 ( Structure type to hold base structure list and field list: )
 
 ( struct: struct
-field: name pointer<string>
-field: byte-size value
-field: super type
-field: fields list
+pointer<string> field: name
+value field: byte-size
+type field: super
+list field: fields
 )
 
 ( todo add struct-fields for struct and struct-field )
