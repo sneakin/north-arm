@@ -4,8 +4,8 @@
 
 ( struct: point2d
     inherits: numeric
-    field: x int32 0
-    field: y int32 0
+    field: x int32
+    field: y int32
 
   alloc-point2d
   3 over point-2d-x !
@@ -35,7 +35,7 @@ end
 null var> *this-struct*
 
 ( Creahes a new dictionary entry with a struct as a value. )
-def make-struct
+def create-struct
   arg1 arg0 error-line/2
   arg1 arg0 create does-const
   arg1 new-struct dup dict dict-entry-data poke
@@ -46,50 +46,31 @@ end
 ( Starts a new struct definition. )
 def struct: ( : name )
   ( generate type )
-  next-token allot-byte-string/2 make-struct exit-frame
+  next-token allot-byte-string/2 create-struct exit-frame
 end
 
 ( Structure field definitions: )
 
+def does-field-accessor
+  arg1 pointer field-accessor does
+  arg0 value-of arg1 dict-entry-data poke
+end
+
 def generate-struct-accessor-name
-  arg0 struct-name peek dup write-line
-  arg1 struct-field-name peek dup write-line
+  arg0 struct -> name peek
+  arg1 struct-field -> name peek
   0
   local0 string-length local1 string-length + 3 + ( fixme one too many )
   dup stack-allot-zero set-local2
-  local2 local3 local0 " -" string-append/4 write-line/2
-  local2 local3 local2 local1 string-append/4 2dup write-line/2
+  local2 local3 local0 " -" string-append/4 2 dropn
+  local2 local3 local2 local1 string-append/4
   exit-frame
-end
-
-def does-field-accessor
-  arg1 pointer field-accessor does
-  arg0 arg1 dict-entry-data poke
 end
 
 def generate-struct-accessor
   arg1 arg0 generate-struct-accessor-name
   create arg1 does-field-accessor drop
   exit-frame
-end
-
-def struct-create-field ( name name-length type struct )
-  ( create the field )
-  0
-  struct-field allot-struct set-local0
-  arg3 local0 value-of struct-field-name poke
-  arg1 local0 value-of struct-field-type poke
-  local0 value-of struct-field-type peek value-of dup IF struct-byte-size peek local0 value-of struct-field-byte-size poke ELSE drop THEN
-  arg0 struct-byte-size peek local0 value-of struct-field-offset poke
-  ( add field to struct type )
-  local0 arg0 struct-add-field
-  ( increase type's byte size )
-  arg0 struct-byte-size peek
-  local0 value-of struct-field-byte-size peek +
-  arg0 struct-byte-size poke
-  ( generate accessor )
-  local0 value-of arg0 generate-struct-accessor
-  local0 exit-frame
 end
 
 ( todo initializers for structs and each field )
@@ -100,6 +81,8 @@ def field: ( : name type )
   next-type
   *this-struct* peek value-of
   struct-create-field
+  ( generate accessor )
+  *this-struct* peek generate-struct-accessor
   exit-frame
 end
 
@@ -114,8 +97,9 @@ def inherits: ( : type )
   local0 value-of type-name peek
   dup string-length
   local0
-  *this-struct* peek value-of
-  struct-create-field
+  *this-struct* peek value-of struct-create-field
+  ( generate accessor )
+  *this-struct* peek generate-struct-accessor
   ( todo add multiple inheritance to struct: type, offset )
   exit-frame
 end

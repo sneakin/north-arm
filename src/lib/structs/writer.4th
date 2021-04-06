@@ -36,7 +36,8 @@ end
 
 def print-pointer<struct>
   arg0 print-pointer-type
-  arg0 type-of struct equals? IF
+  arg0 type equals? ( an exception )
+  arg0 struct kind-of? or IF
     s" Struct: " write-line/2
     arg0 value-of print-struct
   THEN

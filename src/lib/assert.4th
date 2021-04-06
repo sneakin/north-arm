@@ -25,9 +25,14 @@
 ;
 
 def assert-byte-string-equals/3
-  arg2 string-length arg0 assert-equals
-  arg2 arg1 arg0 byte-string-equals?/3 swap drop
-  assertion-message
+  arg3 null? arg2 null? or IF
+    arg2 arg1 assert-equals
+    arg0 0 assert-equals
+  ELSE
+    arg2 string-length arg0 assert-equals
+    arg2 arg1 arg0 byte-string-equals?/3 swap drop
+    assertion-message
+  THEN
 end
 
 def assert-byte-string-equals/4
