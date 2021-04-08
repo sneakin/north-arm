@@ -6,9 +6,10 @@ s[
    src/lib/seq.4th
    src/lib/list.4th
    src/interp/strings.4th
-   src/lib/assoc.4th
    src/interp/messages.4th
    src/interp/dictionary.4th
+   src/lib/fun.4th
+   src/lib/assoc.4th
    src/runner/thumb/math-init.4th
    src/interp/output.4th
    src/interp/reader.4th

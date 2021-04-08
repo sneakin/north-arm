@@ -38,6 +38,16 @@ def revmap-cons/3 ( cons state fn )
   THEN
 end
 
+def find-first ( list fn -- result )
+  arg1 IF
+    arg1 car arg0 exec-abs
+    IF arg1 car
+    ELSE arg1 cdr set-arg1 repeat-frame
+    THEN
+  ELSE 0
+  THEN 2 return1-n
+end
+
 ( Lists as stacks: )
 
 def push-onto ( value pointer ++ cons... value )

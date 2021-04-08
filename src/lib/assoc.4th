@@ -1,13 +1,23 @@
 def find-by-string-2 ( ptr length list -- ptr length result result )
-  arg0 UNLESS arg0 return1 THEN
-  arg0 car arg2 arg1 string-equals?/3 IF arg0 return1 THEN
-  arg0 cdr set-arg0
-  repeat-frame
+' string-equals?/3 arg1 partial-first arg2 partial-first
+  arg0 over find-first 3 return1-n  
 end
 
-def assoc-string-2 ( ptr length list -- ptr length result result )
-  arg0 UNLESS arg0 return1 THEN
-  arg0 car car arg2 arg1 string-equals?/3 IF arg0 car cdr dup set-arg0 return1 THEN
-  arg0 cdr set-arg0
-  repeat-frame
+def assoc-fn/3 ( list test-fn key-fn -- result )
+  arg0 arg1 compose 
+  arg2 over find-first 3 return1-n
+end
+
+def assoc-fn ( list test-fn -- result )
+  arg1 arg0 ' car assoc-fn/3 2 return1-n
+end
+
+def assoc ( list key fn -- result )
+  arg0 arg1 partial-first
+  arg2 over assoc-fn 3 return1-n
+end
+
+def assoc-string-2 ( ptr length list -- result )
+  ' string-equals?/3 arg1 partial-first arg2 partial-first
+  arg0 over assoc-fn 3 return1-n
 end

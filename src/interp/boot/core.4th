@@ -305,9 +305,11 @@ endcol
   3 dropn
 ;
 
-tmp" ./src/lib/byte-data.4th" drop load
-tmp" ./src/lib/seq.4th" drop load
-tmp" ./src/lib/list.4th" drop load
-tmp" ./src/lib/assoc.4th" drop load
-tmp" ./src/interp/list.4th" drop load
-tmp" ./src/interp/data-stack-list.4th" drop load
+s[ ./src/lib/byte-data.4th
+   ./src/lib/seq.4th
+   ./src/lib/list.4th
+   ./src/lib/fun.4th
+   ./src/lib/assoc.4th
+   ./src/interp/list.4th
+   ./src/interp/data-stack-list.4th
+] load-list

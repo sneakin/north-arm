@@ -7,8 +7,8 @@
 
 def library> ( : path ++ handle )
   next-token negative? IF 0 return1 THEN
-  *libraries* peek assoc-string-2
-  IF return1
+  2dup *libraries* peek assoc-string-2
+  dup IF return1
   ELSE
     drop allot-byte-string/2 drop
     RTLD-NOW over dlopen dup UNLESS not-found 0 return1 THEN

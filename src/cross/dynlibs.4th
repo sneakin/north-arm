@@ -8,8 +8,8 @@
 
 def library> ( : path ++ )
   next-token negative? IF error 0 return1 THEN
-  *out-libs* peek find-by-string-2
-  IF return1
+  2dup *out-libs* peek find-by-string-2
+  dup IF return1
   ELSE
     drop allot-byte-string/2 drop
     *out-libs* push-onto

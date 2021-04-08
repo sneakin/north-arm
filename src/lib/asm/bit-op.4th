@@ -52,7 +52,7 @@ def bit-op-adjust-fields-loop ( field-size fields )
 end
 
 def bit-op-adjust-fields ( bit-op )
-  ( todo curry and map )
+  ( todo partial and map )
   arg0 bit-op-num-bits peek
   arg0 bit-op-fields peek
   bit-op-adjust-fields-loop
