@@ -49,6 +49,7 @@ endop
 ( todo vectors from pointer )
 ( todo fpscr not setting )
 
+thumb2? [IF]
 defop float32-add-2 ( a2 a1 b2 b1 -- r2 r1 )
   0 r0 bit-set pushr ,ins
   2 8 vpopn ,ins
@@ -58,6 +59,7 @@ defop float32-add-2 ( a2 a1 b2 b1 -- r2 r1 )
   0 r0 bit-set popr ,ins
   emit-next
 endop
+[THEN]
 
 ( Could factor these ops down to single instructions:
 defop float32-load0
