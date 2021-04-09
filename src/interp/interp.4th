@@ -32,7 +32,7 @@ def make-fd-reader
 end
 
 defcol prompt
-  prompt-here peek peek error-hex-uint enl
+  prompt-here peek peek error-uint enl
   s" Forth> " error-string/2
 endcol
 

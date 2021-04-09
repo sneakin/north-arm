@@ -1,3 +1,5 @@
+tmp" src/lib/assert.4th" load/2
+
 defcol test-write-hex-uint
   int32 0x12345 write-hex-uint nl
   int32 0x1 write-hex-uint nl

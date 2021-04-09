@@ -89,6 +89,7 @@ BUILDER-TARGET tmp" thumb2" drop contains? [IF]
 ( tbd to push LR before calls or in prologue. )
 
 ( Emits the assembly to call an op with the PC stored in LR. )
+( fixme does it fail on ops that use R1 to access the entry? )
 : emit-op-call
   dict-entry-code uint32@ dhere to-out-addr -
   cell-size - branch-link ,ins
