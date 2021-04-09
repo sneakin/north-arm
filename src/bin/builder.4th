@@ -11,7 +11,9 @@ s[
    src/lib/fun.4th
    src/lib/assoc.4th
    src/runner/thumb/math-init.4th
-   src/interp/output.4th
+   src/interp/output/strings.4th
+   src/interp/output/hex.4th
+   src/interp/output/dec.4th
    src/interp/reader.4th
    src/interp/linux/program-args.4th
    src/interp/linux/auxvec.4th
