@@ -447,6 +447,10 @@ Need to restore state. Globals make this tough, but compiler object with output 
 *** Inlining
 *** To assembly call threading
 *** repeated call sequences that have no side effects and return the same values each call can set a generated binding.
+*** Arithmetic between constants
+*** Division and multiply by powers of two
+*** Tail calls
+*** function that can call defs and ops w/o pushing return address or creating frames, name it exec?
 ** dict register -> this pointer
 Calls in a definition are indexed from the register.
 Dictionary specified at compile time by specifying a type.
