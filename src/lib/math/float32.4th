@@ -336,12 +336,12 @@ def map-float32-range ( init max step fn )
   arg3 arg2 float32< IF repeat-frame ELSE exit-frame THEN
 end
 
-def test-exp-float32
-  -1 exp-float32 float32->int32 0 assert-equals
-  0 exp-float32 float32->int32 1 assert-equals
-  1 exp-float32 float32->int32 2 assert-equals
-  2 exp-float32 float32->int32 7 assert-equals
-  3 exp-float32 float32->int32 20 assert-equals
-  9 exp-float32 float32->int32 8193 assert-equals
-  10 exp-float32 float32->int32 59874 assert-equals
+def test-float32-exp
+  -1 float32-exp float32->int32 0 assert-equals
+  0 float32-exp float32->int32 1 assert-equals
+  1 float32-exp float32->int32 2 assert-equals
+  2 float32-exp float32->int32 7 assert-equals
+  3 float32-exp float32->int32 20 assert-equals
+  9 float32-exp float32->int32 8193 assert-equals
+  10 float32-exp float32->int32 59874 assert-equals
 end
