@@ -396,10 +396,31 @@ Inline exec
 **** Should be the same so runtime changes can happen.
 
 ** Numbers
-*** Prefixed hexadecimal output
-*** Arbitrary base output
+*** Prefixed hexadecimal output: 0xNN
+*** DONE Arbitrary base output
 *** Floating point input
 *** Floating point output
+**** overflows integers and fraction needs zero padding
+**** exponent: NNeXX
+*** Floating point constants: pi, e, +/- infinity, nan, +/- 0
+** Math
+*** log2, logn
+**** DONE integers
+***** optimize by splitting
+**** floats
+*** exp, pow, sqrt
+**** integers
+**** floats
+**** optimize
+*** trigonometry: sin, cos, tan, asin, acos, atan
+**** circular
+**** hyperbolic
+*** big integers
+**** arithmetic
+**** logic
+**** comparisons
+**** writers
+**** conversions
 * Thoughts
 ** def syntax
 *** Current
