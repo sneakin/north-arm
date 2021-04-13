@@ -39,6 +39,16 @@ def float32-even?
   arg0 float32-odd? not set-arg0
 end
 
+( Helpers: )
+
+def float32-invert
+  1f arg0 float32-div set-arg0
+end
+
+def float32-square
+  arg0 dup float32-mul set-arg0
+end
+
 ( Fun iteration: )
 
 def pre-inc-float32 ( place step )
@@ -80,28 +90,6 @@ end
 
 ( Natural log: )
 
-def float32-ln-1-loop ( x xp acc n )
-  ( Calculate the series for ln[1-x] = -sum[x^k/k, k, 1, infinity]. )
-  ( arg3 write-float32 space arg2 write-float32 space arg1 write-float32 space arg0 write-int nl )
-  arg0 float-precision peek uint< IF
-    arg3 arg2 float32-mul dup set-arg2
-    arg0 int32->float32 float32-div
-    arg1 float32-add set-arg1
-    arg0 1 + set-arg0 repeat-frame
-  ELSE
-    arg1 float32-negate set-arg1
-  THEN
-end
-
-def float32-ln-1 ( x )
-  ( range 0 <= x < 2 but expanded x>=2 with ln[x] = -ln[1/x]. )
-  arg0 2 int32->float32 float32>=
-  IF 1f arg0 float32-div float32-ln-1 float32-negate
-  ELSE 1f arg0 float32-sub 1f 0f 1 float32-ln-1-loop drop
-  THEN set-arg0
-end
-
-( Shadow with a reduction: )
 ( todo benchmark, optimize )
 
 def fun-ln-1-stepper ( n done? last-term-place x -- value done? )
@@ -122,30 +110,8 @@ end
 def float32-ln-1 ( x )
   ( range 0 <= x < 2 but expanded x>=2 with ln[x] = -ln[1/x]. )
   arg0 2 int32->float32 float32>=
-  IF 1f arg0 float32-div float32-ln-1 float32-negate ( fixme extraneous negates? )
+  IF arg0 float32-invert float32-ln-1 float32-negate ( fixme extraneous negates? )
   ELSE 1f arg0 float32-sub fun-ln-1
-  THEN set-arg0
-end
-
-( ln[x+1]: )
-	   
-def float32-ln+1-loop ( x xp acc n )
-  ( Calculate the series for ln[1+x] = sum[-1^[k-1]*x^k/k, k, 1, infinity]. )
-  ( arg3 write-float32 space arg2 write-float32 space arg1 write-float32 space arg0 write-int nl )
-  arg0 float-precision peek uint< IF
-    arg3 arg2 float32-mul dup set-arg2
-    arg0 int32->float32 float32-div
-    arg0 int32-even? IF float32-negate THEN
-    arg1 float32-add set-arg1
-    arg0 1 + set-arg0 repeat-frame
-  THEN
-end
-
-def float32-ln+1 ( x )
-  ( range 0 <= x < 2 but expanded x>=2 with ln[x] = -ln[1/x]. )
-  arg0 2 int32->float32 float32>=
-  IF 1f arg0 float32-div float32-ln+1 float32-negate
-  ELSE arg0 -1f float32-add 1f 0f 1 float32-ln+1-loop drop
   THEN set-arg0
 end
 
@@ -188,20 +154,11 @@ end
 
 ( Factorial: )
 
-def fun-factorial-float32
-  1f arg0 1f float32-add 1f float32-stepper ' float32-mul 1f fun-reduce/3 set-arg0
-end
-
-def float32-factorial-loop
-  arg1 1f float32> IF
-    arg1 arg0 float32-mul set-arg0
-    arg1 1f float32-sub set-arg1
-    repeat-frame
-  ELSE arg0 2 return1-n
-end
-
 def float32-factorial
-  arg0 0f float32<= IF 1f ELSE arg0 1f float32-factorial-loop THEN set-arg0
+  arg0 0f float32<=
+  IF 1f
+  ELSE 1f arg0 1f float32-add 1f float32-stepper ' float32-mul 1f fun-reduce/3
+  THEN set-arg0
 end
 
 ( Exponentials: )
@@ -222,7 +179,7 @@ end
 ( todo fractional exponents, exp can use fractional exponents: x^y = e^[ln[x]*y];  x^[1/n] = e^[ln[x]/n] )
 
 def float32-pow
-  arg0 0f float32< IF arg1 arg0 float32-negate float32-pow 1f swap float32-div 2 return1-n THEN
+  arg0 0f float32< IF arg1 arg0 float32-negate float32-pow float32-invert 2 return1-n THEN
   arg0 0f float32<= IF 1f 2 return1-n THEN
   arg0 1f float32<= IF arg1 2 return1-n THEN
   arg1 dup arg0 float32-pow-loop 2 return1-n
@@ -245,68 +202,14 @@ def fun-exp-float32
   ' fun-exp-stepper arg0 1f fun-power-series ' float32-add 1f fun-reduce/3 set-arg0
 end
 
-( With more work in adder: )
-
-def fun-exp-adder ( sum n last-term-place x -- sum )
-  ( arg3 write-float32 space arg2 write-float32 space arg1 peek write-float32 space arg0 write-float32 nl )
-  ( Breaking down by term: 1 + x^2/2! + x^3/3! ... => y + y * x/k )
-  arg0 arg2 float32-div
-  arg1 peek float32-mul dup arg1 poke
-  arg3 float32-add 4 return1-n
-end
-
-def fun-exp-float32-1
-  ( sum[x^k/k!, k, 0, infinity] )
-  ( 1 + x^2/2! + x^3/3! ... => y + y * x/k )
-  0 1f here
-  ' fun-exp-adder arg0 partial-first local2 partial-first set-local0
-  0f float-precision peek int32->float32 1f float32-stepper
-  local0 1f fun-reduce/3 set-arg0
-end
-
-( Manually writen exp: )
-
-def exp-float32-loop ( x acc numer denom limit counter -- result )
-  ( sum[x^k/k!, k, 0, infinity] )
-  ( combine numer and denom w/ better factoring )
-  ( arg0 write-int space arg3 write-float32 space arg2 write-float32 space 4 argn write-float32 nl   )
-  arg0 arg1 uint< IF
-    arg3 5 argn float32-mul set-arg3
-    arg2 arg0 int32->float32 float32-mul set-arg2
-    arg3 arg2 float32-div
-    4 argn float32-add 4 set-argn
-    arg0 1 + set-arg0 repeat-frame
-  ELSE 4 argn 6 return1-n
-  THEN
-end
-
 def exp-float32
   arg0 0f float32-equals? IF 1f 1 return1-n THEN
   arg0 0f float32<= IF arg0 float32-negate ELSE arg0 THEN
-  1f 1f 1f float-precision peek 1 exp-float32-loop
-  arg0 0f float32<= IF 1f swap float32-div THEN set-arg0
+  fun-exp-float32
+  arg0 0f float32<= IF float32-invert THEN set-arg0
 end
 
 ( Hyperbolic: see https://en.m.wikipedia.org/wiki/Taylor_series )
-
-def fun-sinh-adder ( sum n last-term-place xx -- sum )
-  ( arg3 write-float32 space arg2 write-float32 space arg1 peek write-float32 space arg0 write-float32 nl )
-  ( x^3/3! * x^2/[5*4] => x^5/5! => y + y * x^2/[[2k+1]*2k] )
-  arg2 2 int32->float32 float32-mul
-  dup 1f float32-add float32-mul
-  arg0 swap float32-div
-  arg1 peek float32-mul dup arg1 poke
-  arg3 float32-add 4 return1-n
-end
-
-def fun-sinh-float32-0
-  ( sum[x^[2n+1] / [2n+1]!, n, 0, inf] => x + x^3/3! + x^5/5! ... )
-  ( With x=0.5: 0.5 + [0.5]^3/3! + [0.5]^5/5! ... = 0.5 + 0.125/6 + 0.03125/120 => last * [0.5]^2/[2n*[2n+1]] )
-  0 arg0 here
-  ' fun-sinh-adder arg0 dup float32-mul partial-first local2 partial-first set-local0
-  0f float-precision peek int32->float32 1f float32-stepper
-  local0 arg0 fun-reduce/3 set-arg0
-end
 
 def fun-sinh-stepper ( n done? last-term-place xx -- value done? )
   ( arg3 write-float32 space arg2 write-float32 space arg1 peek write-float32 space arg0 write-float32 nl )
@@ -321,7 +224,7 @@ end
 def fun-sinh-float32
   ( sum[x^[2n+1] / [2n+1]!, n, 0, inf] => x + x^3/3! + x^5/5! ... )
   ( With x=0.5: 0.5 + [0.5]^3/3! + [0.5]^5/5! ... = 0.5 + 0.125/6 + 0.03125/120 => last * [0.5]^2/[2n*[2n+1]] )
-  ' fun-sinh-stepper arg0 dup float32-mul arg0 fun-power-series
+  ' fun-sinh-stepper arg0 float32-square arg0 fun-power-series
   ' float32-add arg0 fun-reduce/3 set-arg0
 end
 
@@ -337,7 +240,7 @@ end
 
 def fun-cosh-float32
   ( sum[x^[2n] / [2n]!, n, 0, inf] => x + x^2/2! + x^4/4! ... )
-  ' fun-cosh-stepper arg0 dup float32-mul 1f fun-power-series
+  ' fun-cosh-stepper arg0 float32-square 1f fun-power-series
   ' float32-add 1f fun-reduce/3 set-arg0
 end
 
@@ -356,22 +259,13 @@ end
 
 def fun-sin-float32
   ( sum[-1^n * x^[2n+1] / [2n+1]!, n, 0, inf] => x - x^3/3! + x^5/5! ... )
-  ( 0 arg0 here
-  ' fun-sinh-adder arg0 dup float32-mul float32-negate partial-first local2 partial-first set-local0
-  0f float-precision peek int32->float32 1f float32-stepper
-  local0 arg0 fun-reduce/3 set-arg0 )
-
-  ' fun-sinh-stepper arg0 dup float32-mul float32-negate arg0 fun-power-series
+  ' fun-sinh-stepper arg0 float32-square float32-negate arg0 fun-power-series
   ' float32-add arg0 fun-reduce/3 set-arg0
 end
 
 def fun-cos-float32
   ( sum[-1^n * x^[2n] / [2n]!, n, 0, inf] => x - x^2/2! + x^4/4! ... )
-  ( 0 1f here
-  ' fun-cosh-adder arg0 dup float32-mul float32-negate partial-first local2 partial-first set-local0
-  0f float-precision peek int32->float32 1f float32-stepper
-  local0 1f fun-reduce/3 set-arg0 )
-  ' fun-cosh-stepper arg0 dup float32-mul float32-negate 1f fun-power-series
+  ' fun-cosh-stepper arg0 float32-square float32-negate 1f fun-power-series
   ' float32-add 1f fun-reduce/3 set-arg0
 end
 
@@ -429,10 +323,10 @@ defcol ,f over write-float32 endcol
 def test-logs-fn
   arg0 write-float32 space
   arg0 float32-ln-1
-  arg0 float32-ln+1
+  ( arg0 float32-ln+1 )
   arg0 float32-log2
   arg0 float32-ln
-  write-float32 space write-float32 space write-float32 space write-float32 nl
+  ( write-float32 space ) write-float32 space write-float32 space write-float32 nl
   1 return0-n
 end
 
