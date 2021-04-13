@@ -37,3 +37,24 @@ def compose ( a b ++ proper[ a b ] )
   here cs - int32 5 overn dict-entry-data poke
   int32 4 overn exit-frame
 end
+
+def compose-if ( test a ++ proper[ test IF a THEN ] )
+  ( Returns a noname entry that calls A if TEST is true. )
+  make-proper-noname
+  literal proper-exit
+  arg0 cs -
+  literal unless-jump
+  cell-size 1 *
+  literal int32
+  arg1 cs -
+  literal dup
+  here cs - int32 9 overn dict-entry-data poke
+  int32 8 overn exit-frame
+end
+
+def fun-reduce/3 ( item-fn reducer init ++ data... accum )
+  arg2 exec-abs
+  IF arg0 swap arg1 exec-abs set-arg0 repeat-frame
+  ELSE drop arg0 exit-frame
+  THEN
+end

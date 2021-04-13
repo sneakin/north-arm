@@ -2,7 +2,7 @@
 
 10 defvar> output-base
 
-( todo cap number digits to buffer size, will require useless divide[s] or divide by radix^missing )
+( todo cap number digits to buffer size, will require useless divide[s] or divide by radix )
 ( todo return with output adjusted to first digit and a length )
 
 def uint->string/6 ( n out-ptr out-max radix digit padding -- output-start )
@@ -129,3 +129,31 @@ defcol error-int
   swap current-error peek write-int/2
   int32 2 dropn
 endcol
+
+def dec 10 output-base poke end
+def hex 16 output-base poke end
+def bin 2 output-base poke end
+
+( Zero padded number output: )
+
+def uint->padded-string/3 ( n out-ptr out-max -- out-ptr length )
+  arg2 arg1 arg0 output-base peek arg0 48 uint->string/6
+  arg1 arg0 null-terminate
+  set-arg2 arg0 set-arg1 1 return0-n
+end
+
+def uint->padded-string ( n digits -- string length )
+  arg0 1 + stack-allot
+  arg1 over arg0 uint->padded-string/3
+  exit-frame
+end
+
+def write-padded-uint/3 ( n digits fd )
+  arg2 arg1 uint->padded-string arg0 write-string/3
+  3 return0-n
+end
+
+def write-padded-uint ( n digits )
+  arg1 arg0 current-output peek write-padded-uint/3
+  2 return0-n
+end

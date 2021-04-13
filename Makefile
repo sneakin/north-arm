@@ -168,7 +168,9 @@ RUNNER_THUMB_SRC=\
 	src/interp/compiler.4th \
 	src/interp/debug.4th \
 	src/interp/reader.4th \
-	src/interp/output.4th \
+	src/interp/output/strings.4th \
+	src/interp/output/hex.4th \
+	src/interp/output/dec.4th \
 	src/runner/thumb/logic.4th \
 	src/interp/dictionary.4th \
 	src/interp/strings.4th \

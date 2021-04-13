@@ -21,6 +21,8 @@ defcol cell/
   swap int32 2 bsr swap
 endcol
 
+( todo optimize by counting down? divide & conquer? )
+
 def badlog2-uint-loop
   arg1 1 uint<= IF arg0 2 return1-n THEN
   arg1 1 bsr set-arg1
@@ -28,6 +30,7 @@ def badlog2-uint-loop
 end
 
 defcol badlog2-uint swap 0 badlog2-uint-loop swap endcol
+
 defcol badlog2-int
   swap 0 over int<
   IF badlog2-uint
@@ -38,6 +41,8 @@ endcol
 def badlogn-uint
   arg1 badlog2-uint arg0 badlog2-uint uint-div 2 return1-n
 end
+
+( todo optimize by recursively apply exponent/2 )
 
 def int-pow-loop
   arg0 1 uint> IF
