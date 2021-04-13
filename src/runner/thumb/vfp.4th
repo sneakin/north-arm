@@ -147,7 +147,7 @@ endop
 defop float32<=>
   r0 0 fmsrs ,ins
   1 vpop ,ins
-  0 1 fcmps ,ins
+  1 0 fcmps ,ins
   1 r15 fmrxs ,ins
   emit-comparable-resulter
   emit-next
@@ -282,7 +282,7 @@ endop
 defop float64<=> ( ah al bh bl -- trival )
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  0 1 fcmpd ,ins
+  1 0 fcmpd ,ins
   1 r15 fmrxs ,ins
   emit-comparable-resulter
   emit-next
