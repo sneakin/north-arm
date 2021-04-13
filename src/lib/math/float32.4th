@@ -92,7 +92,7 @@ end
 
 ( todo benchmark, optimize )
 
-def fun-ln-1-stepper ( n done? last-term-place x -- value done? )
+def float32-ln-1-stepper ( n done? last-term-place x -- value done? )
   ( Calculate the series for ln[1-x] = -sum[x^k/k, k, 1, infinity]. )
   arg3 0f float32> IF
     arg1 peek arg0 float32-mul dup arg1 poke
@@ -101,9 +101,9 @@ def fun-ln-1-stepper ( n done? last-term-place x -- value done? )
   THEN 2 return0-n
 end
 
-def fun-ln-1
+def float32-ln-1-series
   ( Calculate the series for ln[1-x] = -sum[x^k/k, k, 1, infinity]. )
-  ' fun-ln-1-stepper arg0 1f fun-power-series ( todo power from 1? )
+  ' float32-ln-1-stepper arg0 1f fun-power-series ( todo power from 1? )
   ' float32-add 0f fun-reduce/3 float32-negate set-arg0
 end
 
@@ -111,7 +111,7 @@ def float32-ln-1 ( x )
   ( range 0 <= x < 2 but expanded x>=2 with ln[x] = -ln[1/x]. )
   arg0 2 int32->float32 float32>=
   IF arg0 float32-invert float32-ln-1 float32-negate ( fixme extraneous negates? )
-  ELSE 1f arg0 float32-sub fun-ln-1
+  ELSE 1f arg0 float32-sub float32-ln-1-series
   THEN set-arg0
 end
 
@@ -189,29 +189,29 @@ end
 
 ( exp where the step function does the work: )
 
-def fun-exp-stepper ( n done? last-term-place x -- term done? )
+def float32-exp-stepper ( n done? last-term-place x -- term done? )
   ( .s nl arg3 write-float32 space arg2 write-hex-uint space arg1 peek write-float32 space arg0 write-float32 nl )
   arg0 arg3 float32-div
   arg1 peek float32-mul dup arg1 poke
   set-arg3 2 return0-n
 end
 
-def fun-exp-float32
+def float32-exp-series
   ( sum[x^k/k!, k, 0, infinity] )
   ( 1 + x^2/2! + x^3/3! ... => y + y * x/k )
-  ' fun-exp-stepper arg0 1f fun-power-series ' float32-add 1f fun-reduce/3 set-arg0
+  ' float32-exp-stepper arg0 1f fun-power-series ' float32-add 1f fun-reduce/3 set-arg0
 end
 
-def exp-float32
+def float32-exp
   arg0 0f float32-equals? IF 1f 1 return1-n THEN
   arg0 0f float32<= IF arg0 float32-negate ELSE arg0 THEN
-  fun-exp-float32
+  float32-exp-series
   arg0 0f float32<= IF float32-invert THEN set-arg0
 end
 
 ( Hyperbolic: see https://en.m.wikipedia.org/wiki/Taylor_series )
 
-def fun-sinh-stepper ( n done? last-term-place xx -- value done? )
+def float32-sinh-stepper ( n done? last-term-place xx -- value done? )
   ( arg3 write-float32 space arg2 write-float32 space arg1 peek write-float32 space arg0 write-float32 nl )
   ( x^3/3! * x^2/[5*4] => x^5/5! => y + y * x^2/[[2k+1]*2k] )
   arg3 2 int32->float32 float32-mul
@@ -221,14 +221,14 @@ def fun-sinh-stepper ( n done? last-term-place xx -- value done? )
   set-arg3 2 return0-n
 end
 
-def fun-sinh-float32
+def float32-sinh
   ( sum[x^[2n+1] / [2n+1]!, n, 0, inf] => x + x^3/3! + x^5/5! ... )
   ( With x=0.5: 0.5 + [0.5]^3/3! + [0.5]^5/5! ... = 0.5 + 0.125/6 + 0.03125/120 => last * [0.5]^2/[2n*[2n+1]] )
-  ' fun-sinh-stepper arg0 float32-square arg0 fun-power-series
+  ' float32-sinh-stepper arg0 float32-square arg0 fun-power-series
   ' float32-add arg0 fun-reduce/3 set-arg0
 end
 
-def fun-cosh-stepper ( n done? last-term-place xx -- value done? )
+def float32-cosh-stepper ( n done? last-term-place xx -- value done? )
   ( arg3 write-float32 space arg2 write-float32 space arg1 peek write-float32 space arg0 write-float32 nl )
   ( x^2/2 * x^2/4*3 => x^4/4! makes the step: y + y * x/[[2k-1]*2k] )
   arg3 2 int32->float32 float32-mul
@@ -238,16 +238,16 @@ def fun-cosh-stepper ( n done? last-term-place xx -- value done? )
   set-arg3 2 return0-n
 end
 
-def fun-cosh-float32
+def float32-cosh
   ( sum[x^[2n] / [2n]!, n, 0, inf] => x + x^2/2! + x^4/4! ... )
-  ' fun-cosh-stepper arg0 float32-square 1f fun-power-series
+  ' float32-cosh-stepper arg0 float32-square 1f fun-power-series
   ' float32-add 1f fun-reduce/3 set-arg0
 end
 
 def float32-tanh
   ( sinh/cosh )
-  arg0 fun-sinh-float32
-  arg0 fun-cosh-float32
+  arg0 float32-sinh
+  arg0 float32-cosh
   float32-div set-arg0
 end
 
@@ -257,23 +257,23 @@ end
 
 ( Trigonometry: calculated with the hyperbolic adders but with a negated square to oscillate each term between positive and negative. )
 
-def fun-sin-float32
+def float32-sin
   ( sum[-1^n * x^[2n+1] / [2n+1]!, n, 0, inf] => x - x^3/3! + x^5/5! ... )
-  ' fun-sinh-stepper arg0 float32-square float32-negate arg0 fun-power-series
+  ' float32-sinh-stepper arg0 float32-square float32-negate arg0 fun-power-series
   ' float32-add arg0 fun-reduce/3 set-arg0
 end
 
-def fun-cos-float32
+def float32-cos
   ( sum[-1^n * x^[2n] / [2n]!, n, 0, inf] => x - x^2/2! + x^4/4! ... )
-  ' fun-cosh-stepper arg0 float32-square float32-negate 1f fun-power-series
+  ' float32-cosh-stepper arg0 float32-square float32-negate 1f fun-power-series
   ' float32-add 1f fun-reduce/3 set-arg0
 end
 
 def float32-tan
   ( todo optimize with its own series )
   ( sin/cos = O/H * H/A = O/A )
-  arg0 fun-sin-float32
-  arg0 fun-cos-float32
+  arg0 float32-sin
+  arg0 float32-cos
   float32-div set-arg0
 end
 
