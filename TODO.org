@@ -7,8 +7,12 @@ ELF file that only has an offset thread into a dynamically linked symbol table a
 Build an ELF file that can execute the code to build itself.
 ** Secondary:
 North Runner compatible with the x86 runner that can mmap a file to execute.
-
+** Get out of the Turing Tar Pit.
 * Tasks
+** now
+*** cpio file format as arguments
+*** float tests
+*** uint64
 ** Sooner than later
 *** TODO [#A] structures
 *** TODO [#A] variables with data on stack. initialized on load
