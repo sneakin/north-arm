@@ -24,6 +24,8 @@ alias> uint8@ dpeek-byte
   1 + swap 8 bsr swap uint8!
 ;
 
+( todo optimize? )
+
 : ,uint32
   dup ,uint8
   dup 8 bsr ,uint8
@@ -58,6 +60,8 @@ alias> uint8@ dpeek-byte
   dup 48 bsr ,uint8
   56 bsr ,uint8
 ;
+
+( fixme doesn't work with 32 bit cells )
 
 : uint64!
   2dup uint8!

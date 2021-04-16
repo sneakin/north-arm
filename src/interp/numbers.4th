@@ -29,6 +29,8 @@ def parse-uint-loop ( string length base offset n ++ valid? )
   repeat-frame
 end
 
+( fixme length one short in base 8 from parsing max int )
+
 def parse-int-base ( string index -- base index )
   ( Not 0... )
   arg1 arg0 string-peek int32 48 equals? UNLESS

@@ -25,7 +25,7 @@
 ;
 
 def assert-byte-string-equals/3
-  arg3 null? arg2 null? or IF
+  arg2 null? arg1 null? or IF
     arg2 arg1 assert-equals
     arg0 0 assert-equals
   ELSE

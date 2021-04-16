@@ -47,7 +47,7 @@ def print-env 0 print-env/1 end
 ( Memory dumping: )
 
 def memdump/3 ( ptr num-bytes printer )
-  arg1 cell-size int>= IF
+  arg1 0 int> IF
     arg2 peek arg0 exec-abs space
     arg2 cell-size + set-arg2
     arg1 cell-size - set-arg1
