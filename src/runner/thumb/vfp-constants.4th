@@ -1,6 +1,6 @@
 0xFF 23 bsl defconst> float32-infinity
 0x1FF 23 bsl defconst> float32-negative-infinity
-0xFF 23 bsl 1 logior defconst> float32-nan
+0xFF 23 bsl 1 logior defconst> float32-nan ( fixme nan right? )
 0x1FF 23 bsl 1 logior 22 bit-set defconst> float32-quiet-nan
 0x80000000 defconst> float32-negative-zero
 

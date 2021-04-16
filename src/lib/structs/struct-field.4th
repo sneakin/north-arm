@@ -23,7 +23,7 @@ def struct-field-byte-size
   arg0 cell-size 3 * + set-arg0
 end
 
-def struct-get-field-loop
+def struct-get-field-loop ( name len fields -- field )
   arg0 null? IF 0 return1 THEN
   arg2 arg0 car value-of struct-field-name peek arg1 byte-string-equals?/3 IF
     arg0 car return1
@@ -37,6 +37,20 @@ def struct-get-field ( name len struct -- field )
   dup null? IF drop arg0 type-super peek value-of set-arg0 repeat-frame
 	    ELSE 3 return1-n
 	    THEN
+end
+
+def struct-get-field-ptr/4 ( instance name len struct -- ptr )
+  arg2 arg1 arg0 value-of struct-get-field dup null? IF
+    s" No field" error-line/2
+    0 4 return1-n
+  ELSE
+    value-of struct-field-offset peek
+    arg3 value-of int-add 4 return1-n
+  THEN
+end
+
+def struct-get-field-ptr ( instance name len -- ptr )
+  arg2 arg1 arg0 arg2 type-of struct-get-field-ptr/4 3 return1-n
 end
 
 ( todo error if argument is not a struct )
