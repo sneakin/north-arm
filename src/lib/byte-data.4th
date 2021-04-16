@@ -120,14 +120,24 @@ alias> int64! uint64!
   3 dropn
 ;
 
+: byte-swap-uint16
+  dup 0xFF logand 8 bsl
+  swap 0xFF00 logand 8 bsr logior
+;
+
 : byte-swap-uint32
   dup 0xFF logand 24 bsl
-  swap dup 0xFF00 logand 8 bsl logior
-  swap dup 0xFF0000 logand 8 bsr logior
-  swap dup 0xFF000000 logand 24 bsr logior
+  over 0xFF00 logand 8 bsl logior
+  over 0xFF0000 logand 8 bsr logior
+  swap 0xFF000000 logand 24 bsr logior
+  swap drop
 ;
 
 ( Big endian: )
+
+: UINT16@
+  uint16@ byte-swap-uint16
+;
 
 : UINT32@
   uint32@ byte-swap-uint32

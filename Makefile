@@ -187,6 +187,8 @@ RUNNER_THUMB_SRC=\
 	src/lib/strings.4th \
 	src/lib/list.4th \
 	src/lib/catch.4th \
+	src/lib/structs.4th \
+	src/lib/cpio.4th \
 	$(THUMB_ASSEMBLER_SRC) \
 	$(FOURTH_SRC)
 
@@ -238,6 +240,7 @@ endif
 STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp$(EXECEXT)
 STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(T_OS).1$(EXECEXT)
 STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(T_OS).2$(EXECEXT)
+STAGE3_FORTH=$(TARGET_RUNNER) ./bin/interp.$(T_OS).3$(EXECEXT)
 
 bin/%.1$(EXECEXT): ./src/bin/%.4th
 	cat $< | $(STAGE0_FORTH) > $@
@@ -256,3 +259,14 @@ bin/%.3$(EXECEXT): ./src/bin/%.4th
 
 %.raw: %.png
 	./scripts/bintopng.sh d $< $@
+
+misc/cpio:
+	mkdir -p $@
+
+misc/cpio/ascii.cpio: $(RUNNER_THUMB_SRC)
+	ls $^ | cpio -o -H odc > $@
+misc/cpio/binary.cpio: $(RUNNER_THUMB_SRC)
+	ls $^ | cpio -o -H bin > $@
+
+test-cpio: misc/cpio misc/cpio/ascii.cpio misc/cpio/binary.cpio
+	echo 'load-core tmp" src/tests/lib/cpio.4th" load/2 test-cpio' | $(STAGE3_FORTH)

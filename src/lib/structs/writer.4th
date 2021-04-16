@@ -56,16 +56,28 @@ def print-instance-field ( field instance )
   cmemdump
 end
 
-def print-instance-fields ( struct-fields instance-value )
+def print-instance-fields-loop ( struct-fields instance-value )
   arg1 IF
     arg1 car value-of arg0 print-instance-field
     arg1 cdr set-arg1 repeat-frame
   THEN
 end
 
+def print-instance-fields ( instance type )
+  arg0 IF
+    arg0 value-of struct-fields peek arg1 value-of print-instance-fields-loop
+    arg0 value-of type-super peek set-arg0 repeat-frame
+  THEN
+end
+
 ( todo atomic types )
+( todo inherited fields )
+
+def print-instance/2
+  arg1 print-pointer-type
+  arg0 print-instance-fields
+end
 
 def print-instance
-  arg0 print-pointer-type
-  arg0 type-of value-of struct-fields peek arg0 value-of print-instance-fields
+  arg0 dup type-of print-instance/2
 end

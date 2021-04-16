@@ -17,3 +17,4 @@ doc/html
 version.4th
 release
 lib/*.so
+misc/cpio/

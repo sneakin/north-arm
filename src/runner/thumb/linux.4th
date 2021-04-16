@@ -50,6 +50,13 @@ def close ( fd -- result )
   args 1 6 syscall 1 return1-n
 end
 
+0 defconst> SEEK-SET
+1 defconst> SEEK-CUR
+2 defconst> SEEK-END
+3 defconst> SEEK-DATA
+4 defconst> SEEK-HOLE
+SEEK-HOLE defconst> SEEK-MAX
+
 def lseek ( whence offset fd -- result )
   args 3 19 syscall 3 return1-n
 end
@@ -72,6 +79,22 @@ end
 
 def ioctl ( arg cmd fd -- result )
   args 3 54 syscall 3 return1-n
+end
+
+def fnctl ( arg cmd fd -- result )
+  args 3 55 syscall 3 return1-n
+end
+
+def stat ( stats-ptr path -- result )
+  args 2 195 syscall 2 return1-n
+end
+
+def lstat ( stats-ptr path -- result )
+  args 2 196 syscall 2 return1-n
+end
+
+def fstat ( stats-ptr fd -- result )
+  args 2 197 syscall 3 return1-n
 end
 
 ( Exit to system: )
@@ -97,4 +120,10 @@ end
 
 def mmap2 ( addr length prot flags fd pgoffset -- addr )
   args 6 0xC0 syscall 6 return1-n
+end
+
+( Time: )
+
+def sys-get-time-of-day
+  args 2 78 syscall 1 return1
 end

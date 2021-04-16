@@ -12,11 +12,13 @@ integer 0 type: uint
 uint 1 type: uint<8> ( Unsigned integers of 8 bits, 1 byte. )
 uint 2 type: uint<16> ( Unsigned integers of 16 bit, 2 bytes, machine order. )
 uint 4 type: uint<32> ( Unsigned integers of 32 bit, 4 bytes, machine order. )
+uint 8 type: uint<64> ( Unsigned integers of 64 bit, 8 bytes, machine order. )
 
 integer 0 type: int
 int 1 type: int<8> ( Signed integers of 8 bits, 1 byte. )
 int 2 type: int<16> ( Signed integers of 16 bit, 2 bytes, machine order. )
 int 4 type: int<32> ( Signed integers of 32 bit, 4 bytes, machine order. )
+int 8 type: int<64> ( Signed integers of 64 bit, 8 bytes, machine order. )
 
 ( Floating point: )
 value 0 type: float ( Base floating point number. )
