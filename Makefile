@@ -263,10 +263,12 @@ bin/%.3$(EXECEXT): ./src/bin/%.4th
 misc/cpio:
 	mkdir -p $@
 
-misc/cpio/ascii.cpio: $(RUNNER_THUMB_SRC)
+misc/cpio/odc.cpio: $(RUNNER_THUMB_SRC)
 	ls $^ | cpio -o -H odc > $@
+misc/cpio/newc.cpio: $(RUNNER_THUMB_SRC)
+	ls $^ | cpio -o -H newc > $@
 misc/cpio/binary.cpio: $(RUNNER_THUMB_SRC)
 	ls $^ | cpio -o -H bin > $@
 
-test-cpio: misc/cpio misc/cpio/ascii.cpio misc/cpio/binary.cpio
+test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpio
 	echo 'load-core tmp" src/tests/lib/cpio.4th" load/2 test-cpio' | $(STAGE3_FORTH)

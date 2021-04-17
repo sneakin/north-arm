@@ -157,6 +157,10 @@ def .s
   args int32 96 ecmemdump
 end immediate-as [.s]
 
+defcol ?exec-abs
+  swap dup IF ( exec-abs ) jump-data ELSE drop THEN
+endcol
+
 def alias>
   create>
   ['] dup IF swap alias exit-frame
