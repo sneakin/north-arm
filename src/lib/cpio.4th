@@ -127,7 +127,7 @@ end
 def cpio-read-file ( header fd ++ ptr len )
   ( Read a cpio archived file's contents into a newly allocated buffer. )
   arg1 cpio-header -> filesize uint32@ dup stack-allot-zero
-  local0 0 arg1 arg0 cpio-read-file/4 exit-frame
+  local0 0 arg1 arg0 cpio-read-file/4 negative? IF null set-arg1 set-arg0 ELSE exit-frame THEN
 end
 
 def cpio-loaded-header-name@ ( header -- name  )
