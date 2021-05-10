@@ -105,6 +105,9 @@ defcol error-hex-int
   int32 2 dropn
 endcol
 
+def write-hex-int-sp arg0 write-hex-int space 1 return0-n end
+def error-hex-int-sp arg0 error-hex-int espace 1 return0-n end
+
 defalias> write-int write-hex-int
 defalias> write-uint write-hex-uint
 defalias> error-int error-hex-int

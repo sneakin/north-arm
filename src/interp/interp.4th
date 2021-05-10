@@ -369,6 +369,9 @@ def load-string/2
 end
 
 defcol ,h over error-hex-uint endcol
+defcol .h swap error-hex-uint endcol
+defcol ,i over error-int endcol
+defcol .i swap error-int endcol
 
 0 defvar> initial-dict
 

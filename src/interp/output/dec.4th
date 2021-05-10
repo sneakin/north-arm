@@ -130,6 +130,9 @@ defcol error-int
   int32 2 dropn
 endcol
 
+def write-int-sp arg0 write-int space 1 return0-n end
+def error-int-sp arg0 error-int espace 1 return0-n end
+
 def dec 10 output-base poke end
 def hex 16 output-base poke end
 def bin 2 output-base poke end
