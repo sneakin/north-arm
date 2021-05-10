@@ -55,7 +55,7 @@ end
 2 defconst> SEEK-END
 3 defconst> SEEK-DATA
 4 defconst> SEEK-HOLE
-SEEK-HOLE defconst> SEEK-MAX
+4 defconst> SEEK-MAX
 
 def lseek ( whence offset fd -- result )
   args 3 19 syscall 3 return1-n
