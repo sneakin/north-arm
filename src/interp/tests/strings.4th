@@ -1,5 +1,22 @@
 " src/lib/assert.4th" load
 
+def test-string-peek
+  0 0 string-peek 0 assert-equals
+  " " 0 string-peek 0 assert-equals
+  " a" 0 string-peek 97 assert-equals
+  ( todo test negative, huge, indexes? )
+end
+
+def test-string-poke
+  s" hey"
+  11 41 0 0 string-poke 11 assert-equals
+  11 72 local0 0 string-poke 11 assert-equals
+  local0 0 string-peek 72 assert-equals
+  11 69 local0 1 string-poke 11 assert-equals
+  local0 1 string-peek 69 assert-equals
+  ( todo test negative, huge, indexes? )
+end
+
 def test-copy-byte-string
   0
   32 stack-allot set-local0
@@ -107,4 +124,27 @@ def test-string-append
   local0 12 2swap s" World" string-append/5
   2dup write-line/2
   s" Hello Worl" assert-byte-string-equals/4
+end
+
+def test-byte-string-compare/2
+  0 0 byte-string-compare/2 0 assert-equals
+  " " " " byte-string-compare/2 0 assert-equals
+  " a" " " byte-string-compare/2 -1 assert-equals
+  " " " a" byte-string-compare/2 1 assert-equals
+  " abc" " def" byte-string-compare/2 1 assert-equals
+  " def" " abc" byte-string-compare/2 -1 assert-equals
+  " hello" " hello" byte-string-compare/2 0 assert-equals
+  " hello" " hello?" byte-string-compare/2 1 assert-equals
+  " hello?" " hello" byte-string-compare/2 -1 assert-equals
+  " hello!" " hello?" byte-string-compare/2 1 assert-equals
+end
+
+def test-strings
+  test-string-peek
+  test-string-poke
+  test-copy-byte-string
+  test-string-index-of
+  test-string-contains?
+  test-string-append
+  test-byte-string-compare/2
 end

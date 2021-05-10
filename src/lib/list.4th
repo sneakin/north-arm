@@ -1,6 +1,10 @@
 ( Cons cells: )
 def cons args return1 end
 
+def cons2 ( tail mid car ++ cons )
+  arg2 arg1 cons arg0 cons exit-frame
+end
+
 def car arg0 dup IF peek set-arg0 THEN end
 defcol set-car! rot swap poke endcol
 def cdr arg0 dup IF cell-size + peek set-arg0 THEN end
@@ -46,6 +50,17 @@ def find-first ( list fn -- result )
     THEN
   ELSE 0
   THEN 2 return1-n
+end
+
+def skip-first ( n lst -- nth-item )
+  arg0 IF
+    arg1 0 uint> IF
+      arg0 cdr set-arg0
+      arg1 1 - set-arg1
+      repeat-frame
+    THEN
+  THEN
+  arg0 2 return1-n
 end
 
 ( Lists as stacks: )

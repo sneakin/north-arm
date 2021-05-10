@@ -1,6 +1,19 @@
-( String operations: )
+( String operations: )
+
+( Comparisons: )
 
 ( fixme "boo" == "boot"? Need to check lengths on both. Checking for 0 byte at end works, but not perfect. )
+
+def byte-string-compare/3 ( a-str b-str length )
+  arg0 int32 0 uint> UNLESS int32 0 3 return1-n THEN
+  arg2 peek-byte
+  arg1 peek-byte
+  int<=> dup IF 3 return1-n ELSE drop THEN
+  arg0 int32 1 - set-arg0
+  arg1 int32 1 + set-arg1
+  arg2 int32 1 + set-arg2
+  repeat-frame
+end
 
 def byte-string-equals?/3 ( a-str b-str length )
   arg0 int32 0 uint> UNLESS int32 1 return1 THEN
@@ -35,14 +48,17 @@ def string-equals?/3 ( a-str b-str length )
   repeat-frame
 end
 
+( String byte manipulation: )
+
 defcol string-peek ( string index -- byte )
-  rot + peek-byte swap
+  rot dup IF + peek-byte ELSE 2 dropn 0 THEN swap
 endcol
 
 defcol string-poke ( value string index )
-  rot +
-  swap rot swap poke-byte
+  rot dup IF + swap rot swap poke-byte ELSE 2 dropn swap drop THEN
 endcol
+
+( Lengths: )
 
 defcol null-terminate ( str length -- )
   rot int32 0 rot string-poke
@@ -59,9 +75,41 @@ def string-length ( ptr -- length )
   set-arg0
 end
 
+( Comparison wrappers: )
+
+def byte-string-compare/4 ( a-str a-length b-str b-length -- ternary )
+  arg3 arg1 arg2 arg0 min byte-string-compare/3
+  ( result is 0 and if lengths differ )
+  dup 0 equals? IF
+    arg2 arg0 equals? UNLESS
+      ( return 1 if arg3 shorter, -1 if arg1 is shorter )
+      arg2 arg0 int< IF drop 1 ELSE drop -1 THEN
+    THEN
+  THEN 2 return1-n
+end
+
+def byte-string-compare/2
+  arg1 dup string-length
+  arg0 dup string-length
+  byte-string-compare/4
+  2 return1-n
+end
+
+def byte-string<
+  arg1 arg0 byte-string-compare/2 0 int< 2 return1-n
+end
+
+def byte-string>
+  arg1 arg0 byte-string-compare/2 0 int> 2 return1-n
+end
+
+( Copiers: )
+
 def copy-byte-string/3 ( src dest length )
   arg2 arg1 arg0 copy
 end
+
+( Combining strings: )
 
 def string-append/5 ( dest max-len front front-len back back-len -- dest len )
   4 argn arg2 min
@@ -86,6 +134,8 @@ def string-append/4 ( dest max-len front back -- dest len )
   3 return1-n
 end
 
+( Allocating fresh copies of strings: )
+
 def allot-byte-string/2
   arg0 int32 1 + stack-allot
   arg1 over arg0 copy-byte-string/3 int32 3 dropn
@@ -93,6 +143,8 @@ def allot-byte-string/2
   2dup null-terminate
   exit-frame
 end
+
+( String matching: )
 
 def string-index-of/4 ( ptr len predicate position )
   arg0 arg2 int<= UNLESS int32 0 return1 THEN
