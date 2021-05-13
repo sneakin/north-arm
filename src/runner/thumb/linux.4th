@@ -125,5 +125,5 @@ end
 ( Time: )
 
 def sys-get-time-of-day
-  args 2 78 syscall 1 return1
+  args 2 78 syscall 2 return1-n
 end
