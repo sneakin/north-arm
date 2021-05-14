@@ -94,7 +94,7 @@ def lstat ( stats-ptr path -- result )
 end
 
 def fstat ( stats-ptr fd -- result )
-  args 2 197 syscall 3 return1-n
+  args 2 197 syscall 2 return1-n
 end
 
 ( Exit to system: )
@@ -118,8 +118,16 @@ def brk ( amount )
   args 1 0x2D syscall 1 return1-n
 end
 
-def mmap2 ( addr length prot flags fd pgoffset -- addr )
+def mmap2 ( pgoffset fd flags prot length addr -- addr )
   args 6 0xC0 syscall 6 return1-n
+end
+
+def munmap ( length addr -- result )
+  args 2 0x5B syscall 2 return1-n
+end
+
+def msync ( flags length addr -- result )
+  args 3 0x90 syscall 3 return1-n
 end
 
 ( Time: )

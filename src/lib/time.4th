@@ -104,6 +104,10 @@ def write-time-stamp
   arg0 write-time
 end
 
+struct: timespec
+int<32> field: tv_sec
+int<32> field: tv_nsec
+
 struct: timeval
 int<32> field: sec
 uint<64> field: usec
