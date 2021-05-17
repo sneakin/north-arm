@@ -131,3 +131,12 @@ def get-time-usecs
   local0 timeval -> usec uint32@
   local0 timeval -> usec 4 + uint32@ return2
 end
+
+def sleep
+  0
+  timespec make-instance set-local0
+  arg0 local0 timespec -> tv_sec poke
+  0 local0 timespec -> tv_nsec poke
+  0 local0 value-of nanosleep
+  1 return0-n
+end

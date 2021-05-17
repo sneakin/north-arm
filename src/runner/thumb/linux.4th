@@ -20,6 +20,24 @@ defop syscall ( args num-args syscall -- result )
   emit-next
 endop
 
+( Processes: )
+
+def fork
+  args 0 2 syscall return1
+end
+
+def execve
+  args 2 0xB syscall 2 return1-n
+end
+
+def getpid
+  args 0 39 syscall return1
+end
+
+def wait4 ( rusage opts status pid -- result )
+  args 4 114 syscall 4 return1-n
+end
+
 ( Input & output: )
 
 0 defconst> standard-input
@@ -41,6 +59,7 @@ defalias> O_NDELAY O_NONBLOCK
 defalias> O_FSYNC O_SYNC
 8192 defconst> O_ASYNC
 0x20000 defconst> O_LARGEFILE
+0x4000 defconst> O_DIRECT
 
 def open ( mode flags path -- result )
   args 3 5 syscall 3 return1-n
@@ -97,6 +116,30 @@ def fstat ( stats-ptr fd -- result )
   args 2 197 syscall 2 return1-n
 end
 
+def pipe ( fds[2] -- result )
+  args 1 0x2A syscall 1 return1-n
+end
+
+def pipe2 ( opts fds[2] -- result )
+  args 2 0x167 syscall 2 return1-n
+end
+
+def fd-dup ( fd -- new-fd )
+  args 1 41 syscall 1 return1-n
+end
+
+def fd-dup2 ( new-fd old-fd -- new-fd )
+  args 2 63 syscall 2 return1-n
+end
+
+def poll ( opts n fds[] -- result )
+  args 3 7 syscall 3 return1-n
+end
+
+def fsync ( fd -- result )
+  args 1 0x76 syscall 1 return1-n
+end
+
 ( Exit to system: )
 
 defop sysexit
@@ -134,4 +177,8 @@ end
 
 def sys-get-time-of-day
   args 2 78 syscall 2 return1-n
+end
+
+def nanosleep ( out-remaining timespec -- result )
+  args 2 0xA2 syscall 2 return1-n
 end
