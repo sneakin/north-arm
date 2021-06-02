@@ -34,7 +34,7 @@ defop copy-up-4
   emit-next
 endop
 
-: emit-copy-up
+: emit-copy-up ( bytes register -- )
   ( todo cmp r0 before pop )
   over r0 cmp# ,ins
   18 bcc ,ins
@@ -53,7 +53,7 @@ endop
 
 ( Copies from low to high memory by 8 bytes, 2 cells. )
 defop copy-up-8
-  cell-size 2 int-mul
+  cell-size 2 mult
   0 r4 bit-set r5 bit-set
   emit-copy-up
   emit-next
@@ -61,7 +61,7 @@ endop
 
 ( Copies from low to high memory by 12 bytes, 3 cells. )
 defop copy-up-12
-  cell-size 3 int-mul
+  cell-size 3 mult
   0 r4 bit-set r5 bit-set r6 bit-set
   emit-copy-up
   emit-next
@@ -69,7 +69,7 @@ endop
 
 ( Copies from low to high memory by 16 bytes, 4 cells. )
 defop copy-up-16
-  cell-size 4 int-mul
+  cell-size 4 mult
   0 r4 bit-set r5 bit-set r6 bit-set r7 bit-set
   emit-copy-up
   emit-next
@@ -142,7 +142,7 @@ endop
 
 ( Copies from high to low memory by 8 bytes, 2 cells. )
 defop copy-down-8
-  cell-size 2 int-mul
+  cell-size 2 mult
   0 r4 bit-set r5 bit-set
   emit-copy-down
   emit-next
@@ -150,7 +150,7 @@ endop
 
 ( Copies from high to low memory by 12 bytes, 3 cells. )
 defop copy-down-12
-  cell-size 3 int-mul
+  cell-size 3 mult
   0 r4 bit-set r5 bit-set r6 bit-set
   emit-copy-down
   emit-next
@@ -158,7 +158,7 @@ endop
 
 ( Copies from high to low memory by 16 bytes, 4 cells. )
 defop copy-down-16
-  cell-size 4 int-mul
+  cell-size 4 mult
   0 r4 bit-set r5 bit-set r6 bit-set r7 bit-set
   emit-copy-down
   emit-next

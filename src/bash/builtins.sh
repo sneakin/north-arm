@@ -15,7 +15,7 @@ DICT['nop']='feval'
 #
 # Equality
 #
-DICT['not']='STACK[0]=$(($STACK[0] == 0))'
+DICT['not']='STACK[0]=$((${STACK[0]} == 0))'
 DICT['equals']='if [[ "${STACK[0]}" == "${STACK[1]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
 DICT['equals?']="${DICT['equals']}"
 
