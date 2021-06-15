@@ -14,3 +14,15 @@ def copy ( src dest num-bytes -- )
   ELSE arg0 copy-down
   THEN 3 return0-n
 end
+
+def roll-back-n ( nth ... item n -- item nth ... )
+  ( Moves N cells down by one and stores item at the end. )
+  ( stash the item )
+  arg1
+  ( move items down )
+  args up-stack
+  dup up-stack over arg0 cell-size int-mul copy
+  ( store the item )
+  arg0 up-stack/2 poke
+  1 return0-n
+end

@@ -10,6 +10,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 ** Get out of the Turing Tar Pit.
 * Tasks
 ** now
+*** cross-lookup in bash takes one argument, interp's version takes two.
 *** cpio file format as arguments
 *** float tests
 *** uint64

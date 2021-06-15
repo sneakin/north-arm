@@ -35,6 +35,8 @@ def load-runner
   src/runner/thumb/math.4th
   src/runner/math.4th
   src/runner/stack.4th
+  src/runner/thumb/copiers.4th
+  src/runner/copy.4th
   src/runner/thumb/vfp-constants.4th
   src/runner/thumb/proper.4th
   src/runner/proper.4th
@@ -62,18 +64,17 @@ def builder-run ( entry-fn fn-length files-cons ++ )
   ' main create arg2 does-defalias
   " version.4th" load
   " src/runner/thumb/init.4th" load
-  s" *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! THEN
+  " *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
 
   code-origin
   ( entry point: )
   " init" cross-lookup UNLESS " no init found" error-line not-found return THEN
   dict-entry-code uint32@
   ( finish the ELF file )
-  .s write-elf32-ending
-  s" *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! THEN
+  write-elf32-ending
+  " *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
 
   " Writing..." error-line
   out-origin .s ddump-binary-bytes
-  dhere to-out-addr .s
-  exit-frame
+  dhere to-out-addr return1
 end

@@ -23,7 +23,7 @@ null var> this-word
 ;
 
 : alias>
-  next-token next-token alias
+  next-token next-token swap alias
 ;
 
 ( Compiler's read loop with immediates: )
@@ -247,6 +247,7 @@ alias> uint>= int>=
 alias> ! dpoke
 alias> @ dpeek
 alias> string-const> const>
+alias> tmp" s"
 
 : POSTPONE
   next-token
@@ -254,7 +255,7 @@ alias> string-const> const>
 
 : load-sources
   dup 0 equals IF drop return THEN
-  swap load .s
+  swap load
   1 - loop
 ;
 
