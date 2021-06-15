@@ -23,6 +23,12 @@ def make-seqn args return1 end
 def seqn-size arg0 peek set-arg0 end
 def seqn-nth arg0 1 + cell-size * arg1 + return1 end
 
+def generate-seq/3 ( fn seq size ++ seq )
+  arg0 1 - set-arg0
+  arg0 arg2 exec-abs arg1 arg0 seq-poke
+  arg0 0 uint> IF repeat-frame ELSE arg1 exit-frame THEN
+end
+
 ( Iteration: )
 
 def map-seq-n/4 ( ptr n state fn )
