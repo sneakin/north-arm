@@ -16,6 +16,6 @@ def read-literal-list
 end
 
 : 's[
-  literal pointer
+  literal literal
   read-literal-list
 ; immediate-as s[
