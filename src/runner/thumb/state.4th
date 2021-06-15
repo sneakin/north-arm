@@ -1,3 +1,20 @@
+state-byte-size defconst> state-byte-size
+
+defop save-state-regs ( ptr -- )
+  ( save registers )
+  r0 state-register-mask stmia ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop
+
+defop restore-state-regs ( ptr -- )
+  ( load registers )
+  r0 state-register-mask ldmia ,ins
+  0 r0 bit-set pushr ,ins
+  ( will have changed eip )
+  emit-next
+endop
+
 defop save-low-regs
   0xFF pushr .pclr ,ins
   sp r0 movrr ,ins

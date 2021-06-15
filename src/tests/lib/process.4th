@@ -1,5 +1,3 @@
-load-core
-
 s[ src/lib/process.4th
    src/lib/time.4th
    src/lib/assert.4th
@@ -50,7 +48,7 @@ def test-process-print
   0
   process process-spawn set-local0
   1 sleep
-  s" hello " local0 process-write
+  s" hello space parent-input peek write-int space parent-output peek write-int space " local0 process-write
   local0 process-print
   s" hello hello words " local0 process-write
   1 sleep

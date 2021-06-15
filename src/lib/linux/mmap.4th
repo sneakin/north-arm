@@ -30,15 +30,32 @@ s[ src/lib/linux/stat.4th ] load-list
 0x100000 const> MAP-FIXED-NOREPLACE
 0x4000000 const> MAP-UNINITIALIZED
 
+0xFFFFFFD0 const> MMAP-ERRORS
+
+( todo mmap errors have a range )
+
+def mmap-error?
+  arg0 MMAP-ERRORS uint> return1
+end
+
 def mmap-allot ( size -- ptr size )
   0 -1 MAP-PRIVATE MAP-ANON logior PROT-READ PROT-WRITE logior arg0 0 mmap2
-  dup -1 equals? IF 0 0 ELSE arg0 THEN
+  mmap-error? IF false ELSE arg0 THEN
+  swap set-arg0 return1
+end
+
+MAP-PRIVATE MAP-ANON logior MAP-STACK logior MAP-GROWSDOWN logior const> MAP-STACK-FLAGS
+PROT-READ PROT-WRITE logior ( PROT-GROWSDOWN logior ) const> PROT-STACK-FLAGS
+
+def mmap-stack ( size -- ptr size )
+  0 -1 MAP-STACK-FLAGS PROT-STACK-FLAGS arg0 0 mmap2
+  mmap-error? IF false ELSE arg0 THEN
   swap set-arg0 return1
 end
 
 def mmap-file ( offset size fd prot -- ptr ok? )
   arg3 arg1 MAP-PRIVATE arg0 arg2 0 mmap2
-  dup -1 equals? IF drop 0 false ELSE true THEN
+  mmap-error? IF false ELSE true THEN
   set-arg2 set-arg3 2 return0-n
 end
 

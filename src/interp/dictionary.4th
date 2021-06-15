@@ -14,6 +14,10 @@ defcol dict-entry-data
   swap cell-size + cell-size + swap
 endcol
 
+defcol dict-entry-data-pointer
+  swap dict-entry-data peek cs + swap
+endcol
+
 defcol dict-entry-link
   swap cell-size int32 3 * + swap
 endcol

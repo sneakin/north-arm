@@ -6,6 +6,11 @@ s[ src/lib/structs.4th
    src/lib/linux/process.4th
 ] load-list
 
+( Children replace stdio but may want to use them. )
+
+standard-input var> parent-input
+standard-output var> parent-output
+
 ( Container for pipe2's argument: )
 
 struct: fd-pair
@@ -26,6 +31,9 @@ fd-pair field: output
 value field: pid
 
 def process-do-stdio
+  ( copy stdio )
+  standard-input fd-dup parent-input poke
+  standard-output fd-dup parent-output poke
   ( Take over stdio with the process' pipes. )
   standard-input arg0 process -> input fd-pair . output peek fd-dup2
   standard-output arg0 process -> output fd-pair . input peek fd-dup2

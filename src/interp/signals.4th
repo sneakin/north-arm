@@ -4,16 +4,18 @@
 def print-signal-state
   s" Caught signal " error-string/2
   arg0 error-hex-uint enl
+  s" PID " error-string/2
+  getpid error-hex-uint enl
   s" Registers:" error-string/2 enl
   print-regs
   s" From frame: " error-string/2
-  current-frame error-hex-uint enl ( parent-frame 64 ememdump )
+  current-frame error-hex-uint enl ( parent-frame 64 cmemdump )
   s" Signal stack: " error-string/2
-  current-frame 512 ememdump
+  current-frame 512 cmemdump
   s" Signal info: " error-string/2
-  arg1 arg2 over - ememdump
+  arg1 arg2 over - cmemdump
   s" Signal context: " error-string/2
-  arg2 128 ememdump
+  arg2 128 cmemdump
 end
 
 def signals-abort-handler
@@ -41,6 +43,7 @@ def signals-init
   0 signals-abort-sigaction peek SIGBUS sigaction
   0 signals-abort-sigaction peek SIGSEGV sigaction
   0 signals-abort-sigaction peek SIGSYS sigaction
+  0 signals-trace-sigaction peek SIGCHLD sigaction
   0 signals-trace-sigaction peek SIGUSR1 sigaction
   exit-frame
 end

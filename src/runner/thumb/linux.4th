@@ -3,7 +3,7 @@
 0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
 4 cell-size mult const> state-byte-size
 
-defop syscall ( args num-args syscall -- result )
+: emit-syscall
   ( save registers )
   state-register-mask pushr ,ins
   ( load args into registers )
@@ -15,12 +15,37 @@ defop syscall ( args num-args syscall -- result )
   0 swi ,ins
   ( restore registers, keep return value in R0 )
   state-register-mask popr ,ins
+;
+
+defop syscall ( args num-args syscall -- result )
+  emit-syscall
   ( drop the arguments )
   2 cell-size mult inc-sp ,ins
   emit-next
 endop
 
 ( Processes: )
+
+defop syscall-clone ( args num-args syscall -- pid-or-error )
+  emit-syscall
+  ( skip the argument drop if in child process )
+  0 r0 cmp# ,ins
+  0 beq ,ins
+  ( drop the arguments )
+  2 cell-size mult inc-sp ,ins
+  ( drop 0 return value the child sees )
+  0 bne ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop
+
+def clone ( C order: unsigned long flags, void *stack,
+            int *parent_tid, unsigned long tls,
+            int *child_tid )
+  args 5 0x78 syscall-clone
+  ( cloned process returns to the first address on the stack )
+  dup IF 5 return1-n THEN
+end
 
 def fork
   args 0 2 syscall return1
@@ -32,6 +57,10 @@ end
 
 def getpid
   args 0 39 syscall return1
+end
+
+def gettid
+  args 0 0xE0 syscall return1
 end
 
 def wait4 ( rusage opts status pid -- result )
