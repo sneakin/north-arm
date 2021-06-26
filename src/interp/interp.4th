@@ -373,10 +373,7 @@ defcol .h swap error-hex-uint endcol
 defcol ,i over error-int endcol
 defcol .i swap error-int endcol
 
-0 defvar> initial-dict
-
 def interp-init
-  dict initial-dict poke
   ( token-buffer )
   int32 0 token-buffer-length poke
   token-buffer-max stack-allot token-buffer poke
@@ -389,5 +386,6 @@ def interp-init
 end
 
 def interp-boot
+  copyright error-line
   interp-init interp
 end

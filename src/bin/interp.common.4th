@@ -1,4 +1,5 @@
 " src/cross/builder.4th" load
+" src/copyright.4th" load
 
 s[
    src/lib/seq.4th

@@ -10,6 +10,7 @@ load-thumb-asm
 0xFFFFFFFF const> -op-mask
 
 0 var> code-origin
+0 var> BUILD-COPYRIGHT
 
 def builder-run ( entry len src-cons )
   NORTH-STAGE 2 int> IF elf32-dynamic-stub THEN
@@ -20,13 +21,29 @@ def builder-run ( entry len src-cons )
   write-elf-header
   dhere code-origin poke
 
+  ( Words to later patch: )
+  BUILD-COPYRIGHT peek dup IF
+    ,byte-string
+    s" copyright" create
+  ELSE drop
+  THEN
+  s" main" create
+
   ( The main stage: )
   load-runner
-  arg0 load-list
-
-  s" main" create arg2 arg1 does-defalias
   " version.4th" load
   " ./src/runner/thumb/init.4th" load
+  arg0 load-list
+
+  s" copyright" cross-lookup IF
+    s" do-const-offset" cross-lookup IF
+      dict-entry-code uint32@ over dict-entry-code uint32!
+      code-origin peek to-out-addr over dict-entry-data uint32!
+    ELSE drop
+    THEN
+  THEN drop
+  s" main" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
+  s" *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
   s" *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
 
   code-origin peek

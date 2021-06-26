@@ -1,5 +1,5 @@
 def find-by-string-2 ( ptr length list -- ptr length result result )
-' string-equals?/3 arg1 partial-first arg2 partial-first
+  ' string-equals?/3 arg1 partial-first arg2 partial-first
   arg0 over find-first 3 return1-n  
 end
 

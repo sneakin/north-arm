@@ -30,19 +30,19 @@ defop init
   0 fp mov# ,ins
   0 r0 bit-set popr ,ins
   ( init-return )
-  40 eip ldr-pc ,ins
+  44 eip ldr-pc ,ins ( data[2] )
   eip eip emit-get-reg-word-data
   ( set the dictionary )
-  24 dict-reg ldr-pc ,ins
-  cs-reg dict-reg dict-reg add ,ins
+  28 dict-reg ldr-pc ,ins ( data[0] )
+  dict-reg dict-reg emit-get-reg-word-data
   ( exec main[fini, system-LR, argc, argv, env] -> init-return )
-  24 r1 ldr-pc ,ins
+  24 r1 ldr-pc ,ins ( data[1] )
   out' exec-r1 emit-op-call
   ( without main calling bye, exit restores eip to the initial value above. LR gets lost in ~next~ so this does not get reached: )
   out' bye emit-op-jump
   ( data: dictionary main return-fn )
   emit-init-data-padding
-  out-dict to-out-addr ,uint32
+  out' *init-dict* to-out-addr ,uint32
   out' main to-out-addr ,uint32
   out' init-return to-out-addr ,uint32
 endop

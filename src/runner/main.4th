@@ -158,7 +158,7 @@ def read-uint32
 end
 
 def runner-loop
-  read-uint32 IF exec repeat-frame ELSE return THEN
+  read-uint32 IF exec repeat-frame ELSE bye ( return ) THEN
 end
 
 defcol jump-data
@@ -167,5 +167,8 @@ defcol jump-data
 end
 
 def runner-boot
-  read-uint32 IF exec ' runner-loop jump-data ELSE words bye THEN
+  read-uint32
+  IF exec ' runner-loop jump-data
+  ELSE words bye
+  THEN
 end

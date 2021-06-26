@@ -8,8 +8,14 @@ dhere [UNLESS]
   tmp" Initialized data stack" error-line/2
 [THEN]
 
-tmp" src/interp/boot/core.4th" drop load
-tmp" src/runner/ffi.4th" drop load
-tmp" src/interp/dynlibs.4th" drop load
-tmp" src/interp/signals.4th" drop load
-tmp" src/interp/tty.4th" drop load
+s[ src/interp/boot/core.4th
+   src/runner/ffi.4th
+   src/interp/dynlibs.4th
+   src/interp/signals.4th
+   src/interp/tty.4th
+   src/interp/dictionary/revmap.4th
+   src/interp/dictionary/dump.4th
+] load-list
+
+signals-init
+tty-init

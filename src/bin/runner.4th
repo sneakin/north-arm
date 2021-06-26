@@ -1,6 +1,7 @@
 ( todo split like interp for android and linux )
 
 " src/cross/builder.4th" load
+" src/copyright.4th" load
 
 " thumb-linux-static" string-const> BUILDER-TARGET
 

@@ -11,6 +11,7 @@
 ( Needs defconst sooner. )
 
 0 var> code-origin
+0 var> BUILD-COPYRIGHT
 
 def load-runner
   s[
@@ -57,13 +58,28 @@ def builder-run ( entry-fn fn-length files-cons ++ )
   write-elf32-header
   dhere set-code-origin
 
+  BUILD-COPYRIGHT dup IF
+    ,byte-string
+    " copyright" create
+  ELSE drop
+  THEN
+  " main" create
+  
   ( The main stage: )
   load-runner
-  arg0 load-list
-
-  ' main create arg2 does-defalias
   " version.4th" load
   " src/runner/thumb/init.4th" load
+  arg0 load-list
+
+  " copyright" cross-lookup IF
+    " do-const-offset" cross-lookup IF
+      dict-entry-code uint32@ over dict-entry-code uint32!
+      code-origin to-out-addr over dict-entry-data uint32!
+    ELSE drop
+    THEN
+  THEN drop
+  " main" cross-lookup IF arg2 does-defalias ELSE not-found error-line THEN
+  " *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
   " *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
 
   code-origin
