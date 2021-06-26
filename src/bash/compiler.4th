@@ -234,8 +234,8 @@ symbol> if-placeholder
 
 ( Comparisons: )
 
-: int> swap int<= ;
-: int>= swap int< ;
+: int> swap int< ;
+: int>= swap int<= ;
 
 alias> uint< int<
 alias> uint<= int<=
