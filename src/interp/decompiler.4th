@@ -15,6 +15,11 @@ def write-quoted-string
   dquote write-byte space arg0 write-string ( todo escaping ) dquote write-byte
 end
 
+def write-dict-entry-name
+  arg0 dict-entry-name peek cs + write-string
+  1 return0-n
+end
+
 def decompile-colon-data
   arg0 peek int32 0 equals? IF return THEN
   arg0 peek cs +
@@ -25,6 +30,14 @@ def decompile-colon-data
     swap CASE
       ' cstring WHEN cs + write-quoted-string space ;;
       ' int32 WHEN write-int space ;;
+      ' literal WHEN
+        dup dict dict-contains?/2
+        IF write-dict-entry-name
+	ELSE cs + dup dict dict-contains?/2
+	     IF write-dict-entry-name
+	     ELSE write-hex-uint
+	     THEN
+	THEN space ;;
       drop write-hex-uint space
     ESAC
   ELSE drop
@@ -72,7 +85,7 @@ end
 
 def decompile-op
   s" defop " write-string/2 arg0 write-dict-entry-name nl space space
-  arg0 dict-entry-code peek cs + dup string-length memdump ( todo needs seq size or terminator )
+  arg0 dict-entry-code peek cs + dup string-length memdump ( todo needs seq size or terminator, also needs ,uint32 after op codes. )
   s" endop" write-string/2
   arg0 dict-entry-data peek dup IF
     s" data[ " write-string/2

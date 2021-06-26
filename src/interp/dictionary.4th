@@ -49,6 +49,7 @@ endcol
 
 ( Iteration: )
 
+( todo update callers that don't expect returns )
 def dict-map/4 ( dict origin state fn )
   arg3 null? UNLESS
     arg1 arg3 arg0 exec-abs set-arg1
@@ -57,7 +58,7 @@ def dict-map/4 ( dict origin state fn )
       arg2 + set-arg3
       repeat-frame
     THEN
-  THEN
+  THEN arg1 exit-frame
 end
 
 def dict-map ( dict fn )
