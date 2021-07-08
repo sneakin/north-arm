@@ -21,12 +21,9 @@ def builder-run ( entry len src-cons )
   write-elf-header
   dhere code-origin poke
 
+  ( Plain text message: )
+  BUILD-COPYRIGHT peek dup IF ,byte-string ELSE drop THEN
   ( Words to later patch: )
-  BUILD-COPYRIGHT peek dup IF
-    ,byte-string
-    s" copyright" create
-  ELSE drop
-  THEN
   s" main" create
 
   ( The main stage: )
@@ -35,13 +32,7 @@ def builder-run ( entry len src-cons )
   " ./src/runner/thumb/init.4th" load
   arg0 load-list
 
-  s" copyright" cross-lookup IF
-    s" do-const-offset" cross-lookup IF
-      dict-entry-code uint32@ over dict-entry-code uint32!
-      code-origin peek to-out-addr over dict-entry-data uint32!
-    ELSE drop
-    THEN
-  THEN drop
+  s" copyright" cross-lookup IF code-origin peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
   s" main" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
   s" *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
   s" *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
