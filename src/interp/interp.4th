@@ -5,7 +5,7 @@ end
 
 ( Input: )
 
-256 defconst> token-buffer-max
+320 defconst> token-buffer-max
 0 defvar> token-buffer
 0 defvar> token-buffer-length
 
@@ -385,7 +385,10 @@ def interp-init
   exit-frame
 end
 
-def interp-boot
+def about
   copyright error-line
-  interp-init interp
+end
+  
+def interp-boot
+  interp-init about interp
 end
