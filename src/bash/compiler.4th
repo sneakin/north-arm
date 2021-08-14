@@ -244,6 +244,8 @@ alias> uint>= int>=
 
 ( Misc: )
 
+320 var> token-buffer-max ( used to condition the about message )
+
 alias> ! dpoke
 alias> @ dpeek
 alias> string-const> const>
