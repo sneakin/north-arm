@@ -85,11 +85,11 @@ end
 
 def decompile-op
   s" defop " write-string/2 arg0 write-dict-entry-name nl space space
-  arg0 dict-entry-code peek cs + dup string-length memdump ( todo needs seq size or terminator, also needs ,uint32 after op codes. )
+  arg0 dict-entry-code peek cs + dup string-length cmemdump ( todo needs seq size or terminator, also needs ,uint32 after op codes. )
   s" endop" write-string/2
   arg0 dict-entry-data peek dup IF
     s" data[ " write-string/2
-    cs + dup string-length memdump
+    cs + dup string-length cmemdump
     s" ]" write-string/2
   THEN
   nl
