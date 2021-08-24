@@ -50,13 +50,13 @@ end
 
 ( String byte manipulation: )
 
-defcol string-peek ( string index -- byte )
-  rot dup IF + peek-byte ELSE 2 dropn 0 THEN swap
-endcol
+def string-peek ( string index -- byte )
+  arg1 IF arg1 arg0 peek-off-byte ELSE 0 THEN 2 return1-n
+end
 
-defcol string-poke ( value string index )
-  rot dup IF + swap rot swap poke-byte ELSE 2 dropn swap drop THEN
-endcol
+def string-poke ( value string index )
+  arg1 IF arg2 arg1 arg0 poke-off-byte THEN 3 return0-n
+end
 
 ( Lengths: )
 

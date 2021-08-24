@@ -317,7 +317,7 @@ endop
 
 ( Memory ops: )
 
-defop peek
+defop peek ( addr -- value )
   0 r0 r0 ldr-offset ,ins
   emit-next
 endop
@@ -332,7 +332,25 @@ defop peek-short
   emit-next
 endop
 
-defop poke
+defop peek-off ( offset base -- value )
+  0 r1 bit-set popr ,ins
+  r1 r0 r0 ldr ,ins
+  emit-next
+endop  
+
+defop peek-off-byte
+  0 r1 bit-set popr ,ins
+  r1 r0 r0 ldr .byte ,ins
+  emit-next
+endop  
+
+defop peek-off-short
+  0 r1 bit-set popr ,ins
+  r1 r0 r0 ldr .half ,ins
+  emit-next
+endop  
+
+defop poke ( value addr -- )
   0 r1 bit-set popr ,ins
   0 r0 r1 str-offset ,ins
   0 r0 bit-set popr ,ins
@@ -349,6 +367,27 @@ endop
 defop poke-short
   0 r1 bit-set popr ,ins
   0 r0 r1 strh ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop
+
+defop poke-off ( value base offset -- )
+  0 r1 bit-set r2 bit-set popr ,ins
+  r0 r1 r2 str ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop  
+
+defop poke-off-byte ( value base offset -- )
+  0 r1 bit-set r2 bit-set popr ,ins
+  r0 r1 r2 str .byte ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop  
+
+defop poke-off-short ( value base offset -- )
+  0 r1 bit-set r2 bit-set popr ,ins
+  r0 r1 r2 str .half ,ins
   0 r0 bit-set popr ,ins
   emit-next
 endop

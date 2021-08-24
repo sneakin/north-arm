@@ -17,10 +17,6 @@ def in-range? ( n max min )
   arg2 arg0 int>= and return1
 end
 
-defcol cell/
-  swap int32 2 bsr swap
-endcol
-
 ( todo optimize by counting down? divide & conquer? )
 
 def badlog2-uint-loop

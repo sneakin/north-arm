@@ -190,6 +190,7 @@ alias> sl r10
 
 : .offset-byte 12 bit-set ;
 
+( todo suffix with -offset )
 ( 1 0 0 0 L Offset:5 Rb:3 Rd:3 Load/store halfword )
 : strh ( offset rb rd )
   swap 3 bsl logior

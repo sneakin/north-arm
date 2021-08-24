@@ -25,6 +25,8 @@ s[ src/runner/thumb/frames.4th
    src/cross/defining/frames-boot.4th
    src/runner/constants.4th
    src/runner/thumb/copiers.4th
+   src/runner/cells.4th
+   src/runner/stack.4th
    src/runner/copy.4th
    src/runner/thumb/linux.4th
    src/runner/thumb/linux/signals/syscalls.4th
@@ -35,7 +37,6 @@ s[ src/runner/thumb/frames.4th
    src/runner/math.4th
    src/runner/aliases.4th
    src/runner/thumb/vfp-constants.4th
-   src/runner/stack.4th
    src/runner/thumb/proper.4th
    src/runner/proper.4th
    src/interp/data-stack.4th
