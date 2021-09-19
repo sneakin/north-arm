@@ -261,17 +261,6 @@ def float32-sinh-stepper ( n done? last-term-place xx -- value done? )
   set-arg3 2 return0-n
 end
 
-def print-float32-add
-  arg1 arg0 float32-add
-  dup write-float32 nl
-  2 return1-n
-end
-
-def print-float32-mul
-  arg1 arg0 float32-mul
-  dup write-float32 nl 2 return1-n
-end
-
 def float32-sinh
   ( sum[x^[2n+1] / [2n+1]!, n, 0, inf] => x + x^3/3! + x^5/5! ... )
   ( With x=0.5: 0.5 + [0.5]^3/3! + [0.5]^5/5! ... = 0.5 + 0.125/6 + 0.03125/120 => last * [0.5]^2/[2n*[2n+1]] )
