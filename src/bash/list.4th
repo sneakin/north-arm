@@ -31,7 +31,7 @@ def revmap-car/3 ( cons state fn ++ state )
 end
 
 def load-1
-  arg0 .s load true exit-frame
+  arg0 load true exit-frame
 end
 
 def load-list

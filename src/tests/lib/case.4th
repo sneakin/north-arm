@@ -1,6 +1,4 @@
-( s[ src/lib/case.4th src/lib/assert.4th ] load-list )
-" src/lib/assert.4th" load
-" src/lib/case.4th" load
+s[ src/lib/case.4th src/lib/assert.4th ] load-list
 
 def test-case-printed
   arg0 CASE

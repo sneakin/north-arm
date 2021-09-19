@@ -59,10 +59,12 @@ finterp()
     local input_streamed="${INPUT_STREAMED}"
     local saved_input
     if [[ "${1:-}" != "" ]]; then
+	[[ "${DICT['*trace-interp*']}" != "" ]] && echo "finterp '${@}'"
 	INPUT_STREAMED=0
-	INPUT="${1} ${INPUT}"
+	saved_input="${INPUT}"
+	INPUT="${1}"
     fi
-    
+
     # Execute tokens until one does not `return 0`
     while [[ "$fin" != "1" ]] && next_token
     do
@@ -74,6 +76,7 @@ finterp()
     fi
 
     INPUT_STREAMED="${input_streamed}"
+    INPUT="${saved_input}"
     
     return $fin
 }
