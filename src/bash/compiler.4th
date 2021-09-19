@@ -102,10 +102,16 @@ alias> up-stack/2 -
   here 2 up-stack/2 stack-find/2
 ;
 
+: string-needs-escaping?
+  has-spaces?
+  over has-special-chars? swap drop
+  logior
+;
+
 ( Args: acc stop-ptr work-stack-ptr )
 : concat-seq-loop
   2dup equals 1 unless-jump return
-  dup speek has-spaces? 1 unless-jump quote-string
+  dup speek string-needs-escaping? 1 unless-jump quote-string
   4 overn "  " swap ++ ++
   3 set-overn
   down-stack loop
@@ -232,6 +238,13 @@ symbol> if-placeholder
 : negative? dup 0 int< ;
 : abs-int negative? IF negate THEN ;
 
+alias> int-add +
+alias> int-sub -
+alias> mult *
+alias> int-mul *
+alias> int-div /
+alias> int-mod mod
+
 ( Comparisons: )
 
 : int> swap int< ;
@@ -242,9 +255,12 @@ alias> uint<= int<=
 alias> uint> int>
 alias> uint>= int>=
 
+alias> or logior
+
 ( Misc: )
 
 320 var> token-buffer-max ( used to condition the about message )
+1 const> op-size
 
 alias> ! dpoke
 alias> @ dpeek

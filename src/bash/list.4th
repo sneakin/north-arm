@@ -8,7 +8,7 @@ def map-car/3 ( cons state fn ++ )
   arg2 cdr set-arg2 repeat-frame
 end
 
-def map-seq-n ( ptr number state fn ++ )
+def map-seq-n ( ptr number state fn ++ state )
   0 arg2 int< IF
     arg1 arg3 speek arg0 exec set-arg1
     arg3 up-stack set-arg3
@@ -17,17 +17,21 @@ def map-seq-n ( ptr number state fn ++ )
   THEN
 end
 
-def revmap-car/3 ( cons state fn ++ )
-  arg2 null? swap 0 equals logior IF
-    here locals over stack-delta 1 + arg1 arg0 map-seq-n exit-frame
+def reverse->seq-n ( cons ++ seq n )
+  arg0 null? swap 0 equals logior IF
+    here locals over stack-delta 1 + exit-frame
   ELSE
-    arg2 car
-    arg2 cdr set-arg2 repeat-frame
+    arg0 car
+    arg0 cdr set-arg0 repeat-frame
   THEN
 end
 
+def revmap-car/3 ( cons state fn ++ state )
+  arg2 reverse->seq-n arg1 arg0 map-seq-n exit-frame
+end
+
 def load-1
-  arg0 load exit-frame
+  arg0 .s load true exit-frame
 end
 
 def load-list

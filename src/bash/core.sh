@@ -31,7 +31,7 @@ EIP=0 # current evaluated word's index
 fsysexec()
 {
     local entry="${1}"
-    # echo "fexec $1 -> '$entry'" 1>&2
+    [[ "${DICT['*trace*']}" != "" ]] && echo "fexec '$1' -> '$entry'" 1>&2
     eval "${entry}"
     return $?
 }
@@ -43,6 +43,7 @@ fexec()
     if [[ "${1:-}" != "" ]]; then
 	entry="${DICT[$1]:-}"
     fi
+    [[ "${DICT['*trace*']}" != "" ]] && echo "fexec '$1' -> '${entry}'" 1>&2
     if [[ "${entry}" == "" ]]; then
 	fpush "$1"
     else
@@ -86,6 +87,7 @@ feval()
     # Set the evaluation state
     EVAL_EXPR=( "$@" )
     EIP=0
+    [[ "${DICT['*trace*']}" != "" ]] && echo "feval '${EVAL_EXPR}'"
     # Evaluate each word:
     while [[ "$EIP" -lt "${#EVAL_EXPR[@]}" ]]; do
 	if fexec "${EVAL_EXPR[$EIP]}"; then
