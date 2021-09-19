@@ -1,13 +1,11 @@
 ( CASE expression to have a series of conditional expressions. Uses a syntax similiar to Bash.
   Example:
-    x CASE
+    value CASE
       1 WHEN " one" ;;
       2 WHEN " two" ;;
       drop " not 1 or 2"
     ESAC
 )
-
-( todo fix up a CASE for the interpreter; or make jump-rel & if-jump consistent on cell-size multiplier )
 
 symbol> case-start-marker
 symbol> case-marker
@@ -43,7 +41,7 @@ symbol> case-marker
     2 dropn
   ELSE
     dup speek case-marker equals IF
-      2dup swap stack-delta 1 - over spoke
+      2dup swap stack-delta 1 - op-size * over spoke
     THEN
     up-stack loop
   THEN

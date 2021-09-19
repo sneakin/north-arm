@@ -9,11 +9,23 @@
 
 : assert-not lognot assert ;
 
+: write-binop-message
+  swap write-hex-uint write-string write-hex-uint
+;
+
 : assert-equals
   2dup equals dup assert IF
     2 dropn
   ELSE
-    space write-hex-uint space write-hex-uint nl
+    space "  != " write-binop-message nl
+  THEN
+;
+
+: assert-not-equals
+  2dup equals lognot dup assert IF
+    2 dropn
+  ELSE
+    space "  == " write-binop-message nl
   THEN
 ;
 
