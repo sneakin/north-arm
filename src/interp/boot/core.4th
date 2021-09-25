@@ -168,10 +168,6 @@ def alias>
   THEN
 end
 
-: minmax 2dup int> IF swap THEN ;
-: min minmax drop ;
-: max minmax swap drop ;
-
 : repeat-frame
   literal int32
   ( fixme may not have a begin-frame to find. )

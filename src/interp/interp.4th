@@ -31,9 +31,15 @@ def make-fd-reader
   exit-frame
 end
 
+def prompt-depth
+  top-frame prompt-here peek int-sub cell-size int-div return1
+end
+
 defcol prompt
-  prompt-here peek peek error-uint enl
-  s" Forth> " error-string/2
+  prompt-here peek error-hex-uint
+  s" :" error-string/2
+  prompt-here peek peek error-int
+  s"  > " error-string/2
 endcol
 
 defcol prompt-read ( reader buffer max-length )

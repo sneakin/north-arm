@@ -28,7 +28,7 @@ def seqn-peek ( seq n -- value )
 end
 
 def seqn-poke ( value base n -- )
-  arg2 arg1 arg0 1 + cell-size poke-off
+  arg2 arg1 arg0 1 + cell-size * poke-off
   3 return0-n
 end
 

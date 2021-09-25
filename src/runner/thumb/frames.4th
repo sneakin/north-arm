@@ -84,3 +84,14 @@ defop return2
   0 r1 bit-set pushr ,ins
   emit-next
 endop
+
+defop return2-n
+  ( Restore FP and SP before exiting, dropping N args, but keep the latest two from the stack. )
+  2 r0 r2 mov-lsl ,ins
+  0 r0 bit-set r1 bit-set popr ,ins
+  fp sp movrr ,ins
+  0 fp bit-set eip bit-set popr ,ins
+  r2 sp addrr ,ins
+  0 r1 bit-set pushr ,ins
+  emit-next
+endop

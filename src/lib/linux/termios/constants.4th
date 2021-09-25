@@ -1,0 +1,14 @@
+0x5401 const> TCGETS
+0x5402 const> TCSETS
+0x5403 const> TCSETSW
+0x5404 const> TCSETSF
+
+TCSETS const> TCSANOW
+TCSETSW const> TCSADRAIN
+TCSETSF const> TCSAFLUSH
+
+1 const> ISIG
+2 const> ICANON
+8 const> ECHO
+
+0x100f const> CBAUD
