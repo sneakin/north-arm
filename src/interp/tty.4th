@@ -2,7 +2,7 @@
 0x5414 const> TIOCSWINSZ
 
 def tty-getsize
-  0 0 here TIOCGWINSZ current-input peek ioctl 0 int>= IF
+  0 0 here TIOCGWINSZ current-output peek ioctl 0 int>= IF
     here dup peek-short
     swap 2 + peek-short
   ELSE 0 0
