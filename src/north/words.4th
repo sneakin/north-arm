@@ -225,7 +225,7 @@ alias> exec-core-word exec-abs
 
 alias> RECURSE repeat-frame immediate
 alias> store-local0 set-local0
-def arg4 4 current-frame parent-frame fargn return1 end
+def arg4 4 current-frame parent-frame fargn @ return1 end
 
 defcol returnN
   ( copy N values over the frame's return and FP. Return from the frame. )
