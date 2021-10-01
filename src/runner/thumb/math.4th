@@ -45,7 +45,7 @@ endcol
 
 def int-divmod-sw/4 ( numer subtractor bit quotient )
   ( no work left with zero bits )
-  arg1 int32 0 uint<= IF return THEN
+  arg1 int32 0 uint<= IF arg0 arg3 4 return2-n THEN
   ( add the bit to the quotient if numer can have subtractor subtracted )
   arg2 arg3 uint<= IF
     arg3 arg2 int-sub set-arg3
@@ -65,15 +65,19 @@ def int-divmod-sw ( numer denom -- quotient remainder )
   int32 0
   ( do the divide )
   int-divmod-sw/4
-  ( fix the sign )
+  ( fix the sign:
+       n/d => x r
+       -/- => + -
+       -/+ => - -
+       +/+ => + +
+       +/- => - +
+  )
   arg1 negative? swap drop
-  IF arg0 negative? swap drop UNLESS negate THEN
-  ELSE arg0 negative? swap drop IF negate THEN
+  IF negate arg0 negative? swap drop UNLESS swap negate swap THEN
+  ELSE arg0 negative? swap drop IF swap negate swap THEN
   THEN
   ( save the returns )
-  set-arg1
-  int32 2 dropn
-  set-arg0
+  set-arg0 set-arg1
 end
 
 ( Unsigned division: )
@@ -105,9 +109,7 @@ def uint-divmod-sw ( numer denom -- quotient remainder )
     ( do the divide )
     int-divmod-sw/4
     ( save the returns )
-    set-arg1
-    int32 2 dropn
-    set-arg0
+    set-arg0 set-arg1
   THEN
 end
 
@@ -126,7 +128,7 @@ endcol
 defcol int-divmod-v2
   rot swap
   2dup int-div-v2 ( num den quot )
-  rot swap 3 overn int-mul int-sub abs-int
+  rot swap 3 overn int-mul int-sub ( abs-int )
   swap rot
 endcol
 
@@ -150,3 +152,23 @@ endcol
 
 defalias> int-div int-div-sw
 defalias> uint-div uint-div-sw
+
+( Floored division: )
+
+def floored-divmod
+  arg1 arg0 int-divmod
+  dup IF arg1 0 int< arg0 0 int>= logand IF arg0 int-add over 1 int-sub swap THEN THEN
+  set-arg0 set-arg1
+end
+
+def floored-div
+  arg1 arg0 int-divmod
+  IF arg1 0 int< arg0 0 int>= logand IF 1 int-sub THEN THEN
+  set-arg1 1 return0-n
+end
+
+def floored-mod
+  arg1 arg0 int-divmod
+  dup IF arg1 0 int< arg0 0 int>= logand IF arg0 int-add THEN THEN
+  set-arg1 1 return0-n
+end
