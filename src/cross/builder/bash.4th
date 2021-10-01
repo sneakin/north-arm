@@ -35,6 +35,7 @@ def load-runner
   src/runner/thumb/logic.4th
   src/runner/thumb/math.4th
   src/runner/math.4th
+  src/runner/cells.4th
   src/runner/stack.4th
   src/runner/thumb/copiers.4th
   src/runner/copy.4th
