@@ -9,7 +9,7 @@ def seq-nth ( seq n -- addr )
 end
 
 def seq-peek ( seq n -- value )
-  arg1 cell-size * arg0 peek-off
+  arg0 cell-size * arg1 peek-off
   2 return1-n
 end
 
@@ -23,7 +23,7 @@ def seqn-size arg0 peek set-arg0 end
 def seqn-nth arg0 1 + cell-size * arg1 + return1 end
 
 def seqn-peek ( seq n -- value )
-  arg1 arg0 1 + cell-size * peek-off
+  arg0 1 + cell-size * arg1 peek-off
   2 return1-n
 end
 

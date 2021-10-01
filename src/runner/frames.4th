@@ -41,11 +41,11 @@ defcol locals
 endcol
 
 defcol localn
-  swap cell-size int-mul locals int-add peek swap
+  swap cell-size int-mul locals swap int-sub peek swap
 endcol
 
 defcol set-localn
-  rot swap cell-size int-mul locals int-add poke
+  rot swap cell-size int-mul locals swap int-sub poke
 endcol
 
 defcol local0 locals peek swap endcol

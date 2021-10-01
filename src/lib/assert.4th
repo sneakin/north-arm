@@ -10,7 +10,7 @@
 : assert-not lognot assert ;
 
 : write-binop-message
-  swap write-hex-uint write-string write-hex-uint
+  swap write-int write-string write-int
 ;
 
 : assert-equals
