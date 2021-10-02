@@ -30,7 +30,7 @@
     2 dropn
   ELSE
     dup speek literal case-marker equals IF
-      2dup - 1 - op-size mult over spoke
+      2dup swap stack-delta 1 - -op-size mult over spoke
     THEN
     up-stack loop
   THEN

@@ -1,4 +1,4 @@
-( Stage 0 static interpreter build )
+( Later stage static build )
 " src/bin/interp.common.4th" load
 " thumb-linux-static" string-const> BUILDER-TARGET
-s" interp-boot" sources builder-run
+s" interp-boot" sources peek builder-run
