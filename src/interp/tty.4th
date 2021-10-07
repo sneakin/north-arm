@@ -1,7 +1,7 @@
 0x5413 const> TIOCGWINSZ
 0x5414 const> TIOCSWINSZ
 
-def tty-getsize
+def tty-read-size ( ++ lines columns )
   0 0 here TIOCGWINSZ current-output peek ioctl 0 int>= IF
     here dup peek-short
     swap 2 + peek-short
@@ -12,10 +12,14 @@ end
 0 var> tty-columns
 0 var> tty-lines
 
+def tty-getsize ( ++ lines columns )
+  tty-lines peek tty-columns peek return2
+end
+
 def tty-update-size
-  tty-getsize
-  tty-lines poke
+  tty-read-size
   tty-columns poke
+  tty-lines poke
 end
 
 0 var> tty-winch-sigaction
