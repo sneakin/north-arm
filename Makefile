@@ -8,7 +8,11 @@ SO_CFLAGS=-shared -nostdlib -g
 
 RELEASE_BRANCH?=master
 
-OUTPUTS=bin/interp.android.1$(EXECEXT) \
+OUTPUTS=\
+	bin/interp.static.1$(EXECEXT) \
+	bin/interp.static.2$(EXECEXT) \
+	bin/interp.static.3$(EXECEXT) \
+	bin/interp.android.1$(EXECEXT) \
 	bin/interp.android.2$(EXECEXT) \
 	bin/interp.android.3$(EXECEXT) \
 	bin/interp.linux.1$(EXECEXT) \
@@ -20,7 +24,7 @@ OUTPUTS=bin/interp.android.1$(EXECEXT) \
 
 ifneq ($(QUICK),)
 	OUTPUTS+=\
-		bin/interp.static.1$(EXECEXT) \
+		bin/interp$(EXECEXT) \
 		bin/fforth.dict \
 		bin/assembler-thumb.dict
 endif
@@ -60,29 +64,29 @@ release:
 release/root: .git/refs/heads/$(RELEASE_BRANCH) release
 	if [ -d release/root ]; then cd release/root && $(GIT) fetch; else $(GIT) clone . release/root && cd release/root; fi && $(GIT) checkout $(RELEASE_BRANCH) && $(GIT) pull origin $(RELEASE_BRANCH)
 
-quick: bin/interp.static.1.elf
-
-bin/interp.static.1.elf:
-	cp bootstrap/interp.static.elf bin/interp.static.1.elf
+quick:
+	cp bootstrap/interp.elf bin/interp.elf
 
 bootstrap:
 	mkdir -p bootstrap
 
+bootstrap/interp.elf: release/root bootstrap
+	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf
+	cp release/root/bin/interp.elf bootstrap/interp.elf
+
 bootstrap/interp.static.elf: release/root bootstrap
-	$(MAKE) -C release/root version.4th bin/interp.elf
-	cp release/root/bin/interp.elf bootstrap/interp.static.elf
+	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf bin/interp.static.1.elf bin/interp.static.2.elf bin/interp.static.3.elf
+	cp release/root/bin/interp.static.3.elf bootstrap/interp.static.elf
 
 bootstrap/interp.linux.elf: release/root bootstrap
-	$(MAKE) -C release/root version.4th bin/interp.elf bin/interp.linux.1.elf bin/interp.linux.2.elf bin/interp.linux.3.elf
+	$(MAKE) TARGET=thumb-linux-gnueabi -C release/root version.4th bin/interp.elf bin/interp.linux.1.elf bin/interp.linux.2.elf bin/interp.linux.3.elf
 	cp release/root/bin/interp.linux.3.elf bootstrap/interp.linux.elf
 
-# todo static & dynamic
-
 bootstrap/interp.android.elf: release/root bootstrap
-	$(MAKE) -C release/root version.4th bin/interp.android.1.elf bin/interp.android.2.elf bin/interp.android.3.elf
+	$(MAKE) TARGET=thumb-linux-android -C release/root version.4th bin/interp.android.1.elf bin/interp.android.2.elf bin/interp.android.3.elf
 	cp release/root/bin/interp.android.3.elf bootstrap/interp.android.elf
 
-boot: bootstrap/interp.static.elf bootstrap/interp.linux.elf bootstrap/interp.android.elf
+boot: bootstrap/interp.elf bootstrap/interp.static.elf bootstrap/interp.linux.elf bootstrap/interp.android.elf
 
 version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	@echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
@@ -211,7 +215,7 @@ doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
 doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 	$(HTMLER) $^ > $@
 
-bin/interp.static.1$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
 bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
 bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
@@ -239,7 +243,7 @@ else ifeq ($(HOST_ABI),gnueabi)
 	RUN_OS=linux
 endif
 
-STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp.static.1$(EXECEXT)
+STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp$(EXECEXT)
 STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(RUN_OS).1$(EXECEXT)
 STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(RUN_OS).2$(EXECEXT)
 STAGE3_FORTH=$(TARGET_RUNNER) ./bin/interp.$(RUN_OS).3$(EXECEXT)
