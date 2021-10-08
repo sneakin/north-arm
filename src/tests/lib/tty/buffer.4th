@@ -26,3 +26,25 @@ def test-tty-buffer
   nl local0 tty-buffer-draw
   local0 exit-frame
 end
+
+def test-tty-buffer-ellipse
+  0
+  30 30 make-tty-buffer set-local0
+  42 0x71 0 10 20 0 0 local0 tty-buffer-ellipse
+  42 0x72 0 20 10 0 0 local0 tty-buffer-ellipse
+  42 0x73 0 21 20 0 10 local0 tty-buffer-ellipse
+  nl local0 tty-buffer-draw
+  ( 1 & 2 & 3 cells wide )
+  local0 tty-buffer-erase
+  42 0x74 0 10 20 0 20 local0 tty-buffer-ellipse
+  42 0x75 0 20 21 10 20 local0 tty-buffer-ellipse
+  42 0x76 0 29 22 20 20 local0 tty-buffer-ellipse
+  42 0x71 0 29 3 0 0 local0 tty-buffer-ellipse
+  nl local0 tty-buffer-draw
+  ( 1 & 2 & 3 cells tall )
+  local0 tty-buffer-erase
+  42 0x74 0 0 10 0 0 local0 tty-buffer-ellipse
+  42 0x75 0 11 10 10 0 local0 tty-buffer-ellipse
+  42 0x76 0 22 10 20 0 local0 tty-buffer-ellipse
+  nl local0 tty-buffer-draw
+end

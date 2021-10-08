@@ -1,12 +1,18 @@
 ( Pixel buffers for a TTY screen with drawing optimized to only change state and write characters when changes have been made. )
 
 struct: TtyScreen
-int<32> field: width
-int<32> field: height
+int field: width
+int field: height
 pointer<any> field: front
 pointer<any> field: back
 
-def tty-screen-draw
+def tty-screen-size ( screen -- rows cols )
+  arg0 TtyScreen -> width @
+  arg0 TtyScreen -> height @
+  set-arg0 return1
+end
+
+def tty-screen-redraw
   1 1 tty-cursor-to
   arg0 TtyScreen -> front @ tty-buffer-draw
 end
@@ -20,18 +26,18 @@ def tty-screen-update-row ( front back counter num-skipped )
     arg0 0 > IF arg0 tty-cursor-right 0 set-arg0 THEN
     arg3 tty-cell-draw
   THEN
-  arg3 TtyCell byte-size + set-arg3
-  arg2 TtyCell byte-size + set-arg2
-  arg1 TtyCell byte-size - set-arg1
+  arg3 TtyCell struct -> byte-size @ + set-arg3
+  arg2 TtyCell struct -> byte-size @ + set-arg2
+  arg1 TtyCell struct -> byte-size @ - set-arg1
   arg1 0 > IF repeat-frame THEN 4 return0-n
 end
 
 def tty-screen-update-cells ( front front-pitch back back-pitch counter )
   ( only move to and draw changed cells. )
-  arg4 arg2 arg3 arg1 min 0 tty-screen-update-row nl
+  arg4 arg2 arg3 arg1 min 0 tty-screen-update-row
   arg4 arg3 + 4 set-argn
   arg2 arg1 + set-arg2
-  arg0 1 - set-arg0 arg0 0 > IF repeat-frame THEN 5 return0-n
+  arg0 1 - set-arg0 arg0 0 > IF nl repeat-frame THEN 5 return0-n
 end
 
 def tty-screen-update
@@ -68,10 +74,20 @@ def tty-screen-swap
   1 return0-n
 end
 
+def tty-screen-draw
+  arg0 tty-screen-swap-buffers
+  arg0 tty-screen-redraw
+  1 return0-n
+end
+
 def tty-screen-cells
   arg0 TtyScreen -> back @ TtyBuffer -> cells @ return1-1
 end
 
+def tty-screen-buffer
+  arg0 TtyScreen -> back @ set-arg0
+end
+  
 def make-tty-screen ( rows cols ++ screen )
   0 TtyScreen make-instance set-local0
   arg0 local0 TtyScreen -> width !
@@ -84,4 +100,30 @@ end
 def tty-screen-erase
   arg0 TtyScreen -> back @ tty-buffer-erase
   1 return0-n
+end
+
+def tty-screen-erase-front
+  arg0 TtyScreen -> front @ tty-buffer-erase
+  1 return0-n
+end
+
+def tty-screen-resize! ( rows cols screen ++ screen allot? )
+  arg0 TtyScreen -> width @ arg1 equals?
+  arg0 TtyScreen -> height @ arg2 equals?
+  logand UNLESS
+    arg2 arg1 arg0 TtyScreen -> front @ tty-buffer-resize! 2 dropn
+    arg2 arg1 arg0 TtyScreen -> back @ tty-buffer-resize! 2 dropn
+    arg1 arg0 TtyScreen -> width !
+    arg2 arg0 TtyScreen -> height !
+    arg0 true exit-frame
+  THEN
+  arg0 set-arg2
+  false 2 return1-n
+end
+
+def tty-screen-resized?
+  tty-getsize
+  arg0 TtyScreen -> width @ equals?
+  swap arg0 TtyScreen -> height @ equals?
+  logand not set-arg0
 end

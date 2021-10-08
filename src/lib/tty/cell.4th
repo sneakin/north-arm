@@ -23,7 +23,7 @@ end
 def tty-cell-copy-string/3 ( cells string count -- )
   arg1 peek-byte arg2 TtyCell . char poke-byte
   arg1 1 + set-arg1
-  arg2 TtyCell byte-size + set-arg2
+  arg2 TtyCell struct -> byte-size @ + set-arg2
   arg0 1 - set-arg0
   arg0 0 > IF repeat-frame THEN 3 return0-n
 end

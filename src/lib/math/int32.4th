@@ -78,10 +78,19 @@ def int32-seq
   here arg0 exit-frame
 end
 
-def inc! ( place )
-  arg0 peek dup 1 + arg0 poke
-  set-arg0
+def inc!/2 ( place n -- value+n )
+  arg1 peek arg0 + dup arg1 poke
+  2 return1-n
 end
+
+def inc! ( place ) arg0 1 inc!/2 set-arg0 end
+
+def dec!/2 ( place n )
+  arg1 peek arg0 - dup arg1 poke
+  2 return1-n
+end
+
+def dec! ( place ) arg0 1 dec!/2 set-arg0 end  
 
 def pinc! ( place )
   arg0 peek 1 + dup arg0 poke

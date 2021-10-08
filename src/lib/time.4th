@@ -173,6 +173,10 @@ def time-stamp-seconds
   arg0 60 floored-mod set-arg0
 end
 
+def time-stamp-date
+  arg0 time->date date-stamp-parts rot set-arg0 swap return2
+end
+
 def make-time/1 ( fields -- time )
   arg0 5 seq-peek arg0 4 seq-peek arg0 3 seq-peek make-date-stamp days->secs
   arg0 2 seq-peek hours->secs +
@@ -194,6 +198,7 @@ def write-time
   1 return0-n
 end
 
+( todo refactor )
 def write-date-stamp
   arg0 date-stamp-parts
   rot write-int

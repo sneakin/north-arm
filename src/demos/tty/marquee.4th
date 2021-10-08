@@ -6,13 +6,13 @@ s[ src/lib/tty.4th
 
 struct: TtyMarquee
 pointer<any> field: text
-int<32> field: length
+int field: length
 int<8> field: attr
 int<8> field: color
-int<32> field: x
-int<32> field: y
-int<32> field: speed
-int<32> field: width
+int field: x
+int field: y
+int field: speed
+int field: width
 
 def make-tty-marquee ( str length width y speed ++ marquee )
   0 TtyMarquee make-instance set-local0
@@ -74,7 +74,7 @@ end
     
 def test-tty-marquee
   0 0 0 0
-  tty-getsize swap 1 - swap make-tty-screen set-local0
+  tty-getsize make-tty-screen set-local0
   s" Hello world" local0 TtyScreen -> width @ local0 TtyScreen -> height @ 3 / arg0 make-tty-marquee set-local2
   0x10 local2 TtyMarquee -> color poke-byte
   s" Hello world" local0 TtyScreen -> width @ local0 TtyScreen -> height @ 3 / 2 * arg0 negate make-tty-marquee set-local3
@@ -82,7 +82,7 @@ def test-tty-marquee
   tty-hide-cursor
   tty-alt-buffer
   get-time-secs set-local1
-  local0 tty-screen-draw
+  local0 tty-screen-redraw
   local3 local2 local0 arg1 DOTIMES[
     arg2 tty-screen-erase
     arg3 tty-marquee-update
