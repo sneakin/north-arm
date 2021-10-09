@@ -10,6 +10,8 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 ** Get out of the Turing Tar Pit.
 * Tasks
 ** now
+*** struct fields don't resolve right w/ b and b1 fields.
+*** swap tty-cursor-to's arguments to row, column
 *** cross-lookup in bash takes one argument, interp's version takes two.
 *** DONE cpio file format as arguments
 *** float tests
@@ -99,6 +101,11 @@ what's motd ( -> ' hello )
 *** locals
 { arg1 arg0 | local0 -- result }
 ** String readers have length limit of token-buffer-max. Could/should read more.
+** Full cpio archive concatenated onto binary.
+*** needs memory decoding instead of file reads
+*** And/or cpio header file offset argument
+*** cpio encoder
+*** compressed?
 ** Postpone lookup with and without immediates
 ** Makefile cross compile support
 *** Makefile needs TARGET and HOST documented
