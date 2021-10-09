@@ -1,4 +1,28 @@
-( Bresenham's line drawing, see http://www.phatcode.net/res/224/files/html/ch35/35-03.html )
+( Horizontal lines: )
+
+def hline-fn-loop ( fn accum y x2 x1 ++ accum )
+  arg3 arg2 arg0 4 argn exec-abs set-arg3
+  arg0 1 + set-arg0
+  arg0 arg1 int<= IF repeat-frame ELSE arg3 exit-frame THEN
+end
+
+def hline-fn ( fn accum y x2 x1 ++ accum )
+  4 argn arg3 arg2 arg1 arg0 maxmin hline-fn-loop 5 return0-n
+end
+
+( Vertical lines: )
+
+def vline-fn-loop ( fn accum y2 y1 x ++ accum )
+  arg3 arg1 arg0 4 argn exec-abs set-arg3
+  arg1 1 + set-arg1
+  arg1 arg2 int<= IF repeat-frame ELSE arg3 exit-frame THEN
+end
+
+def vline-fn ( fn accum y2 y1 x ++ accum )
+  4 argn arg3 arg2 arg1 maxmin arg0 vline-fn-loop 5 return0-n
+end
+
+( Bresenham's line drawing, see http://www.phatcode.net/res/224/files/html/ch35/35-03.html )
 
 struct: LineState
 int field: x
@@ -85,18 +109,6 @@ end
 
 ( todo when integer rise/run is zero, use run/rise )
 
-def hline-fn ( fn accum y2 x2 y1 x1 ++ accum )
-  4 argn arg1 arg0 5 argn exec-abs 4 set-argn
-  arg0 1 + set-arg0
-  arg0 arg2 int<= IF repeat-frame ELSE 4 argn exit-frame THEN
-end
-
-def vline-fn ( fn accum y2 x2 y1 x1 ++ accum )
-  4 argn arg1 arg0 5 argn exec-abs 4 set-argn
-  arg1 1 + set-arg1
-  arg1 arg3 int<= IF repeat-frame ELSE 4 argn exit-frame THEN
-end
-
 def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
   ( swap start and end so y1 > y2 )
   arg1 arg3 int> IF
@@ -104,19 +116,15 @@ def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
     arg2 arg0 set-arg2 set-arg0
   THEN
   ( local0 => dx )
-  arg2 arg0 - ( dup UNLESS
+  arg2 arg0 - dup UNLESS ( dx == 0: vertical )
     drop
-    5 argn 4 argn
-    arg2 arg0 int< IF arg1 arg0 arg3 arg2 ELSE arg3 arg2 arg1 arg0 THEN
-    dump-stack hline-fn exit-frame
-  THEN )
+    5 argn 4 argn arg3 arg1 arg0 vline-fn-loop exit-frame
+  THEN
   ( local1 => dy )
-  arg3 arg1 - ( dup UNLESS
-    drop
-    5 argn 4 argn
-    arg1 arg0 arg3 arg2
-    vline-fn exit-frame
-  THEN )
+  arg3 arg1 - dup UNLESS ( dy == 0: horizontal )
+    2 dropn
+    5 argn 4 argn arg1 arg2 arg0 hline-fn exit-frame
+  THEN
   ( handle the four cases )
   local0 0 int> IF
     local0 local1 int> IF
@@ -183,15 +191,25 @@ def line-fn-loop ( state fn accum ++ accum )
 end
 
 def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+  ( local0: dx )
+  arg2 arg0 - dup UNLESS ( dx == 0: vertical )
+    drop
+    5 argn 4 argn arg1 arg3 arg0 vline-fn exit-frame
+  THEN
+  ( local1: dy )
+  arg3 arg1 - dup UNLESS ( dy == 0: horizontal )
+    2 dropn
+    5 argn 4 argn arg1 arg2 arg0 hline-fn exit-frame
+  THEN
   LineState2 make-instance
   arg0 over LineState2 -> x1 !
   arg1 over LineState2 -> y1 !
   arg2 over LineState2 -> x2 !
   arg3 over LineState2 -> y2 !
-  arg2 arg0 - abs-int over LineState2 -> dx !
-  arg3 arg1 - abs-int negate over LineState2 -> dy !
-  arg0 arg2 int< IF 1 ELSE -1 THEN over LineState2 -> sx !
-  arg1 arg3 int< IF 1 ELSE -1 THEN over LineState2 -> sy !
+  local0 abs-int over LineState2 -> dx !
+  local1 abs-int negate over LineState2 -> dy !
+  local0 0 int> IF 1 ELSE -1 THEN over LineState2 -> sx !
+  local1 0 int> IF 1 ELSE -1 THEN over LineState2 -> sy !
   dup LineState2 -> dx @ over LineState2 -> dy @ + over LineState2 -> err !
   5 argn 4 argn line-fn-loop exit-frame
 end
