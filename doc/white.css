@@ -7,4 +7,5 @@
 .number { color: green; font-weight: bold; }
 .subst { font-weight: bold; }
 .type { font-style: italic; }
+.local { font-style: italic; }
 .comma { font-style: italic; }

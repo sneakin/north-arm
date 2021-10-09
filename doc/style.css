@@ -19,4 +19,5 @@ H1, H1 A { color: white; }
 .name { color: red; font-weight: bold; font-style: italic; }
 .subst { font-weight: bold; }
 .type { color: cyan; }
+.local { color: cyan; }
 .comma { color: cyan; }
