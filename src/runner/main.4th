@@ -139,9 +139,8 @@ defcol write-tabbed-hex-uint
 endcol
 
 def words-printer
-  arg0 cs -
-  dup write-tabbed-hex-uint space
-  arg0 dict-entry-name peek cs + write-string nl
+  arg0 dict-entry-name peek cs + write-string space
+  arg0 cs - write-tabbed-hex-uint nl
 end
 
 def words
