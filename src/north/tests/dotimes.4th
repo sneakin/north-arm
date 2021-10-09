@@ -4,6 +4,7 @@ s[ src/lib/assert.4th
 ] load-list
 
 def test-dotimes
+  arg0
   11 22 5 DOTIMES[ hello arg0 ]DOTIMES
   4 assert-equals
   3 assert-equals
@@ -14,4 +15,5 @@ def test-dotimes
   5 assert-equals
   22 assert-equals
   11 assert-equals
+  local0 arg0 assert-equals
 end

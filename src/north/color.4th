@@ -17,4 +17,4 @@ def color-init
   ' color-prompt ' prompt redefine!
 end
 
-tty-getsize 0 int> swap 0 int> and [IF] color-init [THEN] about
+tty-getsize 0 int> swap 0 int> and [IF] color-init [THEN]

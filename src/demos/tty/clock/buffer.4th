@@ -6,7 +6,7 @@ def draw-segment-vertical-row
 end
 
 def draw-segment-verticals
-  4 argn arg1 + arg3 arg0 tty-context-cursor-to
+  4 argn arg1 + arg3 arg0 tty-context-move-to
   arg2 arg0 draw-segment-vertical-row
   arg1 1 + set-arg1
   arg1 tty-segment-bar-height @ int< IF repeat-frame THEN 4 return0-n
@@ -20,19 +20,19 @@ def draw-segment-horiz
 end
 
 def draw-segment-bits ( row col context bits -- )
-  arg3 arg2 arg1 tty-context-cursor-to
+  arg3 arg2 arg1 tty-context-move-to
   arg0 SEGMENT-TOP logand IF
     arg1 draw-segment-horiz
   ELSE arg0 SEGMENT-TOP-ALL logand arg1 draw-segment-vertical-row
   THEN
   arg3 1 + arg2 arg0 SEGMENT-TOP-LEFT SEGMENT-TOP-RIGHT logior logand 0 arg1 draw-segment-verticals
-  arg3 1 + tty-segment-bar-height @ + arg2 arg1 tty-context-cursor-to
+  arg3 1 + tty-segment-bar-height @ + arg2 arg1 tty-context-move-to
   arg0 SEGMENT-CENTER logand IF
     arg1 draw-segment-horiz
   ELSE arg0 arg1 draw-segment-vertical-row
   THEN
   arg3 2 + tty-segment-bar-height @ + arg2 arg0 SEGMENT-BOT-LEFT SEGMENT-BOT-RIGHT logior logand 0 arg1 draw-segment-verticals
-  arg3 2 + tty-segment-bar-height @ dup + + arg2 arg1 tty-context-cursor-to
+  arg3 2 + tty-segment-bar-height @ dup + + arg2 arg1 tty-context-move-to
   arg0 SEGMENT-BOT logand IF
     arg1 draw-segment-horiz
   ELSE arg0 SEGMENT-BOT-ALL logand arg1 draw-segment-vertical-row

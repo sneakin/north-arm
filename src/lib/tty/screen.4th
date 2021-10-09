@@ -68,15 +68,35 @@ def tty-screen-copy-up
   1 return0-n
 end
 
+def tty-screen-copy-down
+  arg0 TtyScreen -> front @ TtyBuffer -> cells @
+  arg0 TtyScreen -> back @ TtyBuffer -> cells @
+  arg0 TtyScreen -> front @ tty-buffer-size
+  copy
+  1 return0-n
+end
+
 def tty-screen-swap
   arg0 tty-screen-swap-buffers
   arg0 tty-screen-update
   1 return0-n
 end
 
+def tty-screen-swap-copy
+  arg0 tty-screen-swap
+  arg0 tty-screen-copy-down
+  1 return0-n
+end
+
 def tty-screen-draw
   arg0 tty-screen-swap-buffers
   arg0 tty-screen-redraw
+  1 return0-n
+end
+
+def tty-screen-draw-copy
+  arg0 tty-screen-redraw
+  arg0 tty-screen-copy-down
   1 return0-n
 end
 

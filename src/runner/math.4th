@@ -8,9 +8,10 @@ defcol zero
   int32 0 swap
 endcol
 
-defcol minmax rot 2dup int> IF swap THEN swap rot endcol
+defcol minmax rot 2dup int< IF swap THEN rot endcol
+defcol maxmin rot 2dup int> IF swap THEN rot endcol
 defcol min rot minmax drop swap endcol
-defcol max rot minmax swap drop swap endcol
+defcol max rot maxmin drop swap endcol
 
 def in-range? ( n max min )
   arg2 arg1 int<=

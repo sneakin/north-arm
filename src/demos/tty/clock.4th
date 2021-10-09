@@ -63,13 +63,14 @@ def tty-analog-clock-hand ( height width length% degrees context -- )
   ( calc center )
   arg0 tty-context-height 2 /
   arg0 tty-context-width 2 /
+  2dup arg0 tty-context-move-to
   ( translate angle and calc end point /| )
   arg1 180 + int32->float32 degrees->vec2d
   arg3 int32->float32 float32-mul local0 float32-mul float32->int32 local2 +
   swap 4 argn int32->float32 float32-mul local0 float32-mul float32->int32 local1 +
   swap
   ( draw line )
-  42 arg0 tty-context-line
+  arg0 tty-context-line
   5 return0-n
 end
 
@@ -80,6 +81,7 @@ def tty-analog-clock-loop ( screen tz -- )
   arg1 tty-screen-resized? IF true 2 return1-n THEN
   0 0 0
   arg1 tty-screen-buffer make-tty-context set-local0
+  42 local0 TtyContext -> char !
   get-time-secs set-local1
   local1 arg0 + set-local2
   arg1 tty-screen-erase
@@ -94,15 +96,17 @@ def tty-analog-clock-loop ( screen tz -- )
   ( 12 o'clock notch )
   4 overn 3 overn - 1 +
   4 overn 3 overn 20 / -
-  over 5 overn 10 / +
-  over 5 overn 10 / +
-  42 local0 tty-context-ellipse
+  2dup local0 tty-context-move-to
+  swap 4 overn 10 / +
+  swap 3 overn 10 / +
+  local0 tty-context-ellipse
   ( face edge )
   4 overn 3 overn -
   4 overn 3 overn -
-  4 overn 2 * 3 overn +
-  4 overn 2 * 3 overn +
-  42 local0 tty-context-ellipse
+  2dup local0 tty-context-move-to
+  swap 4 overn 2 * +
+  swap 3 overn 2 * +
+  local0 tty-context-ellipse
   ( the hands )
   TTY-CELL-NORMAL local0 TtyContext -> attr poke-byte
   0x33 local0 TtyContext -> color poke-byte

@@ -1,5 +1,5 @@
-0xF0 const> TTY-CELL-FG
-0xF const> TTY-CELL-BG
+0x70 const> TTY-CELL-FG
+0x7 const> TTY-CELL-BG
 
 0x3 const> TTY-CELL-BRIGHTNESS
 0xFC const> TTY-CELL-ATTRS

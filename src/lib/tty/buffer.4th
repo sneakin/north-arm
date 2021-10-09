@@ -76,13 +76,20 @@ def tty-buffer-erase ( TtyBuffer -- )
   1 return0-n
 end
 
+def tty-buffer-clips? ( row col buffer -- yes? )
+  0 arg2 int<= arg2 arg0 TtyBuffer -> height @ int< and UNLESS true 3 return1-n THEN
+  0 arg1 int<= arg1 arg0 TtyBuffer -> width @ int< and UNLESS true 3 return1-n THEN
+  false 3 return1-n
+end
+
 def tty-buffer-set-cell ( char color attr row col buffer -- )
-  arg0 TtyBuffer -> cells @
-  arg2 arg0 tty-buffer-pitch * + arg1 TtyCell struct -> byte-size @ * +
-  5 argn over TtyCell . char poke-byte
-  4 argn over TtyCell . color poke-byte
-  3 argn over TtyCell . attr poke-byte
-  6 return0-n
+  arg2 arg1 arg0 tty-buffer-clips? UNLESS
+    arg0 TtyBuffer -> cells @
+    arg2 arg0 tty-buffer-pitch * + arg1 TtyCell struct -> byte-size @ * +
+    5 argn over TtyCell . char poke-byte
+    4 argn over TtyCell . color poke-byte
+    3 argn over TtyCell . attr poke-byte
+  THEN 6 return0-n
 end
 
 def tty-buffer-draw-string ( str length buffer row col color attr -- )
@@ -148,6 +155,7 @@ def tty-buffer-line ( char color attr y1 x1 y2 x2 buffer -- )
   6 argn 3 partial-after
   7 argn 3 partial-after
   arg0 4 argn arg3 arg2 arg1 line-fn
+  8 return0-n
 end
 
 def tty-buffer-circle ( char color attr cy cx r buffer -- )
@@ -156,6 +164,7 @@ def tty-buffer-circle ( char color attr cy cx r buffer -- )
   5 argn 3 partial-after
   6 argn 3 partial-after
   arg0 arg3 arg2 arg1 circle-fn
+  7 return0-n
 end
 
 def tty-buffer-ellipse ( char color attr y1 x1 y2 x2 buffer -- )
@@ -164,4 +173,5 @@ def tty-buffer-ellipse ( char color attr y1 x1 y2 x2 buffer -- )
   6 argn 3 partial-after
   7 argn 3 partial-after
   arg0 4 argn arg3 arg2 arg1 ellipse-fn
+  8 return0-n
 end
