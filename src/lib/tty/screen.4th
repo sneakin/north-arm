@@ -13,8 +13,11 @@ def tty-screen-size ( screen -- rows cols )
 end
 
 def tty-screen-redraw
+  tty-cursor-save
   1 1 tty-cursor-to
+  tty-hide-cursor
   arg0 TtyScreen -> front @ tty-buffer-draw
+  tty-cursor-restore
 end
 
 def tty-screen-update-row ( front back counter num-skipped )
@@ -42,6 +45,7 @@ end
 
 def tty-screen-update
   ( only move to and draw changed cells. )
+  tty-cursor-save
   1 1 tty-cursor-to
   arg0 TtyScreen -> front @ TtyBuffer -> cells @
   arg0 TtyScreen -> front @ tty-buffer-pitch
@@ -49,6 +53,7 @@ def tty-screen-update
   arg0 TtyScreen -> back @ tty-buffer-pitch
   arg0 TtyScreen -> height @
   tty-screen-update-cells
+  tty-cursor-restore
   1 return0-n
 end
 

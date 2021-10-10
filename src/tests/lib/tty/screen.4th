@@ -1,5 +1,6 @@
 s[ src/lib/tty.4th
    src/lib/time.4th
+   src/lib/clock.4th
 ] load-list
 
 def test-tty-screen ( rows cols ++ screen )

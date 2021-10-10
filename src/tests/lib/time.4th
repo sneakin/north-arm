@@ -1,6 +1,7 @@
 s[ src/lib/assert.4th
    src/lib/structs.4th
    src/lib/time.4th
+   src/lib/linux/clock.4th
 ] load-list
 
 def test-time-stamp ( seconds day-of-year year month day hour minutes seconds )

@@ -1,5 +1,6 @@
 s[ src/lib/process.4th
    src/lib/time.4th
+   src/lib/linux/clock.4th
    src/lib/assert.4th
 ] load-list
 

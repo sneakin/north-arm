@@ -19,7 +19,7 @@ int field: height
 pointer<any> field: cells
 
 def make-tty-buffer-mem ( rows cols buffer ++ TtyBuffer )
-  arg2 arg1 * TtyCell struct -> byte-size @ * stack-allot-zero arg0 TtyBuffer -> cells !
+  arg2 arg1 * TtyCell struct -> byte-size @ * cell-size + stack-allot-zero arg0 TtyBuffer -> cells !
   arg1 arg0 TtyBuffer -> width !
   arg2 arg0 TtyBuffer -> height !
   arg0 exit-frame
@@ -71,7 +71,7 @@ end
 
 def tty-buffer-erase ( TtyBuffer -- )
   arg0 TtyBuffer -> cells @
-  arg0 tty-buffer-size cell/
+  arg0 tty-buffer-size cell/ 1 + ( fixme needs to be byte exact, adding padding on allot and going beyond here )
   0 fill-seq
   1 return0-n
 end
@@ -80,6 +80,15 @@ def tty-buffer-clips? ( row col buffer -- yes? )
   0 arg2 int<= arg2 arg0 TtyBuffer -> height @ int< and UNLESS true 3 return1-n THEN
   0 arg1 int<= arg1 arg0 TtyBuffer -> width @ int< and UNLESS true 3 return1-n THEN
   false 3 return1-n
+end
+
+def tty-buffer-get-cell ( row col buffer ++ cell )
+  arg2 arg1 arg0 tty-buffer-clips? UNLESS
+    arg0 TtyBuffer -> cells @
+    arg2 arg0 tty-buffer-pitch * + arg1 TtyCell struct -> byte-size @ * +
+  ELSE
+    0
+  THEN 3 return1-n
 end
 
 def tty-buffer-set-cell ( char color attr row col buffer -- )

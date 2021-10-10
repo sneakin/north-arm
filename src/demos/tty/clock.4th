@@ -1,6 +1,9 @@
-' get-time-secs [UNLESS]
+' alias [UNLESS] load-core [THEN]
+
+' TtyScreen [UNLESS]
 s[ src/lib/tty.4th
    src/lib/time.4th
+   src/lib/linux/clock.4th
    src/lib/geometry/angles.4th
 ] load-list
 [THEN]
@@ -10,6 +13,8 @@ s[ src/demos/tty/clock/segments.4th
    src/demos/tty/clock/tty.4th
    src/demos/tty/clock/buffer.4th
 ] load-list
+
+15 const> CLOCK-REDRAW-PERIOD
 
 def tty-center-segment-clock ( rows cols -- row col )
   arg0 2 / tty-segment-width @ 2 * tty-segment-digit-spacing @ + tty-segment-field-spacing @ + 3 * 2 / -
@@ -26,7 +31,7 @@ def tty-raw-clock-loop ( tz )
   2dup local1 tty-raw-clock/3
   4 overn 2 / + local1 tty-raw-date/3
   1 1 tty-cursor-to tty-show-cursor
-  1 get-time-secs local0 - - sleep
+  local0 1 + sleep-until drop
   drop-locals repeat-frame
 end
 
@@ -37,7 +42,7 @@ end
 
 def tty-buffer-clock-loop ( screen tz )
   arg1 tty-screen-resized? IF true 2 return1-n THEN
-  get-time-secs dup arg0 +
+  get-time-secs 1 + dup arg0 +
   0 arg1 tty-screen-buffer make-tty-context set-local2
   arg1 tty-screen-erase
   ( arg1 tty-buffer-clock-check-size IF arg1 tty-screen-redraw THEN ) ( drop locals will cause problems )
@@ -45,8 +50,8 @@ def tty-buffer-clock-loop ( screen tz )
   over 2 / over tty-center-segment-clock ( swap )
   2dup local1 local2 tty-buffer-clock/4
   swap 4 overn 2 / + swap local1 local2 tty-buffer-date/4
-  local1 0x7 logand IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
-  1 get-time-secs local0 - - sleep
+  local0 sleep-until drop
+  local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
   drop-locals repeat-frame
 end
 
@@ -82,7 +87,7 @@ def tty-analog-clock-loop ( screen tz -- )
   0 0 0
   arg1 tty-screen-buffer make-tty-context set-local0
   42 local0 TtyContext -> char !
-  get-time-secs set-local1
+  get-time-secs 1 + set-local1
   local1 arg0 + set-local2
   arg1 tty-screen-erase
   ( center of clock )
@@ -121,8 +126,8 @@ def tty-analog-clock-loop ( screen tz -- )
     0x44 local0 TtyContext -> color poke-byte
     2dup 50 local2 6 * 360 int-mod local0 tty-analog-clock-hand
   THEN
-  local1 0x7 logand IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
-  1 get-time-secs local1 - - sleep
+  local1 sleep-until drop
+  local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
   drop-locals repeat-frame
 end
 

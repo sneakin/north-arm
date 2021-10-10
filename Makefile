@@ -1,5 +1,5 @@
-FORTH ?= bash ./src/bash/forth.sh
-HTMLER ?= ./scripts/htmler.sh
+FORTH?=bash ./src/bash/forth.sh
+HTMLER?=./scripts/htmler.sh
 GIT?=git
 
 EXECEXT=.elf
@@ -11,7 +11,6 @@ RELEASE_BRANCH?=master
 OUTPUTS=\
 	bin/interp.static.1$(EXECEXT) \
 	bin/interp.static.2$(EXECEXT) \
-	bin/interp.static.3$(EXECEXT) \
 	bin/interp.android.1$(EXECEXT) \
 	bin/interp.android.2$(EXECEXT) \
 	bin/interp.android.3$(EXECEXT) \
@@ -47,14 +46,14 @@ north: bin/north$(EXECEXT)
 
 include ./Makefile.arch
 
-.PHONY: clean doc all quick git-info
-
 ifeq ($(GIT_BRANCH),)
   GIT_REF?=$(shell cat .git/HEAD | sed -e 's/.*: \(.*\)/\1/')
   GIT_BRANCH=$(shell basename $(GIT_REF))
 else
   GIT_REF=refs/heads/$(GIT_BRANCH)
 endif
+
+.PHONY: clean doc all quick git-info
 
 git-info:
 	@echo $(GIT) $(GIT_BRANCH) $(GIT_REF)
@@ -75,8 +74,8 @@ bootstrap/interp.elf: release/root bootstrap
 	cp release/root/bin/interp.elf bootstrap/interp.elf
 
 bootstrap/interp.static.elf: release/root bootstrap
-	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf bin/interp.static.1.elf bin/interp.static.2.elf bin/interp.static.3.elf
-	cp release/root/bin/interp.static.3.elf bootstrap/interp.static.elf
+	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf bin/interp.static.1.elf bin/interp.static.2.elf
+	cp release/root/bin/interp.static.2.elf bootstrap/interp.static.elf
 
 bootstrap/interp.linux.elf: release/root bootstrap
 	$(MAKE) TARGET=thumb-linux-gnueabi -C release/root version.4th bin/interp.elf bin/interp.linux.1.elf bin/interp.linux.2.elf bin/interp.linux.3.elf
