@@ -11,21 +11,27 @@ define platform_vars # (var_prefix)
 	ifneq (,$$(findstring x86_64,$($(1))))
 		$(1)_ARCH?=x86_64
 		$(1)_BITS?=64
+		$(1)_RUNNER?=qemu-x86_64
 	else ifneq (,$$(findstring x86,$($(1))))
 		$(1)_ARCH?=x86
 		$(1)_BITS?=32
+		$(1)_RUNNER?=qemu-i386
 	else ifneq (,$$(findstring arm,$($(1))))
 		$(1)_ARCH?=arm
 		$(1)_BITS?=32
+		$(1)_RUNNER?=qemu-arm
 	else ifneq (,$$(findstring thumb2,$($(1))))
 		$(1)_ARCH?=thumb2
 		$(1)_BITS?=32
+		$(1)_RUNNER?=qemu-arm
 	else ifneq (,$$(findstring thumb,$($(1))))
 		$(1)_ARCH?=thumb
 		$(1)_BITS?=32
+		$(1)_RUNNER?=qemu-arm
 	else ifneq (,$$(findstring aarch64,$($(1))))
 		$(1)_ARCH?=aarch64
 		$(1)_BITS?=64
+		$(1)_RUNNER?=qemu-aarch64
 	else ifneq (,$$(findstring bash,$($(1))))
 		$(1)_ARCH?=bash
 		$(1)_BITS?=32
@@ -63,7 +69,7 @@ ifneq ($(HOST_ARCH), $(TARGET_ARCH))
 	ifneq (32,$(TARGET_BITS))
 		TARGET_CFLAGS?=-m32
 	endif
-	TARGET_RUNNER?=qemu-$(TARGET_ARCH)
+	#TARGET_RUNNER?=qemu-$(TARGET_ARCH)
 else
 	TARGET_CC?=$(CC)
 endif
