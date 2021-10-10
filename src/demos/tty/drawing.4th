@@ -3,6 +3,7 @@
 ' TtyScreen [UNLESS]
 s[ src/lib/tty.4th
    src/lib/time.4th
+   src/lib/linux/clock.4th
 ] load-list
 [THEN]
 
