@@ -1,6 +1,6 @@
 def radians->vec2d ( degs -- y x )
-  arg0 float32-sin
-  arg0 float32-cos set-arg0 return1
+  arg0 float32-cos
+  arg0 float32-sin set-arg0 return1
 end
 
 def degrees->radians ( float<32> -- float<32> )

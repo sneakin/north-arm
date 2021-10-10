@@ -70,9 +70,10 @@ def tty-analog-clock-hand ( height width length% degrees context -- )
   arg0 tty-context-width 2 /
   2dup arg0 tty-context-move-to
   ( translate angle and calc end point /| )
-  arg1 180 + int32->float32 degrees->vec2d
+  arg1 -90 + int32->float32 degrees->vec2d
   arg3 int32->float32 float32-mul local0 float32-mul float32->int32 local2 +
-  swap 4 argn int32->float32 float32-mul local0 float32-mul float32->int32 local1 +
+  swap
+  4 argn int32->float32 float32-mul local0 float32-mul float32->int32 local1 +
   swap
   ( draw line )
   arg0 tty-context-line
@@ -115,11 +116,11 @@ def tty-analog-clock-loop ( screen tz -- )
   ( the hands )
   TTY-CELL-NORMAL local0 TtyContext -> attr poke-byte
   0x33 local0 TtyContext -> color poke-byte
-  2dup 65 local2 time-stamp-hours 5 * -6 * local0 tty-analog-clock-hand
+  2dup 65 local2 time-stamp-hours 5 * 6 * local0 tty-analog-clock-hand
   0x77 local0 TtyContext -> color poke-byte
-  2dup 80 local2 time-stamp-minutes -6 * local0 tty-analog-clock-hand
+  2dup 80 local2 time-stamp-minutes 6 * local0 tty-analog-clock-hand
   0x11 local0 TtyContext -> color poke-byte
-  2dup 95 local2 time-stamp-seconds -6 * local0 tty-analog-clock-hand
+  2dup 95 local2 time-stamp-seconds 6 * local0 tty-analog-clock-hand
   debug? IF
     0x22 local0 TtyContext -> color poke-byte
     2dup 50 local2 6 * local0 tty-analog-clock-hand
