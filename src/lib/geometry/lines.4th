@@ -1,25 +1,25 @@
 ( Horizontal lines: )
 
 def hline-fn-loop ( fn accum y x2 x1 ++ accum )
-  arg3 arg2 arg0 4 argn exec-abs set-arg3
+  arg3 arg2 arg0 4 argn exec-abs UNLESS exit-frame THEN set-arg3
   arg0 1 + set-arg0
   arg0 arg1 int<= IF repeat-frame ELSE arg3 exit-frame THEN
 end
 
 def hline-fn ( fn accum y x2 x1 ++ accum )
-  4 argn arg3 arg2 arg1 arg0 maxmin hline-fn-loop 5 return0-n
+  4 argn arg3 arg2 arg1 arg0 maxmin hline-fn-loop exit-frame
 end
 
 ( Vertical lines: )
 
 def vline-fn-loop ( fn accum y2 y1 x ++ accum )
-  arg3 arg1 arg0 4 argn exec-abs set-arg3
+  arg3 arg1 arg0 4 argn exec-abs UNLESS exit-frame THEN set-arg3
   arg1 1 + set-arg1
   arg1 arg2 int<= IF repeat-frame ELSE arg3 exit-frame THEN
 end
 
 def vline-fn ( fn accum y2 y1 x ++ accum )
-  4 argn arg3 arg2 arg1 maxmin arg0 vline-fn-loop 5 return0-n
+  4 argn arg3 arg2 arg1 maxmin arg0 vline-fn-loop exit-frame
 end
 
 ( Bresenham's line drawing, see http://www.phatcode.net/res/224/files/html/ch35/35-03.html )
@@ -180,7 +180,7 @@ def line-fn-loop ( state fn accum ++ accum )
   arg0
   arg2 LineState2 -> y1 @
   arg2 LineState2 -> x1 @
-  arg1 exec-abs set-arg0
+  arg1 exec-abs UNLESS exit-frame THEN set-arg0
   ( done? )
   arg2 line-state2-done?
   IF arg0 exit-frame

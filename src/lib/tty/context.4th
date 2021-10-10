@@ -98,7 +98,7 @@ def tty-context-line ( y1 x1 context -- )
   arg0 TtyContext -> char @
   arg0 TtyContext -> color peek-byte
   arg0 TtyContext -> attr peek-byte
-  arg0 tty-context-get-pos arg2 arg1 arg0 TtyContext -> buffer @ tty-buffer-line
+  arg2 arg1 arg0 tty-context-get-pos arg0 TtyContext -> buffer @ tty-buffer-line
   arg2 arg1 arg0 tty-context-move-to
   3 return0-n
 end

@@ -21,7 +21,7 @@ end
 
 def eighth-circle-fn-loop ( fn accum circle-state ++ accum )
   ( plot point[s] )
-  arg1 arg0 arg2 exec-abs set-arg1
+  arg1 arg0 arg2 exec-abs UNLESS exit-frame THEN set-arg1
   ( update state )
   arg0 CircleState -> x dup @ 1 + swap !
   arg0 CircleState -> d @ 0 int> IF
@@ -51,16 +51,16 @@ def circle-fn-caller ( fn accum circle-state ++ accum )
   arg0 CircleState -> cy @ arg0 CircleState -> cx @
   ( call fn w/ points on the circle )
   arg1
-  local2 local0 + local3 local1 + arg2 exec-abs
-  local2 local0 + local3 local1 - arg2 exec-abs
-  local2 local0 - local3 local1 + arg2 exec-abs
-  local2 local0 - local3 local1 - arg2 exec-abs
+  local2 local0 + local3 local1 + arg2 exec-abs UNLESS false exit-frame THEN
+  local2 local0 + local3 local1 - arg2 exec-abs UNLESS false exit-frame THEN
+  local2 local0 - local3 local1 + arg2 exec-abs UNLESS false exit-frame THEN
+  local2 local0 - local3 local1 - arg2 exec-abs UNLESS false exit-frame THEN
   ( x/y flipped )
-  local2 local1 + local3 local0 + arg2 exec-abs
-  local2 local1 + local3 local0 - arg2 exec-abs
-  local2 local1 - local3 local0 + arg2 exec-abs
-  local2 local1 - local3 local0 - arg2 exec-abs
-  exit-frame
+  local2 local1 + local3 local0 + arg2 exec-abs UNLESS false exit-frame THEN
+  local2 local1 + local3 local0 - arg2 exec-abs UNLESS false exit-frame THEN
+  local2 local1 - local3 local0 + arg2 exec-abs UNLESS false exit-frame THEN
+  local2 local1 - local3 local0 - arg2 exec-abs UNLESS false exit-frame THEN
+  true exit-frame
 end
 
 def circle-fn ( fn accum cy cx r ++ accum )

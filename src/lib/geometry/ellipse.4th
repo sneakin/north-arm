@@ -41,10 +41,10 @@ end
 
 def ellipse-fn-loop-y  ( state fn accum ++ accum )
   ( call fn )
-  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x0 @ 1 - arg1 exec-abs set-arg0
-  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x1 @ 1 + arg1 exec-abs set-arg0
-  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x0 @ 1 - arg1 exec-abs set-arg0
-  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x1 @ 1 + arg1 exec-abs set-arg0
+  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x0 @ 1 - arg1 exec-abs UNLESS exit-frame THEN set-arg0
+  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x1 @ 1 + arg1 exec-abs UNLESS exit-frame THEN set-arg0
+  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x0 @ 1 - arg1 exec-abs UNLESS exit-frame THEN set-arg0
+  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x1 @ 1 + arg1 exec-abs UNLESS exit-frame THEN set-arg0
   ( loop )
   arg2 EllipseState -> y0 inc! drop
   arg2 EllipseState -> y1 dec! drop
@@ -53,17 +53,17 @@ end
 
 def ellipse-fn-quadrant-call ( state fn accum ++ accum )
   ( Call fn, with accum, y, x, for pixels in each quadrant. )
-  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x1 @ arg1 exec-abs set-arg0
-  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x0 @ arg1 exec-abs set-arg0
-  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x0 @ arg1 exec-abs set-arg0
-  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x1 @ arg1 exec-abs set-arg0
+  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x1 @ arg1 exec-abs UNLESS false exit-frame THEN set-arg0
+  arg0 arg2 EllipseState -> y0 @ arg2 EllipseState -> x0 @ arg1 exec-abs UNLESS false exit-frame THEN set-arg0
+  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x0 @ arg1 exec-abs UNLESS false exit-frame THEN set-arg0
+  arg0 arg2 EllipseState -> y1 @ arg2 EllipseState -> x1 @ arg1 exec-abs UNLESS false exit-frame THEN set-arg0
   ( returns accum )
-  arg0 exit-frame
+  arg0 true exit-frame
 end
 
 def ellipse-fn-loop  ( state fn accum ++ accum )
   ( call fn )
-  arg2 arg1 arg0 ellipse-fn-quadrant-call set-arg0
+  arg2 arg1 arg0 ellipse-fn-quadrant-call UNLESS exit-frame THEN set-arg0
   ( next pixel )
   arg2 ellipse-state-step
   ( done? )
