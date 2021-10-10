@@ -72,6 +72,7 @@ ifneq ($(HOST_ARCH), $(TARGET_ARCH))
 	#TARGET_RUNNER?=qemu-$(TARGET_ARCH)
 else
 	TARGET_CC?=$(CC)
+	TARGET_RUNNER=
 endif
 
 TARGET_VALID=true
