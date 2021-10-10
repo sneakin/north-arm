@@ -1,4 +1,6 @@
-' get-time-secs [UNLESS]
+' alias [UNLESS] load-core [THEN]
+
+' TtyScreen [UNLESS]
 s[ src/lib/tty.4th
    src/lib/time.4th
    src/lib/geometry/angles.4th

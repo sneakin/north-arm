@@ -1,5 +1,11 @@
 ( Horizontal lines: )
 
+' maxmin [UNLESS]
+def maxmin
+  arg1 arg0 minmax set-arg1 set-arg0
+end
+[THEN]
+
 def hline-fn-loop ( fn accum y x2 x1 ++ accum )
   arg3 arg2 arg0 4 argn exec-abs set-arg3
   arg0 1 + set-arg0

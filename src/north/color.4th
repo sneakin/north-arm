@@ -1,7 +1,6 @@
-load-core
-s[ src/lib/math.4th
-   src/lib/structs.4th
-   src/north/words.4th
+' alias [UNLESS] load-core [THEN]
+
+s[ src/north/words.4th
    ../north/src/01/tty.4th
 ] load-list
 
