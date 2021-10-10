@@ -38,7 +38,7 @@ end
 
 def wrapped-inc!/3 ( place max amount -- wrapped? )
   arg2 dup @ arg0 +
-  local0 arg1 int>=
+  dup arg1 int>=
   IF drop 0 true
   ELSE false
   THEN rot ! 3 return1-n
@@ -48,7 +48,7 @@ def wrapped-inc! ( place max -- wrapped? )
   arg1 arg0 1 wrapped-inc!/3 2 return1-n
 end
 
-def tty-context-advance-cursor/2
+def tty-context-advance-cursor/2 ( amount context -- )
   arg0 TtyContext -> x arg0 tty-context-width arg1 wrapped-inc!/3 IF
     arg0 TtyContext -> y arg0 tty-context-height arg1 wrapped-inc!/3
     IF ( todo scroll buffer? )
@@ -57,14 +57,10 @@ def tty-context-advance-cursor/2
 end
 
 def tty-context-advance-cursor
-  arg0 TtyContext -> x arg0 tty-context-width wrapped-inc! IF
-    arg0 TtyContext -> y arg0 tty-context-height wrapped-inc!
-    IF ( todo scroll buffer? )
-    THEN
-  THEN 1 return0-n
+  1 arg0 tty-context-advance-cursor/2 1 return0-n
 end
 
-def tty-context-write-byte
+def tty-context-write-byte ( byte context -- )
   arg1
   arg0 TtyContext -> color peek-byte
   arg0 TtyContext -> attr peek-byte
