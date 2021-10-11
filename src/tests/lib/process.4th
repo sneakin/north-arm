@@ -9,7 +9,7 @@ def test-process-happy
   0 0
   1024 stack-allot set-local1
   ( start up )
-  process process-spawn set-local0
+  process-spawn set-local0
   local0 process -> pid peek assert
   1 sleep
   ( sending commands )
@@ -32,7 +32,7 @@ end
 def test-process-kill
   ( Forceful kill )
   0
-  process process-spawn set-local0
+  process-spawn set-local0
   1 sleep
   s" hello " local0 process-write
   1 sleep
@@ -47,7 +47,7 @@ end
 def test-process-print
   ( Fuller exercise of printing. )
   0
-  process process-spawn set-local0
+  process-spawn set-local0
   1 sleep
   s" hello space parent-input peek write-int space parent-output peek write-int space " local0 process-write
   local0 process-print

@@ -52,7 +52,7 @@ def fork
 end
 
 def execve
-  args 2 0xB syscall 2 return1-n
+  args 3 0xB syscall 3 return1-n
 end
 
 def getpid

@@ -2,8 +2,7 @@
 
 ( todo [e]poll based reactor )
 
-s[ src/lib/structs.4th
-   src/lib/linux/process.4th
+s[ src/lib/linux/process.4th
 ] load-list
 
 ( Children replace stdio but may want to use them. )
