@@ -211,11 +211,3 @@ end
 def nanosleep ( out-remaining timespec -- result )
   args 2 0xA2 syscall 2 return1-n
 end
-
-def clock-gettime ( timespec clockid -- result )
-  args 2 0x107 syscall 2 return1-n
-end
-
-def clock-nanosleep ( timespec-remain timespec-request flags clockid -- result )
-  args 4 0x109 syscall 4 return1-n
-end

@@ -284,6 +284,7 @@ alias> tmp" s"
 
 : not-found " Not found." error-line ;
 
+: write-int ,i drop ;
 : write-hex-uint ,h drop ;
 : write-string/2 drop write-string ;
 : write-line/2 drop write-line ;

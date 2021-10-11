@@ -101,10 +101,10 @@ def tty-analog-clock-loop ( screen tz -- )
   0x70 local0 TtyContext -> color poke-byte
   ( 12 o'clock notch )
   4 overn 3 overn - 1 +
-  4 overn 3 overn 20 / -
+  4 overn 3 overn 20 / - 1 -
   2dup local0 tty-context-move-to
   swap 4 overn 10 / +
-  swap 3 overn 10 / +
+  swap 3 overn 10 / + 1 +
   local0 tty-context-ellipse
   ( face edge )
   4 overn 3 overn -
