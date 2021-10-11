@@ -1,3 +1,6 @@
+( Constants: )
+
+( The clock IDs: )
 0 const> CLOCK-REALTIME                 
 1 const> CLOCK-MONOTONIC                
 2 const> CLOCK-PROCESS-CPUTIME-ID       
@@ -10,8 +13,13 @@
 9 const> CLOCK-BOOTTIME-ALARM           
 11 const> CLOCK-TAI                      
 
+( Timer flags: )
 0 const> TIMER-DEFAULT
 1 const> TIMER-ABSTIME
+
+( 32 bit: )
+
+( Data structures: )
 
 struct: timespec
 int<32> field: tv_sec
@@ -25,11 +33,23 @@ struct: timezone
 int<32> field: minuteswest
 int<32> field: dsttime
 
+( System calls: )
+
+def clock-gettime ( timespec clockid -- result )
+  args 2 0x107 syscall 2 return1-n
+end
+
+def clock-nanosleep ( timespec-remain timespec-request flags clockid -- result )
+  args 4 0x109 syscall 4 return1-n
+end
+
+( Convenience wrappers: )
+
 def clock-get-secs ( clock-id -- timestamp )
   0 
-  timeval make-instance set-local0
+  timespec make-instance set-local0
   local0 value-of arg0 clock-gettime
-  local0 timeval -> sec peek set-arg0
+  local0 timespec -> tv_sec peek set-arg0
 end
 
 def get-time-secs
@@ -68,4 +88,55 @@ end
 
 def sleep-until ( time -- remaining )
   arg0 CLOCK-REALTIME sleep-until/2 set-arg0
+end
+
+
+( 64 bit: )
+
+( Data structures: )
+
+struct: timespec64
+int<64> field: tv_sec
+int<32> field: tv_nsec
+
+struct: timeval64
+int<64> field: sec
+uint<64> field: usec
+
+( System calls: )
+
+def clock64-gettime ( timespec64 clockid -- result )
+  args 2 0x193 syscall 2 return1-n
+end
+
+def clock64-nanosleep ( timespec64-remain timespec64-request flags clockid -- result )
+  args 4 0x197 syscall 4 return1-n
+end
+
+( 64 bit helpers: )
+
+def clock64-get-secs ( clock-id -- timestamp-low timestamp-high )
+  0 
+  timespec64 make-instance set-local0
+  local0 value-of arg0 clock64-gettime
+  local0 timespec64 -> tv_sec uint64@
+  swap set-arg0 return1
+end
+
+def get-time64-secs
+  CLOCK-TAI clock64-get-secs return2
+end
+
+def sleep-until-64/2 ( time-low time-high clock-id -- remaining-low remaining-high )
+  0
+  timespec64 make-instance set-local0
+  arg2 arg1 local0 timespec -> tv_sec uint64!
+  0 local0 timespec -> tv_nsec poke
+  local0 value-of dup TIMER-ABSTIME arg0 clock64-nanosleep
+  local0 timespec -> tv_sec uint64@
+  set-arg1 set-arg2 1 return0-n
+end
+
+def sleep-until-64 ( time-low time-high -- remaining )
+  arg1 arg0 CLOCK-REALTIME sleep-until/2 set-arg0 set-arg1
 end
