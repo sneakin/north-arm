@@ -50,47 +50,21 @@ alias> uint8@ dpeek-byte
   8 bsl logior
 ;
 
-: ,uint64
-  dup ,uint8
-  dup 8 bsr ,uint8
-  dup 16 bsr ,uint8
-  dup 24 bsr ,uint8
-  dup 32 bsr ,uint8
-  dup 40 bsr ,uint8
-  dup 48 bsr ,uint8
-  56 bsr ,uint8
-;
-
 ( fixme doesn't work with 32 bit cells )
 
-: uint64!
-  2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap uint8!
-;
-
-: uint64@
-  dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + uint8@
-  8 bsl logior
-  8 bsl logior
-  8 bsl logior
-  8 bsl logior
-  8 bsl logior
-  8 bsl logior
-  8 bsl logior
-;
+NORTH-STAGE 0 int> [IF]
+  cell-size 4 equals? [IF]
+    " src/lib/byte-data/32.4th" load
+  [ELSE]
+     cell-size 8 int>= [IF]
+        " src/lib/byte-data/64.4th" load
+     [ELSE]
+        s" Only 32 and 64 bit cells supported." error-line/2 error ( todo raise error )
+     [THEN]
+  [THEN]
+[ELSE]
+  " src/lib/byte-data/stage0.4th" load
+[THEN]
 
 alias> ,int8 ,uint8
 alias> int8@ uint8@
