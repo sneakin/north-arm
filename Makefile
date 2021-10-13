@@ -228,7 +228,7 @@ lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
 	chmod u+x $@
 
 bin/%$(EXECEXT): src/bin/%.4th
-	cat $< | $(FORTH) > $@
+	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
 	chmod u+x $@
 
 bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
