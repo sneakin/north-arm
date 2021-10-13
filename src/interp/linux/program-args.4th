@@ -22,19 +22,33 @@ def argv
   top-frame farg3 return1
 end
 
-def get-argv
+def get-argv ( index -- value )
   argv cell-size arg0 * +
-  dup IF peek ELSE 0 THEN return1
+  dup IF peek ELSE 0 THEN set-arg0
 end
 
-def env-addr
-  top-frame frame-args cell-size 4 argc + * +
-  return1
+def env-addr ( ++ pointer )
+  top-frame frame-args cell-size 4 argc + * + return1
 end
 
-def env
+def env ( index ++ value-string )
   env-addr arg0 cell-size * +
-  dup IF peek ELSE 0 THEN return1
+  dup IF peek ELSE 0 THEN 1 return1-n
+end
+
+def get-env/3 ( str len index -- value )
+  arg0 env dup UNLESS 0 3 return1-n THEN
+  dup arg2 arg1 byte-string-equals?/3 IF 3 dropn arg1 + 1 + 3 return1-n THEN
+  4 dropn
+  arg0 1 + set-arg0 repeat-frame
+end
+
+def get-env/2 ( str len -- value )
+  arg1 arg0 0 get-env/3 2 return1-n  
+end
+
+def get-env ( str -- value )
+  arg0 dup string-length 0 get-env/3 1 return1-n  
 end
 
 def move-up-to-zero
@@ -50,10 +64,10 @@ end
 
 def get-auxvec/2
   arg0 peek dup arg1 equals?
-  IF arg0 cell-size + peek return1
+  IF arg0 cell-size + peek 1 return1-n
   ELSE
     0 equals?
-    IF -1 return1
+    IF -1 1 return1-n
     ELSE arg0 cell-size 2 * + set-arg0 repeat-frame
     THEN
   THEN
