@@ -112,7 +112,11 @@ end
 def tty-screen-buffer
   arg0 TtyScreen -> back @ set-arg0
 end
-  
+
+def tty-screen-context
+  arg0 tty-screen-buffer make-tty-context exit-frame
+end
+
 def make-tty-screen ( rows cols ++ screen )
   0 TtyScreen make-instance set-local0
   arg0 local0 TtyScreen -> width !

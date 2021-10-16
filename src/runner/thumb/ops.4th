@@ -623,6 +623,13 @@ defop bsr
   emit-next
 endop
 
+defop absr
+  0 r1 bit-set popr ,ins
+  r0 r1 asr ,ins
+  0 r1 r0 mov-lsl ,ins
+  emit-next
+endop
+
 defop logand
   0 r1 bit-set popr ,ins
   r0 r1 and ,ins

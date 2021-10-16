@@ -97,6 +97,30 @@ def pinc! ( place )
   set-arg0
 end
 
+def wrapped-inc!/3 ( place max amount -- wrapped? )
+  arg2 dup @ arg0 +
+  dup arg1 int>=
+  IF arg1 - true
+  ELSE false
+  THEN rot ! 3 return1-n
+end
+
+def wrapped-inc! ( place max -- wrapped? )
+  arg1 arg0 1 wrapped-inc!/3 2 return1-n
+end
+
+def wrapped-dec!/3 ( place max amount -- wrapped? )
+  arg2 dup @ arg0 -
+  dup 0 int<
+  IF arg1 + true
+  ELSE false
+  THEN rot ! 3 return1-n
+end
+
+def wrapped-dec! ( place max -- wrapped? )
+  arg1 arg0 1 wrapped-dec!/3 2 return1-n
+end
+
 def under? ( value limit -- value yes? )
   arg1 arg0 uint< set-arg0
 end

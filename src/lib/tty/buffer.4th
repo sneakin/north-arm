@@ -184,3 +184,23 @@ def tty-buffer-ellipse ( char color attr y1 x1 y2 x2 buffer -- )
   arg0 4 argn arg3 arg2 arg1 ellipse-fn
   8 return0-n
 end
+
+def tty-buffer-hline-loop ( char color attr y x w buffer counter -- )
+  7 argn 6 argn 5 argn
+  4 argn arg3 arg0 + arg1 tty-buffer-set-cell
+  arg0 1 + set-arg0
+  arg0 arg2 int< IF repeat-frame ELSE 8 return0-n THEN
+end
+
+def tty-buffer-fill-rect-loop ( char color attr y x h w buffer counter -- )
+  8 argn 7 argn 6 argn
+  5 argn arg0 + 4 argn
+  arg2 arg1 0 tty-buffer-hline-loop
+  arg0 1 + set-arg0
+  arg0 arg3 int< IF repeat-frame ELSE 9 return0-n THEN
+end
+
+def tty-buffer-fill-rect ( char color attr y x h w buffer -- )
+  7 argn 6 argn 5 argn 4 argn arg3 arg2 arg1 arg0 0 tty-buffer-fill-rect-loop
+  8 return0-n
+end

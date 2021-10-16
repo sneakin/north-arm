@@ -36,16 +36,10 @@ def tty-context-move-to ( row col context )
   3 return0-n
 end
 
-def wrapped-inc!/3 ( place max amount -- wrapped? )
-  arg2 dup @ arg0 +
-  dup arg1 int>=
-  IF drop 0 true
-  ELSE false
-  THEN rot ! 3 return1-n
-end
-
-def wrapped-inc! ( place max -- wrapped? )
-  arg1 arg0 1 wrapped-inc!/3 2 return1-n
+def tty-context-move-by ( row col context )
+  arg0 TtyContext -> y arg2 inc!/2
+  arg0 TtyContext -> x arg1 inc!/2
+  3 return0-n
 end
 
 def tty-context-advance-cursor/2 ( amount context -- )
@@ -58,6 +52,13 @@ end
 
 def tty-context-advance-cursor
   1 arg0 tty-context-advance-cursor/2 1 return0-n
+end
+
+def tty-context-set-cell ( char color attr y x context -- )
+  5 argn 4 argn arg3 arg2 arg1
+  arg0 TtyContext -> buffer @
+  tty-buffer-set-cell
+  6 return0-n
 end
 
 def tty-context-write-byte ( byte context -- )
@@ -88,6 +89,17 @@ def tty-context-write-string/3 ( str n context -- )
   tty-buffer-draw-string
   arg1 arg0 tty-context-advance-cursor/2
   3 return0-n
+end
+
+def tty-context-fill-rect ( h w context -- )
+  arg0 TtyContext -> char @
+  arg0 TtyContext -> color peek-byte
+  arg0 TtyContext -> attr peek-byte
+  arg0 tty-context-get-pos
+  arg2 arg1
+  arg0 TtyContext -> buffer @ tty-buffer-fill-rect
+  arg2 arg1 arg0 tty-context-move-by
+  3 return0-n  
 end
 
 def tty-context-line ( y1 x1 context -- )

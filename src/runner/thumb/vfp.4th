@@ -168,6 +168,13 @@ defop float32->uint32
   emit-next
 endop
 
+defop float32->uint32-rounded
+  r0 0 fmsrs ,ins
+  0 0 ftouis ,ins
+  0 r0 fmrss ,ins
+  emit-next
+endop
+
 defop uint32->float32
   r0 0 fmsrs ,ins
   0 0 fuitos ,ins
@@ -178,6 +185,13 @@ endop
 defop float32->int32
   r0 0 fmsrs ,ins
   0 0 ftosizs ,ins
+  0 r0 fmrss ,ins
+  emit-next
+endop
+
+defop float32->int32-rounded
+  r0 0 fmsrs ,ins
+  0 0 ftosis ,ins
   0 r0 fmrss ,ins
   emit-next
 endop

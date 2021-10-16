@@ -115,7 +115,7 @@ end
 
 ( todo when integer rise/run is zero, use run/rise )
 
-def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+def ma-line-fn ( fn accum y2 x2 y1 x1 ++ accum )
   ( swap start and end so y1 > y2 )
   arg1 arg3 int> IF
     arg3 arg1 set-arg3 set-arg1
@@ -196,17 +196,11 @@ def line-fn-loop ( state fn accum ++ accum )
   THEN
 end
 
-def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+def bresenham-line-fn ( fn accum y2 x2 y1 x1 ++ accum )
   ( local0: dx )
-  arg2 arg0 - dup UNLESS ( dx == 0: vertical )
-    drop
-    5 argn 4 argn arg1 arg3 arg0 vline-fn exit-frame
-  THEN
+  arg2 arg0 - 
   ( local1: dy )
-  arg3 arg1 - dup UNLESS ( dy == 0: horizontal )
-    2 dropn
-    5 argn 4 argn arg1 arg2 arg0 hline-fn exit-frame
-  THEN
+  arg3 arg1 -
   LineState2 make-instance
   arg0 over LineState2 -> x1 !
   arg1 over LineState2 -> y1 !
@@ -218,4 +212,16 @@ def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
   local1 0 int> IF 1 ELSE -1 THEN over LineState2 -> sy !
   dup LineState2 -> dx @ over LineState2 -> dy @ + over LineState2 -> err !
   5 argn 4 argn line-fn-loop exit-frame
+end
+
+def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+  arg2 arg0 equals? IF ( dx == 0: vertical )
+    5 argn 4 argn arg1 arg3 arg0 vline-fn
+  ELSE
+    arg3 arg1 equals? IF ( dy == 0: horizontal )
+      5 argn 4 argn arg1 arg2 arg0 hline-fn
+    ELSE
+      5 argn 4 argn arg3 arg2 arg1 arg0 bresenham-line-fn
+    THEN
+  THEN exit-frame
 end
