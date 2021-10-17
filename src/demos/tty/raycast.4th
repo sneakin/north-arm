@@ -4,6 +4,7 @@
 s[ src/lib/tty.4th
    src/lib/geometry/angles.4th
    src/lib/linux/clock.4th
+   src/lib/linux/stat.4th
    src/lib/io.4th
 ] load-list
 [THEN]
@@ -148,7 +149,7 @@ def world-get-cell-value ( y x world -- value )
 end
 
 def world-cell-solid? ( cell -- yes? )
-  arg0 32 equals? not return1
+  arg0 32 equals? arg0 0 equals? or not return1
 end
 
 def world-cell-sky? ( cell -- yes? )
@@ -363,6 +364,7 @@ def raycaster-debug-hit-dist ( wy wx cy cx angle -- dist )
 	ELSE
 	  s"  M " write-string/2
 	  ( float32-infinity 5 return1-n )
+	  3 dropn
 	THEN
       THEN
     THEN
@@ -375,7 +377,7 @@ def raycaster-debug-hit-dist ( wy wx cy cx angle -- dist )
   5 return1-n
 end
 
-def raycaster-hit-dist ( wy wx cy cx angle -- dist )
+def raycaster-hit-dist ( wy wx cy cx angle -- dist y? )
   4 argn arg2 - int32->float32
   arg3 arg1 - int32->float32
   arg0 int32->float32 degrees->radians
@@ -399,8 +401,15 @@ def raycaster-hit-dist ( wy wx cy cx angle -- dist )
 	  ( use y )
 	  3 dropn true
 	ELSE
+	  dup float32->int32 arg1 equals?
+	  IF ( use y )
+	    3 dropn true
+	  ELSE ( use x )
+	    false
+	  THEN
 	  ( float32-infinity 5 return1-n )
-	  false
+	  ( 3 dropn true )
+	  ( false )
 	THEN
       THEN
     THEN
@@ -430,9 +439,10 @@ def raycaster-draw-vertical ( hit camera world context )
     arg3 RayCasterHit -> angle @ arg2 WorldCamera -> angle @ -
     arg2 WorldCamera -> fov @ 2 /
     raycaster-fish-eye-correct
+    ( todo turn black or sky color when way too far )
     swap over float32->int32 8 int> or IF TTY-CELL-NORMAL ELSE TTY-CELL-DIM THEN arg0 TtyContext -> attr poke-byte
     ( adjust to wall's pixel height one map unit away )
-    64 int32->float32 swap float32-div float32->int32 arg0 tty-context-height min 0 max
+    arg0 tty-context-height int32->float32 swap float32-div float32->int32 arg0 tty-context-height min 0 max
     ( center the vertical: con_height/2 - wall/2 )
     dup 2 / arg0 tty-context-height 2 / swap - 0 arg0 tty-context-move-by
     arg0 TtyContext -> y @ + arg0 TtyContext -> x @ arg0 tty-context-line
@@ -505,7 +515,9 @@ def raycaster-minimap ( camera world context wy wx sy sx height width row -- )
   ELSE
     0x71 7 argn TtyContext -> color poke-byte
     TTY-CELL-NORMAL 7 argn TtyContext -> attr poke-byte
-    4 argn arg2 2 / + arg3 arg1 2 / + 7 argn tty-context-move-to
+    4 argn arg2 2 / +
+    arg3 arg1 2 / dup 1 logand - + ( shift by 1 when width/2 is odd, ie: 88 columns )
+    7 argn tty-context-move-to
     char-code : 7 argn tty-context-write-byte
     char-code ) 7 argn tty-context-write-byte
     10 return0-n
@@ -515,12 +527,12 @@ end
 def raycaster-draw-sun-disc
   arg1 arg0 tty-context-circle
   arg1 1 - set-arg1
-  arg1 IF repeat-frame ELSE 2 return0-n THEN
+  arg1 0 int> IF repeat-frame ELSE 2 return0-n THEN
 end
 
 def raycaster-draw-sun ( size vangle hangle camera world context )
   ( radius from percent of width to pixels )
-  arg0 tty-context-width 5 argn * 100 / 
+  arg0 tty-context-width 5 argn * 100 / 1 max
   ( Vfov = FoV/w * h )
   ( h/2 - h*sin[time%360] )
   arg0 tty-context-height 2 /
@@ -548,15 +560,19 @@ def raycaster-draw-sky ( camera world context )
   TTY-CELL-NORMAL arg0 TtyContext -> attr poke-byte
   0 0 arg0 tty-context-move-to
   arg0 tty-context-height 2 / arg0 tty-context-width arg0 tty-context-fill-rect
-  ( north )
+  ( north lower in the sky the further south )
   0x77 arg0 TtyContext -> color poke-byte
-  2 45 -90 arg2 arg1 arg0 raycaster-draw-sun
-  ( sun )
+  1
+  arg2 WorldCamera -> y @ raycaster-angle-bits bsl
+  arg1 World -> height @ / 90 * raycaster-angle-bits absr
+  90 swap -
+  -90 arg2 arg1 arg0 raycaster-draw-sun
+  ( sun rises in the east and sets in the west w/ time )
   0x33 arg0 TtyContext -> color poke-byte
   6
   get-time-secs 6 * 360 int-mod
   0 arg2 arg1 arg0 raycaster-draw-sun
-  ( moon )
+  ( moon like the sun but moves ahead a bit each rotation )
   0x77 arg0 TtyContext -> color poke-byte
   4
   get-time-secs dup 6 * 360 int-mod swap 6 * 60 / 360 int-mod +
