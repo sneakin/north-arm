@@ -90,11 +90,11 @@ D              *
 ************   *************" 10 29 make-world const> world5
 
 ' world6 [UNLESS]
-44 81 * tmp" src/demos/tty/raycaster-00.map" drop allot-read-bytes drop
+tmp" src/demos/tty/raycaster-00.map" drop allot-read-file drop
 44 81 make-world const> world6
 [THEN]
 
 ' world7 [UNLESS]
-44 81 * tmp" src/demos/tty/raycaster-01.map" drop allot-read-bytes drop
+tmp" src/demos/tty/raycaster-01.map" drop allot-read-file drop
 44 81 make-world const> world7
 [THEN]

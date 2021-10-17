@@ -9,7 +9,7 @@ end
 def assert-file-contents ( str len path -- )
   debug? IF s" read file" write-line/2 THEN
   0 0
-  arg1 arg0 allot-read-bytes set-local1 set-local0
+  arg1 arg0 allot-read-file/2 set-local1 set-local0
   local1 arg1 assert-equals
   local0 arg2 arg1 assert-byte-string-equals/3
   3 return0-n
