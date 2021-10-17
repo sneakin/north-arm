@@ -47,6 +47,7 @@ def eighth-circle-fn ( fn accum cy cx r ++ accum )
 end
 
 def circle-fn-caller ( fn accum circle-state ++ accum )
+  ( Calls ~fn~ with [accum y x] )
   arg0 CircleState -> y @ arg0 CircleState -> x @
   arg0 CircleState -> cy @ arg0 CircleState -> cx @
   ( call fn w/ points on the circle )
@@ -64,6 +65,9 @@ def circle-fn-caller ( fn accum circle-state ++ accum )
 end
 
 def circle-fn ( fn accum cy cx r ++ accum )
-  ' circle-fn-caller 4 argn 2 partial-after
-  arg3 arg2 arg1 arg0 eighth-circle-fn exit-frame
+  arg0 0 equals?
+  IF arg3 arg2 arg1 4 argn exec-abs
+  ELSE ' circle-fn-caller 4 argn 2 partial-after
+       arg3 arg2 arg1 arg0 eighth-circle-fn
+  THEN exit-frame
 end
