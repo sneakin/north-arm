@@ -41,7 +41,7 @@ def fd-size64 ( fd -- size-lsb size-msb )
 end
 
 def fd-size32
-  arg0 fd-size drop 1 return1-n
+  arg0 fd-size64 drop 1 return1-n
 end
 
 def stat-path ( path ++ file-stat )
