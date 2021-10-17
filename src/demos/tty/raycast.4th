@@ -505,9 +505,7 @@ def raycaster-minimap ( camera world context wy wx sy sx height width row -- )
   ELSE
     0x71 7 argn TtyContext -> color poke-byte
     TTY-CELL-NORMAL 7 argn TtyContext -> attr poke-byte
-    4 argn arg2 2 / +
-    arg3 arg1 2 / + arg1 1 logand 1 - +
-    7 argn tty-context-move-to
+    4 argn arg2 2 / + arg3 arg1 2 / + 7 argn tty-context-move-to
     char-code : 7 argn tty-context-write-byte
     char-code ) 7 argn tty-context-write-byte
     10 return0-n
