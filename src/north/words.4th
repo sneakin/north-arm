@@ -1,3 +1,5 @@
+( Words needed to load files made for the first North. )
+
 def error ( msg heading -- )
   arg0 error-line
   arg1 error-line
@@ -209,15 +211,16 @@ alias> u->f uint32->float32
 alias> float-div float32-div
 
 ( ordered-seq needs: )
-alias> write-unsigned-int write-uint
-alias> .s write-string
 alias> .\n nl
-alias> ,d ,i
 alias> ,sp space
-def .S space arg0 write-string 1 return0-n end
 alias> write-space space
-alias> write-string-n write-string/2
+alias> write-tab tab
 alias> write-crnl nl
+alias> write-unsigned-int write-uint
+alias> ,d ,i
+alias> .s write-string
+alias> write-string-n write-string/2
+def .S space arg0 write-string 1 return0-n end
 def write-line-n arg1 arg0 write-line/2 end
 alias> hexdump cmemdump
 
@@ -225,7 +228,11 @@ alias> exec-core-word exec-abs
 
 alias> RECURSE repeat-frame immediate
 alias> store-local0 set-local0
-def arg4 4 current-frame parent-frame fargn @ return1 end
+defcol arg4 4 argn swap endcol
+
+def frame-argn
+  arg0 current-frame parent-frame @ fargn @ set-arg0
+end
 
 defcol returnN
   ( copy N values over the frame's return and FP. Return from the frame. )
@@ -541,3 +548,4 @@ def dump-dict-entry arg0 64 cmemdump 1 return0-n end
 def null? arg0 0 equals? return1 end
 
 alias> dict-terminator zero
+
