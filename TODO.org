@@ -379,9 +379,11 @@ dry up with comp' immediated as ' to use compiling-dict.
 **** to interpreter
 *** Dictionary list & first class functions
 *** TODO Types
-*** TODO Structures
+*** DONE Structures
 *** Sequences
 *** Garbage collection
+**** Pointers that point down the stack are bad.
+     The locals...
 ** after loop
 *** Exports, symbol table
 *** builder executable that's passed files to build

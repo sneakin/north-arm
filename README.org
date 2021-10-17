@@ -1,6 +1,6 @@
 #+TITLE: Nolan's Forth for Linux on ARM processors.
 
-Using only a shell, statically and dynamically linked ELF files are
+Using only a shell (and Emacs 🤫), statically and dynamically linked ELF files are
 built that can load an assembler and cross compiler to rebuild
 themselves.
 
