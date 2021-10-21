@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+union Cell;
 struct Word;
+typedef union Cell *(*Fun)(union Cell *, struct Word **);
 
 typedef union Cell
 {
@@ -13,12 +15,12 @@ typedef union Cell
   void *ptr;
   struct Word *word;
   struct Word **word_list;
-  union Cell *(*fn)(union Cell *, struct Word **);
+  Fun fn;
 } Cell;
 
 typedef struct Word {
   char *name;
-  Cell *(*code)(Cell *stack, struct Word **eip);
+  Fun code;
   void *data;
   struct Word *next;
 } Word;
@@ -227,7 +229,7 @@ Cell *_fexit(Cell *sp, Word **eip) {
 #ifdef STACK_RETADDR
   return _next(sp+1, sp->word_list);
 #else
-  return sp;
+  return sp; //_next(sp, eip);
 #endif
 }
 
@@ -281,7 +283,7 @@ Word rallot_return = { "rallot_return", _docol, _rallot_return, &rallot_exit };
 
 Word *_rallot2[] = {
   &literal, (Word *)"\nrallot and returns", &cputs,
-  &rhere, &rallot_exit,
+  &rhere, &rallot_return,
   &literal, (Word *)"\npost ret", &cputs,
   &rhere, &dup, &write_hex_int,
   &int_sub, &write_int,
@@ -305,6 +307,7 @@ void dump_stack(Cell *here, Cell *top) {
   }
 }
 
+#ifndef SHARED
 int main() {
   Cell sp[1024];
   Cell *here = _next(sp+1023, (Word **)bootstrap.data);
@@ -316,3 +319,4 @@ int main() {
 
   return *(int*)here;
 }
+#endif

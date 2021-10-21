@@ -1,3 +1,6 @@
-all: c1 c2
-c1: c1.c
-c2: c2.c
+all: build
+
+.PHONY: build
+
+build:
+	$(MAKE) -C build

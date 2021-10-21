@@ -6,10 +6,12 @@
 #include <stdlib.h>
 
 typedef long Cell;
+struct Word;
+typedef Cell *(*Fun)(Cell *stack, struct Word **eip);
 
 typedef struct Word {
   char *name;
-  Cell *(*code)(Cell *stack, struct Word **eip);
+  Fun code;
   void *data;
   struct Word *next;
 } Word;
