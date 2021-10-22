@@ -3,6 +3,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 typedef enum State {
   STOP,
@@ -19,7 +20,7 @@ typedef union Cell
 {
   long i;
   void *ptr;
-  const char *str;
+  char *str;
   struct Word *word;
   struct Word **word_list;
   Fun fn;
@@ -146,14 +147,14 @@ State _swap(Cell **sp, Word ***eip) {
 
 Word swap = { "swap", _swap, (void *)NULL, &write_int };
 
-State _dup(Cell **sp, Word ***eip) {
+State _fdup(Cell **sp, Word ***eip) {
   Cell v = **sp;
   *sp -= 1;
   **sp = v;
   return GO;
 }
 
-Word dup = { "dup", _dup, (void *)NULL, &swap };
+Word fdup = { "fdup", _fdup, (void *)NULL, &swap };
 
 State _docol(Cell **sp, Word ***eip) {
   State r;
@@ -168,7 +169,7 @@ State _docol(Cell **sp, Word ***eip) {
   }
 }
 
-Word docol = { "docol", _docol, NULL, &dup };
+Word docol = { "docol", _docol, NULL, &fdup };
 
 Word *hey_def[] = {
   &literal, (Word *)"Hey!", &cputs, &return0
@@ -205,9 +206,9 @@ Word *_bootstrap[] = {
   &literal, (Word *)1024, &rallot, &write_hex_int,
   &literal, (Word *)"\n123", &cputs,
   &literal, (Word *)1, &literal, (Word *)2, &literal, (Word *)3,
-  &swap, &dup, &write_int, &write_int, &write_int, &write_int,
+  &swap, &fdup, &write_int, &write_int, &write_int, &write_int,
   &literal, (Word *)"\nrhere", &cputs,
-  &here, &swap, &dup, &write_hex_int, &rhere, &dup, &write_hex_int, &int_sub, &write_int,
+  &here, &swap, &fdup, &write_hex_int, &rhere, &fdup, &write_hex_int, &int_sub, &write_int,
   &literal, (Word *)"\nhere", &cputs,
   &int_sub, &write_int,
   &literal, (Word *)"\ndefs", &cputs, &hey,
@@ -276,31 +277,31 @@ Word *_words1[] = {
   &literal, (Word *)"Words", &cputs, //&hey,
   //&rhere, &write_hex_int,
   &over, &over, &swap, &int_sub, &write_hex_int, 
-  &dup, &write_hex_int, 
-  &dup, &literal, (Word *)(sizeof(void *) * 1), &int_add, &peek, &write_hex_int,
-  &dup, &literal, (Word *)(sizeof(void *) * 2), &int_add, &peek, &write_hex_int,
-  &dup, &literal, (Word *)(sizeof(void *) * 3), &int_add, &peek, &write_hex_int,
-  &dup, &peek, &cputs,
+  &fdup, &write_hex_int, 
+  &fdup, &literal, (Word *)(sizeof(void *) * 1), &int_add, &peek, &write_hex_int,
+  &fdup, &literal, (Word *)(sizeof(void *) * 2), &int_add, &peek, &write_hex_int,
+  &fdup, &literal, (Word *)(sizeof(void *) * 3), &int_add, &peek, &write_hex_int,
+  &fdup, &peek, &cputs,
   &literal, (Word *)(sizeof(void *) * 3), &int_add, &peek,
-  &dup, &literal, (Word *)-36, &ifjump,
+  &fdup, &literal, (Word *)-36, &ifjump,
   &drop, &drop, &return0
 };
 
 Word words1 = { "words/1", _docol, _words1, &over };
 
 Word *_test_rallot_exit[] = {
-  &rhere, &dup, &write_hex_int,
+  &rhere, &fdup, &write_hex_int,
   &literal, (Word *)2048, &rallot,
-  &swap, &rhere, &dup, &write_hex_int,
+  &swap, &rhere, &fdup, &write_hex_int,
   &int_sub, &write_int, &drop, &fexit //  &return0,
 };
 
 Word test_rallot_exit = { "test_rallot_exit", _docol, _test_rallot_exit, &words1 };
 
 Word *_test_rallot_return[] = {
-  &rhere, &dup, &write_hex_int,
+  &rhere, &fdup, &write_hex_int,
   &literal, (Word *)2048, &rallot,
-  &swap, &rhere, &dup, &write_hex_int,
+  &swap, &rhere, &fdup, &write_hex_int,
   &int_sub, &write_int, &drop, &return0,
 };
 
@@ -310,13 +311,13 @@ Word *_test_rallot[] = {
   &literal, (Word *)"\nrallot and returns", &cputs,
   &rhere, &test_rallot_return,
   &literal, (Word *)"\npost ret", &cputs,
-  &rhere, &dup, &write_hex_int,
+  &rhere, &fdup, &write_hex_int,
   &int_sub, &write_int,
 
   &literal, (Word *)"\nrallot and exit", &cputs,
   &rhere, &test_rallot_exit,
   &literal, (Word *)"\npost ret", &cputs,
-  &rhere, &dup, &write_hex_int,
+  &rhere, &fdup, &write_hex_int,
   &int_sub, &write_int,
 
   &return0
@@ -370,13 +371,51 @@ Word *_test_nesting0[] = {
 
 Word test_nesting0 = { "test_nesting0", _docol, _test_nesting0, &test_nesting1 };
 
+State _cread(Cell **sp, Word ***eip) {
+  int fd;
+  char *data;
+  off_t len;
+  fd = (*sp)->i;
+  *sp += 1;
+  data = (*sp)->str;
+  *sp += 1;
+  len = (*sp)->i;
+  printf("read %i, %p, %i\n", fd, data, len);
+  (*sp)->i = read(fd, data, len);
+  return GO;
+}
+
+Word cread = { "cread", _cread, NULL, &test_nesting0 };
+
+State _jumprel(Cell **sp, Word ***eip) {
+  *eip += (*sp)->i;
+  *sp += 1;
+  return GO;
+}
+
+Word jumprel = { "jumprel", _jumprel, NULL, &cread };
+
+Word *_test_read[] = {
+  &literal, (Word *)1024, &rallot,
+  &fdup, &write_hex_int,
+  &literal, (Word *)1024, &over, &literal, (Word *)0, &cread,
+  &fdup, &write_int,
+  &fdup, &literal, (Word *)6, &ifjump,
+  &literal, (Word *)"EOF", &cputs,
+  &literal, (Word *)2, &jumprel,
+  &over, &cputs,
+  &drop, &drop, &return0
+};
+
+Word test_read = { "test-read", _docol, _test_read, &jumprel };
+
 extern Word dict;
 
 Word *_words[] = {
   &dict, &words1, &return0
 };
 
-Word words = { "words", _docol, _words, &test_nesting0 };
+Word words = { "words", _docol, _words, &cread };
 
 State _dict(Cell **sp, Word ***eip) {
   *sp -= 1;
@@ -423,6 +462,11 @@ int main() {
 
   (sp--)->i = 0;
   eip = rpushpop.data;
+  _next(&sp, &eip);
+  dump_stack(sp, stack+1023);
+
+  (sp--)->i = 0;
+  eip = test_read.data;
   _next(&sp, &eip);
   dump_stack(sp, stack+1023);
 
