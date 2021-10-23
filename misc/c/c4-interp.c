@@ -158,25 +158,36 @@ Word interp = { "interp", _docol, _interp, &interp_loop };
 
 Word stack_top = { "stack-top", _dovar, 0, &interp };
 
-State _dump_stack(Cell **sp, Word ***eip) {
-  Cell *here = *sp;
-  Cell *top = (Cell *)stack_top.data;
-  printf("Stack: %p\t%p\t%li\n", here, top, top - here);
-  while(here < top) {
-    printf("%li\t%p\n", here->i, here->ptr);
-    here++;
-  }
-  return GO;
-}
+Word *_memdump[] = { // addr bytes
+  &over, &literal, (Word *)0, &int_lte, &literal, (Word *)8, &unlessjump,
+  &literal, (Word *)"", &cputs,
+  &swap, &drop, &swap, &drop, &return0,
+  &literal, (Word *)2, &pick, &peek, &write_hex_int,
+  &roll, &literal, (Word *)8, &int_sub,
+  &roll, &literal, (Word *)8, &int_add,
+  &roll,
+  &literal, (Word *)-32, &jumprel
+};
 
-Word dump_stack = { "dump-stack", _doop, _dump_stack, &stack_top };
+Word memdump = { "memdump", _docol, _memdump, &stack_top };
+
+Word *_dump_stack[] = {
+  &literal, (Word *)"Stack", &cputs,
+  &here, &fdup, &write_hex_int,
+  &stack_top, &peek,
+  &over, &int_sub, &fdup, &write_int,
+  &literal, (Word *)"", &cputs,
+  &memdump, &return0
+};
+
+Word dump_stack = { "dump-stack", _docol, _dump_stack, &memdump };
 
 Word one = { "one", _doconst, (void *)1, &dump_stack };
 Word xvar = { "x", _dovar, 0, &one };
 
 Word *_boot[] = {
   &here, &stack_top, &poke,
-  &words, &interp, &literal, (Word *)0, &cexit, &return0
+  &interp, &literal, (Word *)0, &cexit, &return0
 };
 
 Word boot = { "boot", _docol, _boot, &xvar };
