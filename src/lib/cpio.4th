@@ -1,8 +1,9 @@
 ( cpio archive reading: see `man 5 cpio` for a description of the format. )
 
 s[ src/lib/case.4th
-   src/lib/structs.4th
    src/lib/time.4th
+   src/lib/linux/clock.4th
+   src/lib/linux/stat.4th
    src/lib/io.4th
    src/lib/cpio/common.4th
    src/lib/cpio/old.4th
