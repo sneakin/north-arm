@@ -28,6 +28,7 @@ typedef struct Word {
 } Word;
 
 State _next(Cell **sp, Word ***eip);
+State _doop(Cell **, Word ***);;
 State _docol(Cell **, Word ***);;
 State _doconst(Cell **, Word ***);;
 State _dovar(Cell **, Word ***);;

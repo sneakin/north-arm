@@ -6,22 +6,36 @@
 #include <unistd.h>
 #include "c4.h"
 
-Word *this_word; // hack to get dovar and doconst to work frow exec; could push the word and give native ops an exec code word that drops ToS before jumping to data.
-
-State _exec(Cell **sp, Word ***eip) {
-  this_word = (*sp)->word;
-  *sp += 1;
-  return this_word->code(sp, eip);;
+State _doconst(Cell **sp, Word ***eip) {
+  (*sp)->ptr = (*sp)->word->data;
+  return GO;
 }
 
-Word exec = { "exec", _exec, NULL, NULL };
+Word doconst = { "doconst", _doconst, _doconst, NULL };
+
+State _doop(Cell **sp, Word ***eip) {
+  Word *w = (*sp)->word;
+  Fun f = (Fun)w->data;
+  (*sp) += 1;
+  return f(sp, eip);
+}
+
+Word doop = { "doop", _doconst, _doop, &doconst };
+
+State _exec(Cell **sp, Word ***eip) {
+  Word *w = (*sp)->word;
+  return w->code(sp, eip);;
+}
+
+Word exec = { "exec", _doop, _exec, &doop };
 
 State _next(Cell **sp, Word ***eip) {
   Word *w;
   int r = GO;
   while(r == GO && *eip) {
     //printf("%s\n", (**eip)->name);
-    this_word = w = **eip;
+    *sp -= 1;
+    w = (*sp)->word = **eip;
     *eip += 1;
     r = w->code(sp, eip);
   }
@@ -29,7 +43,7 @@ State _next(Cell **sp, Word ***eip) {
   return r;
 }
 
-Word next = { "next", _next, (void *)NULL, &exec };
+Word next = { "next", _doop, _next, &exec };
 
 State _cputs(Cell **sp, Word ***eip) {
   puts((*sp)->str);
@@ -37,14 +51,14 @@ State _cputs(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word cputs = { "cputs", _cputs, NULL, &next };
+Word cputs = { "cputs", _doop, _cputs, &next };
 
 State _cexit(Cell **sp, Word ***eip) {
   exit((*sp)->i);
   return STOP;
 }
 
-Word cexit = { "cexit", _cexit, (void *)NULL, &cputs };
+Word cexit = { "cexit", _doop, _cexit, &cputs };
 
 State _literal(Cell **sp, Word ***eip) {
   *sp -= 1;
@@ -53,17 +67,7 @@ State _literal(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word literal = { "literal", _literal, (void *)NULL, &cexit };
-
-State _enter(Cell **sp, Word ***eip) {
-  Word *w = (*sp)->word;
-  *sp -= 1;
-  (*sp)->ptr = (Word *)(*eip);
-  *eip = w->data;
-  return GO;
-}
-
-Word enter = { "enter", _enter, (void *)NULL, &literal };
+Word literal = { "literal", _doop, _literal, &cexit };
 
 State _return0(Cell **sp, Word ***eip) {
   //printf("returning to %p\n", (*sp)->ptr);
@@ -72,7 +76,7 @@ State _return0(Cell **sp, Word ***eip) {
   return DROP_FRAME;
 }
 
-Word return0 = { "return0", _return0, (void *)NULL, &enter };
+Word return0 = { "return0", _doop, _return0, &literal };
 
 State _rallot(Cell **sp, Word ***eip) {
   Cell *mem = alloca((*sp)->i);
@@ -83,7 +87,7 @@ State _rallot(Cell **sp, Word ***eip) {
   }
 }
 
-Word rallot = { "rallot", _rallot, (void *)NULL, &return0 };
+Word rallot = { "rallot", _doop, _rallot, &return0 };
 
 State _here(Cell **sp, Word ***eip) {
   ((*sp)-1)->ptr = *sp;
@@ -91,7 +95,7 @@ State _here(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word here = { "here", _here, (void *)NULL, &rallot };
+Word here = { "here", _doop, _here, &rallot };
 
 State _rhere(Cell **sp, Word ***eip) {
   int n = 0;
@@ -99,7 +103,7 @@ State _rhere(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word rhere = { "rhere", _rhere, (void *)NULL, &here };
+Word rhere = { "rhere", _doop, _rhere, &here };
 
 State _int_sub(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
@@ -109,7 +113,7 @@ State _int_sub(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word int_sub = { "int-sub", _int_sub, (void *)NULL, &rhere };
+Word int_sub = { "int-sub", _doop, _int_sub, &rhere };
 
 State _write_int(Cell **sp, Word ***eip) {
   printf("%li ", (*sp)->i);
@@ -117,7 +121,7 @@ State _write_int(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word write_int = { "write-int", _write_int, (void *)NULL, &int_sub };
+Word write_int = { "write-int", _doop, _write_int, &int_sub };
 
 State _swap(Cell **sp, Word ***eip) {
   Cell t = **sp;
@@ -126,7 +130,7 @@ State _swap(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word swap = { "swap", _swap, (void *)NULL, &write_int };
+Word swap = { "swap", _doop, _swap, &write_int };
 
 State _fdup(Cell **sp, Word ***eip) {
   Cell v = **sp;
@@ -135,32 +139,21 @@ State _fdup(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word fdup = { "dup", _fdup, (void *)NULL, &swap };
-
-State _doconst(Cell **sp, Word ***eip) {
-  //Word *w = *(*eip-1);
-  *sp -= 1;
-  //printf("doconst %s %p\n", this_word->name, this_word->data);
-  (*sp)->ptr = this_word->data;
-  return GO;
-}
-
-Word doconst = { "doconst", _doconst, _doconst, &fdup };
+Word fdup = { "dup", _doop, _fdup, &swap };
 
 State _docol(Cell **sp, Word ***eip) {
   State r;
-  //Word *w = *(*eip-1);
+  Word *w = (*sp)->word;
   //printf("docol %p %s from %p\n", w, w->name, *eip);
-  *sp -= 1;
   (*sp)->word_list = *eip;
-  *eip = this_word->data;
+  *eip = (Word **)w->data;
   switch(r = _next(sp, eip)) {
     case DROP_FRAME: return GO;
     default: return r;
   }
 }
 
-Word docol = { "docol", _doconst, _docol, &doconst };
+Word docol = { "docol", _doconst, _docol, &fdup };
 
 State _eip(Cell **sp, Word ***eip) {
   *sp -= 1;
@@ -168,13 +161,13 @@ State _eip(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word eip = { "eip", _eip, NULL, &fdup };
+Word eip = { "eip", _doop, _eip, &fdup };
 
 State _abort_next(Cell **sp, Word ***eip) {
   return STOP;
 }
 
-Word abort_next = { "abort-next", _abort_next, NULL, &eip };
+Word abort_next = { "abort-next", _doop, _abort_next, &eip };
 
 State _write_hex_int(Cell **sp, Word ***eip) {
   printf("%lx ", (*sp)->i);
@@ -182,7 +175,7 @@ State _write_hex_int(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word write_hex_int = { "write-hex-int", _write_hex_int, (void *)NULL, &abort_next };
+Word write_hex_int = { "write-hex-int", _doop, _write_hex_int, &abort_next };
 
 State _int_add(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
@@ -192,7 +185,7 @@ State _int_add(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word int_add = { "int-add", _int_add, (void *)NULL, &write_hex_int };
+Word int_add = { "int-add", _doop, _int_add, &write_hex_int };
 
 State _int_mul(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
@@ -202,7 +195,7 @@ State _int_mul(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word int_mul = { "int-mul", _int_mul, (void *)NULL, &int_add };
+Word int_mul = { "int-mul", _doop, _int_mul, &int_add };
 
 State _int_lte(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
@@ -212,7 +205,7 @@ State _int_lte(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word int_lte = { "int<=", _int_lte, (void *)NULL, &int_mul };
+Word int_lte = { "int<=", _doop, _int_lte, &int_mul };
 
 State _int_lt(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
@@ -222,7 +215,7 @@ State _int_lt(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word int_lt = { "int<", _int_lt, (void *)NULL, &int_lte };
+Word int_lt = { "int<", _doop, _int_lt, &int_lte };
 
 State _equals(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
@@ -232,14 +225,14 @@ State _equals(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word equals = { "equals?", _equals, (void *)NULL, &int_lt };
+Word equals = { "equals?", _doop, _equals, &int_lt };
 
 State _peek(Cell **sp, Word ***eip) {
   **sp = *(Cell *)((*sp)->ptr);
   return GO;
 }
 
-Word peek = { "peek", _peek, (void *)NULL, &equals };
+Word peek = { "peek", _doop, _peek, &equals };
 
 State _poke(Cell **sp, Word ***eip) {
   *(*sp)->cell_ptr = *(*sp+1);
@@ -247,14 +240,14 @@ State _poke(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word poke = { "poke", _poke, (void *)NULL, &peek };
+Word poke = { "poke", _doop, _poke, &peek };
 
 State _peek_byte(Cell **sp, Word ***eip) {
   (*sp)->i = (*sp)->str[0];
   return GO;
 }
 
-Word peek_byte = { "peek-byte", _peek_byte, (void *)NULL, &poke };
+Word peek_byte = { "peek-byte", _doop, _peek_byte, &poke };
 
 State _poke_byte(Cell **sp, Word ***eip) {
   (*sp)->str[0] = (*sp+1)->i;
@@ -262,7 +255,7 @@ State _poke_byte(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word poke_byte = { "poke-byte", _poke_byte, (void *)NULL, &peek_byte };
+Word poke_byte = { "poke-byte", _doop, _poke_byte, &peek_byte };
 
 State _ifjump(Cell **sp, Word ***eip) {
   long n = (*sp)->i;
@@ -274,7 +267,7 @@ State _ifjump(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word ifjump = { "ifjump", _ifjump, (void *)NULL, &poke_byte };
+Word ifjump = { "ifjump", _doop, _ifjump, &poke_byte };
 
 State _unlessjump(Cell **sp, Word ***eip) {
   long n = (*sp)->i;
@@ -286,14 +279,14 @@ State _unlessjump(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word unlessjump = { "unlessjump", _unlessjump, (void *)NULL, &ifjump };
+Word unlessjump = { "unlessjump", _doop, _unlessjump, &ifjump };
 
 State _drop(Cell **sp, Word ***eip) {
   *sp += 1;
   return GO;
 }
 
-Word drop = { "drop", _drop, (void *)NULL, &unlessjump };
+Word drop = { "drop", _doop, _drop, &unlessjump };
 
 State _fexit(Cell **sp, Word ***eip) {
   *eip = (*sp)->word_list;
@@ -301,7 +294,7 @@ State _fexit(Cell **sp, Word ***eip) {
   return _next(sp, eip);
 }
 
-Word fexit = { "fexit", _fexit, (void *)NULL, &drop };
+Word fexit = { "fexit", _doop, _fexit, &drop };
 
 State _over(Cell **sp, Word ***eip) {
   *sp -= 1;
@@ -309,7 +302,7 @@ State _over(Cell **sp, Word ***eip) {
   return _next(sp, eip);
 }
 
-Word over = { "over", _over, (void *)NULL, &fexit };
+Word over = { "over", _doop, _over, &fexit };
 
 State _rpush(Cell **sp, Word ***eip) {
   Cell v = **sp;
@@ -320,13 +313,13 @@ State _rpush(Cell **sp, Word ***eip) {
   }
 }
 
-Word rpush = { "rpush", _rpush, NULL, &over };
+Word rpush = { "rpush", _doop, _rpush, &over };
 
 State _rpop(Cell **sp, Word ***eip) {
   return POP;
 }
 
-Word rpop = { "rpop", _rpop, NULL, &rpush };
+Word rpop = { "rpop", _doop, _rpop, &rpush };
 
 State _cread(Cell **sp, Word ***eip) {
   int fd;
@@ -343,7 +336,7 @@ State _cread(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word cread = { "cread", _cread, NULL, &rpop };
+Word cread = { "cread", _doop, _cread, &rpop };
 
 State _cwrite(Cell **sp, Word ***eip) {
   int fd;
@@ -360,7 +353,7 @@ State _cwrite(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word cwrite = { "cwrite", _cwrite, NULL, &cread };
+Word cwrite = { "cwrite", _doop, _cwrite, &cread };
 
 State _jumprel(Cell **sp, Word ***eip) {
   *eip += (*sp)->i;
@@ -368,7 +361,7 @@ State _jumprel(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word jumprel = { "jumprel", _jumprel, NULL, &cwrite };
+Word jumprel = { "jumprel", _doop, _jumprel, &cwrite };
 
 State _roll(Cell **sp, Word ***eip) {
   Cell t = **sp;
@@ -378,13 +371,10 @@ State _roll(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word roll = { "roll", _roll, NULL, &jumprel };
+Word roll = { "roll", _doop, _roll, &jumprel };
 
 State _dovar(Cell **sp, Word ***eip) {
-  //Word *w = *(*eip-1);
-  *sp -= 1;
-  //printf("dovar %s %i\n", this_word->name, (int)this_word->data);
-  (*sp)->ptr = &this_word->data;
+  (*sp)->ptr = &(*sp)->word->data;
   return GO;
 }
 
@@ -395,7 +385,7 @@ State _move(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word move = { "move", _move, NULL, &dovar };
+Word move = { "move", _doop, _move, &dovar };
 
 extern Word *last_word;
 
@@ -405,7 +395,7 @@ State _set_dict(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word set_dict = { "set-dict", _set_dict, NULL, &move };
+Word set_dict = { "set-dict", _doop, _set_dict, &move };
 
 State _dict(Cell **sp, Word ***eip) {
   *sp -= 1;
@@ -413,5 +403,4 @@ State _dict(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word dict = { "dict", _dict, NULL, &set_dict };
-
+Word dict = { "dict", _doop, _dict, &set_dict };

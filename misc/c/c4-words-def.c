@@ -4,7 +4,7 @@
 
 Word *_words1[] = {
   &swap,
-  &literal, &exec, &swap,
+  &literal, &doconst, &swap,
   &literal, (Word *)"Words", &cputs,
   &over, &over, &swap, &int_sub, &write_hex_int, 
   &fdup, &write_hex_int, 

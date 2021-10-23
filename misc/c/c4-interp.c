@@ -169,7 +169,7 @@ State _dump_stack(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word dump_stack = { "dump-stack", _dump_stack, NULL, &stack_top };
+Word dump_stack = { "dump-stack", _doop, _dump_stack, &stack_top };
 
 Word one = { "one", _doconst, (void *)1, &dump_stack };
 Word xvar = { "x", _dovar, 0, &one };
