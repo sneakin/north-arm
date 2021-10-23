@@ -34,7 +34,7 @@ Word is_space = { "is-space?", _docol, _is_space, &read_byte };
 
 Word *_read_token3[] = { // buffer max-len count -- buffer count
 // todo empty reads look the same as errors
-// leading spaces need to be skipped
+// todo leading spaces need to be skipped, eliminates 0 byte reads
   &read_byte, // &fdup, &write_int,
   &fdup, &literal, (Word *)0, &int_lte, &literal, (Word *)21, &ifjump,
   &fdup, &is_space, &literal, (Word *)18, &ifjump,
@@ -108,6 +108,7 @@ Word byte_string_equals3 = { "byte-string-equals?/3", _docol, _byte_string_equal
 
 Word *_lookup[] = { // buffer length dict
 // needs to search the dictionary
+// todo handle when the name is null
   &over, &literal, (Word *)12, &ifjump,
   &swap, &drop, &swap, &drop, &swap, &drop,
   &literal, (Word *)0, &swap, &over, &swap, &return0,
@@ -182,8 +183,12 @@ Word *_dump_stack[] = {
 
 Word dump_stack = { "dump-stack", _docol, _dump_stack, &memdump };
 
-Word one = { "one", _doconst, (void *)1, &dump_stack };
-Word xvar = { "x", _dovar, 0, &one };
+Word zero = { "0", _doconst, (void *)0, &dump_stack };
+Word one = { "1", _doconst, (void *)1, &zero };
+Word two = { "2", _doconst, (void *)2, &one };
+Word four = { "4", _doconst, (void *)4, &two };
+Word mone = { "-1", _doconst, (void *)-1, &four };
+Word xvar = { "x", _dovar, 0, &mone };
 
 Word *_boot[] = {
   &here, &stack_top, &poke,
