@@ -209,7 +209,7 @@ Word interp_loop = { "interp-loop", _docol, _interp_loop, &istate };
 
 Word *_interp[] = {
   &literal, (Word *)128, &rallot, &input_buffer, &poke,
-  &swap, &rpush,
+  &rpush,
   &literal, (Word *)128, &input_buffer_size, &poke,
   &interp_loop,
   &literal, (Word *)0, &input_buffer, &poke,
