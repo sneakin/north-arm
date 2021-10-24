@@ -11,8 +11,8 @@ typedef State (*Fun)(union Cell **, struct Word ***);
 
 typedef union Cell
 {
-  long i;
   void *ptr;
+  long i;
   char *str;
   union Cell *cell_ptr;
   struct Word *word;
@@ -23,10 +23,11 @@ typedef union Cell
 typedef struct Word {
   char *name;
   Fun code;
-  void *data; // todo Cell
+  Cell data;
   struct Word *next;
 } Word;
 
+State _exec(Cell **sp, Word ***eip);
 State _next(Cell **sp, Word ***eip);
 State _doop(Cell **, Word ***);;
 State _docol(Cell **, Word ***);;

@@ -7,7 +7,7 @@
 #include "c4.h"
 
 State _doconst(Cell **sp, Word ***eip) {
-  (*sp)->ptr = (*sp)->word->data;
+  *(*sp) = (*sp)->word->data;
   return GO;
 }
 
@@ -15,7 +15,7 @@ Word doconst = { "doconst", _doconst, _doconst, NULL };
 
 State _doop(Cell **sp, Word ***eip) {
   Word *w = (*sp)->word;
-  Fun f = (Fun)w->data;
+  Fun f = w->data.fn;
   (*sp) += 1;
   return f(sp, eip);
 }
@@ -147,7 +147,7 @@ State _docol(Cell **sp, Word ***eip) {
   Word *w = (*sp)->word;
   //printf("docol %p %s from %p\n", w, w->name, *eip);
   (*sp)->word_list = *eip;
-  *eip = (Word **)w->data;
+  *eip = w->data.word_list;
   switch(r = _next(sp, eip)) {
     case DROP_FRAME: return GO;
     default: return r;

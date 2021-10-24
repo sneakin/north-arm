@@ -6,9 +6,9 @@ const int STACK_SIZE=1024*8;
 
 int main()
 {
+  Word **eip = boot.data.word_list;
   Cell stack[STACK_SIZE];
   Cell *sp = stack + STACK_SIZE - 1;
-  Word **eip = boot.data;
   _next(&sp, &eip);
   return 0;
 }
