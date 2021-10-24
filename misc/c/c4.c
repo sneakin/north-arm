@@ -117,6 +117,7 @@ Word int_sub = { "int-sub", _doop, _int_sub, &rhere };
 
 State _write_int(Cell **sp, Word ***eip) {
   printf("%li ", (*sp)->i);
+  fflush(stdout);
   *sp += 1;
   return GO;
 }
@@ -161,7 +162,7 @@ State _eip(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word eip = { "eip", _doop, _eip, &fdup };
+Word eip = { "eip", _doop, _eip, &docol };
 
 State _abort_next(Cell **sp, Word ***eip) {
   return STOP;
@@ -171,6 +172,7 @@ Word abort_next = { "abort-next", _doop, _abort_next, &eip };
 
 State _write_hex_int(Cell **sp, Word ***eip) {
   printf("%lx ", (*sp)->i);
+  fflush(stdout);
   *sp += 1;
   return GO;
 }

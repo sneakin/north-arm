@@ -69,19 +69,20 @@ Word *_read_token[] = { // buffer max-len -- buffer read-length
 Word read_token = { "read-token", _docol, _read_token, &read_token3 };
 
 Word stack_top = { "stack-top", _dovar, 0, &read_token };
+Word cell_size = { "cell-size", _doconst, (void *)sizeof(Cell), &stack_top };
 
 Word *_memdump[] = { // addr bytes
   &over, &literal, (Word *)0, &int_lte, &literal, (Word *)8, &unlessjump,
   &literal, (Word *)"", &cputs,
   &swap, &drop, &swap, &drop, &return0,
   &literal, (Word *)2, &pick, &peek, &write_hex_int,
-  &roll, &literal, (Word *)8, &int_sub,
-  &roll, &literal, (Word *)8, &int_add,
+  &roll, &cell_size, &int_sub,
+  &roll, &cell_size, &int_add,
   &roll,
-  &literal, (Word *)-32, &jumprel
+  &literal, (Word *)-30, &jumprel
 };
 
-Word memdump = { "memdump", _docol, _memdump, &stack_top };
+Word memdump = { "memdump", _docol, _memdump, &cell_size };
 
 Word *_dump_stack[] = {
   &literal, (Word *)"Stack", &cputs,
@@ -100,11 +101,23 @@ Word *_dict_entry_name[] = {
 
 Word dict_entry_name = { "dict-entry-name", _docol, _dict_entry_name, &dump_stack };
 
+Word *_dict_entry_code[] = {
+  &swap, &literal, (Word *)sizeof(Cell), &int_add, &swap, &return0
+};
+
+Word dict_entry_code = { "dict-entry-code", _docol, _dict_entry_code, &dict_entry_name };
+
+Word *_dict_entry_data[] = {
+  &swap, &literal, (Word *)(sizeof(Cell)*2), &int_add, &swap, &return0
+};
+
+Word dict_entry_data = { "dict-entry-data", _docol, _dict_entry_data, &dict_entry_code };
+
 Word *_dict_entry_next[] = {
   &swap, &literal, (Word *)(sizeof(Cell)*3), &int_add, &swap, &return0
 };
 
-Word dict_entry_next = { "dict-entry-next", _docol, _dict_entry_next, &dict_entry_name };
+Word dict_entry_next = { "dict-entry-next", _docol, _dict_entry_next, &dict_entry_data };
 
 Word *_byte_string_equals4[] = { // a b length index
   &over, &literal, (Word *)3, &pick, &int_lte, &literal, (Word *)14, &ifjump,
@@ -140,7 +153,7 @@ Word *_byte_string_equals3[] = { // a b length
 
 Word byte_string_equals3 = { "byte-string-equals?/3", _docol, _byte_string_equals3, &byte_string_equals4 };
 
-Word *_lookup[] = { // buffer length dict
+Word *_lookup[] = { // buffer length dict -- dict ok?
 // needs to search the dictionary
   &over, &literal, (Word *)12, &ifjump,
   &swap, &drop, &swap, &drop, &swap, &drop,
@@ -158,40 +171,70 @@ Word *_lookup[] = { // buffer length dict
 
 Word lookup = { "lookup", _docol, _lookup, &byte_string_equals3 };
 
-Word input_buffer = { "input-buffer", _dovar, 0, &lookup };
+Word *_quote[] = {
+  &here, &rpush,
+  &literal, (Word *)0, &literal, (Word *)0, &literal, (Word *)0, &literal, (Word *)0,
+  &here, &literal, (Word *)32, &read_token,
+  &fdup, &literal, (Word *)0, &int_lte, &literal, (Word *)14, &ifjump,
+  &dict, &lookup,
+  &literal, (Word *)9, &unlessjump,
+  &rpop, &cell_size, &int_sub, &over, &over, &poke, &move, &swap, &return0,
+  &literal, "Not found.", &cputs,
+  &rpop, &move, &literal, (Word *)0, &swap, &return0
+};
+
+Word quote = { "'", _docol, _quote, &lookup };
+
+Word input_buffer = { "input-buffer", _dovar, 0, &quote };
 Word input_buffer_size = { "input-buffer-size", _dovar, 0, &input_buffer };
+Word istate = { "istate", _dovar, &exec, &input_buffer_size };
 
 Word *_interp_loop[] = {
-  &here, &rpush,
-  &fdup, &write_int, &literal, (Word *)"Loop: ", &cputs,
+  &rpush,
+  //&fdup, &write_int, &literal, (Word *)"Loop: ", &cputs,
   &input_buffer, &peek, &input_buffer_size, &peek, &read_token,
-  &fdup, &literal, (Word *)0, &int_lt, &literal, (Word *)13, &ifjump,
+  &fdup, &literal, (Word *)0, &int_lt, &literal, (Word *)15, &ifjump,
   &dict, &lookup,
   /* &fdup, &write_int, &fdup, &literal, (Word *)4, &unlessjump,
   &over, &dict_entry_name, &peek, &cputs,  */
-  &literal, (Word *)4, &unlessjump,
-  &exec, &literal, (Word *)1, &jumprel,
+  &literal, (Word *)6, &unlessjump,
+  &istate, &peek, &exec, &literal, (Word *)1, &jumprel,
   &drop,
-  &literal, (Word *)-30, &jumprel,
+  &literal, (Word *)-27, &jumprel,
   &literal, (Word *)"Bye", &cputs,
-  &rpop, &move, &return0
+  &rpop, &return0
 };
 
-Word interp_loop = { "interp-loop", _docol, _interp_loop, &input_buffer_size };
+Word interp_loop = { "interp-loop", _docol, _interp_loop, &istate };
 
 Word *_interp[] = {
   &literal, (Word *)128, &rallot, &input_buffer, &poke,
+  &swap, &rpush,
   &literal, (Word *)128, &input_buffer_size, &poke,
   &interp_loop,
   &literal, (Word *)0, &input_buffer, &poke,
   &literal, (Word *)0, &input_buffer_size, &poke,
-  &return0
+  &rpop, &return0
 };
 
 Word interp = { "interp", _docol, _interp, &interp_loop };
 
-Word one = { "one", _doconst, (void *)1, &interp };
-Word xvar = { "x", _dovar, 0, &one };
+Word *_load[] = {
+  &rpush,
+  &current_input, &peek, &rpush,
+  &current_input, &poke, 
+  &interp_loop,
+  &rpop, &current_input, &poke,
+  &rpop, &return0
+};
+
+Word load = { "load", _docol, _load, &interp };
+
+Word zero = { "0", _doconst, (void *)0, &load };
+Word one = { "1", _doconst, (void *)1, &zero };
+Word sixteen = { "16", _doconst, (void *)16, &one };
+
+Word xvar = { "x", _dovar, 0, &sixteen };
 
 Word *_boot[] = {
   &here, &stack_top, &poke,
