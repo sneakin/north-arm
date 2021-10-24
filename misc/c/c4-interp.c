@@ -15,16 +15,24 @@ Word *_pick[] = {
 
 Word pick = { "pick", _docol, _pick, &words };
 
+Word standard_input = { "standard-input", _doconst, 0, &pick };
+Word standard_output = { "standard-output", _doconst, 1, &standard_input };
+Word standard_error = { "standard-error", _doconst, 2, &standard_output };
+
+Word current_input = { "current-input", _dovar, 0, &standard_error };
+Word current_output = { "current-output", _dovar, 1, &current_input };
+Word current_error = { "current-error", _dovar, 2, &current_output };
+
 Word *_read_byte[] = {
   &literal, (Word *)0, &here,
   &literal, (Word *)1, &swap,
-  &literal, (Word *)0, &cread,
+  &current_input, &peek, &cread,
   &fdup, &literal, (Word *)0, &int_lte, &literal, (Word *)3, &ifjump,
   &drop, &swap, &return0,
   &swap, &drop, &literal, (Word *)-1, &int_add, &swap, &return0
 };
 
-Word read_byte = { "read_byte", _docol, _read_byte, &pick };
+Word read_byte = { "read-byte", _docol, _read_byte, &current_error };
 
 Word *_is_space[] = {
   &swap, &literal, (Word *)32, &int_lte, &swap, &return0
@@ -60,11 +68,37 @@ Word *_read_token[] = { // buffer max-len -- buffer read-length
 
 Word read_token = { "read-token", _docol, _read_token, &read_token3 };
 
+Word stack_top = { "stack-top", _dovar, 0, &read_token };
+
+Word *_memdump[] = { // addr bytes
+  &over, &literal, (Word *)0, &int_lte, &literal, (Word *)8, &unlessjump,
+  &literal, (Word *)"", &cputs,
+  &swap, &drop, &swap, &drop, &return0,
+  &literal, (Word *)2, &pick, &peek, &write_hex_int,
+  &roll, &literal, (Word *)8, &int_sub,
+  &roll, &literal, (Word *)8, &int_add,
+  &roll,
+  &literal, (Word *)-32, &jumprel
+};
+
+Word memdump = { "memdump", _docol, _memdump, &stack_top };
+
+Word *_dump_stack[] = {
+  &literal, (Word *)"Stack", &cputs,
+  &here, &fdup, &write_hex_int,
+  &stack_top, &peek,
+  &over, &int_sub, &fdup, &write_int,
+  &literal, (Word *)"", &cputs,
+  &memdump, &return0
+};
+
+Word dump_stack = { "dump-stack", _docol, _dump_stack, &memdump };
+
 Word *_dict_entry_name[] = {
   &return0
 };
 
-Word dict_entry_name = { "dict-entry-name", _docol, _dict_entry_name, &read_token };
+Word dict_entry_name = { "dict-entry-name", _docol, _dict_entry_name, &dump_stack };
 
 Word *_dict_entry_next[] = {
   &swap, &literal, (Word *)(sizeof(Cell)*3), &int_add, &swap, &return0
@@ -156,33 +190,7 @@ Word *_interp[] = {
 
 Word interp = { "interp", _docol, _interp, &interp_loop };
 
-Word stack_top = { "stack-top", _dovar, 0, &interp };
-
-Word *_memdump[] = { // addr bytes
-  &over, &literal, (Word *)0, &int_lte, &literal, (Word *)8, &unlessjump,
-  &literal, (Word *)"", &cputs,
-  &swap, &drop, &swap, &drop, &return0,
-  &literal, (Word *)2, &pick, &peek, &write_hex_int,
-  &roll, &literal, (Word *)8, &int_sub,
-  &roll, &literal, (Word *)8, &int_add,
-  &roll,
-  &literal, (Word *)-32, &jumprel
-};
-
-Word memdump = { "memdump", _docol, _memdump, &stack_top };
-
-Word *_dump_stack[] = {
-  &literal, (Word *)"Stack", &cputs,
-  &here, &fdup, &write_hex_int,
-  &stack_top, &peek,
-  &over, &int_sub, &fdup, &write_int,
-  &literal, (Word *)"", &cputs,
-  &memdump, &return0
-};
-
-Word dump_stack = { "dump-stack", _docol, _dump_stack, &memdump };
-
-Word one = { "one", _doconst, (void *)1, &dump_stack };
+Word one = { "one", _doconst, (void *)1, &interp };
 Word xvar = { "x", _dovar, 0, &one };
 
 Word *_boot[] = {
