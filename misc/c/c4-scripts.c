@@ -150,33 +150,33 @@ int main() {
   Word **eip;
   
   (sp--)->i = 0;
-  eip = test_nesting0.data;
+  eip = test_nesting0.data.word_list;
   _next(&sp, &eip);
   dump_stack(sp, stack+1023);
 
   (sp--)->i = 0;
-  eip = bootstrap.data;
+  eip = bootstrap.data.word_list;
   _next(&sp, &eip);
   //Cell *here = _next(sp+1023, (Word **)hey_def);
   dump_stack(sp, stack+1023);
 
   (sp--)->i = 0;
-  eip = words.data;
+  eip = words.data.word_list;
   _next(&sp, &eip);
   dump_stack(sp, stack+1023);
 
   (sp--)->i = 0;
-  eip = test_rallot.data;
+  eip = test_rallot.data.word_list;
   _next(&sp, &eip);
   dump_stack(sp, stack+1023);
 
   (sp--)->i = 0;
-  eip = rpushpop.data;
+  eip = rpushpop.data.word_list;
   _next(&sp, &eip);
   dump_stack(sp, stack+1023);
 
   (sp--)->i = 0;
-  eip = test_read.data;
+  eip = test_read.data.word_list;
   _next(&sp, &eip);
   dump_stack(sp, stack+1023);
 

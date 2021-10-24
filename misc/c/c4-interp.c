@@ -15,13 +15,13 @@ Word *_pick[] = {
 
 Word pick = { "pick", _docol, _pick, &words };
 
-Word standard_input = { "standard-input", _doconst, 0, &pick };
-Word standard_output = { "standard-output", _doconst, 1, &standard_input };
-Word standard_error = { "standard-error", _doconst, 2, &standard_output };
+Word standard_input = { "standard-input", _doconst, (void *)0, &pick };
+Word standard_output = { "standard-output", _doconst, (void *)1, &standard_input };
+Word standard_error = { "standard-error", _doconst, (void *)2, &standard_output };
 
-Word current_input = { "current-input", _dovar, 0, &standard_error };
-Word current_output = { "current-output", _dovar, 1, &current_input };
-Word current_error = { "current-error", _dovar, 2, &current_output };
+Word current_input = { "current-input", _dovar, (void *)0, &standard_error };
+Word current_output = { "current-output", _dovar, (void *)1, &current_input };
+Word current_error = { "current-error", _dovar, (void *)2, &current_output };
 
 Word *_read_byte[] = {
   &literal, (Word *)0, &here,
@@ -180,14 +180,14 @@ Word *_quote[] = {
   &dict, &lookup,
   &literal, (Word *)9, &unlessjump,
   &rpop, &cell_size, &int_sub, &over, &over, &poke, &move, &swap, &return0,
-  &literal, "Not found.", &cputs,
+  &literal, (Word *)"Not found.", &cputs,
   &rpop, &move, &literal, (Word *)0, &swap, &return0
 };
 
 Word quote = { "'", _docol, _quote, &lookup };
 
-Word input_buffer = { "input-buffer", _dovar, 0, &quote };
-Word input_buffer_size = { "input-buffer-size", _dovar, 0, &input_buffer };
+Word input_buffer = { "input-buffer", _dovar, (void *)0, &quote };
+Word input_buffer_size = { "input-buffer-size", _dovar, (void *)0, &input_buffer };
 Word istate = { "istate", _dovar, &exec, &input_buffer_size };
 
 Word *_interp_loop[] = {
