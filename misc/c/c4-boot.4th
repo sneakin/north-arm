@@ -24,26 +24,6 @@ create> does>
 here dict dict-entry-data poke
 docol dict dict-entry-code poke
 
-create> ]r
-does> docol
-' return0 ' swap ' int-add ' cell-size ' here
-' poke ' istate ' exec ' literal
-here dict dict-entry-data poke
-
-create> compiling-exec
-does> docol
-' return0 ' rpop
-' exec ' unlessjump 1 ' literal
-' equals? ' ]r ' literal ' dup
-' rpush
-here dict dict-entry-data poke
-
-create> r[
-does> docol
-' return0
-' poke ' istate ' compiling-exec ' literal
-here dict dict-entry-data poke
-
 create> 41
 does> doconst
 4 1 int-add 4 int-mul 2 int-mul 1 int-add dict dict-entry-data poke
@@ -54,58 +34,13 @@ does> doconst
 
 create> (
 does> docol
-r[
-  jumprel -15
-  return0 unlessjump 1 equals? 41
-  return0 drop unlessjump 2 int<= 0 dup
-  read-byte
-]r dict dict-entry-data poke
+' jumprel ' -15
+' return0 ' unlessjump ' 1 ' equals? ' 41
+' return0 ' drop ' unlessjump ' 2 ' int<= ' 0 ' dup
+' read-byte
+here dict dict-entry-data poke
 
 ( Whew! Comments can now be made. )
-
-( Some test definitions: )
-
-create> double
-does> docol
-r[ return0 swap int-add dup swap ]r
-dict dict-entry-data poke
-
-create> square
-does> docol
-r[ return0 swap int-mul dup swap ]r
-dict dict-entry-data poke
-
-( Using reverse, we can have properly ordered definitions: )
-
-create> ]
-does> docol
-r[ return0 swap dump-stack
-   reverse write-int dup swap
-   roll dup int-add cell-size int-add cell-size here
-   swap
-   poke istate exec literal
-]r dict dict-entry-data poke
-
-create> 3
-does> doconst
-4 1 int-sub dict dict-entry-data poke
-
-create> compiling-exec
-does> docol
-r[ return0 rpop
-   int-add 1 swap
-   jumprel 3 exec unlessjump 3
-   equals? ] literal dup
-   rpush
-]r dict dict-entry-data poke
-
-create> [
-does> docol
-r[ return0 swap 0
-   poke istate compiling-exec literal
-]r dict dict-entry-data poke
-
-[ 0 1 1 int-add 0 0 0 ] dump-stack
 
 (
 create> (
@@ -117,7 +52,49 @@ does> docol
 ] dict dict-entry-data poke
 )
 
+( Using reverse, we can have properly ordered definitions: )
+
+create> ]
+does> docol
+' return0 ' swap ' dump-stack
+' reverse ' write-int ' dup ' swap
+' roll ' dup ' int-add ' cell-size ' int-add ' cell-size ' here
+' swap
+' poke ' istate ' exec ' literal
+here dict dict-entry-data poke
+
+create> 3
+does> doconst
+4 1 int-sub dict dict-entry-data poke
+
+create> compiling-exec
+does> docol
+' return0 ' rpop
+' int-add ' 1 ' swap
+' jumprel ' 3 ' exec ' unlessjump ' 3
+' equals? ' ] ' literal ' dup
+' rpush
+here dict dict-entry-data poke
+
+create> [
+does> docol
+' return0 ' swap ' 0
+' poke ' istate ' compiling-exec ' literal
+here dict dict-entry-data poke
+
+[ 0 1 1 int-add 0 0 0 ] dump-stack
+
 ( More demonstration functions: )
+
+create> double
+does> docol
+[ swap dup int-add swap return0 ]
+dict dict-entry-data poke
+
+create> square
+does> docol
+[ swap dup int-mul swap return0 ]
+dict dict-entry-data poke
 
 create> a-test
 does> docol
