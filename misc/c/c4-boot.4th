@@ -4,13 +4,13 @@
 1 int-add dup write-int
 1 int-add write-int
 
-0 0 here 16 read-token create>
+0 0 0 0 here cell-size 4 int-mul read-token create>
 over cputs
 drop dict swap 0 swap docol swap dup cputs here set-dict
 ' return0 ' peek ' rpop
 ' set-dict ' here ' swap ' doconst ' swap 0 ' literal ' swap ' dict
 ' cputs ' dup
-' drop ' read-token 16 ' literal ' here 0 ' literal 0 ' literal
+' drop ' read-token cell-size 4 int-mul ' literal ' here 0 ' literal 0 ' literal 0 ' literal 0 ' literal
 ' rpush ' here
 here dict dict-entry-data poke
 
@@ -19,7 +19,7 @@ create> does>
 ' poke ' dict-entry-code ' dict
 ' peek ' dict-entry-data
 ' unlessjump 1 1 int-add dup int-add 1 int-add ' literal ' lookup ' dict
-' read-token 16 ' literal ' here 0 ' literal 0 ' literal
+' read-token cell-size 4 int-mul ' literal ' here 0 ' literal 0 ' literal 0 ' literal 0 ' literal
 ' rpush ' here
 here dict dict-entry-data poke
 docol dict dict-entry-code poke
