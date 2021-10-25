@@ -44,10 +44,26 @@ does> docol
 ' poke ' istate ' compiling-exec ' literal
 here dict dict-entry-data poke
 
-dump-stack
+create> 41
+does> doconst
+4 1 int-add 4 int-mul 2 int-mul 1 int-add dict dict-entry-data poke
 
-r[ 0 1 1 int-add 0 0 0 ]r dump-stack
-r[ 1 1 int-add 1 1 1 1 ]r dump-stack
+create> -15
+does> doconst
+16 1 int-sub -1 int-mul dict dict-entry-data poke
+
+create> (
+does> docol
+r[
+  jumprel -15
+  return0 unlessjump 1 equals? 41
+  return0 drop unlessjump 2 int<= 0 dup
+  read-byte
+]r dict dict-entry-data poke
+
+( Whew! Comments can now be made. )
+
+( Some test definitions: )
 
 create> double
 does> docol
@@ -58,6 +74,8 @@ create> square
 does> docol
 r[ return0 swap int-mul dup swap ]r
 dict dict-entry-data poke
+
+( Using reverse, we can have properly ordered definitions: )
 
 create> ]
 does> docol
@@ -88,6 +106,18 @@ r[ return0 swap 0
 ]r dict dict-entry-data poke
 
 [ 0 1 1 int-add 0 0 0 ] dump-stack
+
+(
+create> (
+does> docol
+[ read-byte
+  dup 0 int<= 2 unlessjump drop return0
+  41 equals? 1 unlessjump return0
+  -15 jumprel
+] dict dict-entry-data poke
+)
+
+( More demonstration functions: )
 
 create> a-test
 does> docol
