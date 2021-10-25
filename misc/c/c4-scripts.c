@@ -131,7 +131,7 @@ Word *_words[] = {
   &dict, &words1, &return0
 };
 
-Word words = { "words", _docol, _words, &cread };
+Word words = { "words", _docol, _words, &test_read };
 
 Word *last_word = &words;
 

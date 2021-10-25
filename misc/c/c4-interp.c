@@ -186,7 +186,48 @@ Word *_quote[] = {
 
 Word quote = { "'", _docol, _quote, &lookup };
 
-Word input_buffer = { "input-buffer", _dovar, (void *)0, &quote };
+Word *_swap_places[] = { // a b
+  &literal, (Word *)2, &pick, &peek, &fdup, &write_int,
+  &literal, (Word *)2, &pick, &peek, &fdup, &write_int,
+  &literal, (Word *)4, &pick, &poke,
+  &literal, (Word *)2, &pick, &poke,
+  &swap, &drop, &swap, &drop, &return0  
+};
+
+Word swap_places = { "swap-places", _docol, _swap_places, &quote };
+
+Word *_reverse3[] = { // ptr length n
+  &literal, (Word *)3, &pick,
+  &literal, (Word *)3, &pick,
+  &literal, (Word *)3, &pick, &int_sub, &literal, (Word *)1, &int_sub, &cell_size, &int_mul, &int_add,
+  &literal, (Word *)4, &pick,
+  &literal, (Word *)3, &pick, &cell_size, &int_mul, &int_add, &swap_places,
+  &swap, &literal, (Word *)1, &int_add, &swap,
+  &literal, (Word *)1, &pick, &literal, (Word *)2, &int_mul,
+  &literal, (Word *)3, &pick, &int_lt, &literal, (Word *)-44, &ifjump,
+  &return0
+};
+
+Word reverse3 = { "reverse3", _docol, _reverse3, &swap_places };
+
+Word *_reverse[] = {
+  &roll, &literal, (Word *)0, &reverse3,
+  &drop, &drop, &drop, &return0
+};
+
+Word reverse = { "reverse", _docol, _reverse, &reverse3 };
+
+Word *_nseq[] = { // n ++ 0 1 2 ... n-1
+  &literal, (Word *)0, &roll,
+  &swap, &literal, (Word *)1, &int_sub, &swap,
+  &over, &literal, (Word *)3, &ifjump, &swap, &drop, &return0,
+  &literal, (Word *)2, &pick, &literal, (Word *)1, &int_add, &roll,
+  &literal, (Word *)-22, &jumprel
+};
+
+Word nseq = { "nseq", _docol, _nseq, &reverse };
+
+Word input_buffer = { "input-buffer", _dovar, (void *)0, &nseq };
 Word input_buffer_size = { "input-buffer-size", _dovar, (void *)0, &input_buffer };
 Word istate = { "istate", _dovar, &exec, &input_buffer_size };
 
@@ -247,4 +288,8 @@ Word *_boot[] = {
 
 Word boot = { "boot", _docol, _boot, &xvar };
 
+#ifndef TESTING
 Word *last_word = &boot;
+#else
+#include "c4-interp-tests.c"
+#endif
