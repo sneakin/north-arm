@@ -187,8 +187,8 @@ Word *_quote[] = {
 Word quote = { "'", _docol, _quote, &lookup };
 
 Word *_swap_places[] = { // a b
-  &literal, (Word *)2, &pick, &peek, &fdup, &write_int,
-  &literal, (Word *)2, &pick, &peek, &fdup, &write_int,
+  &literal, (Word *)2, &pick, &peek, //&fdup, &write_int,
+  &literal, (Word *)2, &pick, &peek, //&fdup, &write_int,
   &literal, (Word *)4, &pick, &poke,
   &literal, (Word *)2, &pick, &poke,
   &swap, &drop, &swap, &drop, &return0  

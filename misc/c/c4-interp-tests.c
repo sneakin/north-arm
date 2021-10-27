@@ -24,3 +24,4 @@ Word *_test_reverse[] = {
 Word test_reverse = { "test-reverse", _docol, _test_reverse, &boot };
 
 Word *last_word = &test_reverse;
+
