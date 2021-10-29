@@ -199,6 +199,26 @@ State _int_mul(Cell **sp, Word ***eip) {
 
 Word int_mul = { "int-mul", _doop, _int_mul, &int_add };
 
+State _int_div(Cell **sp, Word ***eip) {
+  long a = (*sp)->i;
+  *sp += 1;
+  long b = (*sp)->i;
+  (*sp)->i = (b / a);
+  return GO;
+}
+
+Word int_div = { "int-div", _doop, _int_div, &int_mul };
+
+State _int_mod(Cell **sp, Word ***eip) {
+  long a = (*sp)->i;
+  *sp += 1;
+  long b = (*sp)->i;
+  (*sp)->i = (b % a);
+  return GO;
+}
+
+Word int_mod = { "int-mod", _doop, _int_mod, &int_div };
+
 State _int_lte(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
   *sp += 1;
@@ -207,7 +227,7 @@ State _int_lte(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word int_lte = { "int<=", _doop, _int_lte, &int_mul };
+Word int_lte = { "int<=", _doop, _int_lte, &int_mod };
 
 State _int_lt(Cell **sp, Word ***eip) {
   long a = (*sp)->i;
