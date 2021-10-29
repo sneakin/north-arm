@@ -34,4 +34,4 @@ c4-interp-tests: ../c4-words.h ../c4-interp.c ../c4-words-def.c ../c4-interp-tes
 	$(CC) $(CFLAGS) -o $@ -DTESTING ../c4-interp.c libc4.so libc4-main.so
 
 c4-interp.static: ../c4-words.h ../c4-interp.c ../c4-words-def.c ../c4.c ../c4-main.c
-	$(CC) $(CFLAGS) -o $@ ../c4-interp.c ../c4.c ../c4-main.c
+	$(CC) $(CFLAGS) -static -o $@ ../c4-interp.c ../c4.c ../c4-main.c
