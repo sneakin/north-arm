@@ -140,12 +140,21 @@ does> docol
   swap drop here rpop return0
 ] dict dict-entry-data poke
 
+create> immediate/1
+does> docol
+[ rpush
+  copy-entry
+  immediates peek over dict-entry-next poke
+  immediates poke
+  rpop return0
+] dict dict-entry-data poke
+
+' ( immediate/1 ( Comments in code! )
+
 create> immediate
 does> docol
 [ rpush
-  dict copy-entry
-  immediates peek over dict-entry-next poke
-  immediates poke
+  dict immediate/1
   rpop return0
 ] dict dict-entry-data poke
 
@@ -249,6 +258,7 @@ immediate
 
 : c-test
   10 write-hex-int
+  ( with a comment )
   2 write-int
   ihey
   return0
@@ -263,3 +273,58 @@ immediate
 iwords
 c-test
 d-test
+
+create> -29
+does> doconst
+3 10 int-mul 1 int-sub -1 int-mul dict dict-entry-data poke
+create> -30
+does> doconst
+3 10 int-mul -1 int-mul dict dict-entry-data poke
+create> -31
+does> doconst
+3 10 int-mul 1 int-add -1 int-mul dict dict-entry-data poke
+create> -33
+does> doconst
+3 10 int-mul 3 int-add -1 int-mul dict dict-entry-data poke
+
+: read-until ( char -- ...chars here n )
+  rpush 0 0 roll
+  read-byte
+  dup 0 int<= 7 unlessjump drop swap drop here swap rpop return0
+  dup 3 pick equals? 9 unlessjump drop swap drop here cell-size int-add swap rpop return0
+  roll 1 int-add -33 jumprel
+;
+
+16 4 int-mul 1 int-add read-until xyzCBA 1 int-add cell-size int-mul memdump
+
+create> dquote
+does> doconst
+3 10 int-mul 4 int-add dict dict-entry-data poke
+
+: "
+  rpush dquote read-until over over reverse rpop return0
+; immediate
+
+" Hello" cell-size int-mul memdump
+
+: write-byte
+  swap here 1 swap current-output peek cwrite drop drop return0
+;
+
+create> -23
+does> doconst
+2 10 int-mul 3 int-add -1 int-mul dict dict-entry-data poke
+
+: write-string/2
+  1 pick 0 equals? 4 unlessjump roll drop drop return0
+  2 pick peek write-byte
+  roll 1 int-sub roll cell-size int-add roll
+  -23 jumprel
+;
+
+: newline 10 write-byte return0 ;
+
+" Hello" over over write-string/2 newline write-string/2 newline
+
+4 3 2 1 write-int write-int write-int write-int newline
+  

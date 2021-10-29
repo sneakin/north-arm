@@ -249,9 +249,17 @@ Word *_interp_loop[] = {
 
 Word interp_loop = { "interp-loop", _docol, _interp_loop, &istate };
 
-Word *_interp[] = {
-  &literal, (Word *)128, &rallot, &input_buffer, &poke,
+Word *_stack_allot[] = {
   &rpush,
+  &here, &swap, &int_sub, &move, &here,
+  &rpop, &return0
+};
+
+Word stack_allot = { "stack-allot", _docol, _stack_allot, &interp_loop };
+
+Word *_interp[] = {
+  &rpush,
+  &literal, (Word *)128, &stack_allot, &input_buffer, &poke,
   &literal, (Word *)128, &input_buffer_size, &poke,
   &interp_loop,
   &literal, (Word *)0, &input_buffer, &poke,
@@ -259,7 +267,7 @@ Word *_interp[] = {
   &rpop, &return0
 };
 
-Word interp = { "interp", _docol, _interp, &interp_loop };
+Word interp = { "interp", _docol, _interp, &stack_allot };
 
 Word *_load[] = {
   &rpush,
