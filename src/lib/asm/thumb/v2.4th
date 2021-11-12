@@ -105,7 +105,7 @@
 
 ( 1 1 1 1, 0 0 1 1, 1 1 1 R, 1 1 1 1; 1 0 0 0, Rd:4, 0:8 )
 : mrs ( reg -- ins )
-  0xF logand 24 bsl 0x8000F3EF logior
+  0xF logand 24 bsl 0x8000F3EF logior ( todo 0xf3ef right? )
 ;
 
 : .spsr 20 bit-set ; ( saved CPSR state )
@@ -141,12 +141,12 @@
   swap 0xF logand logior
 ;
 
-: mcrr
+: mcrr ( Rt2 CRm Opc Coproc Rt -- ins32 )
   mcrr-lo 16 bsl
   swap mcrr-hi logior
 ;
 
-: mrrc
+: mrrc ( Rt2 CRm Opc Coproc Rt -- ins32 )
   mcrr-lo 16 bsl
   swap mrrc-hi logior
 ;

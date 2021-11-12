@@ -95,7 +95,7 @@ alias> sl r10
 : bic 14 alu-op ;
 : mvn 15 alu-op ;
 
-( 0 1 0 0 0 1 Op H1 H2 Rs/Hs:3 Rd/Hd:3 Hi register operations/branch exchange )
+( 0 1 0 0 0 1 Op:2 H1 H2 Rs/Hs:3 Rd/Hd:3 Hi register operations/branch exchange )
 : hi-reg-op ( rs rd op -- ins )
   8 bsl
   swap 0x7 logand logior
@@ -146,7 +146,7 @@ alias> sl r10
   dup r7 uint> IF 0 bx-hi ELSE 0 bx-lo THEN
 ;
 
-( 0 1 0 0 1 Rd Word:8 -- PC relative load. Be aware that ldr-pc only loads on 4 byte alignment and that PC is +4 or +2 depending on if the load is located on a 4 or 2 byte boundary:
+( 0 1 0 0 1 Rd:3 Word:8 -- PC relative load. Be aware that ldr-pc only loads on 4 byte alignment and that PC is +4 or +2 depending on if the load is located on a 4 or 2 byte boundary:
   0: 0 r0 ldr-pc ; loads from @4, PC+0
   2: 0 r0 ldr-pc ; loads from @4, PC+0
   4: 0 r0 ldr-pc ; loads from @8, PC+0
@@ -191,6 +191,8 @@ alias> sl r10
 : .offset-byte 12 bit-set ;
 
 ( todo suffix with -offset )
+( todo needs shifting of offset? )
+
 ( 1 0 0 0 L Offset:5 Rb:3 Rd:3 Load/store halfword )
 : strh ( offset rb rd )
   swap 3 bsl logior
