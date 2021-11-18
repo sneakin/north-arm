@@ -366,7 +366,7 @@ here const> DISASM-HI-REGS
 
 : disasm-op2 ( op32 -- ...words count )
   ( v1 branch )
-  dup 0xF800F800 logand 0xF800F000 equals? IF disasm-branch-link2 proper-exit THEN
+  dup 0x8000F800 logand 0x8000F000 equals? IF disasm-branch-link2 proper-exit THEN
   ( v2 operations )
   dup 0xF0F0FFF0 logand 0xF0F0FB90 equals? IF disasm-sdiv proper-exit THEN
   dup 0xF0F0FFF0 logand 0xF0F0FBB0 equals? IF disasm-udiv proper-exit THEN
@@ -375,28 +375,30 @@ here const> DISASM-HI-REGS
   dup 0xF00EFFF0 logand 0x8000F380 equals? IF disasm-msr proper-exit THEN
   dup 0x0000FFF0 logand 0xEC40 equals? IF disasm-mcrr proper-exit THEN
   dup 0x0000FFF0 logand 0xEC50 equals? IF disasm-mrrc proper-exit THEN
-  dup 0x0000FFF0 logand 0xEC00 equals? IF disasm-stc proper-exit THEN
-  dup 0x0000FFF0 logand 0xEC10 equals? IF disasm-ldc proper-exit THEN
-  dup 0x0010FFF0 logand 0x00EE30 equals? IF disasm-cdp proper-exit THEN
-  dup 0x0010FFF0 logand 0x10EE60 equals? IF disasm-mcr proper-exit THEN
-  dup 0x0010FFF0 logand 0x10EE70 equals? IF disasm-mrc proper-exit THEN
+  dup 0x0000FF10 logand 0xEC00 equals? IF disasm-stc proper-exit THEN
+  dup 0x0000FF10 logand 0xEC10 equals? IF disasm-ldc proper-exit THEN
+  dup 0x0010FF00 logand 0x00EE00 equals? IF disasm-cdp proper-exit THEN
+  dup 0x0010FF10 logand 0x10EE00 equals? IF disasm-mcr proper-exit THEN
+  dup 0x0010FF10 logand 0x10EE10 equals? IF disasm-mrc proper-exit THEN
   s" Unknown 32 bit op: " error-string/2 error-hex-uint enl
 ;
 
 def two-byte-op?
-  arg0 0xF000 logand 0xF000 equals? return1
+  arg0 0xF000 logand 0xF000 equals? IF true return1 THEN
+  arg0 0xF800 logand 0xE800 equals? return1
 end
 
 def disasm/3 ( ptr num-bytes size ++ ptr size )
   arg1 2 int< IF here arg0 exit-frame THEN
   arg1 2 - set-arg1
   literal ,ins
-  arg2 arg1 + ins1@ ,h space
+  ( arg2 arg1 2 - peek-off .h space )
+  arg2 arg1 peek-off-short ,h space
+  arg2 arg1 2 - peek-off-short ,h space
   two-byte-op? IF
     arg1 2 - set-arg1
-    16 bsl
-    arg2 arg1 + ins1@ ,h space logior ,h space disasm-op2
-  ELSE disasm-op1
+    swap 16 bsl logior ,h space disasm-op2
+  ELSE drop disasm-op1
   THEN nl
   arg0 + 1 + set-arg0
   repeat-frame

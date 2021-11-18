@@ -127,8 +127,7 @@
 ( 1 1 1 C 1 1 0 0 0 1 0 L Rt2:4 )
 : mcrr-hi ( rt2 -- ins16 )
   0xF logand
-  1 6 bsl logior
-  coproc logior
+  coproc logior 6 bit-set
 ;
 
 : mrrc-hi mcrr-hi 4 bit-set ;
@@ -173,12 +172,12 @@
   swap 0xFF logand logior
 ;
 
-: stc
+: stc ( Rn imm8 coproc CRd -- ins32 )
   stc-lo 16 bsl
   swap stc-hi logior
 ;
 
-: ldc
+: ldc ( Rn imm8 coproc CRd -- ins32 )
   stc-lo 16 bsl
   swap ldc-hi logior
 ;
