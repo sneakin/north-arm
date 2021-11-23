@@ -253,7 +253,7 @@ here const> DISASM-HI-REGS
 : disasm-branch-link ( op -- ...operands instruction count )
   dup 11 bit-set? IF literal bl-lo ELSE literal bl-hi THEN swap
   0x7FF logand literal int32
-  int32 2
+  int32 3
 ;
 
 : disasm-op1 ( op -- ...operands instruction count )
