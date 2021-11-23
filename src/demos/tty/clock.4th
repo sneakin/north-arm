@@ -23,7 +23,7 @@ def tty-center-segment-clock ( rows cols -- row col )
 end
 
 def tty-raw-clock-loop ( tz )
-  get-time-secs dup arg0 +
+  CLOCK-REALTIME clock-get-secs dup arg0 +
   tty-hide-cursor tty-erase
   ( tty-clock-resize )
   tty-getsize
@@ -42,7 +42,7 @@ end
 
 def tty-buffer-clock-loop ( screen tz )
   arg1 tty-screen-resized? IF true 2 return1-n THEN
-  get-time-secs 1 + dup arg0 +
+  CLOCK-REALTIME clock-get-secs 1 + dup arg0 +
   0 arg1 tty-screen-buffer make-tty-context set-local2
   arg1 tty-screen-erase
   ( arg1 tty-buffer-clock-check-size IF arg1 tty-screen-redraw THEN ) ( drop locals will cause problems )
@@ -88,7 +88,7 @@ def tty-analog-clock-loop ( screen tz -- )
   0 0 0
   arg1 tty-screen-buffer make-tty-context set-local0
   42 local0 TtyContext -> char !
-  get-time-secs 1 + set-local1
+  CLOCK-REALTIME clock-get-secs 1 + set-local1
   local1 arg0 + set-local2
   arg1 tty-screen-erase
   ( center of clock )
