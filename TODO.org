@@ -18,6 +18,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 *** uint64
 *** core.4th needs a split to allow inclusion in binary
 ** Sooner than later
+*** Crashes with ~literal int32 123~
 *** s" places the string onto the data stack polluting the binary. Special interp version for defproper?
 *** DONE [#A] structures
 *** TODO [#A] variables with data on stack or data segment. initialized on load
@@ -107,6 +108,10 @@ what's motd ( -> ' hello )
 *** cpio encoder
 *** compressed?
 ** Postpone lookup with and without immediates
+** Using ~'~ in a definition should be like ~literal~
+#BEGIN_SRC
+: ' hello literal hey assert-equals
+#END_SRC
 ** Makefile cross compile support
 *** Makefile needs TARGET and HOST documented
 *** Makefile detection for HOST defaulted to aarch64 forcing use of qemu.
@@ -119,7 +124,7 @@ what's motd ( -> ' hello )
 **** Android / GNU switch
 ** TODO abs-int or int-abs?
 ** runner ops
-*** exec -> exec-cs-offset
+*** TODO exec -> exec-cs-offset, interp/boot/cross.4th aliases to exec-cs
 *** DONE call ops and return to next
 *** variables on stack
 *** array index interpreter

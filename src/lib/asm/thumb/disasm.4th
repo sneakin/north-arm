@@ -1,3 +1,5 @@
+( Register value to symbolic decoding: )
+
 0
 ' r7
 ' r6
@@ -32,6 +34,8 @@ here const> DISASM-HI-REGS
   0xF logand dup 8 int< IF disasm-low-register ELSE disasm-hi-register THEN
 ;
 
+( 16 bit ops: )
+
 : disasm-mov ( op -- shift rs rd instruction count )
   dup 11 bsr 3 logand CASE
     0 WHEN literal mov-lsl ;;
@@ -49,8 +53,13 @@ here const> DISASM-HI-REGS
   dup 9 bit-set? IF literal sub ELSE literal add THEN swap
   dup disasm-low-register swap
   dup 3 bsr disasm-low-register swap
-  dup 6 bsr disasm-low-register swap
-  drop 4
+  dup 10 bit-set? IF
+    6 bsr 0x7 logand literal int32
+    int32 5
+  ELSE
+    6 bsr disasm-low-register
+    int32 4
+  THEN
 ;
 
 : disasm-mcas# ( op -- immed rd instruction count )
@@ -109,9 +118,8 @@ here const> DISASM-HI-REGS
       2 WHEN literal movrr ;;
       3 WHEN literal bx ;;
     ESAC swap
-    dup
-    dup 6 bit-set? IF disasm-hi-register ELSE disasm-low-register THEN swap
-    dup 3 bsr over 7 bit-set? IF disasm-hi-register ELSE disasm-low-register THEN swap
+    dup dup 7 bit-set? IF disasm-hi-register ELSE disasm-low-register THEN swap
+    dup 3 bsr over 6 bit-set? IF disasm-hi-register ELSE disasm-low-register THEN swap
     drop 3
   THEN
 ;
@@ -120,7 +128,7 @@ here const> DISASM-HI-REGS
   literal ldr-pc swap
   dup 8 bsr disasm-low-register swap
   dup 0xFF logand 2 bsl swap literal int32 swap
-  drop 3
+  drop 4
 ;
 
 : disasm-data-op
@@ -139,7 +147,10 @@ here const> DISASM-HI-REGS
   dup disasm-low-register swap
   dup 3 bsr disasm-low-register swap
   dup 6 bsr disasm-low-register swap
-  drop 3
+  4
+  over 9 bit-set? IF 1 + THEN
+  over 10 bit-set? IF 1 + THEN
+  swap drop
 ;
 
 : disasm-ldr-off ( op -- offset rb rd instruction count )
@@ -148,47 +159,63 @@ here const> DISASM-HI-REGS
   dup disasm-low-register swap
   dup 3 bsr disasm-low-register swap
   dup 6 bsr 31 logand 2 bsl swap literal int32 swap
-  drop 3
+  12 bit-set? IF 6 ELSE 5 THEN
 ;
 
 : disasm-ldrh-off ( op -- offset rb rd instruction count )
   dup 11 bit-set? IF literal ldrh ELSE literal strh THEN swap
   dup disasm-low-register swap
   dup 3 bsr disasm-low-register swap
-  dup 6 bsr 31 logand ( 2 bsl ) swap literal int32 swap
-  drop 3
+  dup 6 bsr 31 logand 2 bsl swap literal int32 swap
+  drop 5
 ;
 
 : disasm-ldst-stack ( op -- offset rd instruction count )
   dup 11 bit-set? IF literal ldr-sp ELSE literal str-sp THEN swap
   dup 8 bsr disasm-low-register swap
   dup 0xFF logand 2 bsl swap literal int32 swap
-  drop 3
+  drop 4
 ;
 
 : disasm-addr-pcsp ( op -- offset rd instruction count )
-  dup 11 bit-set? IF literal addr-pc ELSE literal addr-sp THEN swap
+  dup 11 bit-set? IF literal addr-sp ELSE literal addr-pc THEN swap
   dup 8 bsr disasm-low-register swap
   dup 0xFF logand 2 bsl swap literal int32 swap
   drop 3
 ;
 
 : disasm-stack ( op -- ...operands instruction count )
-  dup 8 bit-set? IF literal .pclr swap THEN
-  dup 10 bit-set?
-  ( todo decode popr/pushr register bitfield )
-  IF dup 11 bit-set? IF literal popr ELSE literal pushr THEN
-  ELSE dup 7 bit-set? IF literal dec-sp ELSE literal inc-sp THEN
-  THEN swap
-  dup dup 10 bit-set? UNLESS 2 bsl THEN 0xFF logand swap literal int32 swap
-  8 bit-set? IF 4 ELSE 3 THEN
+  dup 10 bit-set? IF
+    ( todo decode popr/pushr register bitfield )
+    dup 8 bit-set? IF literal .pclr swap THEN
+    dup 11 bit-set? IF literal popr ELSE literal pushr THEN swap
+    dup 0xFF logand swap literal int32 swap
+    int32 8 bit-set? IF 4 ELSE 3 THEN
+  ELSE
+    dup 7 bit-set? IF literal dec-sp ELSE literal inc-sp THEN swap
+    dup 0x7F logand 2 bsl swap literal int32 swap
+    drop 3
+  THEN
+;
+
+: disasm-setend
+  0x8 logand IF literal bigend ELSE literal lilend THEN
+  int32 1
+;
+
+: disasm-stack-setend
+  dup 0xFFF7 logand 0xB650 equals? IF
+    disasm-setend
+  ELSE
+    disasm-stack
+  THEN
 ;
 
 : disasm-ldm ( op -- rb rlist instruction count )
   dup 11 bit-set? IF literal ldmia ELSE literal stmia THEN swap
-  dup 0xFF logand 2 bsl swap literal int32 swap
+  dup 0xFF logand swap literal int32 swap
   dup 8 bsr disasm-low-register swap
-  drop 3
+  drop 4
 ;
 
 : disasm-jumper ( op -- ...operands instruction count )
@@ -210,8 +237,10 @@ here const> DISASM-HI-REGS
     14 WHEN literal beq s" unknown jump op" error-line/2 ;;
     15 WHEN literal swi ;;
   ESAC swap
-  0xFF logand literal int32
-  int32 2
+  0xFF logand over literal swi equals? UNLESS
+    sign-extend-byte 1 bsl
+  THEN literal int32
+  int32 3
 ;
 
 : disasm-branch ( op -- ...operands instruction count )
@@ -229,10 +258,10 @@ here const> DISASM-HI-REGS
 
 : disasm-op1 ( op -- ...operands instruction count )
   ( most significant nibble mostly determines the kind )
-  dup 0xF000 logand 12 bsr ,h space CASE
+  dup 0xF000 logand 12 bsr CASE
     ( 2x000? )
     0x0 WHEN disasm-mov ;;
-    0x1 WHEN disasm-addsub ;;
+    0x1 WHEN dup 0x800 logand IF disasm-addsub ELSE disasm-mov THEN ;;
     ( 2x001? )
     0x2 WHEN disasm-mcas# ;;
     0x3 WHEN disasm-mcas# ;;
@@ -245,7 +274,7 @@ here const> DISASM-HI-REGS
     0x8 WHEN disasm-ldrh-off ;;
     0x9 WHEN disasm-ldst-stack ;;
     0xA WHEN disasm-addr-pcsp ;;
-    0xB WHEN disasm-stack ;;
+    0xB WHEN disasm-stack-setend ;;
     ( 2x11?? )
     0xC WHEN disasm-ldm ;;
     0xD WHEN disasm-jumper ;;
@@ -254,6 +283,8 @@ here const> DISASM-HI-REGS
     s" Unknown op" error-line/2 int32 0
   ESAC
 ;
+
+( 32 bit ops: )
 
 : disasm-branch-link2
   literal branch-link swap
@@ -286,11 +317,11 @@ here const> DISASM-HI-REGS
 ;
 
 : disasm-msr ( op32 -- reg mask msr 4 ) ( todo backwards return list )
-  literal mrs swap
+  literal msr swap
   dup 24 bsr 0xF logand swap
   literal int32 swap
-  24 bsr disasm-register
-  int32 3
+  disasm-register
+  int32 4
 ;
 
 : disasm-mcrr ( op32 -- Rt2 CRm Opc Coproc Rt mcrr 9 )
@@ -342,31 +373,29 @@ here const> DISASM-HI-REGS
   drop int32 13
 ;
 
-: disasm-mcr ( op32 -- CRn Op1 CRm Op2 coproc Rxf mcr 13 )
+: disasm-mcr ( op32 -- CRn Op1 CRm Op2 coproc Rxf mcr 12 )
   literal mcr swap
-  dup 28 bsr 0xF logand swap literal int32 swap
+  dup 28 bsr disasm-register swap
   dup 24 bsr 0xF logand swap literal int32 swap
   dup 21 bsr 0x7 logand swap literal int32 swap
   dup 16 bsr 0xF logand swap literal int32 swap
   dup 5 bsr 0x7 logand swap literal int32 swap
   dup 0xF logand swap literal int32 swap
-  drop int32 13
+  drop int32 12
 ;
 
-: disasm-mrc ( op32 -- CRn Op1 CRm Op2 coproc Rxf mrc 13 )
+: disasm-mrc ( op32 -- CRn Op1 CRm Op2 coproc Rxf mrc 12 )
   literal mrc swap
-  dup 28 bsr 0xF logand swap literal int32 swap
+  dup 28 bsr disasm-register swap
   dup 24 bsr 0xF logand swap literal int32 swap
   dup 21 bsr 0x7 logand swap literal int32 swap
   dup 16 bsr 0xF logand swap literal int32 swap
   dup 5 bsr 0x7 logand swap literal int32 swap
   dup 0xF logand swap literal int32 swap
-  drop int32 13
+  drop int32 12
 ;
 
 : disasm-op2 ( op32 -- ...words count )
-  ( v1 branch )
-  dup 0x8000F800 logand 0x8000F000 equals? IF disasm-branch-link2 proper-exit THEN
   ( v2 operations )
   dup 0xF0F0FFF0 logand 0xF0F0FB90 equals? IF disasm-sdiv proper-exit THEN
   dup 0xF0F0FFF0 logand 0xF0F0FBB0 equals? IF disasm-udiv proper-exit THEN
@@ -380,6 +409,8 @@ here const> DISASM-HI-REGS
   dup 0x0010FF00 logand 0x00EE00 equals? IF disasm-cdp proper-exit THEN
   dup 0x0010FF10 logand 0x10EE00 equals? IF disasm-mcr proper-exit THEN
   dup 0x0010FF10 logand 0x10EE10 equals? IF disasm-mrc proper-exit THEN
+  ( v1 branch )
+  dup 0x8000F800 logand 0x8000F000 equals? IF disasm-branch-link2 proper-exit THEN
   s" Unknown 32 bit op: " error-string/2 error-hex-uint enl
 ;
 

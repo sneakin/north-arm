@@ -222,7 +222,7 @@ alias> sl r10
 
 ( 1 0 1 1 0 0 0 0 S SWord:7 Add offset to stack pointer )
 : inc-sp ( offset )
-  2 bsr
+  2 bsr 0x7F logand
   11 12 bsl logior
 ;
 
@@ -251,7 +251,7 @@ alias> sl r10
 ( 1 1 0 1 Cond:4 Soffset:8 Conditional branch )
 ( Branch if Z set, equal )
 : beq ( offset )
-  1 bsr 0xFF logand
+  dup 1 bsr 0x7F logand swap 0 int< IF 0x80 logior THEN
   13 12 bsl logior
 ;
 
@@ -324,8 +324,8 @@ alias> sl r10
 ( Change processor endian mode. )
 ( 1 0 1 1 0 1 1 0 0 1 0 1 E 0 0 0 )
 : setend
-  0x1 logand
-  0xB65 4 bsl logior
+  1 logand 3 bsl
+  0xB650 logior
 ;
 
 : bigend 1 setend ;

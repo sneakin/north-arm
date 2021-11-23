@@ -1,5 +1,26 @@
 10 var> int32-precision
 
+def bit-mask/2 ( mask nbits -- mask )
+  arg0 0 int> UNLESS arg1 2 return1-n THEN
+  arg1 1 bsl 1 logior set-arg1
+  arg0 1 - set-arg0 repeat-frame
+end
+
+def bit-mask ( nbits -- mask )
+  0 arg0 bit-mask/2 set-arg0
+end
+
+def sign-extend-from
+  arg1 arg0 bit-set?
+  IF arg0 1 + bit-mask lognot arg1 logior
+  ELSE arg1
+  THEN 2 return1-n
+end
+
+def sign-extend-byte
+  arg0 7 sign-extend-from set-arg0
+end
+
 def int32-odd?
   arg0 1 logand set-arg0
 end
