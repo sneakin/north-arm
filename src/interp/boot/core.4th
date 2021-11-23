@@ -304,13 +304,3 @@ endcol
   dup string-length 0 ,byte-string/3
   3 dropn
 ;
-
-s[ ./src/lib/byte-data.4th
-   ./src/lib/seq.4th
-   ./src/lib/list.4th
-   ./src/lib/fun.4th
-   ./src/lib/assoc.4th
-   ./src/lib/case.4th
-   ./src/interp/list.4th
-   ./src/interp/data-stack-list.4th
-] load-list
