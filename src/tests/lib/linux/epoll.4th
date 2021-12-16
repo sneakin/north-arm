@@ -3,14 +3,6 @@ s[ src/lib/linux/epoll.4th
    src/lib/assert.4th
 ] load-list
 
-def make-struct-seq ( struct count ++ ptr )
-  arg1 byte-size arg0 * stack-allot-zero exit-frame
-end
-
-def struct-seq-nth ( seq n struct -- ptr )
-  arg0 byte-size arg1 * arg2 + 3 return1-n
-end
-
 4 const> EPOLL-TEST-NUM-EVENTS
 
 def test-epoll

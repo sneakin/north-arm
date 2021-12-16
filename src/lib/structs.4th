@@ -8,4 +8,5 @@ s[
   src/lib/structs/array-type.4th
   src/lib/structs/seq-field.4th
   src/lib/structs/writer.4th
+  src/lib/structs/seq.4th
 ] load-list
