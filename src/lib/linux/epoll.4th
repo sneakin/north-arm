@@ -21,8 +21,9 @@ O_CLOEXEC const> EPOLL-CLOEXEC
 
 struct: EpollEvent
 uint<32> field: events
-int<32> field: data ( todo union of 32 and 64 bit values )
-int<32> field: data-high
+uint<32> field: padding ( todo may not be needed on all platforms )
+int<32> field: data1 ( todo union of 32 and 64 bit values )
+int<32> field: data2
 
 NORTH-PLATFORM tmp" linux" drop contains?
 NORTH-PLATFORM tmp" thumb" drop contains? and [IF]
@@ -30,3 +31,37 @@ NORTH-PLATFORM tmp" thumb" drop contains? and [IF]
 [ELSE]
   tmp" Unsupported platform" error-line ( todo raise an error )
 [THEN]
+
+( epoll wrappers forksinglemfile descriptors: )
+
+def poll-fd ( fd timeout -- ready? || err )
+  0 0
+  EpollEvent make-instance set-local0
+  0 epoll-create1 set-local1
+  ( register fd )
+  EPOLLIN local0 EpollEvent -> event !
+  arg1 local0 EpollEvent -> data1 !
+  0 local0 EpollEvent -> data2 !
+  local0 value-of arg1 EPOLL-CTL-ADD local1 epoll-ctl
+  dup 0 int>= IF
+    drop
+    ( poll fd )
+    arg0 1 local0 value-of local1 epoll-wait
+    dup 0 int> IF
+      drop
+      local0 EpollEvent -> data1 @ arg1 equals?
+    THEN
+  THEN
+  local1 close drop
+  2 return1-n
+end
+
+def polled-read-fd ( buffer max fd timeout -- buffer length )
+  arg1 arg0 poll-fd
+  dup 0 int<= IF 3 return1-n ELSE drop THEN
+  ( read fd )
+  arg2 arg3 arg1 read
+  dup 0 int< IF 3 return1-n THEN
+  arg3 over null-terminate
+  3 return1-n
+end

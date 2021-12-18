@@ -89,6 +89,11 @@ defalias> O_FSYNC O_SYNC
 8192 defconst> O_ASYNC
 0x20000 defconst> O_LARGEFILE
 0x4000 defconst> O_DIRECT
+0x8000 defconst> O_LARGEFILE
+0x10000 defconst> O_DIRECTORY
+0x20000 defconst> O_NOFOLLOW
+0x40000 defconst> O_NOATIME
+0x80000 defconst> O_CLOEXEC
 
 def open ( mode flags path -- result )
   args 3 5 syscall 3 return1-n
