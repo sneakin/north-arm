@@ -34,12 +34,12 @@ NORTH-PLATFORM tmp" thumb" drop contains? and [IF]
 
 ( epoll wrappers forksinglemfile descriptors: )
 
-def poll-fd ( fd timeout -- ready? || err )
+def poll-fd/3 ( events fd timeout -- ready? || err )
   0 0
   EpollEvent make-instance set-local0
   0 epoll-create1 set-local1
   ( register fd )
-  EPOLLIN EPOLLOUT logior local0 EpollEvent -> event !
+  arg2 local0 EpollEvent -> event !
   arg1 local0 EpollEvent -> data1 !
   0 local0 EpollEvent -> data2 !
   local0 value-of arg1 EPOLL-CTL-ADD local1 epoll-ctl
@@ -49,15 +49,27 @@ def poll-fd ( fd timeout -- ready? || err )
     arg0 1 local0 value-of local1 epoll-wait
     dup 0 int> IF
       drop
-      local0 EpollEvent -> data1 @ arg1 equals?
+      local0 EpollEvent -> data1 @ arg1 equals? IF 1 THEN
     THEN
   THEN
   local1 close drop
-  2 return1-n
+  3 return1-n
+end
+
+def poll-fd-in
+  EPOLLIN arg1 arg0 poll-fd/3 2 return1-n
+end
+
+def poll-fd-out
+  EPOLLOUT arg1 arg0 poll-fd/3 2 return1-n
+end
+
+def poll-fd
+  EPOLLIN EPOLLOUT logior arg1 arg0 poll-fd/3 2 return1-n
 end
 
 def polled-read-fd ( buffer max fd timeout -- buffer length )
-  arg1 arg0 poll-fd
+  arg1 arg0 poll-fd-in
   dup 0 int<= IF 3 return1-n ELSE drop THEN
   ( read fd )
   arg2 arg3 arg1 read

@@ -1,10 +1,11 @@
 ' alias [UNLESS] load-core [THEN]
 
 ' TtyScreen [UNLESS]
-s[ src/lib/tty.4th
-   src/lib/time.4th
+s[ src/lib/time.4th
    src/lib/linux/clock.4th
+   src/lib/linux/epoll.4th
    src/lib/geometry/angles.4th
+   src/lib/tty.4th
 ] load-list
 [THEN]
 
@@ -31,7 +32,12 @@ def tty-raw-clock-loop ( tz )
   2dup local1 tty-raw-clock/3
   4 overn 2 / + local1 tty-raw-date/3
   1 1 tty-cursor-to tty-show-cursor
-  local0 1 + sleep-until drop
+  ( exit the loop when 'q' is entered )
+  0 0 here cell-size current-input @ 0 polled-read-fd 0 int> IF
+    " q" contains? IF 1 return0-n THEN
+  ELSE
+    local0 1 + sleep-until drop
+  THEN
   drop-locals repeat-frame
 end
 
@@ -50,8 +56,14 @@ def tty-buffer-clock-loop ( screen tz )
   over 2 / over tty-center-segment-clock ( swap )
   2dup local1 local2 tty-buffer-clock/4
   swap 4 overn 2 / + swap local1 local2 tty-buffer-date/4
-  local0 sleep-until drop
-  local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
+  ( exit the loop when 'q' is entered )
+  0 0 here cell-size current-input @ 0 polled-read-fd 0 int> IF
+    " q" contains? IF false 2 return1-n THEN
+    arg1 tty-screen-draw
+  ELSE
+    local0 sleep-until drop
+    local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
+  THEN
   drop-locals repeat-frame
 end
 
@@ -60,7 +72,7 @@ def tty-buffer-clock ( tz )
   local0 tty-screen-erase
   local0 tty-screen-draw
   ( repeat this frame on resize )
-  local0 arg0 tty-buffer-clock-loop IF drop-locals repeat-frame THEN
+  local0 arg0 tty-buffer-clock-loop IF drop-locals repeat-frame ELSE tty-show-cursor THEN
 end
 
 def tty-analog-clock-hand ( height width length% degrees context -- )
@@ -83,52 +95,63 @@ end
 0 var> tty-analog-clock-height
 0 var> tty-analog-clock-width
 
-def tty-analog-clock-loop ( screen tz -- )
-  arg1 tty-screen-resized? IF true 2 return1-n THEN
-  0 0 0
-  arg1 tty-screen-buffer make-tty-context set-local0
-  42 local0 TtyContext -> char !
-  CLOCK-REALTIME clock-get-secs 1 + set-local1
-  local1 arg0 + set-local2
-  arg1 tty-screen-erase
+def tty-analog-clock-draw ( context timestamp -- )
+  42 arg1 TtyContext -> char !
   ( center of clock )
-  local0 tty-context-height 2 /
-  local0 tty-context-width 2 /
+  arg1 tty-context-height 2 /
+  arg1 tty-context-width 2 /
   over 1 - tty-analog-clock-height @ dup IF min ELSE drop THEN
   over 1 - tty-analog-clock-width @ dup IF min ELSE drop THEN
   ( the face )
-  TTY-CELL-DIM local0 TtyContext -> attr poke-byte
-  0x70 local0 TtyContext -> color poke-byte
+  TTY-CELL-DIM arg1 TtyContext -> attr poke-byte
+  0x70 arg1 TtyContext -> color poke-byte
   ( 12 o'clock notch )
   4 overn 3 overn - 1 +
   4 overn 3 overn 20 / - 1 -
-  2dup local0 tty-context-move-to
+  2dup arg1 tty-context-move-to
   swap 4 overn 10 / +
   swap 3 overn 10 / + 1 +
-  local0 tty-context-ellipse
+  arg1 tty-context-ellipse
   ( face edge )
   4 overn 3 overn -
   4 overn 3 overn -
-  2dup local0 tty-context-move-to
+  2dup arg1 tty-context-move-to
   swap 4 overn 2 * +
   swap 3 overn 2 * +
-  local0 tty-context-ellipse
+  arg1 tty-context-ellipse
   ( the hands )
-  TTY-CELL-NORMAL local0 TtyContext -> attr poke-byte
-  0x33 local0 TtyContext -> color poke-byte
-  2dup 65 local2 time-stamp-hours 5 * 6 * local0 tty-analog-clock-hand
-  0x77 local0 TtyContext -> color poke-byte
-  2dup 80 local2 time-stamp-minutes 6 * local0 tty-analog-clock-hand
-  0x11 local0 TtyContext -> color poke-byte
-  2dup 95 local2 time-stamp-seconds 6 * local0 tty-analog-clock-hand
+  TTY-CELL-NORMAL arg1 TtyContext -> attr poke-byte
+  0x33 arg1 TtyContext -> color poke-byte
+  2dup 65 arg0 time-stamp-hours 5 * 6 * arg1 tty-analog-clock-hand
+  0x77 arg1 TtyContext -> color poke-byte
+  2dup 80 arg0 time-stamp-minutes 6 * arg1 tty-analog-clock-hand
+  0x11 arg1 TtyContext -> color poke-byte
+  2dup 95 arg0 time-stamp-seconds 6 * arg1 tty-analog-clock-hand
   debug? IF
-    0x22 local0 TtyContext -> color poke-byte
-    2dup 50 local2 6 * local0 tty-analog-clock-hand
-    0x44 local0 TtyContext -> color poke-byte
-    2dup 50 local2 6 * 360 int-mod local0 tty-analog-clock-hand
+    0x22 arg1 TtyContext -> color poke-byte
+    2dup 50 arg0 6 * arg1 tty-analog-clock-hand
+    0x44 arg1 TtyContext -> color poke-byte
+    2dup 50 arg0 6 * 360 int-mod arg1 tty-analog-clock-hand
   THEN
-  local1 sleep-until drop
-  local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
+  2 return0-n
+end
+
+def tty-analog-clock-loop ( screen tz -- )
+  0 0 0
+  arg1 tty-screen-resized? IF true 2 return1-n THEN
+  arg1 tty-screen-erase
+  arg1 tty-screen-buffer make-tty-context set-local0
+  42 local0 TtyContext -> char !
+  CLOCK-REALTIME clock-get-secs 1 + set-local1
+  local0 local1 arg0 + tty-analog-clock-draw
+  ( exit the loop when 'q' is entered )
+  0 0 here cell-size current-input @ 0 polled-read-fd 0 int> IF
+    " q" contains? IF false 2 return1-n THEN
+    arg1 tty-screen-draw
+  ELSE
+    local1 sleep-until drop
+    local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN    
+  THEN
   drop-locals repeat-frame
 end
 
@@ -137,5 +160,5 @@ def tty-analog-clock ( tz )
   local0 tty-screen-erase
   local0 tty-screen-draw
   ( repeat this frame on resize )
-  local0 arg0 tty-analog-clock-loop IF drop-locals repeat-frame THEN
+  local0 arg0 tty-analog-clock-loop IF drop-locals repeat-frame ELSE tty-show-cursor THEN
 end
