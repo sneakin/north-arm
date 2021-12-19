@@ -5,7 +5,7 @@ s[ src/lib/linux/epoll.4th
 
 4 const> EPOLL-TEST-NUM-EVENTS
 
-def test-epoll
+def test-epoll-api
   0 0 0 0 0
   EpollEvent make-instance set-local0
   EpollEvent EPOLL-TEST-NUM-EVENTS make-struct-seq set-local1
@@ -46,4 +46,66 @@ def test-epoll
   4 localn close 0 assert-equals
   local2 close 0 assert-equals
   local3 close 0 assert-equals
+end
+
+def test-poll-fd-ready
+  0 0
+  ( make a pipe to write to and read from )
+  locals cell-size - pipe 0 int>= assert
+  ( check that the pipe has write event )
+  local0 1 poll-fd 1 assert-equals
+  ( write to the pipe )
+  s" epoll works" swap local0 write 11 assert-equals
+  ( poll )
+  local1 1 poll-fd 1 assert-equals
+  ( read the pipe )
+  32 stack-allot 32 over local1 read 11 assert-equals
+  ( close the pipe )
+  local0 close 0 assert-equals
+  local1 close 0 assert-equals
+end
+
+def test-poll-fd-not-ready
+  0 0
+  ( make a pipe to write to and read from )
+  locals cell-size - pipe 0 int>= assert
+  ( check that the pipe has write event )
+  local0 1 poll-fd 1 assert-equals
+  ( poll )
+  local1 1 poll-fd 0 assert-equals
+  ( close the pipe )
+  local0 close 0 assert-equals
+  local1 close 0 assert-equals
+end
+
+def test-polled-read-fd-ready
+  0 0
+  ( make a pipe to write to and read from )
+  locals cell-size - pipe 0 int>= assert
+  ( write to the pipe )
+  s" epoll works" swap local0 write 11 assert-equals
+  ( read the pipe )
+  32 stack-allot 32 local1 5 polled-read-fd 11 assert-equals
+  ( close the pipe )
+  local0 close 0 assert-equals
+  local1 close 0 assert-equals
+end
+
+def test-polled-read-fd-not-ready
+  0 0
+  ( make a pipe to write to and read from )
+  locals cell-size - pipe 0 int>= assert
+  ( read the pipe )
+  32 stack-allot 32 local1 5 polled-read-fd 0 assert-equals
+  ( close the pipe )
+  local0 close 0 assert-equals
+  local1 close 0 assert-equals
+end
+
+def test-epoll
+  test-epoll-api
+  test-poll-fd-ready
+  test-poll-fd-not-ready
+  test-polled-read-fd-ready
+  test-polled-read-fd-not-ready
 end

@@ -39,7 +39,7 @@ def poll-fd ( fd timeout -- ready? || err )
   EpollEvent make-instance set-local0
   0 epoll-create1 set-local1
   ( register fd )
-  EPOLLIN local0 EpollEvent -> event !
+  EPOLLIN EPOLLOUT logior local0 EpollEvent -> event !
   arg1 local0 EpollEvent -> data1 !
   0 local0 EpollEvent -> data2 !
   local0 value-of arg1 EPOLL-CTL-ADD local1 epoll-ctl
