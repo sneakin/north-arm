@@ -80,9 +80,9 @@ D              *
 
 " *****************       ***
 *    AAAA      BW          *
-*              BW          *
-*                          *
-*                          *
+*    bwwb      BW          *
+*    bwwb                  *
+*    bwwb                  *
 *              BW          X
 *              BW          X
 *              BW          X

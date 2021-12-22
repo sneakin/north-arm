@@ -61,7 +61,7 @@ def tty-context-set-cell ( char color attr y x context -- )
   6 return0-n
 end
 
-def tty-context-write-byte ( byte context -- )
+def tty-context-set-char ( byte context -- )
   arg1
   arg0 TtyContext -> color peek-byte
   arg0 TtyContext -> attr peek-byte
@@ -69,6 +69,11 @@ def tty-context-write-byte ( byte context -- )
   arg0 TtyContext -> x @
   arg0 TtyContext -> buffer @
   tty-buffer-set-cell
+  2 return0-n
+end
+
+def tty-context-write-byte ( byte context -- )
+  arg1 arg0 tty-context-set-char
   arg0 tty-context-advance-cursor
   2 return0-n
 end

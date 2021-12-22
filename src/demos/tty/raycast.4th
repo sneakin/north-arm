@@ -31,7 +31,19 @@ def in-range-float32? ( n min max -- yes? )
   arg2 arg0 float32<= arg2 arg1 float32>= and 3 return1-n
 end
 
+def float32-lerp ( weight min max -- value )
+  arg2 arg1 float32-mul
+  1f arg2 float32-sub arg0 float32-mul
+  float32-add 3 return1-n
+end
+
 ( 2D vectors: )
+
+def vec2d-sub ( y2 x2 y1 x1 -- y x )
+  arg3 arg1 float32-sub
+  arg2 arg0 float32-sub
+  4 return2-n
+end
 
 def magnitude-squared ( y x -- mag2 )
   arg1 dup *
@@ -44,11 +56,11 @@ def magnitude-squared-float32 ( y x -- mag2 )
 end
 
 def distance-squared ( y1 x1 y0 x0 -- dd )
-  arg2 arg0 - arg3 arg1 - magnitude-squared 4 return1-n
+  arg3 arg1 - arg2 arg0 - magnitude-squared 4 return1-n
 end
 
 def distance-squared-float32 ( y1 x1 y0 x0 -- dd )
-  arg2 arg0 float32-sub arg3 arg1 float32-sub magnitude-squared-float32 4 return1-n
+  arg3 arg2 arg1 arg0 vec2d-sub magnitude-squared-float32 4 return1-n
 end
 
 def magnitude ( y x -- mag )
@@ -71,6 +83,13 @@ def distance-float32 ( y1 x1 y0 x0 -- dd )
   arg3 arg2 arg1 arg0 distance-squared-float32 float32-sqrt 4 return1-n
 end
 
+def vec2d-normalize ( y x -- ny nx )
+  arg1 arg0 magnitude-float32
+  arg1 over float32-div
+  swap arg0 swap float32-div
+  2 return2-n
+end
+
 def vec2d-dot ( by bx ay ax -- acos )
   arg3 arg1 * arg2 arg0 * + int32->float32
   arg3 arg2 magnitude float32-div
@@ -83,9 +102,9 @@ end
 ( Constants: )
 
 8 const> raycaster-angle-bits
-2 const> raycaster-ray-bits
+1 const> raycaster-ray-bits
 90 var> raycaster-init-fov
-0.5f dup float32-mul dup float32-mul dup float32-mul float32-negate const> hit-fudge-factor
+0.5f dup float32-mul dup float32-mul ( dup float32-mul ) float32-negate const> hit-fudge-factor
 0 var> use-x
 
 
@@ -116,11 +135,13 @@ end
 def raycaster-init
   128 cell-size * stack-allot
   dup raycaster-textures !
-  0x44 over 0 seq-poke
-  0x00 over 32 seq-poke
+  0x80000044 over 0 seq-poke
+  0x80000000 over 32 seq-poke
   0x10 over char-code B seq-poke
+  0x80000010 over char-code b seq-poke
   0x21 over char-code D seq-poke
   0x23 over char-code W seq-poke
+  0x80000023 over char-code w seq-poke
   0x66 over char-code A seq-poke
   0x55 over char-code X seq-poke
   0x11 over char-code Y seq-poke
@@ -148,8 +169,16 @@ def world-get-cell-value ( y x world -- value )
   ELSE 0 THEN 3 return1-n
 end
 
+def world-cell-floor? ( cell -- yes? )
+  arg0 32 equals?
+  arg0 0 equals? or
+  arg0 char-code w equals? or
+  arg0 char-code b equals? or
+  return1
+end
+
 def world-cell-solid? ( cell -- yes? )
-  arg0 32 equals? arg0 0 equals? or not return1
+  arg0 world-cell-floor? not return1
 end
 
 def world-cell-sky? ( cell -- yes? )
@@ -377,7 +406,7 @@ def raycaster-debug-hit-dist ( wy wx cy cx angle -- dist )
   5 return1-n
 end
 
-def raycaster-hit-dist ( wy wx cy cx angle -- dist y? )
+def raycaster-hit-coord ( wy wx cy cx angle -- hy hx y? )
   4 argn arg2 - int32->float32
   arg3 arg1 - int32->float32
   arg0 int32->float32 degrees->radians
@@ -414,11 +443,47 @@ def raycaster-hit-dist ( wy wx cy cx angle -- dist y? )
       THEN
     THEN
   THEN
-  roll
+  set-arg2 set-arg3 4 set-argn 2 return0-n
+end
+
+def raycaster-hit-dist ( wy wx cy cx angle -- y? dist )
+  4 argn arg3 arg2 arg1 arg0 raycaster-hit-coord roll
   arg2 int32->float32
   arg1 int32->float32
   distance-float32
   5 return2-n
+end
+
+def raycaster-draw-floor-vertical ( hit-dist wy wx camera world context n )
+  ( Each horizontal defines a weight to interpolate along the ray.
+From http://www.academictutorials.com/graphics/graphics-raycasting-ii.asp
+  currentDist = h / [2.0 * y - h]
+  weight = [currentDist - distPlayer] / [distWall - distPlayer]
+  currentFloorPos = weight * floorPosWall + [1.0 - weight] * playerPos
+  )
+  arg1 tty-context-height int32->float32
+  arg1 TtyContext -> y @ 2 int-mul int32->float32
+  over float32-sub float32-div ( 0: current distance )
+  dup 6 argn float32-div ( 1: percent along ray )
+  local1 5 argn arg3 WorldCamera -> y @ int32->float32 float32-lerp
+  local1 4 argn arg3 WorldCamera -> x @ int32->float32 float32-lerp
+  float32->int32 swap float32->int32 swap
+  2dup arg2 world-get-cell-value
+  dup 32 equals? IF
+    ( checkered floor )
+    rot + 1 logand IF 0x77 ELSE 0x00 THEN arg1 TtyContext -> color poke-byte
+  ELSE
+    raycaster-textures @ over seq-peek arg1 TtyContext -> color poke-byte
+    rot 2 dropn
+  THEN
+  0 arg1 TtyContext -> attr !
+  arg1 tty-context-set-char
+  1 0 arg1 tty-context-move-by
+  arg0 1 + set-arg0
+  arg1 TtyContext -> y @ arg1 tty-context-height int<
+  IF drop-locals repeat-frame
+  ELSE 7 return0-n
+  THEN
 end
 
 def raycaster-draw-vertical ( hit camera world context )
@@ -428,24 +493,31 @@ def raycaster-draw-vertical ( hit camera world context )
     ( arg3 cdr cdr car arg3 cdr car )
     arg3 RayCasterHit -> y @
     arg3 RayCasterHit -> x @
+    0
+    0
     ( setup the context for the cell )
     0 arg0 TtyContext -> y !
     local0 local1 arg1 world-get-cell-value
     dup arg0 TtyContext -> char !
     raycaster-textures @ swap seq-peek arg0 TtyContext -> color poke-byte
-    ( compute the distance )
-    2dup arg2 world-camera-pos arg3 RayCasterHit -> angle @ raycaster-hit-dist
-    ( 2dup  arg2 WorldCamera -> y @ arg2 WorldCamera -> x @ distance )
+    ( compute the precise hit and distance )
+    local0 local1 arg2 world-camera-pos arg3 RayCasterHit -> angle @ raycaster-hit-coord
+    set-local2 2dup set-local1 set-local0
+    arg2 world-camera-pos int32->float32 swap int32->float32 swap distance-float32
     arg3 RayCasterHit -> angle @ arg2 WorldCamera -> angle @ -
     arg2 WorldCamera -> fov @ 2 /
     raycaster-fish-eye-correct
+    dup set-local3
     ( todo turn black or sky color when way too far )
-    swap over float32->int32 8 int> or IF TTY-CELL-NORMAL ELSE TTY-CELL-DIM THEN arg0 TtyContext -> attr poke-byte
+    local2 over float32->int32 8 int> or IF TTY-CELL-NORMAL ELSE TTY-CELL-DIM THEN arg0 TtyContext -> attr poke-byte
     ( adjust to wall's pixel height one map unit away )
     arg0 tty-context-height int32->float32 swap float32-div float32->int32 arg0 tty-context-height min 0 max
     ( center the vertical: con_height/2 - wall/2 )
     dup 2 / arg0 tty-context-height 2 / swap - 0 arg0 tty-context-move-by
     arg0 TtyContext -> y @ + arg0 TtyContext -> x @ arg0 tty-context-line
+    ( draw floor )
+    ( needs the hit's precise xy and world xy move down along the ray; vertically it's height per unit. )
+    local3 local0 local1 arg2 arg1 arg0 0 raycaster-draw-floor-vertical
   THEN
   arg0 TtyContext -> x inc!
   4 return0-n
@@ -585,14 +657,14 @@ def raycaster-draw ( camera world buffer )
   arg0 make-tty-context set-local0
   ( main display )
   arg2 arg1 local0  raycaster-draw-sky
-  ( floor )
+  ( ground & sky )
   0x02 local0 TtyContext -> color poke-byte
   32 local0 TtyContext -> char poke-byte
   TTY-CELL-NORMAL arg0 TtyContext -> attr poke-byte
   local0 tty-context-height 2 / 0 local0 tty-context-move-to
   local0 tty-context-height dup 2 / swap 1 logand +
   local0 tty-context-width local0 tty-context-fill-rect
-  ( walls )
+  ( rays )
   0 0 local0 tty-context-move-to
   arg2 arg1 local0 raycaster-draw-rays
   ( minimap in top left quarter )
