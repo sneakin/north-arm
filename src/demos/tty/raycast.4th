@@ -97,6 +97,12 @@ def vec2d-dot ( by bx ay ax -- acos )
   4 return1-n
 end
 
+def vec2d-scale ( y x scale -- y' x' )
+  arg2 arg0 float32-mul
+  arg1 arg0 float32-mul
+  3 return2-n
+end
+
 ( A ray caster: )
 
 ( Constants: )
@@ -169,7 +175,7 @@ def world-get-cell-value ( y x world -- value )
   ELSE 0 THEN 3 return1-n
 end
 
-def world-cell-floor? ( cell -- yes? )
+def world-cell-floor? ( cell ++ yes? )
   arg0 32 equals?
   arg0 0 equals? or
   arg0 char-code w equals? or
@@ -177,11 +183,11 @@ def world-cell-floor? ( cell -- yes? )
   return1
 end
 
-def world-cell-solid? ( cell -- yes? )
+def world-cell-solid? ( cell ++ yes? )
   arg0 world-cell-floor? not return1
 end
 
-def world-cell-sky? ( cell -- yes? )
+def world-cell-sky? ( cell ++ yes? )
   arg0 0 equals? IF true return1 THEN
   arg0 10 equals? return1
 end
@@ -192,6 +198,8 @@ struct: RayCasterHit
 int field: angle
 int field: x
 int field: y
+int field: sky
+int field: cell
 
 def make-ray-caster-hit
   args RayCasterHit cons exit-frame
@@ -200,10 +208,14 @@ end
 def cast-ray-fn ( world y x angle ++ world | hit )
   arg2 raycaster-ray-bits absr arg1 raycaster-ray-bits absr arg3 world-get-cell-value
   world-cell-sky? IF
-    drop 0 arg0 cons false exit-frame
+    true
+    arg2 raycaster-ray-bits absr
+    arg1 raycaster-ray-bits absr
+    arg0 make-ray-caster-hit false exit-frame
+    ( drop 0 arg0 cons false exit-frame )
   THEN
   world-cell-solid? IF ( make a list of angle, y, x )
-    drop
+    false
     arg2 raycaster-ray-bits absr
     arg1 raycaster-ray-bits absr
     arg0 make-ray-caster-hit false exit-frame
@@ -214,8 +226,8 @@ end
 
 def cast-ray ( world y x angle ++ hit )
   arg0 int32->float32 degrees->vec2d
-  1024 int32->float32 float32-mul float32->int32 arg1 + raycaster-ray-bits bsl
-  swap 1024 int32->float32 float32-mul float32->int32 arg2 + raycaster-ray-bits bsl swap
+  1024 int32->float32 float32-mul float32->int32 arg1 + raycaster-ray-bits bsl swap
+  1024 int32->float32 float32-mul float32->int32 arg2 + raycaster-ray-bits bsl swap
   ( s" casting to " write-string/2 arg2 .i space arg1 .i space arg0 .i space
   local1 .i space local0 .i nl )
   ' cast-ray-fn arg0 partial-first
@@ -245,6 +257,8 @@ def print-hit
   arg0 RayCasterHit -> angle @ .i space
   arg0 RayCasterHit -> x @ .i space
   arg0 RayCasterHit -> y @ .i space
+  arg0 RayCasterHit -> sky @ .i space
+  arg0 RayCasterHit -> cell @ .i space
   nl
 end
 
@@ -352,8 +366,10 @@ def raycaster-hit-x ( wy wx cy cx angle -- y x )
   4 argn int32->float32 swap 5 return2-n
 end
 
-def raycaster-debug-hit-dist ( wy wx cy cx angle -- dist )
+def raycaster-debug-hit-dist ( cell sky? wy wx cy cx angle -- dist )
   yellow arg0 .i space
+  white 5 argn .i space
+  white 6 argn .i space
   arg2 green .i space arg1 .i space 4 argn cyan .i space 3 argn .i space
   4 argn arg2 - white ,i space int32->float32
   arg3 arg1 - ,i space int32->float32
@@ -403,7 +419,7 @@ def raycaster-debug-hit-dist ( wy wx cy cx angle -- dist )
   distance-float32
   yellow ,f space
   white nl
-  5 return1-n
+  7 return1-n
 end
 
 def raycaster-hit-coord ( wy wx cy cx angle -- hy hx y? )
@@ -499,7 +515,7 @@ def raycaster-draw-vertical ( hit camera world context )
     0 arg0 TtyContext -> y !
     local0 local1 arg1 world-get-cell-value
     dup arg0 TtyContext -> char !
-    raycaster-textures @ swap seq-peek arg0 TtyContext -> color poke-byte
+    raycaster-textures @ over seq-peek arg0 TtyContext -> color poke-byte
     ( compute the precise hit and distance )
     local0 local1 arg2 world-camera-pos arg3 RayCasterHit -> angle @ raycaster-hit-coord
     set-local2 2dup set-local1 set-local0
@@ -513,8 +529,12 @@ def raycaster-draw-vertical ( hit camera world context )
     ( adjust to wall's pixel height one map unit away )
     arg0 tty-context-height int32->float32 swap float32-div float32->int32 arg0 tty-context-height min 0 max
     ( center the vertical: con_height/2 - wall/2 )
-    dup 2 / arg0 tty-context-height 2 / swap - 0 arg0 tty-context-move-by
-    arg0 TtyContext -> y @ + arg0 TtyContext -> x @ arg0 tty-context-line
+    dup 2 / arg0 tty-context-height 2 / swap - 0 arg0 tty-context-move-by    
+    arg3 RayCasterHit -> sky @ IF
+      1 + 0 arg0 tty-context-move-by
+    ELSE
+      arg0 TtyContext -> y @ + arg0 TtyContext -> x @ arg0 tty-context-line
+    THEN
     ( draw floor )
     ( needs the hit's precise xy and world xy move down along the ray; vertically it's height per unit. )
     local3 local0 local1 arg2 arg1 arg0 0 raycaster-draw-floor-vertical
@@ -549,10 +569,16 @@ def raycaster-debug-vertical ( hit camera world context )
   arg3 cdr IF
     ( y, x of hit )
     ( arg3 cdr cdr car arg3 cdr car )
+    arg3 RayCasterHit -> cell @
+    arg3 RayCasterHit -> sky @
     arg3 RayCasterHit -> y @
     arg3 RayCasterHit -> x @
     ( compute the distance )
-    2dup arg2 world-camera-pos arg3 RayCasterHit -> angle @ raycaster-debug-hit-dist
+    arg2 world-camera-pos arg3 RayCasterHit -> angle @ raycaster-debug-hit-dist
+  ELSE
+    arg3 car .i space
+    arg0 TtyScreen -> height @ 2 / int32->float32
+    arg3 car int32->float32 degrees->vec2d 3 overn vec2d-scale .f space .f space nl
   THEN
   4 return0-n
 end
