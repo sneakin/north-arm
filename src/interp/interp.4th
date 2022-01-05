@@ -351,7 +351,7 @@ end
 
 def load
   the-reader peek
-  token-buffer-max stack-allot
+  token-buffer-max stack-allot ( fixme this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams )
   token-buffer-max
   s" Loading " error-string/2 arg0 error-line
   arg0 open-input-file negative? IF return THEN

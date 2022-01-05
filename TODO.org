@@ -16,8 +16,14 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 *** DONE cpio file format as arguments
 *** float tests
 *** uint64
+**** TODO byte order differs from stack / argument and poked wewory order
+     Little endian puts LSB at the lower address. Stack ordering has LSB at the higher address.
+     But byte order in code needs to be consistent on big and little endian systems, which may need 64 bit support in the integer reader instead of faking it.
 *** core.4th needs a split to allow inclusion in binary
 ** Sooner than later
+*** current-tty and standard-tty that opens /dev/tty for IO
+**** needs writes that take an fd
+**** reads need fd too
 *** Crashes with ~literal int32 123~
 *** s" places the string onto the data stack polluting the binary. Special interp version for defproper?
 *** DONE [#A] structures
@@ -45,6 +51,7 @@ The ability to dump the program to source code into a loadable and buildable for
 **** cstring needs to not appear before string literals
 *** [#A] builder binary
 **** Needs immediate dictionary writing and overrides.
+**** Command line arguments
 ** Standard Forth
 *** Comma & period words
 Standard Forth uses these for stream output.
@@ -82,12 +89,11 @@ include? file : loads file if it's not already loaded
 forget file : unload the file's definitions
 anew : called when entering a new file for bookkeeping for forget.
 ? +!
-*** struct
+*** DONE struct
 #+BEGIN_SRC forth
-:struct name
-  type field-name
+struct: name
+  type field: name
   ...
-;struct
 #+END_SRC
 *** defer
 Executable words that can be rebound with IS.
@@ -97,7 +103,7 @@ defer motd
 motd ( calls hello )
 what's motd ( -> ' hello )
 #+END_SRC
-*** [IF]
+*** DONE [IF]
 [IF] and other bracketed conditions behave like #if in C.
 *** locals
 { arg1 arg0 | local0 -- result }

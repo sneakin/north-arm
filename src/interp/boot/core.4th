@@ -17,6 +17,7 @@ def alias>
   not-found enl dict-drop return
 end
 
+( todo necessary? bash loadable... )
 alias> return0 return
 alias> return proper-exit
 alias> equals equals?
