@@ -52,10 +52,10 @@ dhere const> punter
 
 ( debugging sentinels )
 0x13 r3 mov# ,ins
-pc r8 mov-hihi ,ins
+pc r8 movrr ,ins
 
 ( set SP to origin. grows down from origin. )
-pc sp mov-hihi ,ins
+pc sp movrr ,ins
 origin dhere int-sub abs-int 4 int-add dec-sp ,ins
 
 ( setup hardware clock for uart0 )
@@ -140,21 +140,21 @@ MMIO-BASE MMIO-BASE2 equals? [IF]
   0x10 r6 r5 str-offset ,ins
   0x20 r6 r5 str-offset ,ins
   0x30 r6 r5 str-offset ,ins
-[THEN]
 
-( write a 'B' )
-66 r6 mov# ,ins
-0 r7 r6 str-offset ,ins
+  ( write a 'B' )
+  66 r6 mov# ,ins
+  0 r7 r6 str-offset ,ins
+[THEN]
 
 ( secondary cores jump here. patch the jump: )
 dhere punter int-sub 4 int-sub bne punter ins!
 
-( set SP to [origin - core * 256 ] on down )
-pc r7 mov-hihi ,ins
+( divide memory below code by 8 to set SP to
+  [origin - core * 2^12 ] )
+pc r7 movrr ,ins
 dhere origin int-sub 4 int-add r6 emit-load-int32
 r6 r7 r7 sub ,ins
-255 r6 mov# ,ins
-1 r6 add# ,ins
+1 r6 mov# ,ins 12 r6 r6 mov-lsl ,ins
 r0 r6 mul ,ins
 r6 r7 r7 sub ,ins
 r7 sp movrr ,ins
