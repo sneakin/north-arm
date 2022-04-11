@@ -333,6 +333,7 @@ alias> sl r10
 
 ( Helpers: )
 
+( todo optimize when byte is zero )
 : emit-load-int32 ( n reg )
   ( 0xAAbbccdd )
   2 overn 24 bsr 0xFF logand 2 overn mov# ,uint16 ( init reg with highest byte )
