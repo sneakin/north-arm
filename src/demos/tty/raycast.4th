@@ -709,7 +709,7 @@ end
 def raycaster-prompt ( camera world screen -- repeat? )
   arg2 WorldCamera -> angle @
   here prompt-here !
-  1 arg0 TtyScreen -> height @ 2 - tty-cursor-to 2 dropn
+  arg0 TtyScreen -> height @ 2 - 1 tty-cursor-to 2 dropn
   tty-show-cursor
   next-token 2dup error-line/2
   " bye" 3 overn 3 overn string-equals?/3 IF false 3 return1-n ELSE 3 dropn THEN
