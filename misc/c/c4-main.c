@@ -2,7 +2,11 @@
 
 extern Word boot;
 
+#ifdef AVR
+const int STACK_SIZE=1024;
+#else
 const int STACK_SIZE=1024*8;
+#endif
 
 int main()
 {

@@ -419,7 +419,7 @@ Word words = { "words", _docol, _words, &cread };
 
 State _dict(Cell **sp, Word ***eip) {
   *sp -= 1;
-  **sp = (Cell)&dict;
+  (*sp)->word = &dict;
   return GO;
 }
 

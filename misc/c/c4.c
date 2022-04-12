@@ -3,7 +3,52 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifdef AVR
+typedef int off_t;
+
+
+void *alloca(int size)
+{
+  return NULL;
+}
+#endif
+
+#ifndef NOUNIX
 #include <unistd.h>
+#endif
+
+#ifdef NOUNIX
+int read(int fd, void *data, size_t length)
+{
+  unsigned char *bytes = (unsigned char *)data;
+  int i = 0;
+  while(i < length) {
+    bytes[i] = getchar();
+    i++;
+  }
+  return i;
+}
+
+/*
+void xputchar(unsigned char c)
+{
+  loop_until_bit_is_set(UCSRA, UDRE);
+  UDR = c;
+}
+*/
+int write(int fd, void *data, size_t length)
+{
+  unsigned char *bytes = (unsigned char *)data;
+  int i = 0;
+  while(i < length) {
+    putchar(bytes[i]);
+    i++;
+  }
+  return i;
+}
+#endif
+
 #include "c4.h"
 
 State _doconst(Cell **sp, Word ***eip) {
@@ -421,7 +466,9 @@ Word set_dict = { "set-dict", _doop, _set_dict, &move };
 
 State _dict(Cell **sp, Word ***eip) {
   *sp -= 1;
-  **sp = (Cell)last_word;
+  Cell *here = *sp;
+  here->word = last_word;
+  //**sp = (Cell)last_word;
   return GO;
 }
 

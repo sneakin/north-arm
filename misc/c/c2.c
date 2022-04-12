@@ -251,7 +251,7 @@ Word *_words1[] = {
 Word words1 = { "words/1", _docol, _words1, &fexit };
 
 Cell *_dict(Cell *sp, Word **eip) {
-  *(--sp) = (Cell)&words1;
+  (--sp)->word = &words1;
   return _next(sp, eip);
 }
 
