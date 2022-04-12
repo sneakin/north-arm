@@ -284,7 +284,8 @@ Word zero = { "0", _doconst, (void *)0, &load };
 Word one = { "1", _doconst, (void *)1, &zero };
 Word mone = { "-1", _doconst, (void *)-1, &one };
 Word two = { "2", _doconst, (void *)2, &mone };
-Word four = { "4", _doconst, (void *)4, &two };
+Word three = { "3", _doconst, (void *)3, &two };
+Word four = { "4", _doconst, (void *)4, &three };
 Word sixteen = { "16", _doconst, (void *)16, &four };
 
 Word xvar = { "x", _dovar, 0, &sixteen };
