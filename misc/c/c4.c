@@ -98,12 +98,36 @@ State _cputs(Cell **sp, Word ***eip) {
 
 Word cputs = { "cputs", _doop, _cputs, &next };
 
+State _write_string(Cell **sp, Word ***eip) {
+  printf((*sp)->str);
+  (*sp)++;
+  return GO;
+}
+
+Word write_string = { "write-string", _doop, _write_string, &cputs };
+
+FILE ** const std_streams[] = {
+  &stdin, &stdout, &stderr
+};
+
+State _flush(Cell **sp, Word ***eip) {
+  int fd = (*sp)->i;
+  if(fd < 3) {
+    FILE *io = *std_streams[fd];
+    fflush(io);
+  }
+  (*sp)++;
+  return GO;
+}
+
+Word flush = { "flush", _doop, _flush, &write_string };
+
 State _cexit(Cell **sp, Word ***eip) {
   exit((*sp)->i);
   return STOP;
 }
 
-Word cexit = { "cexit", _doop, _cexit, &cputs };
+Word cexit = { "cexit", _doop, _cexit, &flush };
 
 State _literal(Cell **sp, Word ***eip) {
   *sp -= 1;

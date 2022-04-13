@@ -1,6 +1,15 @@
 #include <stdio.h>
+#ifdef AVR
+#include <avr/pgmspace.h>
+#endif
+#ifdef C4
 #include "c4.h"
 #include "c4-words.h"
+#endif
+#ifdef C5
+#include "c5.h"
+#include "c5-words.h"
+#endif
 
 #define C4_LAST_WORD dict
 #include "c4-words-def.c"
@@ -227,13 +236,19 @@ Word *_nseq[] = { // n ++ 0 1 2 ... n-1
 
 Word nseq = { "nseq", _docol, _nseq, &reverse };
 
-Word input_buffer = { "input-buffer", _dovar, (void *)0, &nseq };
+Word *_prompt[] = {
+  &over, &write_int, &literal, (Word *)"> ", &write_string, &current_output, &peek, &flush, &return0
+};
+
+Word prompt = { "prompt", _docol, _prompt, &nseq };
+
+Word input_buffer = { "input-buffer", _dovar, (void *)0, &prompt };
 Word input_buffer_size = { "input-buffer-size", _dovar, (void *)0, &input_buffer };
 Word istate = { "istate", _dovar, &exec, &input_buffer_size };
 
 Word *_interp_loop[] = {
   &rpush,
-  //&fdup, &write_int, &literal, (Word *)"Loop: ", &cputs,
+  &prompt,
   &input_buffer, &peek, &input_buffer_size, &peek, &read_token,
   &fdup, &literal, (Word *)0, &int_lt, &literal, (Word *)15, &ifjump,
   &dict, &lookup,
@@ -242,7 +257,7 @@ Word *_interp_loop[] = {
   &literal, (Word *)6, &unlessjump,
   &istate, &peek, &exec, &literal, (Word *)1, &jumprel,
   &drop,
-  &literal, (Word *)-27, &jumprel,
+  &literal, (Word *)-28, &jumprel,
   &literal, (Word *)"Bye", &cputs,
   &rpop, &return0
 };
@@ -280,7 +295,24 @@ Word *_load[] = {
 
 Word load = { "load", _docol, _load, &interp };
 
-Word zero = { "0", _doconst, (void *)0, &load };
+Word *_mem_used[] = {
+  &stack_top, &peek, &here, &int_sub, &swap, &return0
+};
+Word mem_used = { "mem-used", _docol, _mem_used, &load };
+
+const Word * const _mem_info[] = {
+#ifdef AVR
+  &literal, (Word *)"RAM:\t", &write_string,
+  &free_ram, &write_int, &literal, (Word *)"\n", &write_string,
+#endif
+  &literal, (Word *)"Stack:\t", &write_string,
+  &mem_used, &write_int, &literal, (Word *)"\n", &write_string,
+  //&stack_top, &peek, &write_int, &literal, (Word *)"\n", &write_string,
+  &return0  
+};
+const Word mem_info = { "mem-info", _docol, _mem_info, &load };
+
+Word zero = { "0", _doconst, (void *)0, &mem_info };
 Word one = { "1", _doconst, (void *)1, &zero };
 Word mone = { "-1", _doconst, (void *)-1, &one };
 Word two = { "2", _doconst, (void *)2, &mone };
@@ -292,7 +324,7 @@ Word xvar = { "x", _dovar, 0, &sixteen };
 
 Word *_boot[] = {
   &here, &stack_top, &poke,
-  &interp, &literal, (Word *)0, &cexit, &return0
+  &mem_info, &interp, &return0
 };
 
 Word boot = { "boot", _docol, _boot, &xvar };

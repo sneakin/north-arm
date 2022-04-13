@@ -12,11 +12,15 @@ typedef struct Word *(*Fun)(union Cell **, struct Word ***);
 typedef union Cell
 {
   void *ptr;
-  long i;
+#if defined(__x86_64__)
+  long long i;
+#else
+  int i;
+#endif
   char *str;
   union Cell *cell_ptr;
-  struct Word *word;
-  struct Word **word_list;
+  const struct Word *word;
+  const struct Word **word_list;
   Fun fn;
 } Cell;
 
@@ -24,7 +28,7 @@ typedef struct Word {
   char *name;
   Fun code;
   Cell data;
-  struct Word *next;
+  const struct Word *next;
 } Word;
 
 Word *_exec(Cell **sp, Word ***eip);

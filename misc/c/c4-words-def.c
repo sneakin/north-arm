@@ -2,7 +2,7 @@
 #error Define C4_LAST_WORD to link words into the dictionary.
 #endif
 
-Word *_words1[] = {
+const Word *_words1[] = {
   &swap,
   &literal, &doconst, &swap,
   &literal, (Word *)"Words", &cputs,
