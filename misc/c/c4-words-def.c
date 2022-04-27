@@ -1,26 +1,25 @@
+#include <stddef.h>
+
 #ifndef C4_LAST_WORD
 #error Define C4_LAST_WORD to link words into the dictionary.
 #endif
 
-const Word *_words1[] = {
+const FLASH char _words1_s1[] = "Words";
+DEFCOL(words1, &C4_LAST_WORD) {
   &swap,
   &literal, &doconst, &swap,
-  &literal, (Word *)"Words", &cputs,
+  &literal, (WordPtr)_words1_s1, &cputs,
   &over, &over, &swap, &int_sub, &write_hex_int, 
   &fdup, &write_hex_int, 
-  &fdup, &literal, (Word *)(sizeof(void *) * 1), &int_add, &peek, &write_hex_int,
-  &fdup, &literal, (Word *)(sizeof(void *) * 2), &int_add, &peek, &write_hex_int,
-  &fdup, &literal, (Word *)(sizeof(void *) * 3), &int_add, &peek, &write_hex_int,
+  &fdup, &literal, (WordPtr)offsetof(Word, name), &int_add, &peek, &write_hex_int,
+  &fdup, &literal, (WordPtr)offsetof(Word, code), &int_add, &peek, &write_hex_int,
+  &fdup, &literal, (WordPtr)offsetof(Word, data), &int_add, &peek, &write_hex_int,
   &fdup, &peek, &cputs,
-  &literal, (Word *)(sizeof(void *) * 3), &int_add, &peek,
-  &fdup, &literal, (Word *)-36, &ifjump,
+  &literal, (WordPtr)offsetof(Word, next), &int_add, &peek,
+  &fdup, &literal, (WordPtr)-36, &ifjump,
   &drop, &drop, &return0
 };
 
-Word words1 = { "words/1", _docol, _words1, &C4_LAST_WORD };
-
-Word *_words[] = {
+DEFCOL(words, &words1) {
   &dict, &words1, &return0
 };
-
-Word words = { "words", _docol, _words, &words1 };

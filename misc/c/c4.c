@@ -74,11 +74,14 @@ State _exec(Cell **sp, Word ***eip) {
 
 Word exec = { "exec", _doop, _exec, &doop };
 
+Cell _trace_next = { i: 0 };;
+Word trace_next = { "*trace-next*", _doivar, &_trace_next, &exec };
+
 State _next(Cell **sp, Word ***eip) {
   Word *w;
   int r = GO;
   while(r == GO && *eip) {
-    //printf("%s\n", (**eip)->name);
+    if(_trace_next.ui) printf("%s\n", (**eip)->name);
     *sp -= 1;
     w = (*sp)->word = **eip;
     *eip += 1;
@@ -88,7 +91,7 @@ State _next(Cell **sp, Word ***eip) {
   return r;
 }
 
-Word next = { "next", _doop, _next, &exec };
+Word next = { "next", _doop, _next, &trace_next };
 
 State _cputs(Cell **sp, Word ***eip) {
   puts((*sp)->str);
@@ -184,6 +187,16 @@ State _int_sub(Cell **sp, Word ***eip) {
 
 Word int_sub = { "int-sub", _doop, _int_sub, &rhere };
 
+State _uint_sub(Cell **sp, Word ***eip) {
+  unsigned long a = (*sp)->ui;
+  *sp += 1;
+  unsigned long b = (*sp)->ui;
+  (*sp)->i = (b - a);
+  return GO;
+}
+
+Word uint_sub = { "uint-sub", _doop, _uint_sub, &int_sub };
+
 State _write_int(Cell **sp, Word ***eip) {
   printf("%li ", (*sp)->i);
   fflush(stdout);
@@ -191,7 +204,16 @@ State _write_int(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word write_int = { "write-int", _doop, _write_int, &int_sub };
+Word write_int = { "write-int", _doop, _write_int, &uint_sub };
+
+State _write_uint(Cell **sp, Word ***eip) {
+  printf("%lu ", (*sp)->ui);
+  fflush(stdout);
+  *sp += 1;
+  return GO;
+}
+
+Word write_uint = { "write-uint", _doop, _write_uint, &write_int };
 
 State _swap(Cell **sp, Word ***eip) {
   Cell t = **sp;
@@ -200,7 +222,7 @@ State _swap(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word swap = { "swap", _doop, _swap, &write_int };
+Word swap = { "swap", _doop, _swap, &write_uint };
 
 State _fdup(Cell **sp, Word ***eip) {
   Cell v = **sp;
@@ -471,12 +493,34 @@ State _dovar(Cell **sp, Word ***eip) {
 
 Word dovar = { "dovar", _doconst, _dovar, &roll };
 
+State _doivar(Cell **sp, Word ***eip) {
+  (*sp)->ptr = (*sp)->word->data.ptr;
+  return GO;
+}
+
+Word doivar = { "doivar", _doconst, _doivar, &dovar };
+
+State _free_ram(Cell **sp, Word ***eip) {
+#ifdef AVR
+  extern int __heap_start, *__brkval;
+  int v;
+  (*sp) -= 1;
+  (*sp)->i = (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
+#else
+  (*sp) -= 1;
+  (*sp)->i = -1;
+#endif
+  return GO;
+}
+
+Word free_ram = { "free-ram", _doop, _free_ram, &doivar };
+
 State _move(Cell **sp, Word ***eip) {
   *sp = (*sp)->cell_ptr;
   return GO;
 }
 
-Word move = { "move", _doop, _move, &dovar };
+Word move = { "move", _doop, _move, &free_ram };
 
 extern Word *last_word;
 

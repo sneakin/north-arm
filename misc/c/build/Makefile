@@ -3,7 +3,8 @@ all: c1 c2 c3 c4-words c4-scripts shared-test c4-interp c4-interp.static c4-inte
 ../c4-words.h: ../c4.c
 	sed -E -e 's:^Word (\S+).*:extern Word \1;:g' -e t -e d < $< > $@
 ../c5-words.h: ../c5.c
-	sed -E -e 's:^Word ([^*]\S*).*:extern Word \1;:g' -e t -e d < $< > $@
+	sed -E -e 's:^DEF(OP|CONST|VAR).?\((\S+),.*:extern WordDef \2;:g' -e t -e d < $< > $@
+	#sed -E -e 's:^Word ([^*]\S*).*:extern const FLASH Word \1;:g' -e t -e d < $< > $@
 
 c1: ../c1.c
 c2: ../c2.c
@@ -55,3 +56,5 @@ endif
 
 c5-interp.avr: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../avr.h ../unix_io.h ../c5.c ../c5-main.c
 	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c
+c5-interp.hex: c5-interp.avr
+	avr-objcopy -Oihex $< $@

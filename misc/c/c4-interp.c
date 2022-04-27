@@ -1,7 +1,5 @@
 #include <stdio.h>
-#ifdef AVR
-#include <avr/pgmspace.h>
-#endif
+#include <stddef.h>
 #ifdef C4
 #include "c4.h"
 #include "c4-words.h"
@@ -14,277 +12,257 @@
 #define C4_LAST_WORD dict
 #include "c4-words-def.c"
 
-Word *_pick[] = {
+const FLASH char newline_str[] = "\n";
+
+DEFCONST2(cell_size, "cell-size", { i: sizeof(Cell) }, &words);
+
+DEFCOL(pick, &cell_size) {
   &swap,
-  &literal, (Word *)2, &int_add,
-  &literal, (Word *)sizeof(Cell), &int_mul,
+  &literal, (WordPtr)2, &int_add,
+  &cell_size, &int_mul,
   &here, &int_add, &peek,
   &swap, &return0
 };
 
-Word pick = { "pick", _docol, _pick, &words };
+DEFCONST2(standard_input, "standard-input", { i: 0 }, &pick);
+DEFCONST2(standard_output, "standard-output", { i: 1 }, &standard_input);
+DEFCONST2(standard_error, "standard-error", { i: 2 }, &standard_output);
 
-Word standard_input = { "standard-input", _doconst, (void *)0, &pick };
-Word standard_output = { "standard-output", _doconst, (void *)1, &standard_input };
-Word standard_error = { "standard-error", _doconst, (void *)2, &standard_output };
+DEFVAR2(current_input, "current-input", { i: 0 }, &standard_error);
+DEFVAR2(current_output, "current-output", { i: 1 }, &current_input);
+DEFVAR2(current_error, "current-error", { i: 2 }, &current_output);
 
-Word current_input = { "current-input", _dovar, (void *)0, &standard_error };
-Word current_output = { "current-output", _dovar, (void *)1, &current_input };
-Word current_error = { "current-error", _dovar, (void *)2, &current_output };
-
-Word *_read_byte[] = {
-  &literal, (Word *)0, &here,
-  &literal, (Word *)1, &swap,
+DEFCOL2(read_byte, "read-byte", &current_error) {
+  &literal, (WordPtr)0, &here,
+  &literal, (WordPtr)1, &swap,
   &current_input, &peek, &cread,
-  &fdup, &literal, (Word *)0, &int_lte, &literal, (Word *)3, &ifjump,
+  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)3, &ifjump,
   &drop, &swap, &return0,
-  &swap, &drop, &literal, (Word *)-1, &int_add, &swap, &return0
+  &swap, &drop, &literal, (WordPtr)-1, &int_add, &swap, &return0
 };
 
-Word read_byte = { "read-byte", _docol, _read_byte, &current_error };
-
-Word *_is_space[] = {
-  &swap, &literal, (Word *)32, &int_lte, &swap, &return0
+DEFCOL2(is_space, "is-space?", &read_byte) {
+  &swap, &literal, (WordPtr)32, &int_lte, &swap, &return0
 };
 
-Word is_space = { "is-space?", _docol, _is_space, &read_byte };
-
-Word *_read_token3[] = { // buffer max-len count -- buffer count
+DEFCOL2(read_token3, "read-token/3", &is_space) {
+// buffer max-len count -- buffer count
 // todo empty reads look the same as errors
 // todo leading spaces need to be skipped, eliminates 0 byte reads
   &read_byte, // &fdup, &write_int,
-  &fdup, &literal, (Word *)0, &int_lte, &literal, (Word *)21, &ifjump,
-  &fdup, &is_space, &literal, (Word *)18, &ifjump,
-  &literal, (Word *)4, &pick, // &fdup, &write_hex_int,
-  &literal, (Word *)3, &pick, // &fdup, &write_int,
+  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)21, &ifjump,
+  &fdup, &is_space, &literal, (WordPtr)18, &ifjump,
+  &literal, (WordPtr)4, &pick, // &fdup, &write_hex_int,
+  &literal, (WordPtr)3, &pick, // &fdup, &write_int,
   &int_add, &poke_byte,
-  &swap, &literal, (Word *)1, &int_add, /* &fdup, &write_int, */ &swap,
-  &literal, (Word *)-29, &jumprel,
+  &swap, &literal, (WordPtr)1, &int_add, /* &fdup, &write_int, */ &swap,
+  &literal, (WordPtr)-29, &jumprel,
   &roll, &swap,
   &drop,
-  &literal, (Word *)3, &pick,
-  &literal, (Word *)2, &pick,
-  &int_add, &literal, (Word *)0, &swap, &poke_byte,
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)2, &pick,
+  &int_add, &literal, (WordPtr)0, &swap, &poke_byte,
   &return0
 };
 
-Word read_token3 = { "read-token/3", _docol, _read_token3, &is_space };
-
-Word *_read_token[] = { // buffer max-len -- buffer read-length
-  &roll, &literal, (Word *)0, &read_token3,
+DEFCOL2(read_token, "read-token", &read_token3) {
+  // buffer max-len -- buffer read-length
+  &roll, &literal, (WordPtr)0, &read_token3,
   &swap, &drop, &roll, &roll, &return0
 };
 
-Word read_token = { "read-token", _docol, _read_token, &read_token3 };
+DEFVAR2(stack_top, "stack-top", { ptr: NULL }, &read_token);
 
-Word stack_top = { "stack-top", _dovar, 0, &read_token };
-Word cell_size = { "cell-size", _doconst, (void *)sizeof(Cell), &stack_top };
+const FLASH char empty_string[] = "";
 
-Word *_memdump[] = { // addr bytes
-  &over, &literal, (Word *)0, &int_lte, &literal, (Word *)8, &unlessjump,
-  &literal, (Word *)"", &cputs,
+DEFCOL(memdump, &read_token) { // addr bytes
+  &over, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)8, &unlessjump,
+  &literal, (WordPtr)empty_string, &cputs,
   &swap, &drop, &swap, &drop, &return0,
-  &literal, (Word *)2, &pick, &peek, &write_hex_int,
+  &literal, (WordPtr)2, &pick, &peek, &write_hex_int,
   &roll, &cell_size, &int_sub,
   &roll, &cell_size, &int_add,
   &roll,
-  &literal, (Word *)-30, &jumprel
+  &literal, (WordPtr)-30, &jumprel
 };
 
-Word memdump = { "memdump", _docol, _memdump, &cell_size };
-
-Word *_dump_stack[] = {
-  &literal, (Word *)"Stack", &cputs,
+const FLASH char dump_stack_s1[] = "Stack";
+DEFCOL2(dump_stack, "dump-stack", &memdump) {
+  &literal, (WordPtr)dump_stack_s1, &cputs,
   &here, &fdup, &write_hex_int,
   &stack_top, &peek,
   &over, &int_sub, &fdup, &write_int,
-  &literal, (Word *)"", &cputs,
+  &literal, (WordPtr)empty_string, &cputs,
   &memdump, &return0
 };
 
-Word dump_stack = { "dump-stack", _docol, _dump_stack, &memdump };
-
-Word *_dict_entry_name[] = {
-  &return0
+DEFCOL2(dict_entry_name, "dict-entry-name", &dump_stack) {
+  &swap, &literal, (WordPtr)offsetof(Word, name), &int_add, &swap, &return0
 };
 
-Word dict_entry_name = { "dict-entry-name", _docol, _dict_entry_name, &dump_stack };
-
-Word *_dict_entry_code[] = {
-  &swap, &literal, (Word *)sizeof(Cell), &int_add, &swap, &return0
+DEFCOL2(dict_entry_code, "dict-entry-code", &dict_entry_name) {
+  &swap, &literal, (WordPtr)offsetof(Word, code), &int_add, &swap, &return0
 };
 
-Word dict_entry_code = { "dict-entry-code", _docol, _dict_entry_code, &dict_entry_name };
-
-Word *_dict_entry_data[] = {
-  &swap, &literal, (Word *)(sizeof(Cell)*2), &int_add, &swap, &return0
+DEFCOL2(dict_entry_data, "dict-entry-data", &dict_entry_code) {
+  &swap, &literal, (WordPtr)offsetof(Word, data), &int_add, &swap, &return0
 };
 
-Word dict_entry_data = { "dict-entry-data", _docol, _dict_entry_data, &dict_entry_code };
-
-Word *_dict_entry_next[] = {
-  &swap, &literal, (Word *)(sizeof(Cell)*3), &int_add, &swap, &return0
+DEFCOL2(dict_entry_next, "dict-entry-next", &dict_entry_data) {
+  &swap, &literal, (WordPtr)offsetof(Word, next), &int_add, &swap, &return0
 };
 
-Word dict_entry_next = { "dict-entry-next", _docol, _dict_entry_next, &dict_entry_data };
-
-Word *_byte_string_equals4[] = { // a b length index
-  &over, &literal, (Word *)3, &pick, &int_lte, &literal, (Word *)14, &ifjump,
+DEFCOL2(byte_string_equals4, "byte-string-equals?/4", &dict_entry_next) {
+  // a b length index
+  // index <= length
+  &over, &literal, (WordPtr)3, &pick, &int_lte, &literal, (WordPtr)14, &ifjump,
+  // got to the end, drop args and return true
   &roll, &swap, &drop, // a b ra len
   &roll, &swap, &drop, // a len ra
   &roll, &swap, &drop, // ra len
   &drop,
-  &literal, (Word *)1, &swap, &return0,
-  &over, &literal, (Word *)5, &pick, &int_add, &peek_byte,
-  &literal, (Word *)2, &pick, &literal, (Word *)5, &pick, &int_add, &peek_byte,
-  &equals, &literal, (Word *)14, &ifjump,
+  &literal, (WordPtr)1, &swap, &return0,
+  // compare bytes at index
+  &over, &literal, (WordPtr)5, &pick, &int_add, &peek_byte,
+  &literal, (WordPtr)2, &pick, &literal, (WordPtr)5, &pick, &int_add, &peek_byte,
+  &equals, &literal, (WordPtr)14, &ifjump,
+  // mismatched, return false
   &roll, &swap, &drop,
   &roll, &swap, &drop,
   &roll, &swap, &drop,
   &drop,
-  &literal, (Word *)0, &swap, &return0,
-  &swap, &literal, (Word *)1, &int_add, &swap,
-  &literal, (Word *)-62, &jumprel
+  &literal, (WordPtr)0, &swap, &return0,
+  // matched, increment index and repeat
+  &swap, &literal, (WordPtr)1, &int_add, &swap,
+  &literal, (WordPtr)-62, &jumprel
 };
 
-Word byte_string_equals4 = { "byte-string-equals?/4", _docol, _byte_string_equals4, &dict_entry_next };
-
-Word *_byte_string_equals3[] = { // a b length
-  &literal, (Word *)3, &pick,
-  &literal, (Word *)3, &pick,
-  &literal, (Word *)3, &pick,
-  &literal, (Word *)0, &byte_string_equals4,
+DEFCOL2(byte_string_equals3, "byte-string-equals?/3", &byte_string_equals4) {
+  // a b length
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)0, &byte_string_equals4,
   &roll, &swap, &drop, // a b ret ra
   &roll, &swap, &drop, // a ra ret
   &roll, &swap, &drop,
   &return0
 };
 
-Word byte_string_equals3 = { "byte-string-equals?/3", _docol, _byte_string_equals3, &byte_string_equals4 };
-
-Word *_lookup[] = { // buffer length dict -- dict ok?
-// needs to search the dictionary
-// todo handle when the name is null
-  &over, &literal, (Word *)12, &ifjump,
+DEFCOL(lookup, &byte_string_equals3) {
+  // buffer length dict -- dict ok?
+  // needs to search the dictionary
+  // todo handle when the name is null
+  &over, &literal, (WordPtr)12, &ifjump,
   &swap, &drop, &swap, &drop, &swap, &drop,
-  &literal, (Word *)0, &swap, &over, &swap, &return0,
+  &literal, (WordPtr)0, &swap, &over, &swap, &return0,
   &over, &dict_entry_name, &peek,
-  &literal, (Word *)4, &pick,
-  &literal, (Word *)4, &pick, &byte_string_equals3,
-  &literal, (Word *)10, &unlessjump,
+  &fdup, &cputs,
+  &literal, (WordPtr)4, &pick,
+  &literal, (WordPtr)4, &pick, &byte_string_equals3,
+  &literal, (WordPtr)10, &unlessjump,
   &roll, &swap, &drop, // buf ra dict
   &roll, &swap, &drop, // dict ra 
-  &literal, (Word *)1, &swap, &return0,
+  &literal, (WordPtr)1, &swap, &return0,
   &swap, &dict_entry_next, &peek, &swap,
-  &literal, (Word *)-46, &jumprel
+  &literal, (WordPtr)-48, &jumprel
 };
 
-Word lookup = { "lookup", _docol, _lookup, &byte_string_equals3 };
+const FLASH char not_found[] = "Not found.";
 
-Word *_quote[] = {
+DEFCOL2(quote, "'", &lookup) {
   &here, &rpush,
-  &literal, (Word *)0, &literal, (Word *)0, &literal, (Word *)0, &literal, (Word *)0,
-  &here, &literal, (Word *)32, &read_token,
-  &fdup, &literal, (Word *)0, &int_lte, &literal, (Word *)14, &ifjump,
+  &literal, (WordPtr)0, &literal, (WordPtr)0, &literal, (WordPtr)0, &literal, (WordPtr)0,
+  &here, &literal, (WordPtr)32, &read_token,
+  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)14, &ifjump,
   &dict, &lookup,
-  &literal, (Word *)9, &unlessjump,
+  &literal, (WordPtr)9, &unlessjump,
   &rpop, &cell_size, &int_sub, &over, &over, &poke, &move, &swap, &return0,
-  &literal, (Word *)"Not found.", &cputs,
-  &rpop, &move, &literal, (Word *)0, &swap, &return0
+  &literal, (WordPtr)not_found, &cputs,
+  &rpop, &move, &literal, (WordPtr)0, &swap, &return0
 };
 
-Word quote = { "'", _docol, _quote, &lookup };
-
-Word *_swap_places[] = { // a b
-  &literal, (Word *)2, &pick, &peek, //&fdup, &write_int,
-  &literal, (Word *)2, &pick, &peek, //&fdup, &write_int,
-  &literal, (Word *)4, &pick, &poke,
-  &literal, (Word *)2, &pick, &poke,
+DEFCOL2(swap_places, "swap-places", &quote) {
+  // a b
+  &literal, (WordPtr)2, &pick, &peek, //&fdup, &write_int,
+  &literal, (WordPtr)2, &pick, &peek, //&fdup, &write_int,
+  &literal, (WordPtr)4, &pick, &poke,
+  &literal, (WordPtr)2, &pick, &poke,
   &swap, &drop, &swap, &drop, &return0  
 };
 
-Word swap_places = { "swap-places", _docol, _swap_places, &quote };
-
-Word *_reverse3[] = { // ptr length n
-  &literal, (Word *)3, &pick,
-  &literal, (Word *)3, &pick,
-  &literal, (Word *)3, &pick, &int_sub, &literal, (Word *)1, &int_sub, &cell_size, &int_mul, &int_add,
-  &literal, (Word *)4, &pick,
-  &literal, (Word *)3, &pick, &cell_size, &int_mul, &int_add, &swap_places,
-  &swap, &literal, (Word *)1, &int_add, &swap,
-  &literal, (Word *)1, &pick, &literal, (Word *)2, &int_mul,
-  &literal, (Word *)3, &pick, &int_lt, &literal, (Word *)-44, &ifjump,
+DEFCOL(reverse3, &swap_places) { // ptr length n
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)3, &pick, &int_sub, &literal, (WordPtr)1, &int_sub, &cell_size, &int_mul, &int_add,
+  &literal, (WordPtr)4, &pick,
+  &literal, (WordPtr)3, &pick, &cell_size, &int_mul, &int_add, &swap_places,
+  &swap, &literal, (WordPtr)1, &int_add, &swap,
+  &literal, (WordPtr)1, &pick, &literal, (WordPtr)2, &int_mul,
+  &literal, (WordPtr)3, &pick, &int_lt, &literal, (WordPtr)-44, &ifjump,
   &return0
 };
 
-Word reverse3 = { "reverse3", _docol, _reverse3, &swap_places };
-
-Word *_reverse[] = {
-  &roll, &literal, (Word *)0, &reverse3,
+DEFCOL(reverse, &reverse3) {
+  &roll, &literal, (WordPtr)0, &reverse3,
   &drop, &drop, &drop, &return0
 };
 
-Word reverse = { "reverse", _docol, _reverse, &reverse3 };
-
-Word *_nseq[] = { // n ++ 0 1 2 ... n-1
-  &literal, (Word *)0, &roll,
-  &swap, &literal, (Word *)1, &int_sub, &swap,
-  &over, &literal, (Word *)3, &ifjump, &swap, &drop, &return0,
-  &literal, (Word *)2, &pick, &literal, (Word *)1, &int_add, &roll,
-  &literal, (Word *)-22, &jumprel
+DEFCOL(nseq, &reverse) { // n ++ 0 1 2 ... n-1
+  &literal, (WordPtr)0, &roll,
+  &swap, &literal, (WordPtr)1, &int_sub, &swap,
+  &over, &literal, (WordPtr)3, &ifjump, &swap, &drop, &return0,
+  &literal, (WordPtr)2, &pick, &literal, (WordPtr)1, &int_add, &roll,
+  &literal, (WordPtr)-22, &jumprel
 };
 
-Word nseq = { "nseq", _docol, _nseq, &reverse };
+const FLASH char prompt_str[] = "> ";
 
-Word *_prompt[] = {
-  &over, &write_int, &literal, (Word *)"> ", &write_string, &current_output, &peek, &flush, &return0
+DEFCOL(prompt, &nseq) {
+  &over, &write_int, &literal, (WordPtr)prompt_str, &write_string, &current_output, &peek, &flush, &return0
 };
 
-Word prompt = { "prompt", _docol, _prompt, &nseq };
+DEFVAR2(input_buffer, "input-buffer", { ptr: NULL }, &prompt);
+DEFVAR2(input_buffer_size, "input-buffer-size", { i: 0 }, &input_buffer);
+DEFVAR(istate, { word: &exec }, &input_buffer_size);
 
-Word input_buffer = { "input-buffer", _dovar, (void *)0, &prompt };
-Word input_buffer_size = { "input-buffer-size", _dovar, (void *)0, &input_buffer };
-Word istate = { "istate", _dovar, &exec, &input_buffer_size };
+const FLASH char bye_str[] = "Bye";
 
-Word *_interp_loop[] = {
+DEFCOL2(interp_loop, "interp-loop", &istate) {
   &rpush,
   &prompt,
   &input_buffer, &peek, &input_buffer_size, &peek, &read_token,
-  &fdup, &literal, (Word *)0, &int_lt, &literal, (Word *)15, &ifjump,
+  &fdup, &literal, (WordPtr)0, &int_lt, &literal, (WordPtr)18, &ifjump,
   &dict, &lookup,
-  /* &fdup, &write_int, &fdup, &literal, (Word *)4, &unlessjump,
+  /* &fdup, &write_int, &fdup, &literal, (WordPtr)4, &unlessjump,
   &over, &dict_entry_name, &peek, &cputs,  */
-  &literal, (Word *)6, &unlessjump,
-  &istate, &peek, &exec, &literal, (Word *)1, &jumprel,
-  &drop,
-  &literal, (Word *)-28, &jumprel,
-  &literal, (Word *)"Bye", &cputs,
+  &literal, (WordPtr)6, &unlessjump,
+  &istate, &peek, &exec, &literal, (WordPtr)4, &jumprel,
+  &drop, &literal, (WordPtr)not_found, &cputs,
+  &literal, (WordPtr)-31, &jumprel,
+  &literal, (WordPtr)bye_str, &cputs,
   &rpop, &return0
 };
 
-Word interp_loop = { "interp-loop", _docol, _interp_loop, &istate };
-
-Word *_stack_allot[] = {
+DEFCOL2(stack_allot, "stack-allot", &interp_loop) {
   &rpush,
-  &here, &swap, &int_sub, &move, &here,
+  &here, &swap, &uint_sub, &move, &here,
   &rpop, &return0
 };
 
-Word stack_allot = { "stack-allot", _docol, _stack_allot, &interp_loop };
+#define INPUT_BUFFER_SIZE 32
 
-Word *_interp[] = {
+DEFCOL(interp, &stack_allot) {
   &rpush,
-  &literal, (Word *)128, &stack_allot, &input_buffer, &poke,
-  &literal, (Word *)128, &input_buffer_size, &poke,
+  &literal, (WordPtr)INPUT_BUFFER_SIZE, &stack_allot, &input_buffer, &poke,
+  &literal, (WordPtr)INPUT_BUFFER_SIZE, &input_buffer_size, &poke,
   &interp_loop,
-  &literal, (Word *)0, &input_buffer, &poke,
-  &literal, (Word *)0, &input_buffer_size, &poke,
+  &literal, (WordPtr)0, &input_buffer, &poke,
+  &literal, (WordPtr)0, &input_buffer_size, &poke,
   &rpop, &return0
 };
 
-Word interp = { "interp", _docol, _interp, &stack_allot };
-
-Word *_load[] = {
+DEFCOL(load, &interp) {
   &rpush,
   &current_input, &peek, &rpush,
   &current_input, &poke, 
@@ -293,44 +271,41 @@ Word *_load[] = {
   &rpop, &return0
 };
 
-Word load = { "load", _docol, _load, &interp };
-
-Word *_mem_used[] = {
-  &stack_top, &peek, &here, &int_sub, &swap, &return0
+DEFCOL2(mem_used, "mem-used", &load) {
+// fixme AVR adds 0x80000 to stack_top
+  &stack_top, &peek, &here, &uint_sub,
+  &swap, &return0
 };
-Word mem_used = { "mem-used", _docol, _mem_used, &load };
 
-const Word * const _mem_info[] = {
-#ifdef AVR
-  &literal, (Word *)"RAM:\t", &write_string,
-  &free_ram, &write_int, &literal, (Word *)"\n", &write_string,
-#endif
-  &literal, (Word *)"Stack:\t", &write_string,
-  &mem_used, &write_int, &literal, (Word *)"\n", &write_string,
-  //&stack_top, &peek, &write_int, &literal, (Word *)"\n", &write_string,
+const FLASH char mem_info_ram_str[] = "RAM:\t";
+const FLASH char mem_info_stack_str[] = "Stack:\t";
+
+DEFCOL2(mem_info, "mem-info", &load) {
+  &literal, (WordPtr)mem_info_ram_str, &write_string,
+  &free_ram, &write_uint, &literal, (WordPtr)newline_str, &write_string,
+  &literal, (WordPtr)mem_info_stack_str, &write_string,
+  &mem_used, &write_uint, &literal, (WordPtr)newline_str, &write_string,
   &return0  
 };
-const Word mem_info = { "mem-info", _docol, _mem_info, &load };
 
-Word zero = { "0", _doconst, (void *)0, &mem_info };
-Word one = { "1", _doconst, (void *)1, &zero };
-Word mone = { "-1", _doconst, (void *)-1, &one };
-Word two = { "2", _doconst, (void *)2, &mone };
-Word three = { "3", _doconst, (void *)3, &two };
-Word four = { "4", _doconst, (void *)4, &three };
-Word sixteen = { "16", _doconst, (void *)16, &four };
+DEFCONST2(zero, "0", { i: 0 }, &mem_info);
+DEFCONST2(one, "1", { i: 1 }, &zero);
+DEFCONST2(mone, "-1", { i: -1 }, &one);
+DEFCONST2(two, "2", { i: 2 }, &mone);
+DEFCONST2(three, "3", { i: 3 }, &two);
+DEFCONST2(four, "4", { i: 4 }, &three);
+DEFCONST2(sixteen, "16", { i: 16 }, &four);
 
-Word xvar = { "x", _dovar, 0, &sixteen };
+DEFVAR2(xvar, "x", { i: 0x12345678 }, &sixteen);
 
-Word *_boot[] = {
+DEFCOL(boot, &xvar) {
   &here, &stack_top, &poke,
+  &cell_size, &write_int,
   &mem_info, &interp, &return0
 };
 
-Word boot = { "boot", _docol, _boot, &xvar };
-
 #ifndef TESTING
-Word *last_word = &boot;
+WordPtr last_word = &boot;
 #else
 #include "c4-interp-tests.c"
 #endif
