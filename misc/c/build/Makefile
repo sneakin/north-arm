@@ -1,4 +1,5 @@
-all: c1 c2 c3 c4-words c4-scripts shared-test c4-interp c4-interp.static c4-interp-tests c5-interp
+all: c1 c2 c3 c4-words c4-scripts shared-test c4-interp c4-interp-tests c5-interp
+static: c4-interp.static c5-interp.static
 
 ../c4-words.h: ../c4.c
 	sed -E -e 's:^Word (\S+).*:extern Word \1;:g' -e t -e d < $< > $@

@@ -52,7 +52,7 @@ WordPtr next_op(WordListPtr *eip) {
   return cur;
 }
 
-const FLASH WordPtr _doconst(Cell **sp, WordListPtr *eip) {
+WordPtr _doconst(Cell **sp, WordListPtr *eip) {
   *(*sp) = (*sp)->word->data;
   return next_op(eip);
 }
