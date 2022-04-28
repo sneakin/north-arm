@@ -330,26 +330,16 @@ DEFOP2(equals, "equals?", &int_lt) {
 }
 
 DEFOP(peek, &equals) {
-#ifdef AVR_PEEK
-  // fixme _M can peek dict-entries, no _M and cell_ptr can peek vars
-  if(AVR_PEEK) {
-    memcpy(*sp, (*sp)->roptr, sizeof(Cell));
-  } else {
-    memcpy_M(*sp, (*sp)->roptr, sizeof(Cell));
-  }
+#ifdef AVR
+  memcpy_M(*sp, (*sp)->roptr, sizeof(Cell));
 #else
-  //(*sp)->ui = ((const FLASH Cell *)(*sp)->roptr)->ui;
   (*sp)->ui = (*sp)->cell_ptr->ui;
 #endif
   return next_op(eip);
 }
 
 DEFOP(poke, &peek) {
-#ifdef AVR_PEEK
-  memcpy((*sp)->cell_ptr, (*sp+1), sizeof(Cell));
-#else
   ((*sp)->cell_ptr)->ui = (*sp+1)->ui;
-#endif
   *sp += 2;
   return next_op(eip);
 }
@@ -477,6 +467,9 @@ DEFCONST(dovar, { fn: _dovar }, &roll);
 WordPtr _doivar(Cell **sp, WordListPtr *eip) {
   //*(*sp) = (*sp)->word->data;
   (*sp)->ptr = (*sp)->word->data.ptr;
+#ifdef AVR
+  (*sp)->bytes[2] = 0x80; // force the pointer to RAM
+#endif
   return next_op(eip);
 }
 

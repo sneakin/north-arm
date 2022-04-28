@@ -112,6 +112,9 @@ DEFCOL2(dict_entry_next, "dict-entry-next", &dict_entry_data) {
   &swap, &literal, (WordPtr)offsetof(Word, next), &int_add, &swap, &return0
 };
 
+// fixme avr has limited, wrong length of 3
+// fixme lookup also not terminating on doconst
+
 DEFCOL2(byte_string_equals4, "byte-string-equals?/4", &dict_entry_next) {
   // a b length index
   // index <= length

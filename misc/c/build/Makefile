@@ -52,10 +52,19 @@ ifndef AVR_CC
 AVR_CC=avr-gcc
 endif
 ifndef AVR_MCU
-AVR_MCU=atmega1280
+AVR_MCU=atmega328p
+endif
+ifndef AVRDUDE_MCU
+AVRDUDE_MCU=m328p
+endif
+ifndef AVR_PORT
+AVR_PORT=/dev/ttyUSB1
 endif
 
 c5-interp.avr: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../avr.h ../unix_io.h ../c5.c ../c5-main.c
 	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c
 c5-interp.hex: c5-interp.avr
 	avr-objcopy -Oihex $< $@
+
+flash-c5: c5-interp.hex
+	avrdude -c arduino -p $(AVRDUDE_MCU) -U flash:w:$<:i -P $(AVR_PORT)
