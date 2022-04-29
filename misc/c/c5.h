@@ -26,7 +26,7 @@ typedef WordPtr (*Fun)(union Cell **, WordListPtr *);
 
 typedef union Cell
 {
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(__aarch64__)
   long long i;
   unsigned long long ui;
   unsigned char bytes[sizeof(long long)];
@@ -50,6 +50,9 @@ typedef struct Word {
   Fun code;
   Cell data;
   WordPtr next;
+#ifdef AVR
+  char _p1; // padding so next=NULL == NULL
+#endif
 } Word;
 
 WordPtr _exec(Cell **, WordListPtr *);
