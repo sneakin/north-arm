@@ -2,7 +2,7 @@
 #include "c5-words.h"
 
 extern WordDef boot, words, fexit;
-extern WordDef one, int_add, fdup, write_int, literal, here, swap, poke, peek, dict_entry_data, dict_entry_name, mem_info, write_hex_int;
+extern WordDef one, int_add, fdup, write_int, literal, here, swap, poke, peek, dict_entry_data, dict_entry_name, mem_info, write_hex_int, read_token, lookup;
 extern WordDef current_input, xvar;
 
 #ifdef AVR
@@ -39,7 +39,7 @@ int main(int argc, const char *argv[], const char *env[])
   avr_init();
 #endif
 #ifdef STATIC_INPUT
-  printf("Input: %i %s\n", static_input_length, static_input_buffer);
+  printf("Input: %i %s\r\n", static_input_length, static_input_buffer);
 #endif
   _next(&sp, &eip);
   return 0;

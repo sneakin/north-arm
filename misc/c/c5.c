@@ -32,11 +32,15 @@ unsigned long _debug_level = DBG_TRACE|DBG_CALLS|DBG_IO|DBG_INFO|DBG_INFO1;
 unsigned long _debug_level = DBG_ERROR|DBG_WARN;
 #endif
 
+int is_debug_level(unsigned long level) {
+  return _debug_level & (level&~0xF);
+}
+
 #ifdef NOLOG
 #define DBGOUT(level, fmt, ...) {}
 #else
 #define DBGOUT(level, fmt, ...) \
-  if(_debug_level & (level&~0xF)) \
+  if(is_debug_level(level)) \
   { fprintf_P(stderr, PSTR("\e[3%im"), level & 0x7); \
     fprintf_P(stderr, PSTR(fmt), __VA_ARGS__); \
     fprintf_P(stderr, PSTR("\e[37m\r\n")); \
@@ -105,9 +109,11 @@ DEFOP(next, &exec) {
   DBGOUT(DBG_TRACE, "next %p\t%p\t%lx", *eip, *sp, **sp);
   *eip += 1;
   while(w != NULL && *eip) {
-    i = strncpy_M(output_buffer, w->name, OUTPUT_BUFFER_SIZE);
-    DBGOUT(DBG_TRACE, "-> %p\t%p\t%i %p \"%s\"", (void*)*eip, (void*)w, i, (void*)output_buffer, output_buffer);
-    DBGOUT(DBG_TRACE, "   %p\t%lx\t%li", (void*)*sp, (unsigned long)(*sp)->ui, (long)(*sp)->i);
+    if(is_debug_level(DBG_TRACE)) {
+      i = strncpy_M(output_buffer, w->name, OUTPUT_BUFFER_SIZE);
+      DBGOUT(DBG_TRACE, "-> %p\t%p\t%i %p \"%s\"", (void*)*eip, (void*)w, i, (void*)output_buffer, output_buffer);
+      DBGOUT(DBG_TRACE, "   %p\t%lx\t%li", (void*)*sp, (unsigned long)(*sp)->ui, (long)(*sp)->i);
+    }
     *sp -= 1;
     (*sp)->word = w;
     w = w->code(sp, eip);
@@ -118,8 +124,9 @@ DEFOP(next, &exec) {
 }
 
 DEFOP(cputs, &next) {
-  strncpy_M(output_buffer, (*sp)->rostr, OUTPUT_BUFFER_SIZE);
-  puts(output_buffer);
+  int n = strncpy_M(output_buffer, (*sp)->rostr, OUTPUT_BUFFER_SIZE);
+  fwrite(output_buffer, sizeof(char), n, stdout);
+  fwrite("\r\n", sizeof(char), 2, stdout);
   (*sp)++;
   return next_op(eip);
 }
@@ -235,7 +242,9 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
   WordPtr w = (*sp)->word;
 #ifdef AVR
   char *n = output_buffer;
-  strncpy_M(n, w->name, OUTPUT_BUFFER_SIZE);
+  if(is_debug_level(DBG_CALLS)) {
+    strncpy_M(n, w->name, OUTPUT_BUFFER_SIZE);
+  }
 #else
   const FLASH char *n = w->name;
 #endif

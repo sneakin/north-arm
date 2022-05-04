@@ -14,17 +14,18 @@
 
 typedef int off_t;
 
-int xgetchar(FILE *f)
-{
-  loop_until_bit_is_set(UCSR0A, RXC0);
-  return UDR0;
-}
-
 int xputchar(char c, FILE *f)
 {
   loop_until_bit_is_set(UCSR0A, UDRE0);
   UDR0 = c;
   return 0;
+}
+
+int xgetchar(FILE *f)
+{
+  loop_until_bit_is_set(UCSR0A, RXC0);
+  char c = UDR0;
+  return c;
 }
 
 static FILE serial_in = FDEV_SETUP_STREAM(NULL, xgetchar, _FDEV_SETUP_READ);

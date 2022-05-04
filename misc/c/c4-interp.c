@@ -12,7 +12,7 @@
 #define C4_LAST_WORD dict
 #include "c4-words-def.c"
 
-const FLASH char newline_str[] = "\n";
+const FLASH char crnl_str[] = "\r\n";
 
 DEFCONST2(cell_size, "cell-size", { i: sizeof(Cell) }, &words);
 
@@ -160,7 +160,7 @@ DEFCOL(lookup, &byte_string_equals3) {
   &swap, &drop, &swap, &drop, &swap, &drop,
   &literal, (WordPtr)0, &swap, &over, &swap, &return0,
   &over, &dict_entry_name, &peek,
-  &fdup, &cputs,
+  //&fdup, &cputs,
   &literal, (WordPtr)4, &pick,
   &literal, (WordPtr)4, &pick, &byte_string_equals3,
   &literal, (WordPtr)10, &unlessjump,
@@ -168,7 +168,7 @@ DEFCOL(lookup, &byte_string_equals3) {
   &roll, &swap, &drop, // dict ra 
   &literal, (WordPtr)1, &swap, &return0,
   &swap, &dict_entry_next, &peek, &swap,
-  &literal, (WordPtr)-48, &jumprel
+  &literal, (WordPtr)-46, &jumprel
 };
 
 const FLASH char not_found[] = "Not found.";
@@ -285,9 +285,9 @@ const FLASH char mem_info_stack_str[] = "Stack:\t";
 
 DEFCOL2(mem_info, "mem-info", &load) {
   &literal, (WordPtr)mem_info_ram_str, &write_string,
-  &free_ram, &write_uint, &literal, (WordPtr)newline_str, &write_string,
+  &free_ram, &write_uint, &literal, (WordPtr)crnl_str, &write_string,
   &literal, (WordPtr)mem_info_stack_str, &write_string,
-  &mem_used, &write_uint, &literal, (WordPtr)newline_str, &write_string,
+  &mem_used, &write_uint, &literal, (WordPtr)crnl_str, &write_string,
   &return0  
 };
 
@@ -301,9 +301,19 @@ DEFCONST2(sixteen, "16", { i: 16 }, &four);
 
 DEFVAR2(xvar, "x", { i: 0x12345678 }, &sixteen);
 
+#ifdef DEBUG
+const FLASH char win[] = "write-int";
+#endif
+
 DEFCOL(boot, &xvar) {
   &here, &stack_top, &poke,
+#ifdef DEBUG
   &cell_size, &write_int,
+    &literal, (WordPtr)win, &literal, (WordPtr)9, &dict, &lookup,
+    &write_int, &cputs,
+    &literal, (WordPtr)0, &literal, (WordPtr)0, &here, &literal, (WordPtr)sizeof(WordPtr), &fdup, &int_add, &read_token,
+    &write_int, &cputs,
+#endif
   &mem_info, &interp, &return0
 };
 
