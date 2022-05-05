@@ -74,7 +74,7 @@ DEFCONST(doop, { fn: _doop }, &doconst);
 
 DEFOP(exec, &doop) {
   WordPtr w = (*sp)->word;
-  return w->code(sp, eip);
+  return w->code.fn(sp, eip);
 }
 
 size_t strncpy_M(char *out, const FLASH char *in, size_t count) {
@@ -110,13 +110,13 @@ DEFOP(next, &exec) {
   *eip += 1;
   while(w != NULL && *eip) {
     if(is_debug_level(DBG_TRACE)) {
-      i = strncpy_M(output_buffer, w->name, OUTPUT_BUFFER_SIZE);
+      i = strncpy_M(output_buffer, w->name.rostr, OUTPUT_BUFFER_SIZE);
       DBGOUT(DBG_TRACE, "-> %p\t%p\t%i %p \"%s\"", (void*)*eip, (void*)w, i, (void*)output_buffer, output_buffer);
       DBGOUT(DBG_TRACE, "   %p\t%lx\t%li", (void*)*sp, (unsigned long)(*sp)->ui, (long)(*sp)->i);
     }
     *sp -= 1;
     (*sp)->word = w;
-    w = w->code(sp, eip);
+    w = w->code.fn(sp, eip);
   }
 
   DBGOUT(DBG_TRACE, "-! %p\t%p\t%p\t%lx\t%li", (void *)w, (void *)*eip, (void *)*sp, (unsigned long)(*sp)->ui, (long)(*sp)->i);
@@ -243,12 +243,12 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
 #ifdef AVR
   char *n = output_buffer;
   if(is_debug_level(DBG_CALLS)) {
-    strncpy_M(n, w->name, OUTPUT_BUFFER_SIZE);
+    strncpy_M(n, w->name.rostr, OUTPUT_BUFFER_SIZE);
   }
 #else
-  const FLASH char *n = w->name;
+  const FLASH char *n = w->name.rostr;
 #endif
-  DBGOUT(DBG_CALLS, "docol %p \"%s\" (%S) from %p", (void*)w, n, w->name, *eip);
+  DBGOUT(DBG_CALLS, "docol %p \"%s\" (%S) from %p", (void*)w, n, w->name.rostr, *eip);
   //(*sp)->word_list = *eip;
   //*sp += 1;
   // todo need to push nothing to sp, needs every word updated
@@ -256,7 +256,7 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
   WordListPtr neip = w->data.word_list;
   WordPtr r = _next(sp, &neip);
   if(neip) DBGOUT(DBG_WARN, "eip is not null\t%p", neip);
-  DBGOUT(DBG_INFO, "<= %S returned: %p", w->name, r);
+  DBGOUT(DBG_INFO, "<= %S returned: %p", w->name.rostr, r);
   if(r == &return0) { *sp = fp; return next_op(eip); }
   if(r == NULL) return next_op(eip);
   else return r;

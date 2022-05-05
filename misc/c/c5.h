@@ -46,13 +46,7 @@ typedef union Cell
 } Cell;
 
 typedef struct Word {
-  const FLASH char *name;
-  Fun code;
-  Cell data;
-  WordPtr next;
-#ifdef AVR
-  char _p1; // padding so next=NULL == NULL
-#endif
+  Cell name, code, data, next;
 } Word;
 
 WordPtr _exec(Cell **, WordListPtr *);
@@ -67,7 +61,12 @@ extern WordPtr last_word;
 
 #define DEFWORD2(cname, name, code, data, next) \
   const FLASH char _##cname##_name[] = name; \
-  WordDef cname = { _##cname##_name, code, data, next };
+  WordDef cname = { \
+    { roptr: _##cname##_name }, \
+    { fn: code }, \
+    data, \
+    { roptr: next } \
+  };
 
 #define DEFWORD(name, code, data, next) \
   DEFWORD2(name, #name, code, data, next)
