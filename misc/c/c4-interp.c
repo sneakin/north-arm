@@ -71,11 +71,11 @@ DEFCOL2(read_token, "read-token", &read_token3) {
   &swap, &drop, &roll, &roll, &return0
 };
 
-DEFVAR2(stack_top, "stack-top", { ptr: NULL }, &read_token);
+DEFVAR2(stack_top, "stack-top", { ui: 0 }, &read_token);
 
 const FLASH char empty_string[] = "";
 
-DEFCOL(memdump, &read_token) { // addr bytes
+DEFCOL(memdump, &stack_top) { // addr bytes
   &over, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)8, &unlessjump,
   &literal, (WordPtr)empty_string, &cputs,
   &swap, &drop, &swap, &drop, &return0,
@@ -306,7 +306,7 @@ const FLASH char win[] = "write-int";
 #endif
 
 DEFCOL(boot, &xvar) {
-  &here, &stack_top, &poke,
+  &here, &stack_top, &poke, // todo AVR is no longer setting this since ring buffer
 #ifdef DEBUG
   &cell_size, &write_int,
     &literal, (WordPtr)win, &literal, (WordPtr)9, &dict, &lookup,
