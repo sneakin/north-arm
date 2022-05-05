@@ -12,6 +12,8 @@
 #include <avr/pgmspace.h>
 #include <util/setbaud.h>
 
+#include "ringbuffer.h"
+
 typedef int off_t;
 
 int xputchar(char c, FILE *f)
@@ -21,6 +23,27 @@ int xputchar(char c, FILE *f)
   return 0;
 }
 
+#ifdef AVR_UART_INTR
+#include <avr/interrupt.h>
+
+#define UART_BUFFER_SIZE 64
+RING_BUFFER(uart_rx_buffer, UART_BUFFER_SIZE);
+
+ISR(USART_RX_vect) {
+  ring_buffer_put(&uart_rx_buffer, UDR0);
+}
+
+int uart_rb_getchar(FILE *f) {
+  int c;
+  while((c = ring_buffer_get(&uart_rx_buffer)) < 0) {
+    // idle
+  }
+  return c;
+}
+
+static FILE serial_in = FDEV_SETUP_STREAM(NULL, uart_rb_getchar, _FDEV_SETUP_READ);
+#else
+
 int xgetchar(FILE *f)
 {
   loop_until_bit_is_set(UCSR0A, RXC0);
@@ -29,6 +52,8 @@ int xgetchar(FILE *f)
 }
 
 static FILE serial_in = FDEV_SETUP_STREAM(NULL, xgetchar, _FDEV_SETUP_READ);
+#endif
+
 static FILE serial_out = FDEV_SETUP_STREAM(xputchar, NULL, _FDEV_SETUP_WRITE);
 
 #ifdef STATIC_INPUT
@@ -59,6 +84,9 @@ void avr_init() {
 #endif
   UCSR0C = _BV(UCSZ01) | _BV(UCSZ00); /* 8-bit data */
   UCSR0B = _BV(RXEN0) | _BV(TXEN0);   /* Enable RX and TX */
+#ifdef AVR_UART_INTR
+  UCSR0B |= (1<<RXCIE0);
+#endif
 
   stdout = stderr = &serial_out;
 #ifdef STATIC_INPUT
@@ -68,5 +96,12 @@ void avr_init() {
 #else    
   stdin = &serial_in;
 #endif
+
+#ifdef AVR_UART_INTR
+  sei();
+#endif
+
+#ifdef DEBUG
   puts("AVR initialized");
+#endif
 }
