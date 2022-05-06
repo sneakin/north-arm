@@ -10,6 +10,7 @@
 #include <avr/io.h>
 #include <alloca.h>
 #include <avr/pgmspace.h>
+#include <avr/cpufunc.h>
 #include <util/setbaud.h>
 
 #include "ringbuffer.h"
@@ -26,17 +27,35 @@ int xputchar(char c, FILE *f)
 #ifdef AVR_UART_INTR
 #include <avr/interrupt.h>
 
-#define UART_BUFFER_SIZE 64
+#define UART_BUFFER_SIZE 32
 RING_BUFFER(uart_rx_buffer, UART_BUFFER_SIZE);
 
+void xoff() {
+  xputchar(19, stdout);
+}
+
+void xon() {
+  xputchar(17, stdout);
+}
+
+int uart_rx_full() {
+  return abs(uart_rx_buffer.rpos - uart_rx_buffer.wpos) > UART_BUFFER_SIZE/2;
+}
+
 ISR(USART_RX_vect) {
-  ring_buffer_put(&uart_rx_buffer, UDR0);
+  if(ring_buffer_put(&uart_rx_buffer, UDR0) == 0 ||
+     uart_rx_full()) {
+    xoff();
+  }
 }
 
 int uart_rb_getchar(FILE *f) {
   int c;
-  while((c = ring_buffer_get(&uart_rx_buffer)) < 0) {
-    // idle
+  if((c = ring_buffer_get(&uart_rx_buffer)) < 0) {
+    xon();
+    while((c = ring_buffer_get(&uart_rx_buffer)) < 0) {
+      _NOP();
+    }
   }
   return c;
 }
