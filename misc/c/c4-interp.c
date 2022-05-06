@@ -283,7 +283,7 @@ DEFCOL2(mem_used, "mem-used", &load) {
 const FLASH char mem_info_ram_str[] = "RAM:\t";
 const FLASH char mem_info_stack_str[] = "Stack:\t";
 
-DEFCOL2(mem_info, "mem-info", &load) {
+DEFCOL2(mem_info, "mem-info", &mem_used) {
   &literal, (WordPtr)mem_info_ram_str, &write_string,
   &free_ram, &write_uint, &literal, (WordPtr)crnl_str, &write_string,
   &literal, (WordPtr)mem_info_stack_str, &write_string,

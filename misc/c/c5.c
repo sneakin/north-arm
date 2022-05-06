@@ -491,6 +491,7 @@ DEFOP2(free_ram, "free-ram", &doivar) {
   (*sp) -= 1;
   (*sp)->i = (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 #else
+  *sp -= 1;
   (*sp)->i = -1;
 #endif
   return next_op(eip);
