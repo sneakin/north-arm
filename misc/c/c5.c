@@ -497,7 +497,16 @@ DEFOP2(free_ram, "free-ram", &doivar) {
   return next_op(eip);
 }
 
-DEFOP(move, &free_ram) {
+DEFOP2(ram_used, "ram-used", &free_ram) {
+  int x;
+  static void *init_brk = NULL;
+  if(init_brk == NULL) init_brk = &x;
+  *sp -= 1;
+  (*sp)->ui = init_brk - (void *)&x;
+  return next_op(eip);
+}
+
+DEFOP(move, &ram_used) {
   *sp = (*sp)->cell_ptr;
   return next_op(eip);
 }

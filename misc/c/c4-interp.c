@@ -280,14 +280,19 @@ DEFCOL2(mem_used, "mem-used", &load) {
   &swap, &return0
 };
 
-const FLASH char mem_info_ram_str[] = "RAM:\t";
+const FLASH char mem_info_ram_str[] = "Free RAM:\t";
+const FLASH char mem_info_rstack_str[] = "Rstack:\t";
 const FLASH char mem_info_stack_str[] = "Stack:\t";
 
 DEFCOL2(mem_info, "mem-info", &mem_used) {
+#ifdef AVR
   &literal, (WordPtr)mem_info_ram_str, &write_string,
   &free_ram, &write_uint, &literal, (WordPtr)crnl_str, &write_string,
+#endif
   &literal, (WordPtr)mem_info_stack_str, &write_string,
   &mem_used, &write_uint, &literal, (WordPtr)crnl_str, &write_string,
+  &literal, (WordPtr)mem_info_rstack_str, &write_string,
+  &ram_used, &write_uint, &literal, (WordPtr)crnl_str, &write_string,
   &return0  
 };
 

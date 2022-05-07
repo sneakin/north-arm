@@ -515,12 +515,23 @@ State _free_ram(Cell **sp, Word ***eip) {
 
 Word free_ram = { "free-ram", _doop, _free_ram, &doivar };
 
+State _ram_used(Cell **sp, Word ***eip) {
+  int x;
+  static void *init_brk = NULL;
+  if(init_brk == NULL) init_brk = &x;
+  *sp -= 1;
+  (*sp)->ui = init_brk - (void *)&x;
+  return GO;
+}
+
+Word ram_used = { "ram-used", _doop, _ram_used, &free_ram };
+
 State _move(Cell **sp, Word ***eip) {
   *sp = (*sp)->cell_ptr;
   return GO;
 }
 
-Word move = { "move", _doop, _move, &free_ram };
+Word move = { "move", _doop, _move, &ram_used };
 
 extern Word *last_word;
 
