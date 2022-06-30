@@ -86,21 +86,42 @@ Cond 1 1 1 0 CP Opc L CRn Rd CP# CP 1 CRm " Coprocessor Register Transfer"
 * BL Branch with Link R14 := R15, R15 := address 4.4
 * BX Branch and Exchange R15 := Rn, T bit := Rn[0] 4.3
 CDP Coprocesor Data Processing, Coprocessor-specific 4.14
+CPSID disable interrupts
+CPSIE enable interrupts
 LDC Load coprocessor from memory Coprocessor load 4.15
 * LDM Load multiple registers Stack manipulation, Pop 4.11
 * LDR Load register from memory Rd := [address] 4.9, 4.10
 MCR Move CPU register to coprocessor register cRn := rRn {<op>cRm} 4.16
+MIA
+MIAPH
+MIAxy
 * MLA Multiply Accumulate Rd := [Rm * Rs] + Rn 4.7, 4.8
+MRA
 MRC Move from coprocessor register to CPU register Rn := cRn {<op>cRm} 4.16
+MRRC
 MRS Move PSR status/flags to register Rn := PSR 4.6
 MSR Move register to PSR status/flags PSR := Rm 4.6
 * MUL Multiply Rd := Rm * Rs 4.7, 4.8
 x OR op2 AND NOT Rn 4.5
+PLD
+QADD
+QDADD
+QSUB
+QDSUB
+SMLAL
+SMLALxy
+SMLAWy
+SMLAxy
+SMULL
+SMULxy
 STC Store coprocessor register to memory address := CRn 4.15
+STC2
 * STM Store Multiple Stack manipulation, Push 4.11
 * STR Store register to memory <address> := Rd 4.9, 4.10
 * SWI Software Interrupt OS call 4.13
 SWP Swap register with memory Rd := [Rn], [Rn] := Rm 4.12
+UMLAL
+UMULL
 )
 
 ( Cond 1 1 1 1 Ignored " Software Interrupt" )

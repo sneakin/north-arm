@@ -291,6 +291,23 @@ alias> sl r10
   13 12 bsl logior
 ;
 
+( 1 0 1 1 0 1 1 0 0 1 1 im [0] A I F Enable interrupts )
+: cpsie
+  0xB660
+;
+
+( Disable interrupts. )
+: cpsid
+  cpsie 4 bit-set
+;
+
+( Sets the CPS asynchronous flag. )
+: cps.a 2 bit-set ;
+( Sets the IRQ interrupt flag. )
+: cps.i 1 bit-set ;
+( Sets the FIQ interrupt flag. )
+: cps.f 0 bit-set ;
+
 ( 1 1 1 0 0 Offset:11 Unconditional branch )
 : branch ( offset )
   1 bsr 0x7FF logand
@@ -321,8 +338,7 @@ alias> sl r10
   0 bkpt/1
 ;
 
-( Change processor endian mode. )
-( 1 0 1 1 0 1 1 0 0 1 0 1 E 0 0 0 )
+( 1 0 1 1 0 1 1 0 0 1 0 1 E 0 0 0 Change processor endian mode. )
 : setend
   1 logand 3 bsl
   0xB650 logior

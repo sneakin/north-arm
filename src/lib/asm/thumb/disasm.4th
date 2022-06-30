@@ -203,11 +203,23 @@ here const> DISASM-HI-REGS
   int32 1
 ;
 
-: disasm-stack-setend
-  dup 0xFFF7 logand 0xB650 equals? IF
-    disasm-setend
+: disasm-cps
+  1 swap
+  dup 0 bit-set? IF literal cps.f rot 1 int-add swap THEN
+  dup 1 bit-set? IF literal cps.i rot 1 int-add swap THEN
+  dup 2 bit-set? IF literal cps.a rot 1 int-add swap THEN
+  dup 4 bit-set? IF literal cpsid ELSE literal cpsie THEN
+  rot swap drop
+;
+
+: disasm-cpu-flag-op
+  dup 0xFFE0 logand 0xB660 equals?
+  IF disasm-cps
   ELSE
-    disasm-stack
+    dup 0xFFF7 logand 0xB650 equals?
+    IF disasm-setend
+    ELSE disasm-stack
+    THEN
   THEN
 ;
 
@@ -274,7 +286,7 @@ here const> DISASM-HI-REGS
     0x8 WHEN disasm-ldrh-off ;;
     0x9 WHEN disasm-ldst-stack ;;
     0xA WHEN disasm-addr-pcsp ;;
-    0xB WHEN disasm-stack-setend ;;
+    0xB WHEN disasm-cpu-flag-op ;;
     ( 2x11?? )
     0xC WHEN disasm-ldm ;;
     0xD WHEN disasm-jumper ;;
