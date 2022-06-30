@@ -423,10 +423,10 @@ here const> DISASM-HI-REGS
   dup 0x0010FF10 logand 0x10EE10 equals? IF disasm-mrc proper-exit THEN
   ( v1 branch )
   dup 0x8000F800 logand 0x8000F000 equals? IF disasm-branch-link2 proper-exit THEN
-  s" Unknown 32 bit op: " error-string/2 error-hex-uint enl
+  drop 0
 ;
 
-def two-byte-op?
+def two-shorts-op?
   arg0 0xF000 logand 0xF000 equals? IF true return1 THEN
   arg0 0xF800 logand 0xE800 equals? return1
 end
@@ -435,12 +435,15 @@ def disasm/3 ( ptr num-bytes size ++ ptr size )
   arg1 2 int< IF here arg0 exit-frame THEN
   arg1 2 - set-arg1
   literal ,ins
-  ( arg2 arg1 2 - peek-off .h space )
   arg2 arg1 peek-off-short ,h space
   arg2 arg1 2 - peek-off-short ,h space
-  two-byte-op? IF
-    arg1 2 - set-arg1
+  two-shorts-op? IF
     swap 16 bsl logior ,h space disasm-op2
+    dup IF
+      arg1 2 - set-arg1
+    ELSE
+      drop arg2 arg1 peek-off-short disasm-op1
+    THEN
   ELSE drop disasm-op1
   THEN nl
   arg0 + 1 + set-arg0
@@ -453,7 +456,7 @@ end
 
 def disasm-word
   ( todo detect if word is aarch32 or thumb )
-  ( todo drop the length argument )
+  ( todo drop the length arg, or get from a sized sequence )
   arg1 dict-entry-code @ cs + 1 - arg0 disasm
   exit-frame
 end
