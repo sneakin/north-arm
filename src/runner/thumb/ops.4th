@@ -83,7 +83,7 @@ BUILDER-TARGET tmp" thumb2" drop contains? [IF]
 ( Emits the assembly to jump to an op. )
 : emit-op-jump
   dict-entry-code uint32@ dhere to-out-addr -
-  cell-size - emit-branch
+  1 + emit-branch
 ;
 
 ( tbd to push LR before calls or in prologue. )
@@ -92,7 +92,7 @@ BUILDER-TARGET tmp" thumb2" drop contains? [IF]
 ( fixme does it fail on ops that use R1 to access the entry? )
 : emit-op-call
   dict-entry-code uint32@ dhere to-out-addr -
-  cell-size - branch-link ,ins
+  1 + branch-link ,ins
 ;
 
 ( Core execution: )
@@ -100,6 +100,8 @@ BUILDER-TARGET tmp" thumb2" drop contains? [IF]
 defop exec-r1-abs
   ( load and jump to the pointed to word's code field, leaving word in r0 )
   0 dict-entry-code r1 r2 ldr-offset ,ins
+  ( skip the length and offset for thumb mode )
+  cell-size 1 + r2 add# ,ins
   ( dict-entries are offset from the .text segment. )
   ( add the base address )
   cs-reg r2 r2 add ,ins

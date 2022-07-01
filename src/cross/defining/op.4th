@@ -1,15 +1,21 @@
 ( Op definitions: )
 
+( todo lost the ability to dave aarch32 ops w/ the size changes )
 : does-thumb-code
   4 align-data
-  dhere to-out-addr 1 + swap dict-entry-code uint32!
+  dhere to-out-addr swap dict-entry-code uint32!
 ;
 
 : defop
   create> does-thumb-code
+  0 ,uint32
 ;
 
 : endop
+  ( calculate the sequence's size )
+  dhere to-out-addr out-dict dict-entry-code uint32@ cell-size + -
+  out-dict dict-entry-code uint32@ from-out-addr uint32!
+  ( pad the sequence )
   0 ,uint16
   4 align-data
 ;

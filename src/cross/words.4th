@@ -1,4 +1,4 @@
-( Output word access: )
+( Bash output word functions )
 
 " op-" const> -op-prefix
 

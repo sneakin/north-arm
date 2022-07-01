@@ -457,7 +457,7 @@ end
 def disasm-word
   ( todo detect if word is aarch32 or thumb )
   ( todo drop the length arg, or get from a sized sequence )
-  arg1 dict-entry-code @ cs + 1 - arg0 disasm
+  arg0 dict-entry-code @ cs + dup @ swap cell-size + swap disasm
   exit-frame
 end
 

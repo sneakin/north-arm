@@ -80,7 +80,7 @@ endop
 ( Callbacks: )
 
 : emit-exec-pc ( cell-offset -- )
-  out' exec-r1-abs dict-entry-code uint32@ r2 emit-load-int32
+  out' exec-r1-abs dict-entry-code uint32@ cell-size + 1 + r2 emit-load-int32
   cs-reg r2 r2 add ,ins
   cell-size mult r1 ldr-pc ,ins
   r2 bx ,ins
