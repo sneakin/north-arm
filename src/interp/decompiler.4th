@@ -24,13 +24,14 @@ def decompile-colon-data
   arg0 peek int32 0 equals? IF return THEN
   arg0 peek cs +
   dup dict-contains? UNLESS return THEN
-  dup write-dict-entry-name space
   dup literalizes? IF
     arg0 op-size + dup set-arg0 peek
-    swap CASE
-      ' cstring WHEN cs + write-quoted-string space ;;
-      ' int32 WHEN write-int space ;;
+    swap dup CASE
+      ' cstring WHEN drop cs + write-quoted-string space ;;
+      ' string WHEN drop write-quoted-string space ;;
+      ' int32 WHEN drop write-int space ;;
       ' literal WHEN
+        write-dict-entry-name space
         dup dict dict-contains?/2
         IF write-dict-entry-name
 	ELSE cs + dup dict dict-contains?/2
@@ -38,9 +39,9 @@ def decompile-colon-data
 	     ELSE write-hex-uint
 	     THEN
 	THEN space ;;
-      drop write-hex-uint space
+      drop write-dict-entry-name space write-hex-uint space
     ESAC
-  ELSE drop
+  ELSE write-dict-entry-name space
   THEN
   arg0 op-size + set-arg0
   repeat-frame
@@ -86,7 +87,7 @@ end
 def decompile-op
   s" defop " write-string/2 arg0 write-dict-entry-name nl space space
   arg0 dict-entry-code peek cs +
-  dup peek cmemdump ( todo needs ,uint32 after op codes. )
+  dup peek cell-size + cmemdump ( todo needs ,uint32 after op codes. )
   s" endop" write-string/2
   arg0 dict-entry-data peek dup IF
     s" data[ " write-string/2

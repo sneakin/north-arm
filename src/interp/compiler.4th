@@ -95,13 +95,14 @@ def compile-token
 end
 
 def literalizes?
-  arg0 pointer literal equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer int32 equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer uint32 equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer offset32 equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer pointer equals? IF int32 1 set-arg0 return THEN
-  arg0 pointer cstring equals? IF int32 1 set-arg0 return THEN
-  int32 0 set-arg0
+  arg0 pointer literal equals? IF true set-arg0 return THEN
+  arg0 pointer int32 equals? IF true set-arg0 return THEN
+  arg0 pointer uint32 equals? IF true set-arg0 return THEN
+  arg0 pointer offset32 equals? IF true set-arg0 return THEN
+  arg0 pointer pointer equals? IF true set-arg0 return THEN
+  arg0 pointer cstring equals? IF true set-arg0 return THEN
+  arg0 pointer string equals? IF true set-arg0 return THEN
+  false set-arg0
 end
 
 ( punt literalizes? could search a list of words registered, or flagged on a word, whenever next-word or a literalizing word is used. )

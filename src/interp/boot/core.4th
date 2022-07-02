@@ -211,17 +211,34 @@ def s"
   swap return2
 end
 
-defcol [s"]
-  literal literal swap
-  POSTPONE s" ( ra ptr len )
-  swap rot ( ptr len ra )
-  literal int32 rot swap
-endcol immediate-as s"
+( alias> string literal )
 
-def ["]
-  literal literal
-  POSTPONE d" return2
-end immediate-as "
+' string [IF] ( todo remove the condition once rebuilt )
+  defcol [s"]
+    literal string swap
+    POSTPONE s" ( ra ptr len )
+    swap rot ( ptr len ra )
+    literal int32 rot swap
+  endcol immediate-as s"
+
+  def ["]
+    literal string
+    POSTPONE d" return2
+  end immediate-as "
+
+[ELSE]
+  defcol [s"]
+    literal literal swap
+    POSTPONE s" ( ra ptr len )
+    swap rot ( ptr len ra )
+    literal int32 rot swap
+  endcol immediate-as s"
+
+  def ["]
+    literal literal
+    POSTPONE d" return2
+  end immediate-as "
+[THEN]
 
 : ."
   [s"] literal write-string/2
