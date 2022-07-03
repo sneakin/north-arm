@@ -106,6 +106,10 @@ def decompile-unknown-entry
   nl
 end
 
+def is-op? ( word -- yes? )
+  arg0 dict-entry-code-word arg0 equals? set-arg0
+end
+
 def decompile ( entry )
   arg0 IF
     arg0 dict-entry-code-word CASE
@@ -113,7 +117,7 @@ def decompile ( entry )
       ' do-proper WHEN arg0 decompile-proper ;;
       ' do-const WHEN arg0 s" const>" decompile-var ;;
       ' do-var WHEN arg0 s" var>" decompile-var ;;
-        arg0 dict-entry-code-word arg0 equals?
+        arg0 is-op?
 	IF arg0 decompile-op
 	ELSE arg0 decompile-unknown-entry
 	THEN

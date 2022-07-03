@@ -435,17 +435,17 @@ def disasm/3 ( ptr num-bytes size ++ ptr size )
   arg1 2 int< IF here arg0 exit-frame THEN
   arg1 2 - set-arg1
   literal ,ins
-  arg2 arg1 peek-off-short ,h space
-  arg2 arg1 2 - peek-off-short ,h space
+  arg2 arg1 peek-off-short
+  arg2 arg1 2 - peek-off-short
   two-shorts-op? IF
-    swap 16 bsl logior ,h space disasm-op2
+    swap 16 bsl logior disasm-op2
     dup IF
       arg1 2 - set-arg1
     ELSE
       drop arg2 arg1 peek-off-short disasm-op1
     THEN
   ELSE drop disasm-op1
-  THEN nl
+  THEN
   arg0 + 1 + set-arg0
   repeat-frame
 end
@@ -454,11 +454,19 @@ def disasm ( ptr num-bytes ++ ptr size )
   arg1 arg0 0 disasm/3 exit-frame
 end
 
+def is-thumb-op? ( word -- yes? )
+  arg0 is-op? IF
+    arg0 dict-entry-code @ 1 logand IF true set-arg0 return0 THEN
+  THEN
+  false set-arg0
+end
+
 def disasm-word
   ( todo detect if word is aarch32 or thumb )
-  ( todo drop the length arg, or get from a sized sequence )
-  arg0 dict-entry-code @ cs + 0xFFFFFFFE logand dup @ swap cell-size + swap disasm
-  exit-frame
+  arg0 is-thumb-op? IF
+    arg0 dict-entry-code @ cs + 0xFFFFFFFE logand dup @ swap cell-size + swap disasm
+  ELSE 0
+  THEN exit-frame
 end
 
 def write-disasm ( ptr num-cells -- )
@@ -481,4 +489,10 @@ def write-disasm ( ptr num-cells -- )
   arg1 cell-size + set-arg1
   arg0 1 - set-arg0
   repeat-frame
+end
+
+def write-word-disasm ( word -- )
+  arg0 disasm-word
+  dup IF write-disasm ELSE s" Not a thumb op." write-line/2 THEN
+  1 return0-n
 end
