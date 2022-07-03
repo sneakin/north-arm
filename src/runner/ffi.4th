@@ -30,7 +30,7 @@ def ffi-callback-with ( word code-word -- ...assembly ptr )
   ( copy code-word's code into a new buffer )
   ( todo get the length from the sequence )
   3 11 + cell-size * stack-allot-zero set-local0
-  arg0 dict-entry-code peek cs + ( 1 - )
+  arg0 dict-entry-code peek cs + 0xFFFFFFFE logand
   local0 cell-size 11 * copy-byte-string/3 3 dropn
   ( FFI callbacks expect dict, cs, and word to call after the copied code. )
   arg1 local0 13 seq-poke

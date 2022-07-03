@@ -76,7 +76,7 @@ def builder-run ( entry-fn fn-length files-cons ++ )
   code-origin
   ( entry point: )
   " init" cross-lookup UNLESS " no init found" error-line not-found return THEN
-  dict-entry-code uint32@ cell-size + 1 +
+  dict-entry-code uint32@ cell-size +
   ( finish the ELF file )
   write-elf32-ending
   " *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN

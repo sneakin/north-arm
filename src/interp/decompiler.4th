@@ -86,7 +86,7 @@ end
 
 def decompile-op
   s" defop " write-string/2 arg0 write-dict-entry-name nl space space
-  arg0 dict-entry-code peek cs +
+  arg0 dict-entry-code peek cs + 0xFFFFFFFE logand
   dup peek cell-size + cmemdump ( todo needs ,uint32 after op codes. )
   s" endop" write-string/2
   arg0 dict-entry-data peek dup IF
