@@ -7,7 +7,7 @@ def array-type-element-size
   arg0 array-type -> element-type peek type -> byte-size peek set-arg0
 end
 
-( Creates a nuw type for an array of the type argument. )
+( Creates a new type for an array of the type argument. )
 def make-array-type ( element-type number-of-elements )
   array-type make-instance
   " array" over struct -> name poke

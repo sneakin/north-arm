@@ -9,6 +9,23 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 ** Get out of the Turing Tar Pit.
 * Tasks
+** July
+*** self contained binaries
+**** boot/core and friends
+***** immediates
+***** better dictionary separation by switching modes & dictionaries
+**** clock, raycaster
+**** eliminate aliases
+**** standalone builder w/ files on command line
+*** actual compilation to machine code
+**** DONE sized sequences for code fields
+**** copy code field
+*** Dictionaries
+**** Remove dedicated register
+**** Association list
+**** Ops with doop code, assembly data fields?
+**** Reorder ~dict-map~ arguments to make ~fn~ last.
+*** error handler, catch and throw
 ** now
 *** struct fields don't resolve right w/ b and b1 fields.
 *** swap tty-cursor-to's arguments to row, column
@@ -16,7 +33,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 *** DONE cpio file format as arguments
 *** float tests
 *** uint64
-**** TODO byte order differs from stack / argument and poked wewory order
+**** TODO byte order differs from stack / argument and poked memory order
      Little endian puts LSB at the lower address. Stack ordering has LSB at the higher address.
      But byte order in code needs to be consistent on big and little endian systems, which may need 64 bit support in the integer reader instead of faking it.
 *** core.4th needs a split to allow inclusion in binary
@@ -40,15 +57,19 @@ Would only work when the token does not span reads.
 *** Compiling to assembly
 *** egl & TTY drawing
 *** bare metal
+**** Pi Zero / 2
+**** Pi 3
+**** M0 / micro:bit
 *** Ports
 **** x86
 **** bacaw
 *** quine
 The ability to dump the program to source code into a loadable and buildable format.
 **** Disasm
+***** DONE Sized sequences for code fields
 **** immediates
 **** hexadecimal prefixes
-**** cstring needs to not appear before string literals
+**** DONE cstring needs to not appear before string literals
 *** [#A] builder binary
 **** Needs immediate dictionary writing and overrides.
 **** Command line arguments
@@ -432,6 +453,8 @@ Inline exec
 **** overflows integers and fraction needs zero padding
 **** exponent: NNeXX
 *** Floating point constants: pi, e, +/- infinity, nan, +/- 0
+**** DONE 32 bit
+**** 64 bit
 ** Math
 *** log2, logn
 **** DONE integers
@@ -441,9 +464,11 @@ Inline exec
 **** integers
 **** floats
 **** optimize
+     exp has a trick reusing results
 *** trigonometry: sin, cos, tan, asin, acos, atan
 **** circular
 **** hyperbolic
+**** float64
 *** big integers
 **** arithmetic
 **** logic
@@ -509,7 +534,7 @@ Dictionary specified at compile time by specifying a type.
 func> tokens+
 func: tokens+
 *** Possible
-Difference in the itherpretation of what gets read and returned.
+Difference in the interpretation of what gets read and returned.
 
 **** Compiling state with lookup and immediates.
 func[ tokens... ]
