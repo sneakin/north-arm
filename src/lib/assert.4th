@@ -65,3 +65,14 @@ end
 : assert-contains-not
   2dup contains? not assertion-message
 ;
+
+: assert-data ( data-ptr ...cells count -- )
+  dup 0 equals?
+  IF 2 dropn
+  ELSE
+    1 int-sub
+    dup 3 int-add overn over seq-peek ,h
+    3 overn assert-equals
+    swap drop loop
+  THEN
+;

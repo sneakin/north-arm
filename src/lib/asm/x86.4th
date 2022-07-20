@@ -7,9 +7,19 @@ x86 instructions follow the form:
 
 16 var> x86-bits
 
-: 16bit? x86-bits peek 16 equals? ;
-: 32bit? x86-bits peek 32 equals? ;
-: 64bit? x86-bits peek 64 equals? ;
+NORTH-STAGE 0 equals? [IF]
+  : 16bit? x86-bits 16 equals? ;
+  : 32bit? x86-bits 32 equals? ;
+  : 64bit? x86-bits 64 equals? ;
+
+  : x86-bits! set-x86-bits ;
+[ELSE]
+  : 16bit? x86-bits peek 16 equals? ;
+  : 32bit? x86-bits peek 32 equals? ;
+  : 64bit? x86-bits peek 64 equals? ;
+
+  : x86-bits! x86-bits poke ;
+[THEN]
 
 ( Prefixes: )
 
@@ -56,30 +66,34 @@ REX.B 0 1-bit extension of the ModRM r/m field1, SIB base field1, or opcode reg 
 6 const> modrm-immed
 7 const> [bx]
 
-( ModRM registers: ModRM.reg1; ModRM.r/m [mod = 11b]; ModRM.r/m [mod ≠ 11b] )
-0 const> ax ( rAX, MMX0, XMM0, YMM0; rAX, MMX0, XMM0, YMM0; [rAX] )
-1 const> cx ( rCX, MMX1, XMM1, YMM1; rCX, MMX1, XMM1, YMM1; [rCX] )
-2 const> dx ( rDX, MMX2, XMM2, YMM2; rDX, MMX2, XMM2, YMM2; [rDX] )
-3 const> bx ( rBX, MMX3, XMM3, YMM3; rBX, MMX3, XMM3, YMM3; [rBX] )
-4 const> ah ( AH, rSP, MMX4, XMM4, YMM4; AH, rSP, MMX4, XMM4, YMM4; SIB )
-5 const> ch ( CH, rBP, MMX5, XMM5, YMM5; CH, rBP, MMX5, XMM5, YMM5; [rBP] )
-6 const> dh ( DH, rSI, MMX6, XMM6, YMM6; DH, rSI, MMX6, XMM6, YMM6; [rSI] )
-7 const> bh ( BH, rDI, MMX7, XMM7, YMM7; BH, rDI, MMX7, XMM7, YMM7; [rD] )
+( ModRM registers: ModRM.reg1; ModRM.r/m [mod = 11b]; ModRM.r/m [mod ≠ 11b] ) 
+( rAX, MMX0, XMM0, YMM0; rAX, MMX0, XMM0, YMM0; [rAX] )
+( rCX, MMX1, XMM1, YMM1; rCX, MMX1, XMM1, YMM1; [rCX] )
+( rDX, MMX2, XMM2, YMM2; rDX, MMX2, XMM2, YMM2; [rDX] )
+( rBX, MMX3, XMM3, YMM3; rBX, MMX3, XMM3, YMM3; [rBX] )
+( AH, rSP, MMX4, XMM4, YMM4; AH, rSP, MMX4, XMM4, YMM4; SIB )
+( CH, rBP, MMX5, XMM5, YMM5; CH, rBP, MMX5, XMM5, YMM5; [rBP] )
+( DH, rSI, MMX6, XMM6, YMM6; DH, rSI, MMX6, XMM6, YMM6; [rSI] )
+( BH, rDI, MMX7, XMM7, YMM7; BH, rDI, MMX7, XMM7, YMM7; [rD] )
 
 ( Register constants, not actual instruction bits. )
 0x00 const> al
 0x01 const> cl
 0x02 const> dl
 0x03 const> bl
-0x04 const> sp
-0x05 const> bp
-0x06 const> si
-0x07 const> di
+0x04 const> ah
+0x05 const> ch
+0x06 const> dh
+0x07 const> bh
 
 0x10 const> ax
 0x11 const> cx
 0x12 const> dx
 0x13 const> bx
+0x14 const> sp
+0x15 const> bp
+0x16 const> si
+0x17 const> di
 
 0x20 const> eax
 0x21 const> ecx
@@ -108,11 +122,11 @@ REX.B 0 1-bit extension of the ModRM r/m field1, SIB base field1, or opcode reg 
 0x3F const> r15
 
 def reg8?
-  arg0 di al in-range? return1
+  arg0 bh al in-range? return1
 end
 
 def reg16?
-  arg0 bx ax in-range? return1
+  arg0 di ax in-range? return1
 end
 
 def reg32?
@@ -173,13 +187,9 @@ end
   and
 ;
 
-: modrm-dest-reg
-  modrm-sib? IF modrm-mem ELSE modrm-reg THEN
-;
-
 ( Constructors: )
 
-: modind ( regB regA )
+: modrm ( regB regA )
   modrm-mode-ind modrm/3
 ;
 
@@ -187,20 +197,28 @@ end
   modrm-mode-reg modrm/3
 ;
 
-: modoff ( offset regB regA || offset sib sp regA )
+: modrm+ ( offset regB regA || offset sib sp regA )
   over 7 logand modrm-sib equals? IF 4 overn ELSE 3 overn THEN
   0xFF uint<= IF modrm-mode-byte ELSE modrm-mode-long THEN modrm/3
 ;
 
-: modsib ( sib RegA )
-  modrm-sib swap modind
+: modrmx ( sib RegA )
+  modrm-sib swap modrm
 ;
 
-: modoff-sib ( sib reg )
-  modrm-sib swap modoff
+: modrm+x ( sib reg )
+  modrm-sib swap modrm+
 ;
 
 ( SIB: scale[2], index[3], base[3]; effective_address = scale * index + base + offset )
+( Scaling factors: )
+0 const> x1
+1 const> x2
+2 const> x4
+3 const> x8
+
+4 const> sib-none
+
 : sib ( base index scale -- pseudo-sib )
   0xFF logand 16 bsl
   swap 0xFF logand 8 bsl logior
@@ -218,13 +236,10 @@ end
   swap drop
 ;
 
-( Scaling factors: )
-0 const> x1
-1 const> x2
-2 const> x4
-3 const> x8
-
-4 const> sib-none
+( fixme using this or modrm-mem is wrong especially with a sib )
+: modrm-dest-reg
+  modrm-sib? IF over sib-base ELSE dup modrm-mem THEN
+;
 
 ( Syntax in Forth:
 Intel assembler line
@@ -279,11 +294,7 @@ Emitted bytes depend on bit size of operands or explicitly.
     reg32? IF oper-size ,uint8 THEN
     ( reg64? IF oper-size ,uint8 THEN ) ( todo error )
   ELSE
-    64bit? IF
-      reg16? IF oper-size ,uint8 THEN
-    ELSE
-      reg16? IF oper-size ,uint8 THEN
-    THEN
+    reg16? IF oper-size ,uint8 THEN
   THEN drop
 ;
 
@@ -306,6 +317,7 @@ Emitted bytes depend on bit size of operands or explicitly.
   2 overn modrm-reg reg64-extended? swap drop IF rex.r THEN
   2 overn modrm-sib? IF
     drop
+    3 overn sib-base reg64? swap drop IF rex.w THEN
     ( set rex.x if sib index is 64 bit extended )
     3 overn sib-index reg64-extended? swap drop IF rex.x THEN
     ( set rex.b if sib base is 64 bit extended )
@@ -358,6 +370,10 @@ Emitted bytes depend on bit size of operands or explicitly.
   THEN
 ;
 
+: emit-prefixes ( modrm register -- modrm )
+  emit-op-size emit-rex-modrm
+;
+
 ( Instructions: )
 
 ( NOP 90 Performs no operation.
@@ -366,7 +382,7 @@ NOP reg/mem32 | 0F 1F /0 | Performs no operation on a 32-bit register or memory 
 NOP reg/mem64 | 0F 1F /0 | Performs no operation on a 64-bit register or memory operand. )
 : nop
   0 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x1F ,uint8
   emit-modrm
 ;
@@ -388,10 +404,7 @@ MOV reg64, imm64	| B8 +rq iq | Move an 64-bit immediate value into a 64-bit regi
     0xB0 + ,uint8 ,uint8
   ELSE
     dup emit-op-size
-    reg64? IF
-      dup emit-rex-b
-      ( todo error on extended register, or bump to a modr/m mov )
-    THEN
+    reg64? IF dup emit-rex-b THEN
     dup 0x7 logand 0xB8 + ,uint8
     emit-register-data
   THEN
@@ -404,16 +417,11 @@ MOV reg/mem16, imm16	| C7 /0 iw | Move a 16-bit immediate value to a 16-bit regi
 MOV reg/mem32, imm32	| C7 /0 id | Move a 32-bit immediate value to a 32-bit register or memory operand.
 MOV reg/mem64, imm32	| C7 /0 id | Move a 32-bit signed immediate value to a 64-bit register or memory operand. )
 : movm#
-  dup modrm-mem emit-op-size emit-rex-modrm
+  dup modrm-mem emit-prefixes
   dup modrm-mem reg8? IF
-    drop
-    0xC6 ,uint8
-    emit-modrm
-    ,uint8
+    drop 0xC6 ,uint8 emit-modrm ,uint8
   ELSE
-    drop
-    0xC7 ,uint8
-    emit-modrm
+    drop 0xC7 ,uint8 emit-modrm
     16bit? IF ,uint16 ELSE ,uint32 THEN
   THEN
 ;
@@ -423,7 +431,7 @@ MOV reg16, reg/mem16		| 8B /r | Move the contents of a 16-bit register or memory
 MOV reg32, reg/mem32		| 8B /r | Move the contents of a 32-bit register or memory operand to a 32-bit destination register.
 MOV reg64, reg/mem64		| 8B /r | Move the contents of a 64-bit register or memory operand to a 64-bit destination register. )
 : movr ( ...modrm -- )
-  dup modrm-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   dup modrm-reg reg8? IF 0x8A ELSE 0x8B THEN ,uint8 drop
   emit-modrm  
 ;
@@ -446,8 +454,8 @@ MOV reg/mem32, reg32		| 89 /r | Move the contents of a 32-bit register to a 32-b
 MOV reg/mem64, reg64		| 89 /r | Move the contents of a 64-bit register to a 64-bit destination register or memory operand.
  )
 : movm ( modrm )
-  dup modrm-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x88 ELSE 0x89 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x88 ELSE 0x89 THEN ,uint8 drop
   emit-modrm  
 ;
 
@@ -455,7 +463,7 @@ MOV reg/mem64, reg64		| 89 /r | Move the contents of a 64-bit register to a 64-b
 MOVBE reg32, mem32	| 0F 38 F0 /r | Load the low doubleword of a general-purpose register from a 32-bit memory location while swapping the bytes.
 MOVBE reg64, mem64	| 0F 38 F0 /r | Load a 64-bit register from a 64-bit memory location while swapping the bytes. )
 : movber
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x0F ,uint8 0x38 ,uint8 0xF0 ,uint8
   emit-modrm
 ;
@@ -464,7 +472,7 @@ MOVBE reg64, mem64	| 0F 38 F0 /r | Load a 64-bit register from a 64-bit memory l
 MOVBE mem32, reg32	| 0F 38 F1 /r | Store the low doubleword of a general-purpose register to a 32-bit memory location while swapping the bytes.
 MOVBE mem64, reg64	| 0F 38 F1 /r | Store the contents of a 64-bit general-purpose register to a 64-bit memory location while swapping the bytes. )
 : movbem
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x0F ,uint8 0x38 ,uint8 0xF1 ,uint8
   emit-modrm
 ;
@@ -475,14 +483,14 @@ MOVSX reg64, reg/mem8	| 0F BE /r | Move the contents of an 8-bit register or mem
 MOVSX reg32, reg/mem16	| 0F BF /r | Move the contents of an 16-bit register or memory location to a 32-bit register with sign extension.
 MOVSX reg64, reg/mem16	| 0F BF /r | Move the contents of an 16-bit register or memory location to a 64-bit register with sign extension. )
 : movsx
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x0F ,uint8 0xBE ,uint8
   emit-modrm
 ;
 
 ( MOVSXD reg64, reg/mem32	| 63 /r | Move the contents of a 32-bit register or memory operand to a 64-bit register with sign extension )
 : movsxd
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x63 ,uint8
   emit-modrm
 ;
@@ -499,7 +507,7 @@ MOVZX reg64, reg/mem16	| 0F B7 /r | Move the contents of a 16-bit register or me
 LEA reg32, mem		| 8D /r | Store effective address in a 32-bit register.
 LEA reg64, mem		| 8D /r | Store effective address in a 64-bit register. )
 : lea ( modrm -- )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x8D ,uint8
   emit-modrm
 ;
@@ -571,7 +579,7 @@ POP reg/mem32	| 8F /0 | Pop the top of the stack into a 32-bit register or memor
 POP reg/mem64	| 8F /0 | Pop the top of the stack into a 64-bit register or memory location. )
 : popm ( modrm -- )
   0 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x8F ,uint8
   emit-modrm
 ;
@@ -608,7 +616,7 @@ PUSH reg/mem32		| FF /6 |Push the contents of a 32-bit register or memory operan
 PUSH reg/mem64		| FF /6 | Push the contents of a 64-bit register or memory operand onto the stack. )
 : pushm ( modrm )
   6 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0xFF ,uint8
   emit-modrm
 ;
@@ -618,22 +626,22 @@ PUSH reg/mem64		| FF /6 | Push the contents of a 64-bit register or memory opera
 
 : emit-rol1
   modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xD0 ELSE 0xD1 THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xD0 ELSE 0xD1 THEN ,uint8 drop
   emit-modrm
 ;
 
 : emit-rolcl
   modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xD2 ELSE 0xD3 THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xD2 ELSE 0xD3 THEN ,uint8 drop
   emit-modrm
 ;
 
 : emit-rol#
   modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xC0 ELSE 0xC1 THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xC0 ELSE 0xC1 THEN ,uint8 drop
   emit-modrm
   ,uint8
 ;
@@ -724,8 +732,8 @@ NEG reg/mem32	| F7 /3 | Performs a two’s complement negation on a 32-bit regis
 NEG reg/mem64	| F7 /3 | Performs a two’s complement negation on a 64-bit register or memory operand. )
 : neg ( modrm )
   3 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -735,8 +743,8 @@ NOT reg/mem32	| F7 /2 | Complements the bits in a 32-bit register or memory oper
 NOT reg/mem64	| F7 /2 | Compliments the bits in a 64-bit register or memory operand. )
 : x86:not ( modrm )
   2 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -749,9 +757,9 @@ AND RAX, imm32		| 25 id | and the contents of RAX with a sign-extended immediate
 AND reg/mem16, imm16	| 81 /4 iw | and the contents of reg/mem16 with imm16.
 AND reg/mem32, imm32	| 81 /4 id | and the contents of reg/mem32 with imm32.
 AND reg/mem64, imm32	| 81 /4 id | and the contents of reg/mem64 with sign-extended imm32. )
-: emit-and#
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF
+: emit-80
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF
     drop
     0x80 ,uint8
     emit-modrm
@@ -766,21 +774,21 @@ AND reg/mem64, imm32	| 81 /4 id | and the contents of reg/mem64 with sign-extend
 
 : and#
   4 modrm-reg!
-  emit-and#
+  emit-80
 ;
 
 ( AND reg/mem16, imm8	| 83 /4 ib | and the contents of reg/mem16 with a sign-extended 8-bit value.
 AND reg/mem32, imm8	| 83 /4 ib | and the contents of reg/mem32 with a sign-extended 8-bit value.
 AND reg/mem64, imm8	| 83 /4 ib | and the contents of reg/mem64 with a sign-extended 8-bit value. )
-: emit-and#i8
-  dup modrm-mem emit-op-size emit-rex-modrm
+: emit-83
+  modrm-dest-reg emit-prefixes
   0x83 ,uint8
   emit-modrm
   ,uint8
 ;
 
 : and#i8
-  4 modrm-reg! emit-and#i8
+  4 modrm-reg! emit-83
 ;
 
 ( AND reg/mem8, reg8	| 20 /r | and the contents of an 8-bit register or memory location with the contents of an 8-bit register.
@@ -788,8 +796,8 @@ AND reg/mem16, reg16	| 21 /r | and the contents of a 16-bit register or memory l
 AND reg/mem32, reg32	| 21 /r | and the contents of a 32-bit register or memory location with the contents of a 32-bit register.
 AND reg/mem64, reg64	| 21 /r | and the contents of a 64-bit register or memory location with the contents of a 64-bit register. )
 : andm
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x20 ELSE 0x21 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x20 ELSE 0x21 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -798,8 +806,8 @@ AND reg16, reg/mem16	| 23 /r | and the contents of a 16-bit register with the co
 AND reg32, reg/mem32	| 23 /r | and the contents of a 32-bit register with the contents of a 32-bit memory location or register.
 AND reg64, reg/mem64	| 23 /r | and the contents of a 64-bit register with the contents of a 64-bit memory location or register. )
 : andr ( reg )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x22 ELSE 0x23 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x22 ELSE 0x23 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -813,14 +821,14 @@ OR reg/mem16, imm16	| 81 /1 iw | or the contents of a 16-bit register or memory 
 OR reg/mem32, imm32	| 81 /1 id | or the contents of a 32-bit register or memory operand and an immediate 32-bit value.
 OR reg/mem64, imm32	| 81 /1 id | or the contents of a 64-bit register or memory operand and sign-extended immediate 32-bit value. )
 : or#
-  1 modrm-reg! emit-and#
+  1 modrm-reg! emit-80
 ;
 
 ( OR reg/mem16, imm8	| 83 /1 ib | or the contents of a 16-bit register or memory operand and a sign-extended immediate 8-bit value.
 OR reg/mem32, imm8	| 83 /1 ib | or the contents of a 32-bit register or memory operand and a sign-extended immediate 8-bit value.
 OR reg/mem64, imm8	| 83 /1 ib | or the contents of a 64-bit register or memory operand and a sign-extended immediate 8-bit value. )
 : or#i8
-  1 modrm-reg! emit-and#i8
+  1 modrm-reg! emit-83
 ;
 
 ( OR reg/mem8, reg8	| 08 /r | or the contents of an 8-bit register or memory operand with the contents of an 8-bit register.
@@ -828,8 +836,8 @@ OR reg/mem16, reg16	| 09 /r | or the contents of a 16-bit register or memory ope
 OR reg/mem32, reg32	| 09 /r | or the contents of a 32-bit register or memory operand with the contents of a 32-bit register.
 OR reg/mem64, reg64	| 09 /r | or the contents of a 64-bit register or memory operand with the contents of a 64-bit register )
 : orm
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x08 ELSE 0x09 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x08 ELSE 0x09 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -838,8 +846,8 @@ OR reg16, reg/mem16	| 0B /r | or the contents of a 16-bit register with the cont
 OR reg32, reg/mem32	| 0B /r | or the contents of a 32-bit register with the contents of a 32-bit register or memory operand.
 OR reg64, reg/mem64	| 0B /r | or the contents of a 64-bit register with the contents of a 64-bit register or memory operand. )
 : orr ( reg )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x0A ELSE 0x0B THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x0A ELSE 0x0B THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -855,14 +863,14 @@ XOR reg/mem16, imm16	| 81 /6 iw | xor the contents of a 16-bit destination regis
 XOR reg/mem32, imm32	| 81 /6 id | xor the contents of a 32-bit destination register or memory operand with a 32-bit immediate value and store the result in the destination.
 XOR reg/mem64, imm32	| 81 /6 id | xor the contents of a 64-bit destination register or memory operand with a sign-extended 32-bit immediate value and store the result in the destination. )
 : xor#
-  6 modrm-reg! emit-and#
+  6 modrm-reg! emit-80
 ;
 
 ( XOR reg/mem16, imm8	| 83 /6 ib | xor the contents of a 16-bit destination register or memory operand with a sign-extended 8-bit immediate value and store the result in the destination.
 XOR reg/mem32, imm8	| 83 /6 ib | xor the contents of a 32-bit destination register or memory operand with a sign-extended 8-bit immediate value and store the result in the destination.
 XOR reg/mem64, imm8	| 83 /6 ib | xor the contents of a 64-bit destination register or memory operand with a sign-extended 8-bit immediate value and store the result in the destination. )
 : xor#i8
-  6 modrm-reg! emit-and#i8
+  6 modrm-reg! emit-83
 ;
 
 ( XOR reg/mem8, reg8	| 30 /r | xor the contents of an 8-bit destination register or memory operand with the contents of an 8-bit register and store the result in the destination.
@@ -870,8 +878,8 @@ XOR reg/mem16, reg16	| 31 /r | xor the contents of a 16-bit destination register
 XOR reg/mem32, reg32	| 31 /r | xor the contents of a 32-bit destination register or memory operand with the contents of a 32-bit register and store the result in the destination.
 XOR reg/mem64, reg64	| 31 /r | xor the contents of a 64-bit destination register or memory operand with the contents of a 64-bit register and store the result in the destination. )
 : xorm
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x30 ELSE 0x31 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x30 ELSE 0x31 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -880,8 +888,8 @@ XOR reg16, reg/mem16	| 33 /r | xor the contents of a 16-bit destination register
 XOR reg32, reg/mem32	| 33 /r | xor the contents of a 32-bit destination register with the contents of a 32-bit register or memory operand and store the results in the destination.
 XOR reg64, reg/mem64	| 33 /r | xor the contents of a 64-bit destination register with the contents of a 64-bit register or memory operand and store the results in the destination )
 : xorr
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x32 ELSE 0x33 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x32 ELSE 0x33 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -897,14 +905,14 @@ CMP reg/mem16, imm16	| 81 /7 iw | Compare a 16-bit immediate value with the cont
 CMP reg/mem32, imm32	| 81 /7 id | Compare a 32-bit immediate value with the contents of a 32-bit register or memory operand.
 CMP reg/mem64, imm32	| 81 /7 id | Compare a 32-bit signed immediate value with the contents of a 64-bit register or memory operand. )
 : cmp#
-  7 modrm-reg! emit-and#
+  7 modrm-reg! emit-80
 ;
 
 ( CMP reg/mem16, imm8	| 83 /7 ib | Compare an 8-bit signed immediate value with the contents of a 16-bit register or memory operand.
 CMP reg/mem32, imm8	| 83 /7 ib | Compare an 8-bit signed immediate value with the contents of a 32-bit register or memory operand.
 CMP reg/mem64, imm8	| 83 /7 ib | Compare an 8-bit signed immediate value with the contents of a 64-bit register or memory operand. )
 : cmp#i8
-  7 modrm-reg! emit-and#i8
+  7 modrm-reg! emit-83
 ;
 
 ( CMP reg/mem8, reg8	| 38 /r | Compare the contents of an 8-bit register or memory operand with the contents of an 8-bit register.
@@ -912,8 +920,8 @@ CMP reg/mem16, reg16	| 39 /r | Compare the contents of a 16-bit register or memo
 CMP reg/mem32, reg32	| 39 /r | Compare the contents of a 32-bit register or memory operand with the contents of a 32-bit register.
 CMP reg/mem64, reg64	| 39 /r | Compare the contents of a 64-bit register or memory operand with the contents of a 64-bit register. )
 : cmpm
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x38 ELSE 0x39 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x38 ELSE 0x39 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -922,8 +930,8 @@ CMP reg16, reg/mem16	| 3B /r | Compare the contents of a 16-bit register with th
 CMP reg32, reg/mem32	| 3B /r | Compare the contents of a 32-bit register with the contents of a 32-bit register or memory operand.
 CMP reg64, reg/mem64	| 3B /r | Compare the contents of a 64-bit register with the contents of a 64-bit register or memory operand. )
 : cmpr
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x3A ELSE 0x3B THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x3A ELSE 0x3B THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -936,19 +944,18 @@ TEST RAX, imm32		| A9 id | and a sign-extended immediate 32-bit value with the c
 TEST reg/mem16, imm16	| F7 /0 iw | and an immediate 16-bit value with the contents of a 16-bit register or memory operand and set rFLAGS to reflect the result.
 TEST reg/mem32, imm32	| F7 /0 id | and an immediate 32-bit value with the contents of a 32-bit register or memory operand and set rFLAGS to reflect the result.
 TEST reg/mem64, imm32	| F7 /0 id | and a sign-extended immediate32-bit value with the contents of a 64-bit register or memory operand and set rFLAGS to reflect the result. )
+: emit-f6
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
+  emit-modrm
+;
+
 : test#
   0 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF
-    drop
-    0xF6 ,uint8
-    emit-modrm
-    ,uint8
+  modrm-dest-reg reg8? IF
+    drop emit-f6 ,uint8
   ELSE
-    drop
-    0xF7 ,uint8
-    emit-modrm
-    16bit? IF ,uint16 ELSE ,uint32 THEN
+    drop emit-f6 16bit? IF ,uint16 ELSE ,uint32 THEN
   THEN
 ;
 
@@ -957,8 +964,8 @@ TEST reg/mem16, reg16	| 85 /r | and the contents of a 16-bit register with the c
 TEST reg/mem32, reg32	| 85 /r | and the contents of a 32-bit register with the contents of a 32-bit register or memory operand and set rFLAGS to reflect the result.
 TEST reg/mem64, reg64	| 85 /r | and the contents of a 64-bit register with the contents of a 64-bit register or memory operand and set rFLAGS to reflect the result. )
 : test
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x84 ELSE 0x85 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x84 ELSE 0x85 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1141,7 +1148,7 @@ JMP reg/mem32		| FF /4 | Near jump with the target specified reg/mem32.
 JMP reg/mem64		| FF /4 | Near jump with the target specified reg/mem64. )
 : jmpr
   4 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0xFF ,uint8
   emit-modrm
 ;
@@ -1157,7 +1164,7 @@ JMP FAR pntr16:32	| EA cp | Far jump direct, with the target specified by a far 
 JMP FAR mem16:32	| FF /5 | Far jump indirect, with the target specified by a far pointer in memory [32- and 64-bit operand size] )
 : jmp-farr
   5 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0xFF ,uint8
   emit-modrm
 ;
@@ -1178,7 +1185,7 @@ CALL reg/mem64	 | FF /2 | Near call with the target specified by reg/mem64.
 )
 : callm ( modrm )
   2 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm 0xFF ,uint8
+  modrm-dest-reg emit-prefixes 0xFF ,uint8
   emit-modrm
 ;
 
@@ -1195,7 +1202,7 @@ CALL FAR mem16:32	| FF /3 | Far call indirect, with the target specified by a fa
 )
 : callfm ( modrm )
   3 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm 0xFF ,uint8
+  modrm-dest-reg emit-prefixes 0xFF ,uint8
   emit-modrm
 ;
 
@@ -1275,14 +1282,14 @@ ADC reg/mem16, imm16	| 81 /2 iw	| Add imm16 to reg/mem16 + CF.
 ADC reg/mem32, imm32	| 81 /2 id	| Add imm32 to reg/mem32 + CF.
 ADC reg/mem64, imm32	| 81 /2 id	| Add sign-extended imm32 to reg/mem64 + CF. )
 : adc#
-  2 modrm-reg! emit-and#
+  2 modrm-reg! emit-80
 ;
 
 ( ADC reg/mem16, imm8	| 83 /2 ib	| Add sign-extended imm8 to reg/mem16 + CF.
 ADC reg/mem32, imm8	| 83 /2 ib	| Add sign-extended imm8 to reg/mem32 + CF.
 ADC reg/mem64, imm8	| 83 /2 ib	| Add sign-extended imm8 to reg/mem64 + CF. )
 : adc#i8
-  2 modrm-reg! emit-and#i8
+  2 modrm-reg! emit-83
 ;
 
 ( ADC reg/mem8, reg8	| 10 /r		| Add reg8 to reg/mem8 + CF
@@ -1290,8 +1297,8 @@ ADC reg/mem16, reg16	| 11 /r		| Add reg16 to reg/mem16 + CF.
 ADC reg/mem32, reg32	| 11 /r		| Add reg32 to reg/mem32 + CF.
 ADC reg/mem64, reg64	| 11 /r		| Add reg64 to reg/mem64 + CF. )
 : adcm
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x10 ELSE 0x11 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x10 ELSE 0x11 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1300,8 +1307,8 @@ ADC reg16, reg/mem16	| 13 /r		| Add reg/mem16 to reg16 + CF.
 ADC reg32, reg/mem32	| 13 /r		| Add reg/mem32 to reg32 + CF.
 ADC reg64, reg/mem64	| 13 /r		| Add reg/mem64 to reg64 + CF. )
 : adcr
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x12 ELSE 0x13 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x12 ELSE 0x13 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1309,7 +1316,7 @@ ADC reg64, reg/mem64	| 13 /r		| Add reg/mem64 to reg64 + CF. )
 ADCX reg64, reg/mem64   | 66 0F 38 F6 /r | Unsigned add with carry flag.
 )
 : adcx
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0xF6380F66 ,uint32
   emit-modrm
 ;
@@ -1326,14 +1333,14 @@ ADD reg/mem16, imm16	| 81 /0 iw	| Add imm16 to reg/mem16
 ADD reg/mem32, imm32	| 81 /0 id	| Add imm32 to reg/mem32.
 ADD reg/mem64, imm32	| 81 /0 id	| Add sign-extended imm32 to reg/mem64. )
 : add# ( number rd )
-  0 modrm-reg! emit-and#
+  0 modrm-reg! emit-80
 ;
 
 ( ADD reg/mem16, imm8	| 83 /0 ib	| Add sign-extended imm8 to reg/mem16
 ADD reg/mem32, imm8	| 83 /0 ib	| Add sign-extended imm8 to reg/mem32.
 ADD reg/mem64, imm8	| 83 /0 ib	| Add sign-extended imm8 to reg/mem64. )
 : add#i8 ( number rd )
-  0 modrm-reg! emit-and#i8
+  0 modrm-reg! emit-83
 ;
 
 ( ADD reg8, reg/mem8	| 02 /r		| Add reg/mem8 to reg8.
@@ -1341,8 +1348,8 @@ ADD reg16, reg/mem16	| 03 /r		| Add reg/mem16 to reg16.
 ADD reg32, reg/mem32	| 03 /r		| Add reg/mem32 to reg32.
 ADD reg64, reg/mem64	| 03 /r		| Add reg/mem64 to reg64. )
 : addr ( modrm )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x02 ELSE 0x03 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x02 ELSE 0x03 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1351,8 +1358,8 @@ ADD reg/mem16, reg16	| 01 /r		| Add reg16 to reg/mem16.
 ADD reg/mem32, reg32	| 01 /r		| Add reg32 to reg/mem32.
 ADD reg/mem64, reg64	| 01 /r		| Add reg64 to reg/mem64. )
 : addm ( modrm )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x0 ELSE 0x1 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x0 ELSE 0x1 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1362,8 +1369,8 @@ INC reg/mem32	| FF /0 | Increment the contents of a 32-bit register or memory lo
 INC reg/mem64	| FF /0 | Increment the contents of a 64-bit register or memory location by 1. )
 : inc
   0 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xFE ELSE 0xFF THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xFE ELSE 0xFF THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1388,14 +1395,14 @@ SUB reg/mem16, imm16	| 81 /5 iw | Subtract an immediate 16-bit value from a 16-b
 SUB reg/mem32, imm32	| 81 /5 id | Subtract an immediate 32-bit value from a 32-bit destination register or memory location.
 SUB reg/mem64, imm32	| 81 /5 id | Subtract a sign-extended immediate 32-bit value from a 64-bit destination register or memory location. )
 : sub#
-  5 modrm-reg! emit-and#
+  5 modrm-reg! emit-80
 ;
 
 ( SUB reg/mem16, imm8	| 83 /5 ib | Subtract a sign-extended immediate 8-bit value from a 16-bit register or memory location.
 SUB reg/mem32, imm8	| 83 /5 ib | Subtract a sign-extended immediate 8-bit value from a 32-bit register or memory location.
 SUB reg/mem64, imm8	| 83 /5 ib | Subtract a sign-extended immediate 8-bit value from a 64-bit register or memory location. )
 : sub#i8
-  5 modrm-reg! emit-and#i8
+  5 modrm-reg! emit-83
 ;
 
 ( SUB reg/mem8, reg8	| 28 /r | Subtract the contents of an 8-bit register from an 8-bit destination register or memory location.
@@ -1403,8 +1410,8 @@ SUB reg/mem16, reg16	| 29 /r | Subtract the contents of a 16-bit register from a
 SUB reg/mem32, reg32	| 29 /r | Subtract the contents of a 32-bit register from a 32-bit destination register or memory location.
 SUB reg/mem64, reg64	| 29 /r | Subtract the contents of a 64-bit register from a 64-bit destination register or memory location. )
 : subm
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x28 ELSE 0x29 THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x28 ELSE 0x29 THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1413,8 +1420,8 @@ SUB reg16, reg/mem16	| 2B /r | Subtract the contents of a 16-bit register or mem
 SUB reg32, reg/mem32	| 2B /r | Subtract the contents of a 32-bit register or memory operand from a 32-bit destination register.
 SUB reg64, reg/mem64	| 2B /r | Subtract the contents of a 64-bit register or memory operand from a 64-bit destination register. )
 : subr ( modrm )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
-  dup modrm-dest-reg reg8? IF 0x2A ELSE 0x2B THEN ,uint8 drop
+  dup modrm-reg emit-prefixes
+  dup modrm-reg reg8? IF 0x2A ELSE 0x2B THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1424,8 +1431,8 @@ DEC reg/mem32	| FF /1 | Decrement the contents of a 32-bit register or memory lo
 DEC reg/mem64	| FF /1 | Decrement the contents of a 64-bit register or memory location by 1. )
 : dec
   1 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xFE ELSE 0xFF THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg8? IF 0xFE ELSE 0xFF THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1442,10 +1449,7 @@ DIV reg/mem16	| F7 /6 | Perform unsigned division of DX:AX by the contents of a 
 DIV reg/mem32	| F7 /6 | Perform unsigned division of EDX:EAX by the contents of a 32-bit register or memory location and store the quotient in EAX and the remainder in EDX.
 DIV reg/mem64	| F7 /6 | Perform unsigned division of RDX:RAX by the contents of a 64-bit register or memory location and store the quotient in RAX and the remainder in RDX. )
 : div ( modrm )
-  6 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
-  emit-modrm
+  6 modrm-reg! emit-f6
 ;
 
 ( IDIV reg/mem8 | F6 /7 | Perform signed division of AX by the contents of an 8-bit register or memory location and store the quotient in AL and the remainder in AH.
@@ -1453,27 +1457,22 @@ IDIV reg/mem16	| F7 /7 | Perform signed division of DX:AX by the contents of a 1
 IDIV reg/mem32	| F7 /7 | Perform signed division of EDX:EAX by the contents of a 32-bit register or memory location and store the quotient in EAX and the remainder in EDX.
 IDIV reg/mem64	| F7 /7 | Perform signed division of RDX:RAX by the contents of a 64-bit register or memory location and store the quotient in RAX and the remainder in RDX. )
 : idiv
-  7 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
-  emit-modrm
+  7 modrm-reg! emit-f6
 ;
 
 ( MUL reg/mem8	| F6 /4 | Multiplies an 8-bit register or memory operand by the contents of the AL register and stores the result in the AX register.
-MUL reg/mem16	| F7 /4 | Multiplies a 16-bit register or memory operand by the contents of the AX register and stores the result in the DX:AX register.
+MUL reg/mem16	| F7 /4 | Multiplies a 16-bit register or memory oper
+and by the contents of the AX register and stores the result in the DX:AX register.
 MUL reg/mem32	| F7 /4 | Multiplies a 32-bit register or memory operand by the contents of the EAX register and stores the result in the EDX:EAX register.
 MUL reg/mem64	| F7 /4b | Multiplies a 64-bit register or memory operand by the contents of the RAX register and stores the result in the RDX:RAX register. )
 : mul ( modrm )
-  4 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
-  emit-modrm
+  4 modrm-reg! emit-f6
 ;
 
 ( MULX reg32, reg32, reg/mem32 C4 RXB.02 0.dest2.0.11	| F6 /r |
 MULX reg64, reg64, reg/mem64 C4 RXB.02 1.dest2.0.11	| F6 /r | )
 : mulx
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0xF6 ,uint8
   emit-modrm
 ;
@@ -1483,17 +1482,14 @@ IMUL reg/mem16			| F7 /5 | Multiply the contents of AX by the contents of a 16-b
 IMUL reg/mem32			| F7 /5 | Multiply the contents of EAX by the contents of a 32-bit memory or register operand and put the signed result in EDX:EAX.
 IMUL reg/mem64			| F7 /5 | Multiply the contents of RAX by the contents of a 64-bit memory or register operand and put the signed result in RDX:RAX. )
 : imul ( modrm )
-  5 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg8? IF 0xF6 ELSE 0xF7 THEN ,uint8 drop
-  emit-modrm
+  5 modrm-reg! emit-f6
 ;
 
 ( IMUL reg16, reg/mem16		| 0F AF /r | Multiply the contents of a 16-bit destination register by the contents of a 16-bit register or memory operand and put the signed result in the 16-bit destination register.
 IMUL reg32, reg/mem32		| 0F AF /r | Multiply the contents of a 32-bit destination register by the contents of a 32-bit register or memory operand and put the signed result in the 32-bit destination register.
 IMUL reg64, reg/mem64		| 0F AF /r | Multiply the contents of a 64-bit destination register by the contents of a 64-bit register or memory operand and put the signed result in the 64-bit destination register. )
 : imulr ( modrm )
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x0F ,uint8 0xAF ,uint8
   emit-modrm
 ;
@@ -1502,7 +1498,7 @@ IMUL reg64, reg/mem64		| 0F AF /r | Multiply the contents of a 64-bit destinatio
 IMUL reg32, reg/mem32, imm8	| 6B /r ib | Multiply the contents of a 32-bit register or memory operand by a sign-extended immediate byte and put the signed result in the 32-bit destination register.
 IMUL reg64, reg/mem64, imm8	| 6B /r ib | Multiply the contents of a 64-bit register or memory operand by a sign-extended immediate byte and put the signed result in the 64-bit destination register. )
 : imul#i8
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x6B ,uint8
   emit-modrm
   ,uint8
@@ -1512,9 +1508,9 @@ IMUL reg64, reg/mem64, imm8	| 6B /r ib | Multiply the contents of a 64-bit regis
 IMUL reg32, reg/mem32, imm32	| 69 /r id | Multiply the contents of a 32-bit register or memory operand by a sign-extended immediate double and put the signed result in the 32-bit destination register.
 IMUL reg64, reg/mem64, imm32	| 69 /r id | Multiply the contents of a 64-bit register or memory operand by a sign-extended immediate double and put the signed result in the 64-bit destination register. )
 : imul#
-  dup modrm-dest-reg emit-op-size emit-rex-modrm
+  dup modrm-reg emit-prefixes
   0x69 ,uint8
-  dup modrm-dest-reg reg16? IF
+  dup modrm-reg reg16? IF
     drop emit-modrm ,uint16
   ELSE
     drop emit-modrm ,uint32
@@ -1539,14 +1535,14 @@ FNINIT	| DB E3 | Initialize the x87 unit without checking for unmasked floating-
 FNSAVE mem94/108env	| DD /6 | Copy the x87 state to mem94/108env without checking for pending floating-point exceptions, then reinitialize the x87 state. )
 : fsave
   6 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x98 ,uint8 0xDD ,uint8
   emit-modrm
 ;
 
 : fnsave
   6 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0xDD ,uint8
   emit-modrm
 ;
@@ -1554,7 +1550,7 @@ FNSAVE mem94/108env	| DD /6 | Copy the x87 state to mem94/108env without checkin
 ( FRSTOR mem94/108env | DD /4 | Load the x87 state from mem94/108env. )
 : frstor
   4 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0xDD ,uint8
   emit-modrm
 ;
@@ -1583,9 +1579,9 @@ FCOMIP ST[0],ST[i]	| DF F0+i | Compare the contents of ST[0] with the contents o
 FILD mem32int	| DB /0 | Push the contents of mem32int onto the x87 register stack.
 FILD mem64int	| DF /5 | Push the contents of mem64int onto the x87 register stack. )
 : fild ( modrm )
-  dup modrm-mem reg64? IF 5 ELSE 0 THEN modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg32? IF 0xDB ELSE 0xDF THEN ,uint8 drop
+  modrm-dest-reg reg64? IF 5 ELSE 0 THEN modrm-reg!
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg32? IF 0xDB ELSE 0xDF THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1593,8 +1589,8 @@ FILD mem64int	| DF /5 | Push the contents of mem64int onto the x87 register stac
 FIST mem32int	| DB /2 | Convert the contents of ST[0] to integer and store the result in mem32int. )
 : fist ( sp-offset )
   2 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg16? IF 0xDF ELSE 0xDB THEN ,uint8 drop
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg16? IF 0xDF ELSE 0xDB THEN ,uint8 drop
   emit-modrm
 ;
 
@@ -1609,8 +1605,8 @@ FISTTP mem32int		| DB /1 | Store the truncated floating-point value in ST[0] in 
 FISTTP mem64int		| DD /1 | Store the truncated floating-point value in ST[0] in memory location mem64int and pop the floating-point register stack. )
 : fisttp
   1 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
-  dup modrm-mem reg16? IF
+  modrm-dest-reg emit-prefixes
+  modrm-dest-reg reg16? IF
     0xDF
   ELSE reg32? IF 0xDB ELSE 0xDD THEN
   THEN ,uint8 drop
@@ -1805,7 +1801,7 @@ IRETQ | CF | Return from interrupt [64-bit operand size]. )
 LGDT mem16:64	| 0F 01 /2 | Loads mem16:64 into the global descriptor table register. )
 : lgtd
   2 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x01 ,uint8
   emit-modrm
 ;
@@ -1814,7 +1810,7 @@ LGDT mem16:64	| 0F 01 /2 | Loads mem16:64 into the global descriptor table regis
 LIDT mem16:64	| 0F 01 /3 | Loads mem16:64 into the interrupt descriptor table register. )
 : lidt
   3 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x01 ,uint8
   emit-modrm
 ;
@@ -1822,7 +1818,7 @@ LIDT mem16:64	| 0F 01 /3 | Loads mem16:64 into the interrupt descriptor table re
 ( LLDT reg/mem16 | 0F 00 /2 | Load the 16-bit segment selector into the local descriptor table register and load the LDT descriptor from the GDT. )
 : lldt
   2 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x00 ,uint8
   emit-modrm
 ;
@@ -1849,7 +1845,7 @@ MOV DRn, reg64		| 0F 23 /r | Move the contents of a 64-bit register to DRn. )
 SGDT mem16:64	| 0F 01 /0 | Store global descriptor table register to memory. )
 : sgdt
   0 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x01 ,uint8
   emit-modrm
 ;
@@ -1858,7 +1854,7 @@ SGDT mem16:64	| 0F 01 /0 | Store global descriptor table register to memory. )
 SIDT mem16:64	| 0F 01 /1 | Store interrupt descriptor table register to memory. )
 : sidt
   1 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x01 ,uint8
   emit-modrm
 ;
@@ -1869,7 +1865,7 @@ SLDT reg64	| 0F 00 /0 | Store the segment selector from the local descriptor tab
 SLDT mem16	| 0F 00 /0 | Store the segment selector from the local descriptor table register to a 16-bit memory location. )
 : sldt
   0 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x00 ,uint8
   emit-modrm
 ;
@@ -1880,7 +1876,7 @@ SMSW reg64	| 0F 01 /4 | Store the entire 64-bit CR0 to a 64-bit register.
 SMSW mem16	| 0F 01 /4 | Store the low 16 bits of CR0 to memory. )
 : smsw
   4 modrm-reg!
-  dup modrm-mem emit-op-size emit-rex-modrm
+  modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x01 ,uint8
   emit-modrm
 ;
