@@ -243,11 +243,17 @@ load-core
   8 align-data
   break-padding
   ( byte )
+  dhere 0x7F push# break-padding
+  0xCCCC7F6A 1 assert-data
+  ( minus byte )
+  dhere -1 push# break-padding
+  0xCCCCFF6A 1 assert-data
+  ( "byte" )
   dhere 0x80 push# break-padding
-  0xCCCC806A 1 assert-data
+  0x00008068 0xCCCCCC00 2 assert-data
   ( word )
   dhere 0x800 push# break-padding
-  0x00080068 1 assert-data
+  0x00080068 0xCCCCCC00 2 assert-data
 ;
 
 : test-x86-not

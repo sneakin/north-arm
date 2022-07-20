@@ -8,18 +8,24 @@ x86 instructions follow the form:
 16 var> x86-bits
 
 NORTH-STAGE 0 equals? [IF]
+  : x86-bytes x86-bits 8 int-div ;
+
   : 16bit? x86-bits 16 equals? ;
   : 32bit? x86-bits 32 equals? ;
   : 64bit? x86-bits 64 equals? ;
 
   : x86-bits! set-x86-bits ;
 [ELSE]
+  : x86-bytes x86-bits peek 8 int-div ;
+
   : 16bit? x86-bits peek 16 equals? ;
   : 32bit? x86-bits peek 32 equals? ;
   : 64bit? x86-bits peek 64 equals? ;
 
   : x86-bits! x86-bits poke ;
 [THEN]
+
+: signed-byte? abs-int 0x7F uint<= ;
 
 ( Prefixes: )
 
@@ -199,7 +205,7 @@ end
 
 : modrm+ ( offset regB regA || offset sib sp regA )
   over 7 logand modrm-sib equals? IF 4 overn ELSE 3 overn THEN
-  0xFF uint<= IF modrm-mode-byte ELSE modrm-mode-long THEN modrm/3
+  signed-byte? IF modrm-mode-byte ELSE modrm-mode-long THEN modrm/3
 ;
 
 : modrmx ( sib RegA )
@@ -603,7 +609,7 @@ PUSH imm16		| 68 iw | Push a 16-bit immediate value onto the stack.
 PUSH imm32		| 68 id | Push a 32-bit immediate value onto the stack. [No prefix for encoding this in 64-bit mode.]
 PUSH imm64		| 68 id | Push a sign-extended 32-bit immediate value onto the stack. )
 : push# ( immed )
-  dup 0xFF uint<= IF
+  dup signed-byte? IF
     0x6A ,uint8 ,uint8
   ELSE
     0x68 ,uint8 16bit? IF ,uint16 ELSE ,uint32 THEN
@@ -972,7 +978,7 @@ TEST reg/mem64, reg64	| 85 /r | and the contents of a 64-bit register with the c
 ( Jumps: )
 
 : jumper ( offset jmp-op -- )
-  over 0xFF uint<=
+  over signed-byte?
   IF 0x70 + ,uint8 ,uint8
   ELSE
     0x0F ,uint8 0x80 + ,uint8
@@ -1134,7 +1140,7 @@ alias> jg jnle
 JMP rel16off		| E9 cw | Near jump with the target specified by a 16-bit signed displacement.
 JMP rel32off		| E9 cd | Near jump with the target specified by a 32-bit signed displacement. )
 : jmp#
-  dup 0xFF uint<= IF
+  dup signed-byte? IF
     0xEB ,uint8 ,uint8
   ELSE
     0xE9 ,uint8
