@@ -41,6 +41,7 @@ end
 
 : read-list ( last-token result ++ result )
   next-token null? IF drop swap drop return THEN
+  3 overn q" (" equals? IF q" )" read-until drop swap loop THEN
   3 overn over equals IF drop swap drop return THEN
   ( last result token => result token last here-1 )
   swap rot here up-stack loop
@@ -53,6 +54,7 @@ end
 : read-literal-list
   next-token null? IF drop return THEN
   dup q" ]" equals IF drop return THEN
+  dup q" (" equals IF q" )" read-until drop loop THEN
   literal literal rot
   literal cons swap
   1 + loop

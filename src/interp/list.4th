@@ -2,6 +2,7 @@
 
 def read-list ( last-token result ++ result )
   next-token negative? IF 2 dropn arg0 exit-frame THEN
+  over s" (" string-equals?/3 IF 5 dropn POSTPONE ( repeat-frame ELSE 3 dropn THEN
   arg1 3 overn 3 overn string-equals?/3 IF 5 dropn arg0 exit-frame THEN
   3 dropn allot-byte-string/2 drop
   arg0 swap cons set-arg0
@@ -18,6 +19,7 @@ end
 ( Reads a list of tokens to the stack, placing ' literal before each so the list is stack allocated at runtime. )
 : read-literal-stack-list
   next-token negative? IF 2 dropn proper-exit THEN
+  over s" (" byte-string-equals?/3 IF 5 dropn POSTPONE ( loop THEN
   over s" ]" byte-string-equals?/3
   IF 5 dropn proper-exit ELSE 3 dropn THEN
   dhere rot swap 0 ,byte-string/3 3 dropn ( fixme drop the drop )
