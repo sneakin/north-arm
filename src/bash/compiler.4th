@@ -292,5 +292,6 @@ alias> tmp" s"
 : peek " warning: peeker" error-line ;
 : poke " warning: poker" error-line ;
 
+" src/bash/platform.4th" load
 " src/bash/frames.4th" load
 " src/bash/list.4th" load

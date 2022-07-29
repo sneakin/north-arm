@@ -149,6 +149,8 @@ DICT['has-spaces?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([ \t\n
 DICT['has-special-chars?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([*?!~$=]) ]]; then fpush 1; else fpush 0; fi'
 DICT['quote-string']='v="${STACK[0]}"; fpop; fpush "$(printf %q "$v")"'
 DICT['contains?']='if [[ "${STACK[1]}" =~ "${STACK[0]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
+DICT['string-equals?/3']='feval 3 overn 3 overn equals?'
+
 
 #
 # Output
@@ -188,15 +190,17 @@ DICT['return1']='tmp="${STACK[0]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" 
 #
 # Environment access
 #
-DICT['argc']='fpush "${#ARGV[@]}"'
-DICT['argv']='n="${STACK[0]}"; fpop; if [[ "$n" == 0 ]]; then fpush "$0"; else fpush "${ARGV[$((n - 1))]}"; fi'
+DICT['argc']='fpush "$((${#ARGV[@]} + 1))"'
+DICT['get-argv']='n="${STACK[0]}"; fpop; if [[ "$n" == 0 ]]; then fpush "$0"; else fpush "${ARGV[$((n - 1))]}"; fi'
 
 DICT['getenv']='n="${STACK[0]}"; fpop; fpush "$(eval echo "\$$n")"'
 DICT['setenv']='n="${STACK[0]}"; v="${STACK[1]}"; fpop 2; export $n="$v"'
 
+DICT['system']='cmd="${STACK[0]}"; fpop; eval "$cmd"'
+DICT['system-capture']='inp="${STACK[1]}"; cmd="${STACK[0]}"; fpop 2; fpush "$(echo "${inp}" | eval "$cmd")"'
+
 #
 # Startup
 #
-DICT['NORTH-STAGE']='fpush 0'
 DICT['boot']='feval "Hello." error-line'
 DICT['load-core']='feval literal src/bash/compiler.4th load'
