@@ -5,7 +5,7 @@ end
 
 ( Input: )
 
-320 defconst> token-buffer-max
+1024 defconst> token-buffer-max
 0 defvar> token-buffer
 0 defvar> token-buffer-length
 
