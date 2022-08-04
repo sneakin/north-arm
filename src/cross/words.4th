@@ -90,7 +90,9 @@
   dup ' int32 equals
   swap dup ' literal equals
   swap dup ' pointer equals
+  swap dup ' string equals
+  swap dup ' cstring equals
   swap dup ' offset32 equals
   swap ' uint32 equals
-  logior logior logior logior
+  logior logior logior logior logior logior
 ;
