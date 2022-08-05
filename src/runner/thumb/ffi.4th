@@ -107,37 +107,21 @@ endcol
 
 ( fixme FFI callbacks are loading state from wrong offsets. changes depending on how the trampoline's length. )
 
-: ffi-callback-exec-lo ( landing-zone -- )
-  ( set eip to callback landing zone, will get pushed on call )
-  dict-entry-data uint32@ eip emit-load-int32
-  ( syscalls wipe the registers. State needs to be loaded from after the branch. )
-  dhere 0 ,ins
-  dhere 0 ,ins
-  cs-reg eip eip add ,ins
-  3 emit-exec-pc
-  ( above is variable length, so patch in PC relative state loading of dict and cs. )
-  dhere over - cell-size + cs-reg ldr-pc swap ins!
-  dhere over - dict-reg ldr-pc swap ins!
-;
-
-: ffi-callback-exec-hi ( landing-zone -- )
-  ( set eip to callback landing zone, will get pushed on call )
-  dict-entry-data uint32@ eip emit-load-int32
-  ( syscalls wipe the registers. State needs to be loaded from after the branch. )
-  dhere 0 ,ins
-  dhere 0 ,ins
-  cs-reg eip eip add ,ins
-  3 emit-exec-pc
-  ( above is variable length, so patch in PC relative state loading of dict and cs. )
-  dhere over - cell-size + cs-reg ldr-pc swap ins!
-  dhere over - cell-size + dict-reg ldr-pc swap ins!
-;
-
 : ffi-callback-exec ( landing-zone -- )
-  dhere to-out-addr 2 logand
-  IF ffi-callback-exec-hi
-  ELSE ffi-callback-exec-lo
-  THEN
+  ( set eip to callback landing zone, will get pushed on call )
+  dict-entry-data uint32@ eip emit-load-int32
+  ( syscalls wipe the registers. State needs to be loaded from after the branch. )
+  dhere 0 ,ins
+  dhere 0 ,ins
+  cs-reg eip eip add ,ins
+  3 emit-exec-pc
+  2 pad-data ( pad to get the size aligned for ldr-pc )
+  ( above is variable length, so patch in PC relative state loading of dict and cs. )
+  ( dict, cs, and a word will appended here when copied )
+  dhere over - cell-size + cs-reg ldr-pc swap ins!
+  dhere over -
+  over to-out-addr 2 logand UNLESS cell-size - THEN
+  dict-reg ldr-pc swap ins!
 ;
 
 : ffi-callback-exec-0
