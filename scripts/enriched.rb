@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'rexml'
 
 class NoTerm
@@ -95,6 +96,7 @@ class VT100
 
   def underline= yes
     current_state[:underline] = yes ? 4 : 0x24
+    reset_color if yes
   end
 
   def italic= yes
@@ -102,12 +104,16 @@ class VT100
   end
 end
 
+def unescape xml
+  xml.gsub('&lt;', '<').gsub('&gt;', '>').gsub('&amp;', '&')
+end
+
 def enrich doc, out = $stdout, vt100 = nil
   vt100 ||= VT100.new
   #vt100 ||= NoTerm.new(out)
   doc.each_child do |e, r|
     case e
-    when REXML::Text then out.write(vt100.emit_delta + e.to_s)
+    when REXML::Text then out.write(vt100.emit_delta + unescape(e.to_s))
     else
       case e.name
       when 'x-color' then
@@ -131,7 +137,7 @@ def enrich doc, out = $stdout, vt100 = nil
         enrich(e, out, vt100)
         vt100.underline = false
       when 'root' then enrich(e, out, vt100)
-      else out.write(vt100.emit_delta + e.text)
+      else out.write(vt100.emit_delta + unescape(e.text))
       end
     end
   end
