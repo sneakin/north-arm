@@ -1,27 +1,5 @@
 ( Dictionary access: )
 
-cell-size 4 mult defconst> dict-entry-size
-
-defcol dict-entry-name
-  exit
-endcol
-
-defcol dict-entry-code
-  swap cell-size + swap
-endcol
-
-defcol dict-entry-data
-  swap cell-size + cell-size + swap
-endcol
-
-defcol dict-entry-data-pointer
-  swap dict-entry-data peek cs + swap
-endcol
-
-defcol dict-entry-link
-  swap cell-size int32 3 * + swap
-endcol
-
 ( Entry construction: )
 
 def alloc-dict-entry
@@ -37,15 +15,6 @@ def make-dict-entry ( name-ptr length ++ ...memory entry-ptr )
   arg1 cs - over dict-entry-name poke
   exit-frame
 end
-
-( Copying: )
-
-defcol dict-entry-clone-fields
-  rot swap
-  over dict-entry-code peek over dict-entry-code poke
-  over dict-entry-data peek over dict-entry-data poke
-  2 dropn
-endcol
 
 ( Iteration: )
 
@@ -101,3 +70,7 @@ defcol defined?
   swap IF int32 1 ELSE int32 0 THEN
   swap
 endcol
+
+def defined?/2
+  arg1 arg0 dict dict-lookup 2 return1-n
+end

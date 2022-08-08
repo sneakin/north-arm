@@ -102,7 +102,7 @@ end
   out-dictionary peek swap 0 swap 0 swap make-dict-entry/4
 ;
 
-: create ( ptr length -- )
+: create ( ptr length -- entry )
   2dup error-line/2
   drop make-dict-entry dup to-out-addr error-hex-uint enl
   dup out-dictionary poke

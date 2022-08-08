@@ -1,23 +1,16 @@
 ( functions like in boot or based on a flag? based on host. )
 
-" src/cross/arch/thumb.4th" load
+s[ src/cross/builder/globals.4th
+   src/cross/builder/predicates/bash.4th
+] load-list
 
-4 const> cell-size
-4 const> -op-size
-0xFFFFFFFF const> -op-mask
-
-( Needs literals handled. )
-( 2 const> -op-size )
-( Needs defconst sooner. )
-
-0 var> code-origin
-0 var> BUILD-COPYRIGHT
-
+( todo duplicated by include/runner.4th )
 def load-runner
   s[
   src/runner/thumb/ops.4th
   src/runner/thumb/cpu.4th
   src/runner/thumb/vfp.4th
+
   src/cross/string-list.4th
   src/cross/defining/colon-bash.4th
   src/cross/defining/colon.4th
@@ -25,6 +18,7 @@ def load-runner
   src/cross/defining/constants.4th
   src/cross/constants.4th
   src/cross/defining/variables.4th
+
   src/runner/thumb/frames.4th
   src/runner/frames.4th
   src/cross/defining/frames.4th
@@ -44,6 +38,10 @@ def load-runner
   src/runner/proper.4th
   src/runner/aliases.4th
   src/runner/thumb/state.4th
+   src/runner/dictionary.4th
+   src/runner/thumb/math-init.4th
+   version.4th
+   src/runner/thumb/init.4th
   ] load-list exit-frame
 end
 
@@ -53,6 +51,11 @@ end
 (   src/cross/dynlibs.4th
 )
 
+def builder-load
+  " src/cross/arch/thumb.4th" load ( fixme swap load-thumb-asm? )
+  exit-frame
+end
+
 def builder-run ( entry-fn fn-length files-cons ++ )
   " Building..." error-line
   dhere set-out-origin
@@ -60,16 +63,17 @@ def builder-run ( entry-fn fn-length files-cons ++ )
   dhere set-code-origin
 
   BUILD-COPYRIGHT dup IF ,byte-string ELSE drop THEN
-  " main" create
+  " _start" create
   
   ( The main stage: )
-  load-runner
-  " version.4th" load
-  " src/runner/thumb/init.4th" load
+  builder-with-runner IF
+    load-runner
+    ( " src/include/runner.4th" load )
+  THEN
   arg0 load-list
 
   " copyright" cross-lookup IF code-origin to-out-addr over dict-entry-data uint32! ELSE not-found error-line THEN drop
-  " main" cross-lookup IF arg2 does-defalias ELSE not-found error-line THEN
+  " _start" cross-lookup IF arg2 does-defalias ELSE not-found error-line THEN
   " *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
   " *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
 

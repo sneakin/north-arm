@@ -3,76 +3,86 @@ TARGETS=bash-linux-static thumb-linux-static thumb-linux-gnueabi thumb-linux-and
 HOSTS=$(TARGETS)
 
 HOST?=$(MAKE_HOST)
-TARGET?=arm-linux-static
+TARGET?=thumb-linux-static
 
 platform_tuple = $($(1)_ARCH)-$($(1)_OS)-$($(1)_ABI)
 
 define platform_vars # (var_prefix)
-	ifneq (,$$(findstring x86_64,$($(1))))
+	ifneq (,$$(findstring x86_64,$(2)))
 		$(1)_ARCH?=x86_64
 		$(1)_BITS?=64
 		$(1)_RUNNER?=qemu-x86_64
-	else ifneq (,$$(findstring x86,$($(1))))
+	else ifneq (,$$(findstring x86,$(2)))
 		$(1)_ARCH?=x86
 		$(1)_BITS?=32
 		$(1)_RUNNER?=qemu-i386
-	else ifneq (,$$(findstring arm,$($(1))))
+	else ifneq (,$$(findstring arm,$(2)))
 		$(1)_ARCH?=arm
 		$(1)_BITS?=32
 		$(1)_RUNNER?=qemu-arm
-	else ifneq (,$$(findstring thumb2,$($(1))))
+	else ifneq (,$$(findstring thumb2,$(2)))
 		$(1)_ARCH?=thumb2
 		$(1)_BITS?=32
 		$(1)_RUNNER?=qemu-arm
-	else ifneq (,$$(findstring thumb,$($(1))))
+	else ifneq (,$$(findstring thumb,$(2)))
 		$(1)_ARCH?=thumb
 		$(1)_BITS?=32
 		$(1)_RUNNER?=qemu-arm
-	else ifneq (,$$(findstring aarch64,$($(1))))
+	else ifneq (,$$(findstring aarch64,$(2)))
 		$(1)_ARCH?=aarch64
 		$(1)_BITS?=64
 		$(1)_RUNNER?=qemu-aarch64
-	else ifneq (,$$(findstring bash,$($(1))))
+	else ifneq (,$$(findstring bash,$(2)))
 		$(1)_ARCH?=bash
 		$(1)_BITS?=32
 	else
-		$$(error "Bad arch: $($(1))")	
+		$$(error "Bad arch: $(2)")	
 	endif
 
-	ifneq (,$$(findstring linux,$($(1))))
+	ifneq (,$$(findstring linux,$(2)))
 		$(1)_OS?=linux
-	else ifneq (,$$(findstring windows,$($(1))))
+	else ifneq (,$$(findstring windows,$(2)))
 		$(1)_OS?=windows
 	else
-		$$(error "Bad OS: $($(1))")	
+		$$(error "Bad OS: $(2)")	
 	endif
 
-	ifneq (,$$(findstring gnueabi,$($(1))))
+	ifneq (,$$(findstring gnueabi,$(2)))
 		$(1)_ABI?=gnueabi
 		$(1)_STATIC?=false
-	else ifneq (,$$(findstring android,$($(1))))
+	else ifneq (,$$(findstring android,$(2)))
 		$(1)_ABI?=android
 		$(1)_STATIC?=false
-	else ifneq (,$$(findstring static,$($(1))))
+	else ifneq (,$$(findstring static,$(2)))
 		$(1)_ABI?=static
 		$(1)_STATIC?=true
 	else
-	$$(error "Bad ABI: $($(1))")	
+	$$(error "Bad ABI: $(2)")	
 	endif
 endef
 
-$(eval $(call platform_vars,HOST))
-$(eval $(call platform_vars,TARGET))
+$(eval $(call platform_vars,HOST,$(HOST)))
+$(eval $(call platform_vars,TARGET,$(TARGET)))
 
-ifneq ($(HOST_ARCH), $(TARGET_ARCH))
-	TARGET_CC?=$(TARGET)-gcc
+ifeq ($(HOST_ARCH), $(TARGET_ARCH))
+	TARGET_CC?=$(CC)
+	TARGET_RUNNER=
+else
 	ifneq (32,$(TARGET_BITS))
 		TARGET_CFLAGS?=-m32
 	endif
+	ifeq ($(TARGET_ARCH), thumb)
+	     TARGET_CC?=arm-$(TARGET_OS)-$(TARGET_ABI)
+	     TARGET_CFLAGS+=-Mthumb
+	else
+		ifeq ($(TARGET_ARCH), thumb2)
+		   TARGET_CC?=arm-$(TARGET_OS)-$(TARGET_ABI)
+	     	   TARGET_CFLAGS+=-Mthumb
+		else
+		   TARGET_CC?=$(TARGET)-gcc
+		endif
+	endif
 	#TARGET_RUNNER?=qemu-$(TARGET_ARCH)
-else
-	TARGET_CC?=$(CC)
-	TARGET_RUNNER=
 endif
 
 TARGET_VALID=true

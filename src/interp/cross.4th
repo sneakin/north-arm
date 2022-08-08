@@ -18,8 +18,14 @@ defalias> spoke poke
 defalias> spoke-byte poke-byte
 
 alias> : defproper
-alias> :: redefproper
+( alias> :: redefproper )
 alias> var> defvar>
 alias> const> defconst>
 alias> symbol> defsymbol>
+
+( alias> ' out-off' immediate )
+
+alias> immediate out-immediate
+alias> immediate-as out-immediate-as
+
 alias> alias> defalias>

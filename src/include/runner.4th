@@ -2,8 +2,11 @@
 s[ src/runner/thumb/ops.4th
    src/runner/thumb/cpu.4th
    src/runner/thumb/vfp.4th
-   src/cross/dynlibs.4th
  ] load-list
+
+NORTH-STAGE 0 int> [IF]
+  s[ src/cross/dynlibs.4th ] load-list
+[THEN]
 
 ( Cross compiler )
 s[
@@ -40,4 +43,9 @@ s[ src/runner/thumb/frames.4th
    src/runner/thumb/proper.4th
    src/runner/proper.4th
    src/interp/data-stack.4th
+   src/runner/thumb/state.4th
+   src/runner/dictionary.4th
+   src/runner/thumb/math-init.4th
+   version.4th
+   src/runner/thumb/init.4th
 ] load-list

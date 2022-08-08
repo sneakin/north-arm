@@ -43,7 +43,7 @@ defop init
   ( data: dictionary main return-fn )
   emit-init-data-padding
   out' *init-dict* to-out-addr ,uint32
-  out' main to-out-addr ,uint32
+  out' _start to-out-addr ,uint32
   out' init-return to-out-addr ,uint32
 endop
 

@@ -1,6 +1,7 @@
 ( Structures: )
 
 ( todo binary output structures )
+( todo usage in [cross] compiling out )
 
 ( struct: point2d
     inherits: numeric

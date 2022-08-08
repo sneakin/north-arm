@@ -64,7 +64,7 @@ out' [IF] copies-entry-as> [IF]
 out' end-compile copies-entry-as> endcol
 out' end-compile copies-entry-as> end
 out' end-compile copies-entry-as> ;
-out' ( copies-entry-as> (
+out' ( copies-entry-as> ( ( bad emacs )
 out' c" copies-entry-as> c"
 to-out-addr defvar> immediates
 

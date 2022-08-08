@@ -155,7 +155,7 @@ end
 
 ( todo nested comments )
 
-def (
+def ( ( bad emacs )
   int32 41 skip-until-char
   the-reader peek reader-read-byte
 end
@@ -345,8 +345,15 @@ end
 
 ( File loading: )
 
+def open-output-file/2 ( mode path -- fid )
+  arg1 O_CREAT O_WRONLY logior arg0 open 2 return1-n
+end
+
+def open-output-file ( path -- fid )
+  0640 arg0 open-output-file/2 set-arg0
+end
 def open-input-file ( path -- fd )
-  0 0 arg0 open set-arg0
+  0 O_RDONLY arg0 open set-arg0
 end
 
 def load
@@ -357,12 +364,20 @@ def load
   arg0 open-input-file negative? IF return THEN
   make-fd-reader the-reader poke
   interp
+  the-reader peek fd-reader-close
   local0 the-reader poke
   exit-frame
 end
 
+defcol tail-1 ( ...args1 arg0 frame-ra fp word ra -- ...args1 ra -> word )
+  drop
+  current-frame return-address @ set-arg0
+  dict-entry-data @ cs + current-frame return-address !
+  return
+endcol
+
 def load/2
-  arg1 load exit-frame
+  ' load tail-1
 end
 
 def load-string/2

@@ -1,3 +1,5 @@
+( s[ src/lib/linux/clock.4th src/lib/linux/stat.4th ] load-list )
+
 def read-bytes ( ptr len fd -- ptr len )
   arg1 arg2 arg0 read 2 return1-n
 end

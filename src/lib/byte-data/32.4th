@@ -1,3 +1,5 @@
+( todo swap the word order to watch native byte order? )
+
 : ,uint64 ( low high -- )
   ( low, high on stack )
   swap ,uint32 ,uint32

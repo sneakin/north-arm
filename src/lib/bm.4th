@@ -1,4 +1,3 @@
-tmp" src/lib/structs.4th" load/2
 tmp" src/lib/time.4th" load/2
 tmp" src/lib/linux/clock.4th" load/2
 

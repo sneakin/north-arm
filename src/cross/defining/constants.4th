@@ -31,4 +31,3 @@
 : defsymbol>
   create> does-const dup to-out-addr swap dict-entry-data poke
 ;
-

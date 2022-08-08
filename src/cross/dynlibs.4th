@@ -6,7 +6,7 @@
 0 var> *out-imports*
 )
 
-def library> ( : path ++ )
+def library> ( : path ++ library-item )
   next-token negative? IF error 0 return1 THEN
   2dup *out-libs* peek find-by-string-2
   dup IF return1

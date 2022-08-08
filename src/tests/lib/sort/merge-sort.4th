@@ -1,5 +1,4 @@
-s[ src/lib/math.4th
-   src/lib/sort/merge-sort.4th
+s[ src/lib/sort/merge-sort.4th
    src/lib/assert.4th
 ] load-list
 

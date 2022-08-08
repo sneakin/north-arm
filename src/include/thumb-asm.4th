@@ -12,7 +12,7 @@ s[
   src/lib/elf/stub32.4th
   src/lib/elf/stub32-dynamic.4th
   src/lib/elf/stub64.4th
-  src/lib/elf/stub64-dynamic.4th
+  ( src/lib/elf/stub64-dynamic.4th )
   src/lib/elf/stub.4th
 
   src/cross/defining/op.4th

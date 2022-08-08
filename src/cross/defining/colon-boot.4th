@@ -6,8 +6,10 @@
   dup out' int32 equals
   swap dup out' literal equals
   swap dup out' pointer equals
+  swap dup out' cstring equals
+  swap dup out' string equals
   swap out' offset32 equals
-  logior logior logior
+  logior logior logior logior logior
 ;
 
 ( todo an extra zero is padded between entries and first data )

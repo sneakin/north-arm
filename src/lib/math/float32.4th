@@ -94,7 +94,7 @@ def float32-under? ( value limit -- value yes? )
   arg1 arg0 float32< set-arg0
 end
 
-def float32-stepper ( min max step )
+def float32-stepper ( min max step ++ stepper-fn )
   arg2 here 0 0
   ' float32-under? arg1 partial-first set-local2
   local1 arg0 pre-inc-float32-fun
@@ -103,13 +103,13 @@ def float32-stepper ( min max step )
 end
 
 ( Return a function that steps from 0 to float-precision. )
-def fun-precision-stepper ( fn ) ( todo include zero? )
+def fun-precision-stepper ( fn ++ stepper-fn ) ( todo include zero? )
   0f float-precision peek int32->float32 1f float32-stepper
   arg0 compose exit-frame
 end
 
 ( Return a function that takes float-precision steps passing the prior term pointer and constant factor. )
-def fun-power-series ( fn x init )
+def fun-power-series ( fn x init ++ stepper-fn )
   arg0 here
   arg2 arg1 partial-first local1 partial-first
   fun-precision-stepper exit-frame

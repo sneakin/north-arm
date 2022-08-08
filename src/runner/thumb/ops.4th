@@ -436,6 +436,10 @@ defop pointer
   emit-next
 endop
 
+defalias> cstring pointer
+defalias> string literal
+defalias> uint32 int32
+
 ( Constants: )
 
 defop do-const

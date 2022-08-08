@@ -24,19 +24,22 @@ The prebuilt binaries under ~./bootstrap/~ can be used to skip steps.
 
 ~./bootstrap/interp.static.elf~ only requires a Linux kernel, but can not load dynamic libraries.
 ~./bootstrap/interp.android.elf~ is built to use Android's dynamic linker.
+~./bootstrap/interp.gnueabi.elf~ is built to use the GNU dynamic linker found on desktops.
 
-Termux sets ~$LD_PRELOAD~ which requires unsetting it: ~LD_PRELOAD='' ./bin/interp.elf~
+Termux may set ~$LD_PRELOAD~ which requires unsetting it: ~LD_PRELOAD='' ./bin/interp.elf~
 
 * Building
 
 ~make~ is the preferred build tool.
 
 The default task, ~make all~, will use Bash to boot strap a static executable: ~bin/interp.elf~.
-This will then be used to rebuild itself as ~bin/interp.1.elf~ which then builds a dynamically linked ~bin/interp.2.elf~.
+This will then be used to rebuild itself as ~bin/interp.${linker}.1.elf~ and ~bin/builder.${linker}.1.elf~ which then builds a dynamically linked versions with the  ~2.elf~ suffix.
+~${linker}~ may be any or all of ~static~, ~android~, and ~gnueabi~.
+The ~OUT_TARGETS~ Make variable controls this.
 Be prepared to wait.
 
-The build script ~src/bin/${root}.4th~ can be built by running ~make bin/${root}.elf~.
-This build will be done with Bash. ~make bin/${root}.1.elf~ will use ~bin/interp.1.elf~.
+The build script ~src/bin/${app}.4th~ can be built by running ~make bin/${app}.elf~.
+This build will be done with Bash. ~make bin/${app}.1.elf~ will use ~bin/interp.1.elf~.
 The ~1~ can be changed to any value with 1, 2, and 3 typically used.
 
 ~make boot~ will rebuild ~./bootstrap/~ from a clean clone of the repository.
@@ -51,6 +54,7 @@ All executables built can be found in ~./bin/~.
 It is used before any binary is available.
 
 ~load-core~ will load the compiling words.
+This load step can be skipped by using ~./bin/fforth~ after running ~make bin/fforth.dict~.
 
 Build scripts under ~src/bin/~ can be ~cat~ into it and writen to a file:
 ~cat src/bin/interp.4th | ./src/bash/forth.sh > interp.elf~
@@ -127,6 +131,7 @@ Loads the bare interpreter when building.
 
 ** Constants
 *** const>
+*** string-const>
 *** symbol>
 
 ** Cross Compiling

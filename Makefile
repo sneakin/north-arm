@@ -8,23 +8,38 @@ SO_CFLAGS=-shared -nostdlib -g
 
 RELEASE_BRANCH?=master
 
-OUTPUTS=\
-	bin/interp.static.1$(EXECEXT) \
-	bin/interp.static.2$(EXECEXT) \
-	bin/interp.android.1$(EXECEXT) \
-	bin/interp.android.2$(EXECEXT) \
-	bin/interp.android.3$(EXECEXT) \
-	bin/interp.linux.1$(EXECEXT) \
-	bin/interp.linux.2$(EXECEXT) \
-	bin/interp.linux.3$(EXECEXT) \
-	bin/assembler.1$(EXECEXT) \
-	bin/assembler-thumb.sh \
-	lib/ffi-test-lib$(SOEXT)
+all:
 
-ifneq ($(QUICK),)
+include ./Makefile.arch
+
+RUN_OS=static
+ifeq ($(HOST_ABI),android)
+	RUN_OS=android
+else ifeq ($(HOST_ABI),gnueabi)
+	RUN_OS=linux
+endif
+
+TRIPLE_static=$(TARGET_ARCH)-$(TARGET_OS)-static
+TRIPLE_android=$(TARGET_ARCH)-$(TARGET_OS)-android
+TRIPLE_gnueabi=$(TARGET_ARCH)-$(TARGET_OS)-gnueabi
+
+#OUT_TARGETS?=static android gnueabi
+OUT_TARGETS?=$(TARGET_ABI)
+
+OUTPUTS=lib/ffi-test-lib$(SOEXT)
+
+$(foreach stage,1 2 3, \
+  $(foreach target,$(OUT_TARGETS), \
+    $(eval OUTPUTS+= \
+       bin/builder.$(target).$(stage)$(EXECEXT) \
+       bin/interp.$(target).$(stage)$(EXECEXT) \
+       bin/runner.$(target).$(stage)$(EXECEXT) )))
+
+ifeq ($(QUICK),)
 	OUTPUTS+=\
 		bin/interp$(EXECEXT) \
 		bin/fforth.dict \
+		bin/assembler-thumb.sh \
 		bin/assembler-thumb.dict
 endif
 
@@ -44,19 +59,10 @@ all: $(OUTPUTS)
 tests: bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
-include ./Makefile.arch
-
-ifeq ($(GIT_BRANCH),)
-  GIT_REF?=$(shell cat .git/HEAD | sed -e 's/.*: \(.*\)/\1/')
-  GIT_BRANCH=$(shell basename $(GIT_REF))
-else
-  GIT_REF=refs/heads/$(GIT_BRANCH)
-endif
-
 .PHONY: clean doc all quick git-info
 
 git-info:
-	@echo $(GIT) $(GIT_BRANCH) $(GIT_REF)
+	@echo $(GIT) at "$(shell cat .git/HEAD | sed -e 's/.*: \(.*\)/\1/')"
 
 release:
 	mkdir -p release
@@ -65,6 +71,16 @@ release/root: .git/refs/heads/$(RELEASE_BRANCH) release
 
 quick:
 	cp bootstrap/interp.elf bin/interp.elf
+
+clean:
+	rm -f $(OUTPUTS) $(DOCS)
+
+bin:
+	mkdir bin
+
+#
+# Prebuilt binary building from a clean tree.
+#
 
 bootstrap:
 	mkdir -p bootstrap
@@ -77,15 +93,19 @@ bootstrap/interp.static.elf: release/root bootstrap
 	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf bin/interp.static.1.elf bin/interp.static.2.elf
 	cp release/root/bin/interp.static.2.elf bootstrap/interp.static.elf
 
-bootstrap/interp.linux.elf: release/root bootstrap
-	$(MAKE) TARGET=thumb-linux-gnueabi -C release/root version.4th bin/interp.elf bin/interp.linux.1.elf bin/interp.linux.2.elf bin/interp.linux.3.elf
-	cp release/root/bin/interp.linux.3.elf bootstrap/interp.linux.elf
+bootstrap/interp.gnueabi.elf: release/root bootstrap
+	$(MAKE) TARGET=thumb-linux-gnueabi -C release/root version.4th bin/interp.elf bin/interp.gnueabi.1.elf bin/interp.gnueabi.2.elf bin/interp.gnueabi.3.elf
+	cp release/root/bin/interp.gnueabi.3.elf bootstrap/interp.gnueabi.elf
 
 bootstrap/interp.android.elf: release/root bootstrap
 	$(MAKE) TARGET=thumb-linux-android -C release/root version.4th bin/interp.android.1.elf bin/interp.android.2.elf bin/interp.android.3.elf
 	cp release/root/bin/interp.android.3.elf bootstrap/interp.android.elf
 
-boot: bootstrap/interp.elf bootstrap/interp.static.elf bootstrap/interp.linux.elf bootstrap/interp.android.elf
+boot: bootstrap/interp.elf bootstrap/interp.static.elf bootstrap/interp.gnueabi.elf bootstrap/interp.android.elf
+
+#
+# Generated source files:
+#
 
 version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	@echo "\" $$(cat $<)\" string-const> NORTH-GIT-REF" > $@
@@ -96,11 +116,9 @@ version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 src/copyright.4th: src/copyright.4th.erb src/copyright.txt
 	./scripts/copyright-gen.sh $< > $@
 
-clean:
-	rm -f $(OUTPUTS) $(DOCS)
-
-bin:
-	mkdir bin
+#
+# Formatted code docs
+#
 
 doc: doc/html $(DOCS)
 
@@ -217,14 +235,48 @@ doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
 doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 	$(HTMLER) $^ > $@
 
+# Per stage variabless:
+
+define define_stage # stage
+STAGE$(1)_PRIOR=$(shell echo $$(($(1) - 1)))
+STAGE$(1)_FORTH=$(RUNNER) ./bin/interp.$(RUN_OS).$(1)$(EXECEXT)
+STAGE$(1)_BUILDER=$(RUNNER) ./bin/builder.$(RUN_OS).$(1)$(EXECEXT)
+endef
+
+# Per target and stage outputs:
+
+define define_stage_targets # target, stage
+bin/%.$(1).$(2)$$(EXECEXT):
+	$$(STAGE$(2)_BUILDER) -t $$(TRIPLE_$(1)) -o $$@ $$^
+bin/builder.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ $$^
+bin/interp.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th
+	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e interp-boot -o $$@ $$^
+bin/runner.$(1).$(2)$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
+	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e runner-boot -o $$@ $$^
+endef
+
+# Define instances of the above:
+$(foreach stage,1 2 3,$(eval $(call define_stage,$(stage))))
+
+$(foreach stage,1 2 3, \
+  $(foreach target,static android gnueabi, \
+    $(eval $(call define_stage_targets,$(target),$(stage)))))
+
+# Bootstrap stage 0:
+
+STAGE0_FORTH=$(RUNNER) ./bin/interp$(EXECEXT)
+STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
+STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
+
+bin/builder$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+	$(STAGE0_BUILDER) -t $(HOST_ARCH)-$(HOST_OS)-static -e build -o $@ $^
+
 bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
 bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
 bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
-
-lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
-	mkdir -p lib && $(TARGET_CC) $(SO_CFLAGS) -o $@ $<
 
 %$(EXECEXT): %.4th
 	cat $< | $(FORTH) > $@
@@ -234,40 +286,18 @@ bin/%$(EXECEXT): src/bin/%.4th
 	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
 	chmod u+x $@
 
+# Barebones ELF files:
 bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
-RUN_OS=static
-ifeq ($(HOST_ABI),android)
-	RUN_OS=android
-else ifeq ($(HOST_ABI),gnueabi)
-	RUN_OS=linux
-endif
+# Test cases:
 
-STAGE0_FORTH=$(TARGET_RUNNER) ./bin/interp$(EXECEXT)
-STAGE1_FORTH=$(TARGET_RUNNER) ./bin/interp.$(RUN_OS).1$(EXECEXT)
-STAGE2_FORTH=$(TARGET_RUNNER) ./bin/interp.$(RUN_OS).2$(EXECEXT)
-STAGE3_FORTH=$(TARGET_RUNNER) ./bin/interp.$(RUN_OS).3$(EXECEXT)
+# FFI Test library
+lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
+	mkdir -p lib && $(TARGET_CC) $(SO_CFLAGS) -o $@ $<
 
-bin/%.1$(EXECEXT): ./src/bin/%.4th
-	cat $< | $(STAGE0_FORTH) > $@
-	chmod u+x $@
-
-bin/%.2$(EXECEXT): ./src/bin/%.4th
-	cat $< | $(STAGE1_FORTH) > $@
-	chmod u+x $@
-
-bin/%.3$(EXECEXT): ./src/bin/%.4th
-	cat $< | $(STAGE2_FORTH) > $@
-	chmod u+x $@
-
-%.png: %$(EXECEXT)
-	./scripts/bintopng.sh e $< $@
-
-%.raw: %.png
-	./scripts/bintopng.sh d $< $@
-
+# CPIO test inputs
 misc/cpio:
 	mkdir -p $@
 
@@ -280,3 +310,10 @@ misc/cpio/binary.cpio: $(RUNNER_THUMB_SRC)
 
 test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpio
 	echo 'load-core tmp" src/tests/lib/cpio.4th" load/2 test-cpio' | $(STAGE3_FORTH)
+
+# Image fun
+%.png: %$(EXECEXT)
+	./scripts/bintopng.sh e $< $@
+
+%.raw: %.png
+	./scripts/bintopng.sh d $< $@

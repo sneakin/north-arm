@@ -3,6 +3,6 @@
 
 def assembler-boot
   data-stack-init-size data-init-stack
-  return-stack-init-size cell-size * proper-init
+  return-stack-init-size cell-size int-mul proper-init
   interp-boot
 end
