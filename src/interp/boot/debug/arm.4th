@@ -1,14 +1,19 @@
 ( ARM control registers: )
 
+def print-fpscr-bit ( reg-value bit name-str name-len -- )
+  arg3 arg2 bit-set? IF arg1 arg0 ELSE s" _" THEN write-string/2
+  4 return0-n
+end
+
 def print-fpscr/1
   arg0 dup write-hex-uint
   nl s" Cond: " write-string/2
-  dup 31 bit-set? IF s" N" ELSE s" _" THEN write-string/2
-  dup 30 bit-set? IF s" Z" ELSE s" _" THEN write-string/2
-  dup 29 bit-set? IF s" C" ELSE s" _" THEN write-string/2
-  dup 28 bit-set? IF s" V" ELSE s" _" THEN write-string/2
+  dup 31 s" N" print-fpscr-bit
+  dup 30 s" Z" print-fpscr-bit
+  dup 29 s" C" print-fpscr-bit
+  dup 28 s" V" print-fpscr-bit
   nl s" Flush to zero: " write-string/2
-  dup 24 bit-set? IF s" FZ" ELSE s" _" THEN write-string/2 space
+  dup 24 s" FZ" print-fpscr-bit space
   nl s" Rounding: " write-string/2  
   dup 21 bsr 0x3 logand write-hex-uint space
   nl s" Vstride: " write-string/2  
@@ -16,17 +21,17 @@ def print-fpscr/1
   nl s" Vlen: " write-string/2
   dup 16 bsr 0x7 logand write-hex-uint space
   nl s" Trap: " write-string/2
-  dup 12 bit-set? IF s" IX " ELSE s" _" THEN write-string/2
-  dup 11 bit-set? IF s" UF " ELSE s" _" THEN write-string/2
-  dup 10 bit-set? IF s" OF " ELSE s" _" THEN write-string/2
-  dup 9 bit-set? IF s" DZ " ELSE s" _" THEN write-string/2
-  dup 8 bit-set? IF s" IO " ELSE s" _" THEN write-string/2
+  dup 12 s" IX " print-fpscr-bit
+  dup 11 s" UF " print-fpscr-bit
+  dup 10 s" OF " print-fpscr-bit
+  dup 9 s" DZ " print-fpscr-bit
+  dup 8 s" IO " print-fpscr-bit
   nl s" Cumalative: " write-string/2
-  dup 4 bit-set? IF s" IX " ELSE s" _" THEN write-string/2
-  dup 3 bit-set? IF s" UF " ELSE s" _" THEN write-string/2
-  dup 2 bit-set? IF s" OF " ELSE s" _" THEN write-string/2
-  dup 1 bit-set? IF s" DZ " ELSE s" _" THEN write-string/2
-  dup 0 bit-set? IF s" IO " ELSE s" _" THEN write-string/2
+  dup 4 s" IX " print-fpscr-bit
+  dup 3 s" UF " print-fpscr-bit
+  dup 2 s" OF " print-fpscr-bit
+  dup 1 s" DZ " print-fpscr-bit
+  dup 0 s" IO " print-fpscr-bit
   nl
 end
 
