@@ -19,6 +19,20 @@ symbol> case-marker
   out-off' drop
 ; out-immediate-as WHEN
 
+: out-WHEN-STR
+  ( load the value )
+  out-off' int32 int32 3
+  out-off' overn
+  out-off' rot out-off' swap
+  ( compare values )
+  out-off' string-equals?/3
+  out-off' int32 int32 3 out-off' set-overn
+  out-off' int32 int32 2 out-off' dropn
+  ( start IF )
+  POSTPONE out-IF ( fixme postpone needed, or is there a cross POSTPANE? )
+  out-off' drop
+; out-immediate-as WHEN-STR
+
 : out-;;
   ( skip to ESAC )
   out-off' int32

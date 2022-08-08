@@ -26,6 +26,20 @@ symbol> case-marker
   literal drop
 ; immediate
 
+: WHEN-STR
+  ( load the value )
+  literal int32 int32 3
+  literal overn
+  literal rot literal swap
+  ( compare values )
+  literal string-equals?/3
+  literal int32 int32 3 literal set-overn
+  literal int32 int32 2 literal dropn
+  ( start IF )
+  POSTPONE IF
+  literal drop
+; immediate
+
 : ;;
   ( skip to ESAC )
   literal int32
