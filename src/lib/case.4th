@@ -5,6 +5,12 @@
       2 WHEN " two" ;;
       drop " not 1 or 2"
     ESAC
+
+    value CASE
+      1 OF " one" ENDOF
+      2 OF " two" ENDOF
+      drop " not 1 or 2"
+    ENDCASE
 )
 
 symbol> case-start-marker
@@ -65,3 +71,9 @@ symbol> case-marker
   ( patch the case-markers )
   here dup esac-patcher
 ; immediate
+
+( More standard words: )
+alias> OF WHEN immediate
+alias> OF-STR WHEN-STR immediate
+alias> ENDOF ;; immediate
+alias> ENDCASE ESAC immediate

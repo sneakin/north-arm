@@ -15,6 +15,20 @@
   literal drop
 ; out-immediate-as WHEN
 
+: out-WHEN-STR
+  ( load the value )
+  literal int32 int32 3
+  literal overn
+  literal rot literal swap
+  ( compare values )
+  literal string-equals?/3
+  literal int32 int32 3 literal set-overn
+  literal int32 int32 2 literal dropn
+  ( start IF )
+  POSTPONE out-IF ( fixme postpone needed, or is there a cross POSTPONE? )
+  literal drop
+; out-immediate-as WHEN-STR
+
 : out-;;
   ( skip to ESAC )
   literal int32
@@ -40,3 +54,9 @@
   ( patch the case-markers )
   here dup out-esac-patcher
 ; out-immediate-as ESAC
+
+( More standard words: )
+alias> out-OF out-WHEN out-immediate-as OF
+alias> out-OF-STR out-WHEN-STR out-immediate-as OF-STR
+alias> out-ENDOF out-;; out-immediate-as ENDOF
+alias> out-ENDCASE out-ESAC outsimmediate-as ENDCASE

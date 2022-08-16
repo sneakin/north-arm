@@ -29,7 +29,7 @@ symbol> case-marker
   out-off' int32 int32 3 out-off' set-overn
   out-off' int32 int32 2 out-off' dropn
   ( start IF )
-  POSTPONE out-IF ( fixme postpone needed, or is there a cross POSTPANE? )
+  POSTPONE out-IF ( fixme postpone needed, or is there a cross POSTPONE? )
   out-off' drop
 ; out-immediate-as WHEN-STR
 
@@ -58,3 +58,9 @@ symbol> case-marker
   ( patch the case-markers )
   here dup out-esac-patcher
 ; out-immediate-as ESAC
+
+( More standard words: )
+alias> out-OF out-WHEN out-immediate-as OF
+alias> out-OF-STR out-WHEN-STR out-immediate-as OF-STR
+alias> out-ENDOF out-;; out-immediate-as ENDOF
+alias> out-ENDCASE out-ESAC out-immediate-as ENDCASE

@@ -79,7 +79,7 @@ Standard Forth uses these for stream output.
 Switching to < or > like standard stack ops.
 **** byte data
 **** asm ops
-*** CASE
+*** DONE CASE
 #+BEGIN_SRC forth
 CASE
   N OF ... ENDOF
