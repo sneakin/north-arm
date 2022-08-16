@@ -29,9 +29,9 @@ end
 defcol badlog2-uint swap 0 badlog2-uint-loop swap endcol
 
 defcol badlog2-int
-  swap 0 over int<
+  swap 1 over int<=
   IF badlog2-uint
-  ELSE 0 ( " range error" error )
+  ELSE drop 0 ( " range error" error )
   THEN swap
 endcol
 

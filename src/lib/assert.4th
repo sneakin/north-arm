@@ -7,7 +7,7 @@
   THEN
 ;
 
-: assert-not lognot assert ;
+: assert-not not assert ;
 
 : write-binop-message
   swap write-int write-string write-int

@@ -38,12 +38,6 @@ def print-regs
   save-high-regs local0 0 print-regs-loop
 end
 
-def print-env/1
-  arg0 env dup IF write-line arg0 1 + set-arg0 drop repeat-frame THEN
-end
-
-def print-env 0 print-env/1 end
-
 ( Memory dumping: )
 
 def memdump/3 ( ptr num-bytes printer )
