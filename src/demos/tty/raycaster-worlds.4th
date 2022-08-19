@@ -98,3 +98,8 @@ tmp" src/demos/tty/raycaster-00.map" drop allot-read-file drop
 tmp" src/demos/tty/raycaster-01.map" drop allot-read-file drop
 44 81 make-world const> world7
 [THEN]
+
+' world8 [UNLESS]
+tmp" src/demos/tty/raycaster-08.map" drop allot-read-file drop
+64 65 make-world const> world8
+[THEN]

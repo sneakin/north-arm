@@ -224,10 +224,12 @@ def cast-ray-fn ( world y x angle ++ world | hit )
   arg3 true 4 return2-n
 end
 
+256 var> RAYCAST-CAST-LENGTH ( fixme crashes when set too small: nothing to render? )
+
 def cast-ray ( world y x angle ++ hit )
   arg0 int32->float32 degrees->vec2d
-  1024 int32->float32 float32-mul float32->int32 arg1 + raycaster-ray-bits bsl swap
-  1024 int32->float32 float32-mul float32->int32 arg2 + raycaster-ray-bits bsl swap
+  RAYCAST-CAST-LENGTH @ int32->float32 float32-mul float32->int32 arg1 + raycaster-ray-bits bsl swap
+  RAYCAST-CAST-LENGTH @ int32->float32 float32-mul float32->int32 arg2 + raycaster-ray-bits bsl swap
   ( s" casting to " write-string/2 arg2 .i space arg1 .i space arg0 .i space
   local1 .i space local0 .i nl )
   ' cast-ray-fn arg0 partial-first
