@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 FFROOT=$(dirname "$0")
 FFBASE=$(basename "$0")

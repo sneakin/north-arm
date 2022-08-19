@@ -1,11 +1,14 @@
 TARGETS=bash-linux-static thumb-linux-static thumb-linux-gnueabi thumb-linux-android \
-	thumb2-linux-static thumb2-linux-gnueabi thumb2-linux-android
+	thumb2-linux-static thumb2-linux-gnueabi thumb2-linux-android \
+	x86-linux-static x86-linux-gnueabi \
+	x86_64-linux-static x86_64-linux-gnueabi \
+	x86-netbsd-static x86-netbsd-dynamic
 HOSTS=$(TARGETS)
 
 HOST?=$(MAKE_HOST)
 TARGET?=thumb-linux-static
 
-platform_tuple = $($(1)_ARCH)-$($(1)_OS)-$($(1)_ABI)
+platform_tuple=$($(1)_ARCH)-$($(1)_OS)-$($(1)_ABI)
 
 define platform_vars # (var_prefix)
 	ifneq (,$$(findstring x86_64,$(2)))
@@ -36,15 +39,25 @@ define platform_vars # (var_prefix)
 		$(1)_ARCH?=bash
 		$(1)_BITS?=32
 	else
-		$$(error "Bad arch: $(2)")	
+$$(error "Bad arch: $(2)")
 	endif
 
 	ifneq (,$$(findstring linux,$(2)))
 		$(1)_OS?=linux
 	else ifneq (,$$(findstring windows,$(2)))
 		$(1)_OS?=windows
+	else ifneq (,$$(findstring netbsd,$(2)))
+		$(1)_OS?=netbsd
+	else ifneq (,$$(findstring dragonfly,$(2)))
+		$(1)_OS?=netbsd
+	else ifneq (,$$(findstring freebsd,$(2)))
+		$(1)_OS?=netbsd
+	else ifneq (,$$(findstring openbsd,$(2)))
+		$(1)_OS?=netbsd
+	else ifneq (,$$(findstring netbsd,$(2)))
+		$(1)_OS?=netbsd
 	else
-		$$(error "Bad OS: $(2)")	
+$$(error "Bad OS: $(2)")
 	endif
 
 	ifneq (,$$(findstring gnueabi,$(2)))
@@ -56,8 +69,11 @@ define platform_vars # (var_prefix)
 	else ifneq (,$$(findstring static,$(2)))
 		$(1)_ABI?=static
 		$(1)_STATIC?=true
+	else ifneq (,$$(findstring dynamic,$(2)))
+		$(1)_ABI?=dynamic
+		$(1)_STATIC?=false
 	else
-	$$(error "Bad ABI: $(2)")	
+$$(error "Bad ABI: $(2)")
 	endif
 endef
 
