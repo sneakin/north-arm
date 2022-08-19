@@ -30,6 +30,12 @@ s[ src/interp/data-stack.4th ] load-list
 s[ src/interp/proper.4th
 ] load-list
 
+( Math and big numbers: )
+s[ src/lib/math/int32.4th
+   src/lib/math/int64.4th
+   src/interp/output/int64.4th
+] load-list
+   
 ( Debugging )
 s[ src/interp/debug.4th
    src/interp/decompiler.4th

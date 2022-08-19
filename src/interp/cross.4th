@@ -23,9 +23,9 @@ alias> var> defvar>
 alias> const> defconst>
 alias> symbol> defsymbol>
 
-( alias> ' out-off' immediate )
+alias> ' out' immediate
 
-alias> immediate out-immediate
+alias> immediate out-immediate ( todo compiling or to output? )
 alias> immediate-as out-immediate-as
 
 alias> alias> defalias>

@@ -30,6 +30,14 @@ def decompile-colon-data
       ' cstring WHEN drop cs + write-quoted-string space ;;
       ' string WHEN drop write-quoted-string space ;;
       ' int32 WHEN drop write-int space ;;
+      ' int64 WHEN
+         write-dict-entry-name space
+	 arg0 op-size + dup set-arg0 peek write-int64 space
+      ;;
+      ' uint64 WHEN
+         write-dict-entry-name space
+	 arg0 op-size + dup set-arg0 peek write-uint64 space
+      ;;
       ' literal WHEN
         write-dict-entry-name space
         dup dict dict-contains?/2

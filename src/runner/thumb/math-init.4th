@@ -23,3 +23,17 @@ defcol arm-soft-divmod
   ' uint-divmod-sw ' uint-divmod dict-entry-clone-fields
   patch-math-operators
 endcol
+
+def math-init/1 ( platform-str -- )
+  ( s" thumb2" contains? )
+  arg0 0 peek-off-byte 0x74 equals?
+  arg0 5 peek-off-byte 0x32 equals?
+  and IF
+    arm-hard-divmod
+  THEN
+  1 return0-n
+end
+
+def math-init
+  NORTH-PLATFORM math-init/1
+end

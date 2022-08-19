@@ -102,6 +102,8 @@ def literalizes?
   arg0 pointer pointer equals? IF true set-arg0 return THEN
   arg0 pointer cstring equals? IF true set-arg0 return THEN
   arg0 pointer string equals? IF true set-arg0 return THEN
+  arg0 pointer uint64 equals? IF true set-arg0 return THEN
+  arg0 pointer int64 equals? IF true set-arg0 return THEN
   false set-arg0
 end
 

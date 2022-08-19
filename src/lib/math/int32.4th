@@ -1,17 +1,11 @@
-10 var> int32-precision
-
-def bit-mask/2 ( mask nbits -- mask )
-  arg0 0 int> UNLESS arg1 2 return1-n THEN
-  arg1 1 bsl 1 logior set-arg1
-  arg0 1 - set-arg0 repeat-frame
-end
-
-def bit-mask ( nbits -- mask )
-  0 arg0 bit-mask/2 set-arg0
-end
+tmp" defvar>" defined?/2 [IF]
+  10 defvar> int32-precision
+[ELSE]
+  10 var> int32-precision
+[THEN]
 
 def sign-extend-from
-  arg1 arg0 bit-set?
+  arg1 1 arg0 bsl logand
   IF arg0 1 + bit-mask lognot arg1 logior
   ELSE arg1
   THEN 2 return1-n
@@ -161,3 +155,7 @@ end
 def fun-factorial-int32
   1 arg0 1 + uint32-stepper ' int-mul 1 fun-reduce/3 set-arg0
 end
+
+NORTH-BITS 32 equals? [IF]
+  s[ src/lib/math/32/int32.4th ] load-list
+[THEN]

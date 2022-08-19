@@ -18,6 +18,10 @@ def in-range? ( n max min )
   arg2 arg0 int>= and return1
 end
 
+def bit-mask
+  1 arg0 bsl 1 int-sub set-arg0
+end
+
 ( todo optimize by counting down? divide & conquer? )
 
 def badlog2-uint-loop

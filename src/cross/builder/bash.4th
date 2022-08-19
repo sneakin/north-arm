@@ -27,7 +27,12 @@ def load-runner
   src/runner/thumb/linux/signals/syscalls.4th
   src/runner/thumb/ffi.4th
   src/runner/thumb/logic.4th
-  src/runner/thumb/math.4th
+  src/runner/thumb/math/cmp.4th
+  src/runner/thumb/math/signed.4th
+  src/runner/math/division.4th
+  src/runner/thumb/math/division.4th
+  src/runner/thumb/math/carry.4th
+  src/runner/thumb/math/int64.4th
   src/runner/math.4th
   src/runner/cells.4th
   src/runner/stack.4th

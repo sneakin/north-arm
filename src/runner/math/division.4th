@@ -1,32 +1,6 @@
-( Comparisons: )
-
-defcol int>
-  rot int< swap
-endcol
-
-defcol int>=
-  rot int<= swap
-endcol
-
-defcol uint>
-  rot uint< swap
-endcol
-
-defcol uint>=
-  rot uint<= swap
-endcol
-
-( Signed operations: )
-
-def negative?
-  arg0 int32 0 int< return1
-end
-
-def abs-int
-  arg0 negative? IF negate THEN set-arg0
-end
-
 ( Division: )
+
+( todo optimize with a log2? )
 
 def bsl-to-match/3 ( to-match n bits-left )
   arg2 arg1 uint<= IF return THEN
@@ -36,14 +10,13 @@ def bsl-to-match/3 ( to-match n bits-left )
   repeat-frame
 end
 
-defcol bsl-to-match ( to-match n -- shifted-n bits )
+def bsl-to-match ( to-match n -- shifted-n bits )
   ( shift N until it's larger than to-match. Return N shifted and the number of bits it was. )
-  rot swap int32 0 bsl-to-match/3
-  rot drop
-  rot
-endcol
+  arg1 arg0 int32 0 bsl-to-match/3
+  set-arg0 set-arg1
+end
 
-def int-divmod-sw/4 ( numer subtractor bit quotient )
+def int-divmod-sw/4 ( numer subtractor bit quotient -- quotient remainder )
   ( no work left with zero bits )
   arg1 int32 0 uint<= IF arg0 arg3 4 return2-n THEN
   ( add the bit to the quotient if numer can have subtractor subtracted )
@@ -73,9 +46,9 @@ def int-divmod-sw ( numer denom -- quotient remainder )
        +/- => - +
   )
   arg1 negative? swap drop
-  IF negate arg0 negative? swap drop UNLESS swap negate swap THEN
-  ELSE arg0 negative? swap drop IF swap negate swap THEN
-  THEN
+  dup IF swap negate swap THEN
+  arg0 negative? swap drop
+  equals? UNLESS swap negate swap THEN
   ( save the returns )
   set-arg0 set-arg1
 end
@@ -123,24 +96,10 @@ defcol uint-div-sw
   rot swap uint-divmod-sw drop swap
 endcol
 
-( Thumb2 divmod, divide and then multiply and subtract for the remainder: )
-
-defcol int-divmod-v2
-  rot swap
-  2dup int-div-v2 ( num den quot )
-  rot swap 3 overn int-mul int-sub ( abs-int )
-  swap rot
-endcol
-
-defcol uint-divmod-v2
-  rot swap
-  2dup uint-div-v2 ( num den quot )
-  rot swap 3 overn int-mul int-sub
-  swap rot
-endcol
-
 defalias> int-divmod int-divmod-sw
 defalias> uint-divmod uint-divmod-sw
+defalias> int-div int-div-sw
+defalias> uint-div uint-div-sw
 
 defcol int-mod
   rot swap int-divmod swap drop swap
@@ -149,9 +108,6 @@ endcol
 defcol uint-mod
   rot swap uint-divmod swap drop swap
 endcol
-
-defalias> int-div int-div-sw
-defalias> uint-div uint-div-sw
 
 ( Floored division: )
 

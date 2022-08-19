@@ -31,7 +31,7 @@ end
 
 ( fixme length one short in base 8 from parsing max int )
 
-def parse-int-base ( string index -- base index )
+def parse-int-base ( string index ++ base index ) ( fixme: drop args {
   ( Not 0... )
   arg1 arg0 string-peek int32 48 equals? UNLESS
     ( $N hexadecimal )
@@ -70,9 +70,13 @@ def parse-uint ( str length -- n valid? )
   set-arg0 set-arg1
 end
 
+def minus-sign?
+  arg0 int32 45 equals? set-arg0
+end
+
 def parse-int ( str length -- n valid? )
   ( leading minus sign: )
-  arg1 int32 0 string-peek int32 45 equals? IF
+  arg1 int32 0 string-peek minus-sign? IF
     ( no digits )
     arg0 int32 1 int<= IF
       int32 0 set-arg1
