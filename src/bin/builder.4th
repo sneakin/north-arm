@@ -43,15 +43,17 @@ end
 def north-stacks-init!
   return-stack peek UNLESS
     512 proper-init
-    verbosity @ IF s" Initialized return stack: " error-string/2 THEN
-    return-stack @ error-hex-uint enl
+    verbosity @ IF s" Initialized return stack: " error-string/2
+		   return-stack @ error-hex-uint enl
+		THEN
   THEN
 
   dhere UNLESS
     256 1024 * data-init-stack
-    verbosity @ IF s" Initialized data stack: " error-string/2 THEN
-    data-stack-base @ error-hex-uint espace
-    data-stack-size @ error-uint enl
+    verbosity @ IF s" Initialized data stack: " error-string/2
+		   data-stack-base @ error-hex-uint espace
+		   data-stack-size @ error-uint enl
+		THEN
   THEN
 
   exit-frame
