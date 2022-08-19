@@ -1,5 +1,3 @@
-" src/lib/bit-fields.4th" load
-
 ( Determines the number of terms the repeated series use. > 1000 needed for sin-prod. )
 11 var> float-precision
 
@@ -144,8 +142,6 @@ def float32-ln-1 ( x )
   ELSE 1f arg0 float32-sub float32-ln-1-series
   THEN set-arg0
 end
-
-2f float32-ln-1 const> ln2-1
 
 def float32-ln
   ( special cases )

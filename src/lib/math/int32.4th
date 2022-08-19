@@ -1,4 +1,4 @@
-tmp" defvar>" defined?/2 [IF]
+' defvar> [IF]
   10 defvar> int32-precision
 [ELSE]
   10 var> int32-precision
@@ -6,7 +6,7 @@ tmp" defvar>" defined?/2 [IF]
 
 def sign-extend-from
   arg1 1 arg0 bsl logand
-  IF arg0 1 + bit-mask lognot arg1 logior
+  IF 1 arg0 1 + bsl 1 - ( bit-mask ) lognot arg1 logior
   ELSE arg1
   THEN 2 return1-n
 end

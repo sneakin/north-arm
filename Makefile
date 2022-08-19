@@ -16,7 +16,7 @@ RUN_OS=static
 ifeq ($(HOST_ABI),android)
 	RUN_OS=android
 else ifeq ($(HOST_ABI),gnueabi)
-	RUN_OS=linux
+	RUN_OS=gnueabi
 endif
 
 TRIPLE_static=$(TARGET_ARCH)-$(TARGET_OS)-static
@@ -184,7 +184,10 @@ RUNNER_THUMB_SRC=\
 	src/runner/thumb/state.4th \
 	src/runner/thumb/linux.4th \
 	src/runner/thumb/init.4th \
-	src/runner/thumb/math.4th \
+	src/runner/thumb/math/cmp.4th \
+	src/runner/thumb/math/signed.4th \
+	src/runner/thumb/math/carry.4th \
+	src/runner/math/division.4th \
 	src/cross/defining/proper.4th \
 	src/runner/proper.4th \
 	src/runner/thumb/proper.4th \
@@ -269,8 +272,9 @@ STAGE0_FORTH=$(RUNNER) ./bin/interp$(EXECEXT)
 STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
 STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
 
+# todo was using HOST vars which attempted a build for x86. Right but not ready.
 bin/builder$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
-	$(STAGE0_BUILDER) -t $(HOST_ARCH)-$(HOST_OS)-static -e build -o $@ $^
+	$(STAGE0_BUILDER) -t $(TARGET_ARCH)-$(TARGET_OS)-static -e build -o $@ $^
 
 bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
 bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)

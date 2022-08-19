@@ -1,4 +1,4 @@
-tmp" alias" defined?/2 [UNLESS] load-core [THEN]
+' alias [UNLESS] load-core [THEN]
 " src/lib/getopt.4th" load
 
 " src/cross/builder/interp.4th" load
