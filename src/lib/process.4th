@@ -80,15 +80,15 @@ def process-start ( fn process -- ok? )
   THEN 2 return1-n
 end
 
-def process-spawn ( ++ process )
+def process-spawn/1 ( fn ++ process )
   ( Allocates a new process and starts it interpreting. )
   0
   process make-instance set-local0
-  ' interp local0 process-start IF
-    local0 exit-frame
-  ELSE
-    0 return1
-  THEN
+  arg0 local0 process-start IF local0 exit-frame ELSE 0 set-arg0 THEN
+end
+
+def process-spawn ( ++ process )
+  ' interp process-spawn/1 dup IF exit-frame ELSE 0 return1 THEN
 end
 
 def process-write ( str length process -- bytes-wrote )
