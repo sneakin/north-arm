@@ -7,10 +7,10 @@
 [ELSE] 128
 [THEN] const> NORTH-BITS
 
-" " " uname -o" system-capture
+" " " uname -o 2>/dev/null || echo static" system-capture
 " -" ++
 " " " uname -s" system-capture ++
 " -" ++
-" " " basename $SHELL" system-capture ++
+" bash" ++
 " tr '[:upper:]' '[:lower:]'" system-capture
 const> NORTH-PLATFORM
