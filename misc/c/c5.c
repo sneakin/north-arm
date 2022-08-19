@@ -314,7 +314,19 @@ DEFOP2(int_mod, "int-mod", &int_div) {
   return next_op(eip);
 }
 
-DEFOP2(int_lte, "int<=", &int_mod) {
+DEFOP(bsl, &int_mod) {
+  Cell c = *((*sp)++);
+  (*sp)->ui <<= c.ui;
+  return next_op(eip);
+}
+
+DEFOP(bsr, &bsl) {
+  Cell c = *((*sp)++);
+  (*sp)->ui >>= c.ui;
+  return next_op(eip);
+}
+
+DEFOP2(int_lte, "int<=", &bsr) {
   long a = (*sp)->i;
   *sp += 1;
   long b = (*sp)->i;
