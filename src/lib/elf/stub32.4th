@@ -29,7 +29,7 @@
 ( ' type uint16 field )
 2 ,uint16
 ( ' machine uint16 field )
-40 ,uint16
+target-thumb? IF 40 ELSE target-x86? IF 3 ELSE 0 THEN THEN ,uint16
 ( ' version uint32 field )
 1 ,uint32
 ( ' entry uint32 field )
@@ -171,13 +171,6 @@ swap to-out-addr ,uint32
   " .data" ,byte-string
   " .shstrtab" ,byte-string
   " .note.ABI-tag" ,byte-string
-;
-
-: write-elf32-code
-  1 r7 mov# ,uint16
-  13 r0 mov# ,uint16
-  0 swi ,uint16
-  0 swi ,uint16
 ;
 
 : write-elf32-abi-tag

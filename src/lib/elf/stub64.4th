@@ -173,13 +173,6 @@ swap to-out-addr ,uint64
   " .note.ABI-tag" ,byte-string
 ;
 
-: write-elf64-code
-  1 r7 mov# ,uint16
-  13 r0 mov# ,uint16
-  0 swi ,uint16
-  0 swi ,uint16
-;
-
 : write-elf64-abi-tag
   4 ,uint32 ( name )
   16 ,uint32 ( desc )

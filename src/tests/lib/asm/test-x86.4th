@@ -8,6 +8,7 @@ load-core
   16 x86-bits!
   break-padding
   ( 8 bit )
+  ( [ { 0x10 al } [ 0xCCRR10B0 ] ] ' mov# assert-op )
   dhere 0x10 al mov# break-padding
   0xCCCC10B0 1 assert-data
   ( 16 bit )

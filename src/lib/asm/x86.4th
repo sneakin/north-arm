@@ -189,7 +189,7 @@ end
 
 : modrm-sib?
   modrm-reg? lognot
-  over modrm-mem 0xF logand modrm-sib equals?
+  over modrm-mem ( 0xF logand ) modrm-sib equals?
   and
 ;
 
@@ -204,7 +204,7 @@ end
 ;
 
 : modrm+ ( offset regB regA || offset sib sp regA )
-  over 7 logand modrm-sib equals? IF 4 overn ELSE 3 overn THEN
+  over ( 7 logand ) modrm-sib equals? IF 4 overn ELSE 3 overn THEN
   signed-byte? IF modrm-mode-byte ELSE modrm-mode-long THEN modrm/3
 ;
 
@@ -386,7 +386,7 @@ Emitted bytes depend on bit size of operands or explicitly.
 NOP reg/mem16 | 0F 1F /0 | Performs no operation on a 16-bit register or memory operand.
 NOP reg/mem32 | 0F 1F /0 | Performs no operation on a 32-bit register or memory operand.
 NOP reg/mem64 | 0F 1F /0 | Performs no operation on a 64-bit register or memory operand. )
-: nop
+: x86:nop
   0 modrm-reg!
   modrm-dest-reg emit-prefixes
   0x0F ,uint8 0x1F ,uint8
@@ -488,14 +488,14 @@ MOVSX reg32, reg/mem8	| 0F BE /r | Move the contents of an 8-bit register or mem
 MOVSX reg64, reg/mem8	| 0F BE /r | Move the contents of an 8-bit register or memory location to a 64-bit register with sign extension.
 MOVSX reg32, reg/mem16	| 0F BF /r | Move the contents of an 16-bit register or memory location to a 32-bit register with sign extension.
 MOVSX reg64, reg/mem16	| 0F BF /r | Move the contents of an 16-bit register or memory location to a 64-bit register with sign extension. )
-: movsx
+: movsx ( modrm -- )
   dup modrm-reg emit-prefixes
   0x0F ,uint8 0xBE ,uint8
   emit-modrm
 ;
 
 ( MOVSXD reg64, reg/mem32	| 63 /r | Move the contents of a 32-bit register or memory operand to a 64-bit register with sign extension )
-: movsxd
+: movsxd ( modrm -- )
   dup modrm-reg emit-prefixes
   0x63 ,uint8
   emit-modrm
@@ -506,6 +506,12 @@ MOVZX reg32, reg/mem8	| 0F B6 /r | Move the contents of an 8-bit register or mem
 MOVZX reg64, reg/mem8	| 0F B6 /r | Move the contents of an 8-bit register or memory operand to a 64-bit register with zero-extension.
 MOVZX reg32, reg/mem16	| 0F B7 /r | Move the contents of a 16-bit register or memory operand to a 32-bit register with zero-extension.
 MOVZX reg64, reg/mem16	| 0F B7 /r | Move the contents of a 16-bit register or memory operand to a 64-bit register with zero-extension. )
+: movzx ( modrm -- )
+  dup modrm-reg emit-prefixes
+  0x0F ,uint8 0xB7 ,uint8
+  emit-modrm
+;
+
 
 ( Memory access: )
 
@@ -811,7 +817,7 @@ AND reg/mem64, reg64	| 21 /r | and the contents of a 64-bit register or memory l
 AND reg16, reg/mem16	| 23 /r | and the contents of a 16-bit register with the contents of a 16-bit memory location or register.
 AND reg32, reg/mem32	| 23 /r | and the contents of a 32-bit register with the contents of a 32-bit memory location or register.
 AND reg64, reg/mem64	| 23 /r | and the contents of a 64-bit register with the contents of a 64-bit memory location or register. )
-: andr ( reg )
+: andr ( modrm -- )
   dup modrm-reg emit-prefixes
   dup modrm-reg reg8? IF 0x22 ELSE 0x23 THEN ,uint8 drop
   emit-modrm
@@ -1338,7 +1344,7 @@ ADD RAX, imm32		| 05 id		| Add sign-extended imm32 to RAX.
 ADD reg/mem16, imm16	| 81 /0 iw	| Add imm16 to reg/mem16
 ADD reg/mem32, imm32	| 81 /0 id	| Add imm32 to reg/mem32.
 ADD reg/mem64, imm32	| 81 /0 id	| Add sign-extended imm32 to reg/mem64. )
-: add# ( number rd )
+: add# ( number modrm -- )
   0 modrm-reg! emit-80
 ;
 
