@@ -24,7 +24,7 @@ def ffi-callback-for ( returns num-args -- calling-word )
   peek return1
 end
 
-NORTH-BUILD-TIME 1634096442 uint<= [IF]
+NORTH-BUILD-TIME 1659768556 uint< [IF]
 
 def ffi-callback-with ( word code-word -- ...assembly ptr )
   ( returns a call to an op that'll push args & jump to the next word. )
