@@ -321,3 +321,9 @@ test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpi
 
 %.raw: %.png
 	./scripts/bintopng.sh d $< $@
+
+# Syntax highlighter
+bin/highlight.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+	src/include/interp.4th \
+	src/interp/cross.4th \
+	src/bin/highlight.4th
