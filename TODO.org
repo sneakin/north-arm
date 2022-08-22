@@ -9,6 +9,23 @@ Build an ELF file that can execute the code to build itself.
 North Runner compatible with the x86 runner that can mmap a file to execute.
 ** Get out of the Turing Tar Pit.
 * Tasks
+** August
+*** big integers
+**** int64 file organization
+**** parse-int for int64
+**** int64 literal words
+*** defining immediates in binary
+    Three sets of immediates:
+      * interpreter: top level, interpretable, used in evaluated defs
+      * cross compiling: interpretable, only used when [cross] compiling
+      * output: compiled into binary, listed in binary's immediates.
+    
+*** structs in binary
+    Defines constants and immediates needed during compilation, and generates accessors needed in compiled output.
+*** More dictionary meta data: files loaded, definition source location
+*** process.4th
+**** function to start with a provided function
+**** execve wrapper to run system commands: needs to builh/copy env and an argv array of strings
 ** July
 *** self contained binaries
 **** boot/core and friends
@@ -16,17 +33,18 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 ***** better dictionary separation by switching modes & dictionaries
 **** clock, raycaster
 **** eliminate aliases
-**** standalone builder w/ files on command line
+**** DONE standalone builder w/ files on command line
 *** actual compilation to machine code
 **** DONE sized sequences for code fields
-**** copy code field
+**** copy code field, may need a trampoline field or every interpreted word needs a copied code sequence
 *** Dictionaries
 **** Remove dedicated register
 **** Association list
 **** Ops with doop code, assembly data fields?
 **** Reorder ~dict-map~ arguments to make ~fn~ last.
+**** Delay writing out until the end of building?
 *** error handler, catch and throw
-** now
+** <=June?
 *** struct fields don't resolve right w/ b and b1 fields.
 *** swap tty-cursor-to's arguments to row, column
 *** cross-lookup in bash takes one argument, interp's version takes two.
@@ -66,6 +84,7 @@ Would only work when the token does not span reads.
 *** quine
 The ability to dump the program to source code into a loadable and buildable format.
 **** Disasm
+***** integrated into dictionary dump
 ***** DONE Sized sequences for code fields
 **** immediates
 **** hexadecimal prefixes
@@ -78,6 +97,7 @@ The ability to dump the program to source code into a loadable and buildable for
 Standard Forth uses these for stream output.
 Switching to < or > like standard stack ops.
 **** byte data
+,ins breaks the rule on ~,word~ and ~.word~.
 **** asm ops
 *** DONE CASE
 #+BEGIN_SRC forth
@@ -99,7 +119,7 @@ return
 0sp - zero stack to init
 rot a b c -- b c a
 -rot a b c -- c a b
-pick -> overn
+pick -> 1 + overn
 nip -> swap drop
 tuck a b -- b a b
 
@@ -126,6 +146,7 @@ what's motd ( -> ' hello )
 #+END_SRC
 *** DONE [IF]
 [IF] and other bracketed conditions behave like #if in C.
+**** TODO Remove brackets on toplevel use.
 *** locals
 { arg1 arg0 | local0 -- result }
 ** String readers have length limit of token-buffer-max. Could/should read more.
@@ -188,6 +209,13 @@ Call frames, stack & data pointer math
 *** DONE Compiled words: create & def -> :
 *** DONE Compiler words: :
 *** DONE Immediates: immediate
+** Debugger
+*** function call tracing
+*** breakpoints
+*** watch points
+*** memory / variable watches
+*** execution stepping
+*** exception and signal trapping
 ** Assemblers
 *** TODO Two passes with labels
 *** TODO New-lines write instructions; one per line
@@ -269,7 +297,7 @@ Threads too: offset & indirect.
 Data stack: relative or absolute?
 
 *** DONE argc/argv
-**** TODO getopt like function
+**** DONE getopt like function
 ** DONE Separate ops and definitions
 ** TODO Separate bash specific defs from the general
 ** DONE Variables

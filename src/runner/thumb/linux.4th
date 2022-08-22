@@ -51,7 +51,7 @@ def fork
   args 0 2 syscall return1
 end
 
-def execve
+def execve ( env argv program -- status )
   args 3 0xB syscall 3 return1-n
 end
 
