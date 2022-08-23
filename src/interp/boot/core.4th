@@ -133,8 +133,8 @@ def immediate-as
 end
 
 defcol ''
-  literal literal swap
-  ['] swap
+  literal pointer swap
+  ['] cs - swap
 end immediate-as '
 
 def ememdump/3

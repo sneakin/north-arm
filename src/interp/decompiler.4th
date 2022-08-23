@@ -20,6 +20,15 @@ def write-dict-entry-name
   1 return0-n
 end
 
+def decompile-literal-word ( value word offset -- )
+  arg1 write-dict-entry-name space
+  arg2 arg0 + dict dict-contains?/2
+  IF write-dict-entry-name
+  ELSE 2 dropn arg2 write-hex-uint
+  THEN space
+  3 return0-n
+end
+
 def decompile-colon-data
   arg0 peek int32 0 equals? IF return THEN
   arg0 peek cs +
@@ -27,28 +36,21 @@ def decompile-colon-data
   dup literalizes? IF
     arg0 op-size + dup set-arg0 peek
     swap dup CASE
-      ' cstring WHEN drop cs + write-quoted-string space ;;
-      ' string WHEN drop write-quoted-string space ;;
-      ' int32 WHEN drop write-int space ;;
-      ' int64 WHEN
+      ' cstring OF drop cs + write-quoted-string space ENDOF
+      ' string OF drop write-quoted-string space ENDOF
+      ' int32 OF drop write-int space ENDOF
+      ' int64 OF
          write-dict-entry-name space
 	 arg0 op-size + dup set-arg0 peek write-int64 space
-      ;;
-      ' uint64 WHEN
+      ENDOF
+      ' uint64 OF
          write-dict-entry-name space
 	 arg0 op-size + dup set-arg0 peek write-uint64 space
-      ;;
-      ' literal WHEN
-        write-dict-entry-name space
-        dup dict dict-contains?/2
-        IF write-dict-entry-name
-	ELSE cs + dup dict dict-contains?/2
-	     IF write-dict-entry-name
-	     ELSE write-hex-uint
-	     THEN
-	THEN space ;;
+      ENDOF
+      ' pointer OF cs decompile-literal-word ENDOF
+      ' literal OF cs decompile-literal-word ENDOF
       drop write-dict-entry-name space write-hex-uint space
-    ESAC
+    ENDCASE
   ELSE write-dict-entry-name space
   THEN
   arg0 op-size + set-arg0

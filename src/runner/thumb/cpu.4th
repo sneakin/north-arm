@@ -1,4 +1,4 @@
-( Linux tlaps these according to https://www.kernel.org/doc/Documentation/arm64/cpu-feature-registers.txt )
+( Linux traps these according to https://www.kernel.org/doc/Documentation/arm64/cpu-feature-registers.txt )
 
 defop push-cpsr
   0 r0 bit-set pushr ,ins
