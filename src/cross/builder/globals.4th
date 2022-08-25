@@ -1,6 +1,8 @@
 " thumb-linux-android" string-const> DEFAULT-BUILDER-TARGET
 DEFAULT-BUILDER-TARGET var> builder-target
 true var> builder-with-runner
+false var> builder-with-interp
+false var> builder-with-cross
 " elf32" string-const> DEFAULT-OUTPUT-FORMAT
 DEFAULT-OUTPUT-FORMAT var> builder-output-format
 0 var> builder-output-file
