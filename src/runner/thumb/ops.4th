@@ -5,7 +5,8 @@ r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip
 
-target-thumb2? [IF]
+( target-thumb2? )
+BUILDER-TARGET tmp" thumb2" drop contains? [IF]
   tmp" Compiling for thumb2" error-line/2
   : thumb2? 1 ;
 [ELSE]
