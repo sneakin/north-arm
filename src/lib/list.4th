@@ -32,13 +32,21 @@ def map-car ( cons fn )
   arg1 cdr set-arg1 repeat-frame
 end
 
+def map-car/3 ( cons state fn )
+  arg2 UNLESS arg1 exit-frame THEN
+  arg1 arg2 car arg0 exec-abs set-arg1
+  arg2 cdr set-arg2 repeat-frame
+end
+
 def revmap-cons/3 ( cons state fn )
   arg2 IF
     arg2 car
     arg2 cdr set-arg2 repeat-frame
   ELSE
     here here locals swap stack-delta
-    dup 0 int> IF arg1 arg0 map-seq-n/4 exit-frame THEN
+    dup 0 int> IF arg1 arg0 map-seq-n/4 exit-frame
+	       ELSE arg1 3 return1-n
+	       THEN
   THEN
 end
 

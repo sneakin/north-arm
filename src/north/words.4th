@@ -319,7 +319,7 @@ end
 
 def dallot-zeroed-seq ( num-cells -- seq )
   arg0 dallot-seq
-  dup seq-data arg0 cell-size * 0 fill-seq 3 dropn
+  dup seq-data arg0 cell-size * 0 fill-seq
   return1-1
 end
 

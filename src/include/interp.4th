@@ -9,6 +9,7 @@ s[ src/lib/seq.4th
    src/interp/output/strings.4th
    src/interp/output/hex.4th
    src/interp/output/dec.4th
+   src/interp/output/bool.4th
    src/interp/characters.4th
    src/interp/reader.4th
    src/interp/numbers.4th

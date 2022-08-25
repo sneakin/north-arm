@@ -369,15 +369,8 @@ def load
   exit-frame
 end
 
-defcol tail-1 ( ...args1 arg0 frame-ra fp word ra -- ...args1 ra -> word )
-  drop
-  current-frame return-address @ set-arg0
-  dict-entry-data @ cs + current-frame return-address !
-  return
-endcol
-
 def load/2
-  ' load tail-1
+  ' load droptail-1
 end
 
 def load-string/2

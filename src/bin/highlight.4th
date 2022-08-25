@@ -2,8 +2,9 @@
     ~bin/builder.android.3.elf -o bin/highlight src/include/interp.4th src/interp/cross.4th src/bin/highlight.4th~. )
 
 tmp" alias" defined?/2 [UNLESS] load-core [THEN]
-" src/lib/getopt.4th" load
-" src/lib/scanners/highlight.4th" load
+s[ src/lib/getopt.4th
+   src/lib/scanners/highlight.4th
+] load-list
 
 0 var> verbosity
 0 var> start-interp
@@ -11,8 +12,9 @@ tmp" alias" defined?/2 [UNLESS] load-core [THEN]
 0 var> cfg-file
 0 var> recurse-files
 true var> with-file-heading
+0 var> output-format
 
-" hic:vrm" string-const> OPTS
+" hif:c:vrm" string-const> OPTS
 
 def process-opts
   arg0 CASE
@@ -22,6 +24,7 @@ def process-opts
     s" r" WHEN-STR true recurse-files ! ;;
     s" c" WHEN-STR arg1 cfg-file ! ;;
     s" m" WHEN-STR false with-file-heading ! ;;
+    s" f" WHEN-STR arg1 output-format ! ;;
     s" *" WHEN-STR arg1 files-to-highlight push-onto true exit-frame ;;
     drop false 2 return1-n
   ESAC  
@@ -36,6 +39,7 @@ def usage
   s"        -i  Start an interpreter before highlighting." write-line/2
   s"        -v  Be verbose and print out debug messages." write-line/2
   s"   -c path  Load a North script to configure highlighting." write-line/2
+  s"   -f name  Use the named output formatter: enriched, html" write-line/2
 end
 
 def north-stacks-init!
@@ -58,26 +62,52 @@ def north-stacks-init!
 end
 
 def main
+  0 0
+  HIGHLIGHT-DEFAULT-OUTPUT output-format !
   ' process-opts OPTS getopt UNLESS usage 1 return1 THEN
 
+  verbosity @ IF
+    s" Inputs: " error-string/2
+    files-to-highlight @ dup IF enl ' error-line map-car ELSE drop s" stdin" error-line/2 THEN
+    s" Recursive: " error-string/2 recurse-files @ error-bool enl
+    s" Output format: " error-string/2 output-format @ dup UNLESS " enriched" THEN error-string enl
+    s" With header: " error-string/2 with-file-heading @ error-bool enl
+    s" Verbosity: " error-string/2 verbosity @ error-int enl
+    s" Config file: " error-string/2 cfg-file @ error-string enl
+    s" Start Interpreter: " error-string/2 start-interp @ error-bool enl
+  THEN
+
+  ( Initialize everything: )
   north-stacks-init!
-  recurse-files @ highlight-init
+  output-format @ make-highlight-output set-local0
 
   start-interp @ IF interp-init interp THEN
   cfg-file @ IF cfg-file @ load THEN
 
-  with-file-heading @ IF
-    s" Content-Type: text/enriched" write-line/2
-    s" Text-Width: 70" write-line/2
-    nl
-  THEN
-  
-  files-to-highlight @ dup IF
-    0 ' highlight-file revmap-cons/3
+  ( Start of writing: )
+  with-file-heading @ IF local0 highlight-output-heading THEN
+
+  ( Allocate space for the readers: )
+  token-buffer-max stack-allot set-local1
+
+  ( Start highlighting... )
+  files-to-highlight @ IF
+    ( ...files listed on the command line )
+    local1 token-buffer-max local0 files-to-highlight @
+    recurse-files @
+    IF 0 recursive-highlight ELSE highlight-file-list THEN
   ELSE
-    token-buffer-max stack-allot
-    token-buffer-max make-stdin-reader highlight
+    ( ...standard input )
+    local1 token-buffer-max make-stdin-reader local0 highlight/2
+    ( ...and any files loaded )
+    recurse-files @ IF
+      highlight-state-seen-files @
+      local1 token-buffer-max local0 4 overn 0 recursive-highlight
+    THEN
   THEN
+
+  ( finish writing )
+  with-file-heading @ IF local0 highlight-output-footing THEN
 
   0 return1
 end

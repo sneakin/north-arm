@@ -33,7 +33,7 @@ end
 
 def tty-buffer-pitch ( buffer -- pitch )
   arg0 TtyBuffer -> width @
-  TtyCell struct -> byte-size @ * return1-1
+  TtyCell struct -> byte-size @ * set-arg0
 end
 
 def tty-buffer-draw-row ( cells width pen-state -- )

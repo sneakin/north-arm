@@ -77,6 +77,14 @@ end
 
 ( Comparison wrappers: )
 
+def string-equals?
+  arg1 string-length
+  arg0 string-length over equals?
+  IF arg1 arg0 rot string-equals?/3
+  ELSE false
+  THEN 2 return1-n
+end
+
 def byte-string-compare/4 ( a-str a-length b-str b-length -- ternary )
   arg3 arg1 arg2 arg0 min byte-string-compare/3
   ( result is 0 and if lengths differ )
@@ -143,6 +151,11 @@ def allot-byte-string/2
   2dup null-terminate
   exit-frame
 end
+
+def allot-byte-string ( str ++ )
+  arg0 arg0 string-length allot-byte-string/2 exit-frame
+end
+
 
 ( String matching: )
 

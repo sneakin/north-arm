@@ -21,6 +21,8 @@ s[ src/interp/boot/core.4th
    src/interp/dictionary/dump.4th
    src/lib/structs.4th
    src/lib/math.4th
+   src/lib/linux.4th
+   src/lib/io.4th
 ] load-list
 
 signals-init

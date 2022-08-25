@@ -105,7 +105,11 @@ class VT100
 end
 
 def unescape xml
-  xml.gsub('&lt;', '<').gsub('&gt;', '>').gsub('&amp;', '&')
+  if xml
+    xml.gsub('&lt;', '<').gsub('&gt;', '>').gsub('&amp;', '&')
+  else
+    ''
+  end
 end
 
 def enrich doc, out = $stdout, vt100 = nil
@@ -136,8 +140,21 @@ def enrich doc, out = $stdout, vt100 = nil
         vt100.underline = true
         enrich(e, out, vt100)
         vt100.underline = false
+      when 'bigger' then
+        vt100.underline = true
+        vt100.bold = true
+        # out.write(vt100.emit_delta)
+        # out.puts(" " * e.text.size)
+        # vt100.underline = false
+        # vt100.bold = false
+        # out.puts(vt100.emit_delta)        
+        # vt100.underline = false
+        # vt100.bold = true
+        out.write(vt100.emit_delta + unescape(e.text))
+        vt100.underline = false
+        vt100.bold = false
       when 'root' then enrich(e, out, vt100)
-      else out.write(vt100.emit_delta + unescape(e.text))
+      else enrich(e, out, vt100) #out.write(vt100.emit_delta + unescape(e.text))
       end
     end
   end

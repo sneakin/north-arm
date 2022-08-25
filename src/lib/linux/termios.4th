@@ -27,7 +27,7 @@ def tty-termios
 end
 
 def termios-lflag
-    arg0 int32 3 cell+n return1-1
+    arg0 int32 3 cell-size * + set-arg0
 end
 
 def termios-clear-lflag

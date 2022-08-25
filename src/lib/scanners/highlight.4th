@@ -1,405 +1,260 @@
+( List of string helpers: )
+
+def push-copied-string-onto/3 ( string length list ++ new-list )
+  arg2 arg1 allot-byte-string/2 drop arg0 push-onto exit-frame
+end
+
+def push-copied-string-onto ( string list ++ new-list )
+  arg1 allot-byte-string drop arg0 push-onto exit-frame
+end
+
+def push-copied-strings-onto ( list dest ++ new-list )
+  arg1 UNLESS arg0 exit-frame THEN
+  arg1 car arg0 push-copied-string-onto
+  arg1 cdr set-arg1 repeat-frame
+end
+
+def copy-string-onto-list ( list str ++ cons )
+  arg0 allot-byte-string drop arg1 swap cons exit-frame
+end
+
+def list-contains-string? ( str list -- cons )
+  ' string-equals?/3 arg1 string-length partial-first
+  arg1 partial-first
+  arg0 over find-first 2 return1-n
+end
+
+def highlight-output-dict end
+def highlight-output-any arg0 cell-size + set-arg0 end
+def highlight-output-heading-fn arg0 cell-size 2 * + set-arg0 end
+def highlight-output-footing-fn arg0 cell-size 3 * + set-arg0 end
+def highlight-output-file-heading-fn arg0 cell-size 4 * + set-arg0 end
+def highlight-output-file-footing-fn arg0 cell-size 5 * + set-arg0 end
+
+def highlight-output-heading
+  arg0 highlight-output-heading-fn @ droptail-1
+end
+
+def highlight-output-footing
+  arg0 highlight-output-footing-fn @ droptail-1
+end
+
+def highlight-output-file-heading
+  arg0 highlight-output-file-heading-fn @ droptail-1
+end
+
+def highlight-output-file-footing
+  arg0 highlight-output-file-footing-fn @ droptail-1
+end
+
+( Highligher state: )
+
 1536 var> highlight-max-token-size
 
-def highlight-state-buffer arg0 cell-size 4 * + set-arg0 end
-def highlight-state-size arg0 cell-size 3 * + set-arg0 end
-def highlight-state-reader arg0 cell-size 2 * + set-arg0 end
-def highlight-state-length arg0 cell-size 1 * + set-arg0 end
-def highlight-state-token-list arg0 cell-size 0 * + set-arg0 end
+def highlight-state-current-token arg0 cell-size 9 * + set-arg0 end
+def highlight-state-current-size arg0 cell-size 8 * + set-arg0 end
+def highlight-state-current-length arg0 cell-size 7 * + set-arg0 end
+def highlight-state-last-token arg0 cell-size 6 * + set-arg0 end
+def highlight-state-last-size arg0 cell-size 5 * + set-arg0 end
+def highlight-state-last-length arg0 cell-size 4 * + set-arg0 end
+def highlight-state-token-list arg0 cell-size 3 * + set-arg0 end
+def highlight-state-seen-files arg0 cell-size 2 * + set-arg0 end
+def highlight-state-reader arg0 cell-size 1 * + set-arg0 end
+def highlight-state-output arg0 cell-size 0 * + set-arg0 end
 
-defcol make-highlight-state ( buffer size reader ++ state )
-  0 swap
-  0 swap
-  here cell-size + swap
-endcol
+def highlight-state-dict arg0 highlight-state-output @ highlight-output-dict set-arg0 end
 
-def write-escaped-html-byte
-  arg0 CASE
-    60 WHEN s" &lt;" write-string/2 ;;
-    62 WHEN s" &gt;" write-string/2 ;;
-    38 WHEN s" &amp;" write-string/2 ;;
-    0 WHEN s" &null;" write-string/2 ;;
-    27 WHEN s" &escape;" write-string/2 ;;
-    10 WHEN nl ;;
-    dup 32 int< IF
-      s" &x" write-string/2
-      arg0 write-hex-int
-      s" ;" write-string/2
-    ELSE arg0 write-byte
-    THEN
-  ESAC
-
-  1 return0-n
+def allot-highlight-state ( ++ ... state )
+  cell-size 10 * stack-allot-zero exit-frame
 end
 
-def write-escaped-html/2 ( str n )
-  arg0 0 int<= IF 2 return0-n THEN
-  arg1 peek-byte write-escaped-html-byte
-  arg1 1 + set-arg1
-  arg0 1 - set-arg0
-  repeat-frame
+def make-highlight-state ( buffer-size reader output ++ state )
+  0 allot-highlight-state set-local0
+  arg2 stack-allot-zero local0 highlight-state-current-token !
+  arg2 local0 highlight-state-current-size !
+  arg2 stack-allot-zero local0 highlight-state-last-token !
+  arg2 local0 highlight-state-last-size !
+  arg1 local0 highlight-state-reader !
+  arg0 local0 highlight-state-output !
+  local0 exit-frame
 end
 
-def comment-done
-  arg0 41 equals? set-arg0
-end
-
-def terminated-text ( buffer size done-fn state -- )
-  arg3 arg2 arg1 arg0 highlight-state-reader @ reader-read-until
-  shift write-escaped-html/2
-  0 equals? IF repeat-frame THEN
-  arg3 arg2 arg0 highlight-state-reader @ reader-next-token drop write-string/2
-  4 return0-n
-end
-
-def comment
-  0
-  s" <bold><x-color><param>red</param>" write-string/2
-  arg2 arg1 write-string/2
-  highlight-max-token-size @ stack-allot set-local0
-  local0
-  highlight-max-token-size @
-  ' comment-done arg0 terminated-text
-  s" </x-color></bold>" write-string/2
-  nl
-  3 return0-n
-end
-
-def string-done
-  arg0 34 equals? set-arg0
-end
-
-def string
-  0
-  s" <bold><x-color><param>brightmagenta</param>" write-string/2
-  arg2 arg1 write-escaped-html/2
-  arg0 highlight-state-buffer @ arg0 highlight-state-size @
-  ' string-done arg0 highlight-state-reader @ reader-read-until drop
-  dup arg0 highlight-state-length !
-  2dup null-terminate
-  write-escaped-html/2
-  16 stack-allot 16
-  arg0 highlight-state-reader @
-  reader-next-token drop write-string/2
-  s" </x-color></bold>" write-string/2
-  space
-  3 return0-n
-end  
-
-def token-list-loop ( buffer size state cons -- cons )
-  arg2 cell-size 3 * int< IF
-    s" Warning: token list too large." error-line/2
-    arg0 4 return1-n
-  THEN
-  arg3 arg2 arg1 highlight-state-reader @ reader-next-token
-  0 int<= IF arg0 4 return1-n THEN
-  2dup null-terminate
-  over s" ]" string-equals?/3 IF arg0 4 return1-n ELSE 3 dropn THEN
-  over s" (" string-equals?/3 IF 3 dropn arg1 comment nl repeat-frame ELSE 3 dropn THEN
-  over s" )" string-equals?/3 IF 5 dropn repeat-frame ELSE 3 dropn THEN
-  2dup write-line/2
-  ( create a cons pointing to the string and last cons
-    after the read string in the buffer )
-  arg3 over + 1 +
-  arg3 over !
-  arg0 over cell-size + !
-  dup set-arg0
-  dup cell-size 3 * + set-arg3
-  arg2 3 overn - cell-size 3 * - set-arg2
-  3 dropn repeat-frame
-end
-
-def token-list
-  s" <x-color><param>brightmagenta</param>" write-string/2
-  arg2 arg1 write-string/2 space
-  s" </x-color>" write-string/2
-  arg0 highlight-state-buffer @
-  arg0 highlight-state-size @
-  arg0
-  0 token-list-loop
-  arg0 highlight-state-token-list !
-  s" <x-color><param>brightmagenta</param>" write-string/2
-  s" ] " write-string/2
-  s" </x-color>" write-string/2
-  3 return0-n
-end
-
-def keyword
-  s" <x-color><param>cyan</param>" write-string/2
-  arg2 arg1 write-escaped-html/2
-  s" </x-color>" write-string/2
-  space
-  3 return0-n
-end
-
-def keyword-open
-  ( s" <div class='definition'>" write-string/2 )
-  nl
-  arg2 arg1 arg0 keyword
-  3 return0-n
-end
-
-def keyword-token
-  ( s" <div class='definition'>" write-string/2 )
-  s" <x-color><param>brightmagenta</param>" write-string/2
-  arg2 arg1 write-escaped-html/2
-  space s" <bold>" write-string/2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  arg0 highlight-state-reader @ reader-next-token
-  drop write-escaped-html/2
-  s" </bold></x-color>" write-string/2
-  space
-  3 return0-n
-end
-
-def keyword-token-next
-  s" <bold><underline><x-color><param>brightcyan</param>" write-string/2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  arg0 highlight-state-reader @ reader-next-token
-  drop write-escaped-html/2
-  s" </x-color></underline></bold>" write-string/2
-  3 return0-n
-end
-
-def keyword-top-token
-  ( s" <div class='definition'>" write-string/2 )
-  arg2 arg1 arg0 keyword
-  arg2 arg1 arg0 keyword-token-next
-  nl
-  3 return0-n
-end
-
-def keyword-top-token2
-  ( s" <div class='definition'>" write-string/2 )
-  arg2 arg1 arg0 keyword
-  arg2 arg1 arg0 keyword-token-next
-  space
-  arg2 arg1 arg0 keyword-token-next
-  nl
-  3 return0-n
-end
-
-def keyword-open-token
-  ( s" <div class='definition'>" write-string/2 )
-  nl nl
-  arg2 arg1 arg0 keyword-top-token
-  3 return0-n
-end
-
-def keyword-end
-  nl
-  arg2 arg1 arg0 keyword
-  ( s" </div>" write-string/2 )
-  3 return0-n
-end
-
-def keyword-frame
-  s" <x-color><param>yellow</param>" write-string/2
-  arg2 arg1 write-escaped-html/2
-  s" </x-color>" write-string/2
-  space
-  3 return0-n
-end
-
-def keyword-peek
-  s" <bold><x-color><param>brightgreen</param>" write-string/2
-  arg2 arg1 write-escaped-html/2
-  s" </x-color></bold>" write-string/2
-  space
-  3 return0-n
-end
-
-def keyword-poke
-  s" <bold><x-color><param>brightyellow</param>" write-string/2
-  arg2 arg1 write-escaped-html/2
-  s" </x-color></bold>" write-string/2
-  space
-  3 return0-n
-end
-
-def word-eol
-  arg2 arg1 write-escaped-html/2
-  nl
-  3 return0-n
-end
-
-def any
-  arg2 arg1 write-escaped-html/2
-  space
-  3 return0-n
-end
-
-0 var> highlight-dict
-
-def highlight-lookup ( str len -- fn )
-  arg1 arg0 highlight-dict @ cs dict-lookup/4 UNLESS ' any THEN 2 return1-n
-end
-
-def highlight/3 ( buffer len state -- )
-  arg2 arg1 arg0 highlight-state-reader @ reader-next-token
-  negative? IF 3 return0-n ELSE drop THEN
-  2dup highlight-lookup dup IF
-    arg0 swap exec-abs
-    repeat-frame
-  THEN
-end
-
-def highlight ( reader -- )
-  0
-  highlight-max-token-size @ stack-allot
-  highlight-max-token-size @
-  arg0 make-highlight-state set-local0
-  highlight-max-token-size @ stack-allot
-  highlight-max-token-size @
-  local0 highlight/3 1 return0-n
-end
-
-def highlight-str
-  arg1 arg0 make-string-reader highlight 2 return0-n
-end
-
-def highlight-file
-  0
-  arg0 open-input-file negative? IF
-    s" Failed to open: " error-string/2
-    arg0 error-string espace
-    error-int enl
-    1 return0-n
-  ELSE set-local0
-  THEN
-  s" Highlighting " error-string/2 arg0 error-string enl
-  highlight-max-token-size @ stack-allot highlight-max-token-size @ local0 make-fd-reader
-  dup highlight
-  fd-reader-close
-  1 return0-n
-end
-
-def highlight-stdin
-  the-reader @ highlight
-end
+( Formatter helpers for ~load~ and ~load-list~ )
 
 def highlight-load
-  arg2 arg1 write-string/2 nl nl
-  arg0 highlight-state-length @ 1 int> IF 
-    arg0 highlight-state-buffer @ 1 + highlight-file
+  ( copy file name and push onto seen files list)
+  arg0 highlight-state-last-length @ 1 int> IF
+    arg0 highlight-state-last-token @ 1 +
+    arg0 highlight-state-last-length @
+    arg0 highlight-state-seen-files
+    push-copied-string-onto/3
+    exit-frame
   THEN 3 return0-n
 end
 
 def highlight-load-list
-  arg2 arg1 write-string/2 nl nl
   arg0 highlight-state-token-list @ dup IF
-    0 ' highlight-file revmap-cons/3
-  THEN
-  3 return0-n
+    arg0 highlight-state-seen-files @
+    ' copy-string-onto-list revmap-cons/3
+    arg0 highlight-state-seen-files !
+    exit-frame
+  THEN 3 return0-n
 end
+
+( Output formatters: )
 
 tmp" BUILDER-TARGET" defined?/2 [UNLESS]
   alias> copies-entry-as> copy-as>
   : to-out-addr cs - ;
 [THEN]
   
-0
-' comment copies-entry-as> ( ( bad emacs )
-' keyword-top-token copies-entry-as> var>
-' keyword-top-token copies-entry-as> const>
-' keyword-top-token copies-entry-as> defvar>
-' keyword-top-token copies-entry-as> defconst>
-' keyword-top-token copies-entry-as> string-const>
-' keyword-top-token copies-entry-as> symbol>
-' keyword-top-token copies-entry-as> copies-entry-as>
-' keyword-top-token copies-entry-as> copies-as>
-' keyword-top-token2 copies-entry-as> alias>
-' keyword-top-token2 copies-entry-as> defalias>
-' keyword-token copies-entry-as> POSTPONE
-' keyword-token copies-entry-as> '
-' keyword-token copies-entry-as> out'
-' keyword-token copies-entry-as> out-off'
-' keyword-token copies-entry-as> literal
-' keyword-token copies-entry-as> pointer
-' keyword-open-token copies-entry-as> def
-' keyword-open-token copies-entry-as> defcol
-' keyword-open-token copies-entry-as> :
-' keyword-open-token copies-entry-as> defop
-' keyword-end copies-entry-as> ;
-' keyword-end copies-entry-as> endcol
-' keyword-end copies-entry-as> end
-' keyword-end copies-entry-as> endop
-' keyword copies-entry-as> immediate
-' keyword-token copies-entry-as> immediate-as
-' keyword copies-entry-as> IF
-' keyword copies-entry-as> ELSE
-' keyword copies-entry-as> THEN
-' keyword copies-entry-as> UNLESS
-' keyword copies-entry-as> CASE
-' keyword copies-entry-as> ENDCASE
-' keyword copies-entry-as> ESAC
-' keyword copies-entry-as> WHEN
-' keyword copies-entry-as> WHEN-STR
-' keyword copies-entry-as> ;;
-' keyword copies-entry-as> OF
-' keyword copies-entry-as> OF-STR
-' keyword copies-entry-as> ENDOF
-' keyword copies-entry-as> exit
-' keyword copies-entry-as> exit-frame
-' keyword copies-entry-as> repeat-frame
-' keyword copies-entry-as> loop
-' keyword copies-entry-as> return
-' keyword copies-entry-as> return0
-' keyword copies-entry-as> return1
-' keyword copies-entry-as> return2
-' keyword copies-entry-as> return0-n
-' keyword copies-entry-as> return1-n
-' keyword copies-entry-as> return2-n
-' keyword-frame copies-entry-as> arg0
-' keyword-frame copies-entry-as> arg1
-' keyword-frame copies-entry-as> arg2
-' keyword-frame copies-entry-as> arg3
-' keyword-frame copies-entry-as> argn
-' keyword-frame copies-entry-as> set-arg0
-' keyword-frame copies-entry-as> set-arg1
-' keyword-frame copies-entry-as> set-arg2
-' keyword-frame copies-entry-as> set-arg3
-' keyword-frame copies-entry-as> set-argn
-' keyword-frame copies-entry-as> local0
-' keyword-frame copies-entry-as> local1
-' keyword-frame copies-entry-as> local2
-' keyword-frame copies-entry-as> local3
-' keyword-frame copies-entry-as> localn
-' keyword-frame copies-entry-as> set-local0
-' keyword-frame copies-entry-as> set-local1
-' keyword-frame copies-entry-as> set-local2
-' keyword-frame copies-entry-as> set-local3
-' keyword-frame copies-entry-as> set-localn
-' word-eol copies-entry-as> ,ins
-' word-eol copies-entry-as> ins!
-' word-eol copies-entry-as> load
-' word-eol copies-entry-as> load/2
-' word-eol copies-entry-as> load-list
-' keyword-peek copies-entry-as> peek
-' keyword-peek copies-entry-as> @
-' keyword-poke copies-entry-as> poke
-' keyword-poke copies-entry-as> !
-' token-list copies-entry-as> s[
-' token-list copies-entry-as> w[
-' string copies-entry-as> s"
-' string copies-entry-as> c"
-' string copies-entry-as> e"
-' string copies-entry-as> d"
-' string copies-entry-as> "
-' string copies-entry-as> tmp"
-to-out-addr const> init-highlight-dict
+s[ src/lib/scanners/highlight/common.4th
+   src/lib/scanners/highlight/enriched.4th
+   src/lib/scanners/highlight/html.4th
+] load-list
 
-tmp" BUILDER-TARGET" defined?/2 [IF]
-  ' init-highlight-dict dict-entry-data @ from-out-addr
-[ELSE]
-  init-highlight-dict
-[THEN]
-' highlight-load copies-entry-as> load
-' highlight-load copies-entry-as> load/2
-' highlight-load-list copies-entry-as> load-list
-to-out-addr const> init-recursive-highlight-dict
+" enriched" string-const> HIGHLIGHT-DEFAULT-OUTPUT
 
-def highlight-init ( recurse -- )
-  arg0 IF init-recursive-highlight-dict ELSE init-highlight-dict THEN
-  cs + highlight-dict !
-  1 return0-n
+def make-highlight-output ( name ++ output )
+  arg0 CASE
+    s" enriched" OF-STR ' enriched-highlighter droptail-1 ENDOF
+    s" html" OF-STR ' html-highlighter droptail-1 ENDOF
+    drop ' enriched-highlighter droptail-1
+  ENDCASE
+end
+
+( Single stream highlight functions: )
+
+def highlight-lookup ( str len output -- fn )
+  arg2 arg1 arg0 highlight-output-dict @ cs dict-lookup/4 UNLESS
+    arg0 highlight-output-any @
+  THEN 3 return1-n
+end
+
+def highlight-inner ( state -- )
+  arg0 highlight-state-current-token @
+  arg0 highlight-state-current-size @
+  arg0 highlight-state-reader @
+  reader-next-token negative? IF 3 dropn arg0 exit-frame ELSE drop THEN
+  2dup arg0 highlight-state-output @ highlight-lookup dup IF
+    arg0 swap exec-abs
+    repeat-frame
+  THEN
+end
+
+def highlight/2 ( reader output ++ )
+  highlight-max-token-size @ arg1 arg0 make-highlight-state
+  highlight-inner exit-frame
+end
+
+def highlight-file/4 ( reader-buffer size path output ++ state ok? || error ok? )
+  0 0
+  arg1 open-input-file
+  negative? IF false 2 return2-n ELSE set-local0 THEN
+  arg3 arg2 local0 make-fd-reader set-local1
+  local1 arg0 highlight/2
+  local1 fd-reader-close
+  true exit-frame
+end
+
+def highlight-str ( str length output ++ state )
+  arg1 arg0 make-string-reader arg0 highlight/2 exit-frame
+end
+
+def highlight-stdin ( output ++ state )
+  the-reader @ arg0 highlight/2 exit-frame
+end
+
+( Multiple file highlighting: )
+
+def file-heading ( path output )
+  arg1 arg0 highlight-output-file-heading 2 return0-n
+end
+
+def file-footing ( output -- )
+  arg1 arg0 highlight-output-file-footing 1 return0-n
+end
+
+def write-error-opening ( error-code path -- )
+  s" Failed to open: " write-string/2
+  arg0 write-string space
+  arg1 write-int nl
+  2 return0-n
+end
+
+def highlight-file-list-fn ( reader-buffer size output path ++ output )
+  arg0 arg1 file-heading
+  arg3 arg2 arg0 arg1 highlight-file/4 UNLESS
+    arg0 write-error-opening
+  THEN
+  arg1 file-footing
+  arg1 exit-frame
+end
+
+def highlight-file-list ( reader-buffer size output path-list -- )
+  ' highlight-file-list-fn arg3 3 partial-after arg2 2 partial-after
+  arg0 arg1 3 overn revmap-cons/3
+  4 return0-n
+end
+
+( Recursive highlighting: )
+
+def allot-recursive-highlight-state
+  cell-size 5 * stack-allot-zero exit-frame
+end
+
+def recursive-highlight-state-buffer arg0 cell-size 4 * + set-arg0 end
+def recursive-highlight-state-buffer-size
+  arg0 cell-size 3 * + set-arg0
+end
+def recursive-highlight-state-output arg0 cell-size 2 * + set-arg0 end
+def recursive-highlight-state-recurser arg0 cell-size + set-arg0 end
+def recursive-highlight-state-seen-paths end
+
+def recursive-highlight-seen? ( path state -- yes? )
+  arg1 arg0 recursive-highlight-state-seen-paths @
+  list-contains-string? 2 return1-n
+end
+
+def recursive-highlight-has-seen! ( path state ++ state )
+  arg1 arg0 recursive-highlight-state-seen-paths push-onto
+  arg0 exit-frame
+end
+
+def recursive-highlight-fn ( state path ++ state )
+  arg0 arg1 recursive-highlight-seen? IF arg1 2 return1-n THEN
+  s" Highlighting " error-string/2 arg0 error-string enl
+  arg0 arg1 recursive-highlight-state-output @ file-heading
+  arg0 arg1 recursive-highlight-has-seen!
+  arg1 recursive-highlight-state-buffer @
+  arg1 recursive-highlight-state-buffer-size @
+  arg0
+  arg1 recursive-highlight-state-output @
+  highlight-file/4 IF
+    arg1 recursive-highlight-state-output @ file-footing
+    arg1 recursive-highlight-state-recurser @ IF
+      highlight-state-seen-files @
+      arg1
+      arg1 recursive-highlight-state-recurser @
+      dup IF exec-abs exit-frame ELSE 3 dropn THEN
+    ELSE drop
+    THEN
+  ELSE
+    arg0 write-error-opening
+    arg1 recursive-highlight-state-output @ file-footing
+  THEN arg1 exit-frame
+end
+       
+def recursive-highlight/2 ( list state ++ state )
+  arg1 arg0 ' recursive-highlight-fn revmap-cons/3 exit-frame
+end
+
+def recursive-highlight ( reader-buffer size output list-paths all-paths ++ recursive-state )
+  0 allot-recursive-highlight-state set-local0
+  4 argn local0 recursive-highlight-state-buffer !
+  arg3 local0 recursive-highlight-state-buffer-size !
+  arg2 local0 recursive-highlight-state-output !
+  ' recursive-highlight/2 local0 recursive-highlight-state-recurser !
+  arg0 local0 recursive-highlight-state-seen-paths !
+  arg1 local0 recursive-highlight/2 exit-frame
 end

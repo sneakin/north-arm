@@ -106,7 +106,7 @@ def tty-screen-draw-copy
 end
 
 def tty-screen-cells
-  arg0 TtyScreen -> back @ TtyBuffer -> cells @ return1-1
+  arg0 TtyScreen -> back @ TtyBuffer -> cells @ set-arg0
 end
 
 def tty-screen-buffer

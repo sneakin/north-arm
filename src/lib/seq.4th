@@ -49,3 +49,24 @@ def map-seq-n/4 ( ptr n state fn )
   THEN
 end
 
+( Filling: )
+
+def fill-seq ( seq n value -- )
+  arg1 0 int> UNLESS 3 return0-n THEN
+  arg1 1 - set-arg1
+  arg0 arg2 arg1 seq-poke
+  repeat-frame
+end
+
+( Allocating: )
+
+def stack-allot-zero
+  arg0 stack-allot
+  dup arg0 cell/ 0 fill-seq
+  exit-frame
+end
+
+def stack-allot-zero-seq
+  arg0 cell-size * stack-allot-zero
+  exit-frame
+end

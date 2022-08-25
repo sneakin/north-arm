@@ -51,6 +51,7 @@ s[ src/runner/thumb/frames.4th
    src/interp/data-stack.4th
    src/runner/thumb/state.4th
    src/runner/dictionary.4th
+   src/runner/frame-tailing.4th
    src/runner/thumb/math-init.4th
    version.4th
    src/runner/thumb/init.4th
@@ -87,6 +88,7 @@ s[
    src/runner/aliases.4th
    src/runner/x86/linux.4th
    src/runner/dictionary.4th
+   src/runner/frame-tailing.4th
   
    version.4th
    src/runner/x86/init.4th
