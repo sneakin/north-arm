@@ -281,6 +281,8 @@ tmp" BUILDER-TARGET" defined?/2 [IF]
 ' enriched-keyword-token copies-entry-as> out-off'
 ' enriched-keyword-token copies-entry-as> literal
 ' enriched-keyword-token copies-entry-as> pointer
+' enriched-keyword-token copies-entry-as> longify
+' enriched-keyword-token copies-entry-as> char-code
 ' enriched-keyword-open-token copies-entry-as> def
 ' enriched-keyword-open-token copies-entry-as> defcol
 ' enriched-keyword-open-token copies-entry-as> :

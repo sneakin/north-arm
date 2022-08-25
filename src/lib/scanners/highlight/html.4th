@@ -366,6 +366,8 @@ end
 ' html-keyword-token copies-entry-as> out-off'
 ' html-keyword-token copies-entry-as> literal
 ' html-keyword-token copies-entry-as> pointer
+' html-keyword-token copies-entry-as> longify
+' html-keyword-token copies-entry-as> char-code
 ' html-keyword-open-token copies-entry-as> def
 ' html-keyword-open-token copies-entry-as> defcol
 ' html-keyword-open-token copies-entry-as> :
