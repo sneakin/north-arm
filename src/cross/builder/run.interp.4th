@@ -33,8 +33,8 @@ def builder-run ( entry len src-cons )
 
   ( The main stage: )
   builder-with-runner peek IF " src/include/runner.4th" load THEN
-  builder-with-interp peek IF " src/include/interp.4th" load THEN
-  builder-with-cross peek IF " src/interp/cross.4th" load THEN
+  ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" load THEN THEN
+  ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" load THEN THEN
   arg0 load-list
 
   s" copyright" cross-lookup IF code-origin peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
