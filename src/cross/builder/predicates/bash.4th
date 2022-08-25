@@ -7,6 +7,10 @@ def target-thumb?
   builder-target platform-target-thumb? return1
 end
 
+def target-thumb2?
+  builder-target platform-target-thumb2? return1
+end
+
 def target-aarch32?
   builder-target platform-target-aarch32? return1
 end

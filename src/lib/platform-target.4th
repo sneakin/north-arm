@@ -4,6 +4,10 @@ def platform-target-thumb?
   arg0 " thumb" contains? set-arg0
 end
 
+def platform-target-thumb2?
+  arg0 " thumb2" contains? set-arg0
+end
+
 def platform-target-aarch32?
   arg0 " aarch32" contains? set-arg0
 end
