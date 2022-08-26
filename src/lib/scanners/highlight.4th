@@ -51,12 +51,13 @@ end
 
 1536 var> highlight-max-token-size
 
-def highlight-state-current-token arg0 cell-size 9 * + set-arg0 end
-def highlight-state-current-size arg0 cell-size 8 * + set-arg0 end
-def highlight-state-current-length arg0 cell-size 7 * + set-arg0 end
-def highlight-state-last-token arg0 cell-size 6 * + set-arg0 end
-def highlight-state-last-size arg0 cell-size 5 * + set-arg0 end
-def highlight-state-last-length arg0 cell-size 4 * + set-arg0 end
+def highlight-state-current-token arg0 cell-size 10 * + set-arg0 end
+def highlight-state-current-size arg0 cell-size 9 * + set-arg0 end
+def highlight-state-current-length arg0 cell-size 8 * + set-arg0 end
+def highlight-state-last-token arg0 cell-size 7 * + set-arg0 end
+def highlight-state-last-size arg0 cell-size 6 * + set-arg0 end
+def highlight-state-last-length arg0 cell-size 5 * + set-arg0 end
+def highlight-state-last-word arg0 cell-size 4 * + set-arg0 end
 def highlight-state-token-list arg0 cell-size 3 * + set-arg0 end
 def highlight-state-seen-files arg0 cell-size 2 * + set-arg0 end
 def highlight-state-reader arg0 cell-size 1 * + set-arg0 end
@@ -65,7 +66,7 @@ def highlight-state-output arg0 cell-size 0 * + set-arg0 end
 def highlight-state-dict arg0 highlight-state-output @ highlight-output-dict set-arg0 end
 
 def allot-highlight-state ( ++ ... state )
-  cell-size 10 * stack-allot-zero exit-frame
+  cell-size 11 * stack-allot-zero exit-frame
 end
 
 def make-highlight-state ( buffer-size reader output ++ state )
@@ -83,6 +84,7 @@ end
 
 def highlight-load
   ( copy file name and push onto seen files list)
+  ( caller needs to ensure last-token is a string. )
   arg0 highlight-state-last-length @ 1 int> IF
     arg0 highlight-state-last-token @ 1 +
     arg0 highlight-state-last-length @
@@ -93,10 +95,13 @@ def highlight-load
 end
 
 def highlight-load-list
+  ( caller needs to ensure last-token and token-list is a cons list of strings. )
+  ( todo reset token list more often? )
   arg0 highlight-state-token-list @ dup IF
     arg0 highlight-state-seen-files @
     ' copy-string-onto-list revmap-cons/3
     arg0 highlight-state-seen-files !
+    0 arg0 highlight-state-token-list !
     exit-frame
   THEN 3 return0-n
 end
@@ -111,6 +116,7 @@ tmp" BUILDER-TARGET" defined?/2 [UNLESS]
 s[ src/lib/scanners/highlight/common.4th
    src/lib/scanners/highlight/enriched.4th
    src/lib/scanners/highlight/html.4th
+   src/lib/scanners/highlight/deps.4th
 ] load-list
 
 " enriched" string-const> HIGHLIGHT-DEFAULT-OUTPUT
@@ -119,6 +125,7 @@ def make-highlight-output ( name ++ output )
   arg0 CASE
     s" enriched" OF-STR ' enriched-highlighter droptail-1 ENDOF
     s" html" OF-STR ' html-highlighter droptail-1 ENDOF
+    s" deps" OF-STR ' deps-highlighter droptail-1 ENDOF
     drop ' enriched-highlighter droptail-1
   ENDCASE
 end
@@ -132,12 +139,15 @@ def highlight-lookup ( str len output -- fn )
 end
 
 def highlight-inner ( state -- )
+  0
   arg0 highlight-state-current-token @
   arg0 highlight-state-current-size @
   arg0 highlight-state-reader @
   reader-next-token negative? IF 3 dropn arg0 exit-frame ELSE drop THEN
   2dup arg0 highlight-state-output @ highlight-lookup dup IF
+    dup set-local0
     arg0 swap exec-abs
+    local0 arg0 highlight-state-last-word !
     repeat-frame
   THEN
 end
@@ -158,7 +168,7 @@ def highlight-file/4 ( reader-buffer size path output ++ state ok? || error ok? 
 end
 
 def highlight-str ( str length output ++ state )
-  arg1 arg0 make-string-reader arg0 highlight/2 exit-frame
+  arg2 arg1 make-string-reader arg0 highlight/2 exit-frame
 end
 
 def highlight-stdin ( output ++ state )

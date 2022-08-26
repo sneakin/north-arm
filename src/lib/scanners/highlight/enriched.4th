@@ -246,14 +246,22 @@ end
 
 def enriched-highlight-load
   arg2 arg1 arg0 enriched-keyword-eol
-  ( arg2 arg1 arg0 highlight-load exit-frame )
-  ' highlight-load tail-0
+  arg0 highlight-state-last-word @ ' enriched-string dict-entry-equiv? IF
+    ( arg2 arg1 arg0 highlight-load exit-frame )
+    ' highlight-load tail-0
+  ELSE
+    3 return0-n
+  THEN
 end
 
 def enriched-highlight-load-list
   arg2 arg1 arg0 enriched-keyword-eol
-  ( arg2 arg1 arg0 highlight-load-list exit-frame )
-  ' highlight-load-list tail-0
+  arg0 highlight-state-last-word @ ' enriched-token-list dict-entry-equiv? IF
+    ( arg2 arg1 arg0 highlight-load-list exit-frame )
+    ' highlight-load-list tail-0
+  ELSE
+    3 return0-n
+  THEN
 end
 
 
@@ -283,6 +291,11 @@ tmp" BUILDER-TARGET" defined?/2 [IF]
 ' enriched-keyword-token copies-entry-as> pointer
 ' enriched-keyword-token copies-entry-as> longify
 ' enriched-keyword-token copies-entry-as> char-code
+' enriched-keyword-token copies-entry-as> out-immediate-as
+' enriched-keyword-token copies-entry-as> immediate-as
+' enriched-keyword-token copies-entry-as> copy-as>
+' enriched-keyword-token copies-entry-as> copies-entry-as>
+' enriched-keyword-token copies-entry-as> create>
 ' enriched-keyword-open-token copies-entry-as> def
 ' enriched-keyword-open-token copies-entry-as> defcol
 ' enriched-keyword-open-token copies-entry-as> :

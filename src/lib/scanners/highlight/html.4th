@@ -94,7 +94,7 @@ def html-highlight-heading
   <head>" write-line/2
   html-highlight-screen-style " screen" html-style
   html-highlight-print-style " print" html-style
-  s" </head>
+  s"   </head>
   <body>" write-string/2
 end
 
@@ -336,14 +336,22 @@ end
 
 def html-highlight-load
   arg2 arg1 arg0 html-keyword-eol
-  ( arg2 arg1 arg0 highlight-load exit-frame )
-  ' highlight-load tail-0
+  arg0 highlight-state-last-word @ ' html-string dict-entry-equiv? IF
+    ( arg2 arg1 arg0 highlight-load exit-frame )
+    ' highlight-load tail-0
+  ELSE
+    3 return0-n
+  THEN
 end
 
 def html-highlight-load-list
   arg2 arg1 arg0 html-keyword-eol
-  ( arg2 arg1 arg0 highlight-load-list exit-frame )
-  ' highlight-load-list tail-0
+  arg0 highlight-state-last-word @ ' html-token-list dict-entry-equiv? IF
+    ( arg2 arg1 arg0 highlight-load-list exit-frame )
+    ' highlight-load-list tail-0
+  ELSE
+    3 return0-n
+  THEN
 end
 
 ( HTML highlighting dictionary: )
@@ -368,6 +376,11 @@ end
 ' html-keyword-token copies-entry-as> pointer
 ' html-keyword-token copies-entry-as> longify
 ' html-keyword-token copies-entry-as> char-code
+' html-keyword-token copies-entry-as> out-immediate-as
+' html-keyword-token copies-entry-as> immediate-as
+' html-keyword-token copies-entry-as> copy-as>
+' html-keyword-token copies-entry-as> copies-entry-as>
+' html-keyword-token copies-entry-as> create>
 ' html-keyword-open-token copies-entry-as> def
 ' html-keyword-open-token copies-entry-as> defcol
 ' html-keyword-open-token copies-entry-as> :

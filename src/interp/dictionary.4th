@@ -74,3 +74,15 @@ endcol
 def defined?/2
   arg1 arg0 dict dict-lookup 2 return1-n
 end
+
+def dict-entry-equiv?
+  arg1 arg0 equals?
+  IF true
+  ELSE arg1 dict-entry-code peek
+       arg0 dict-entry-code peek equals?
+       IF arg1 dict-entry-data peek
+	  arg0 dict-entry-data peek equals?
+       ELSE false
+       THEN
+  THEN 2 return1-n		    
+end
