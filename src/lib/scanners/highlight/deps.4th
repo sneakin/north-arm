@@ -21,14 +21,6 @@ def deps-file-footing ( output -- )
   1 return0-n
 end
 
-def deps-terminated-text ( buffer size done-fn state -- )
-  arg3 arg2 arg1 arg0 highlight-state-reader @ reader-read-until
-  shift 2 dropn
-  0 equals? IF repeat-frame THEN
-  arg3 arg2 arg0 highlight-state-reader @ reader-next-token drop 2 dropn
-  4 return0-n
-end
-
 def deps-comment
   0 ' comment-done arg0 highlight-terminated-text 3 return0-n
 end
