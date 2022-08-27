@@ -27,7 +27,7 @@ def roll ( a b c -- b c a )
 end
 
 def swap-overn ( old-value ... new-value n -- new-value ... old-value )
-  arg0 1 + argn
-  arg1 arg0 1 + set-argn
+  arg0 1 int-add argn
+  arg1 arg0 1 int-add set-argn
   2 return1-n
 end
