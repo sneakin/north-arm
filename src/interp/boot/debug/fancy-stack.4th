@@ -1,6 +1,6 @@
 ( Fancy [linked] stack print out: )
 
-( todo highlight words; seqs with sizes. )
+( todo highlight words; seqs with sizes, typed structs, color coding, unreachable/reachable. )
 
 40 var> fancy-stack-cols
 

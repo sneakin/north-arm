@@ -30,21 +30,27 @@ def highlight-output-heading-fn arg0 cell-size 2 * + set-arg0 end
 def highlight-output-footing-fn arg0 cell-size 3 * + set-arg0 end
 def highlight-output-file-heading-fn arg0 cell-size 4 * + set-arg0 end
 def highlight-output-file-footing-fn arg0 cell-size 5 * + set-arg0 end
+def highlight-output-comment-fn arg0 cell-size 6 * + set-arg0 end
+def highlight-output-data arg0 cell-size 7 * + set-arg0 end
 
 def highlight-output-heading
-  arg0 highlight-output-heading-fn @ droptail-1
+  arg0 highlight-output-heading-fn @ tail-0
 end
 
 def highlight-output-footing
-  arg0 highlight-output-footing-fn @ droptail-1
+  arg0 highlight-output-footing-fn @ tail-0
 end
 
 def highlight-output-file-heading
-  arg0 highlight-output-file-heading-fn @ droptail-1
+  arg0 highlight-output-file-heading-fn @ tail-0
 end
 
 def highlight-output-file-footing
-  arg0 highlight-output-file-footing-fn @ droptail-1
+  arg0 highlight-output-file-footing-fn @ tail-0
+end
+
+def highlight-output-comment
+  arg0 highlight-output-comment-fn @ droptail-1
 end
 
 ( Highligher state: )
@@ -80,6 +86,88 @@ def make-highlight-state ( buffer-size reader output ++ state )
   local0 exit-frame
 end
 
+def highlight-allot-last
+  arg0 highlight-state-last-length @ dup IF
+    arg0 highlight-state-last-token @ swap allot-byte-string/2
+    exit-frame
+  ELSE 0 0 1 return2-n
+  THEN
+end
+
+( Terminated string readers: )
+
+def comment-done
+  arg0 41 equals? set-arg0
+end
+
+def string-done
+  arg0 34 equals? set-arg0
+end
+
+( Reads bytes until ~done-fn~ is true calling ~each-fn~ on each buffer read. )
+def highlight-terminated-text ( each-fn done-fn state -- )
+  arg0 highlight-state-last-size @ 1 - 0 over stack-allot set-local1
+  local1 local0 arg1 arg0 highlight-state-reader @ reader-read-until
+  shift 2dup null-terminate
+  arg2 dup IF exec-abs ELSE 3 dropn THEN
+  0 equals? IF repeat-frame THEN
+  local1 local0 arg0 highlight-state-reader @ reader-next-token drop
+  arg2 dup IF exec-abs ELSE 3 dropn THEN
+  3 return0-n
+end
+
+( Reads bytes until ~"~ is read for one buffer or less. )
+def highlight-string ( state ++ terminating-token )
+  0
+  arg0 highlight-state-last-token @ arg0 highlight-state-last-size @
+  ' string-done arg0 highlight-state-reader @ reader-read-until drop
+  dup arg0 highlight-state-last-length !
+  null-terminate
+  16 stack-allot 16
+  arg0 highlight-state-reader @
+  reader-next-token drop exit-frame
+end  
+
+( Token list reader: )
+
+( fixme duplicated )
+def pad-addr ( addr alignment )
+  arg1 arg0 + arg0 / arg0 *
+  2 return1-n
+end
+
+def highlight-token-list-loop ( buffer size state cons -- cons )
+  arg2 cell-size 3 * int< IF
+    s" Warning: token list too large." error-line/2
+    arg0 4 return1-n
+  THEN
+  arg3 arg2 arg1 highlight-state-reader @ reader-next-token
+  0 int<= IF arg0 4 return1-n THEN
+  2dup null-terminate
+  over s" ]" string-equals?/3 IF arg0 4 return1-n ELSE 3 dropn THEN
+  over s" (" string-equals?/3 IF
+    3 dropn arg1 arg1 highlight-state-output @ highlight-output-comment
+    repeat-frame
+  ELSE 3 dropn THEN
+  over s" )" string-equals?/3 IF 5 dropn repeat-frame ELSE 3 dropn THEN
+  ( create a cons pointing to the string and last cons
+    after the read string in the buffer )
+  arg3 over + 1 + cell-size pad-addr
+  arg3 over !
+  arg0 over cell-size + !
+  dup set-arg0
+  dup cell-size 3 * + set-arg3
+  arg2 3 overn - cell-size 3 * - set-arg2
+  3 dropn repeat-frame
+end
+
+def highlight-token-list ( state -- token-list )
+  arg0 highlight-state-last-token @ arg0 highlight-state-last-size @
+  arg0 0 highlight-token-list-loop
+  dup arg0 highlight-state-token-list !
+  1 return1-n
+end
+
 ( Formatter helpers for ~load~ and ~load-list~ )
 
 def highlight-load
@@ -104,30 +192,6 @@ def highlight-load-list
     0 arg0 highlight-state-token-list !
     exit-frame
   THEN 3 return0-n
-end
-
-( Output formatters: )
-
-tmp" BUILDER-TARGET" defined?/2 [UNLESS]
-  alias> copies-entry-as> copy-as>
-  : to-out-addr cs - ;
-[THEN]
-  
-s[ src/lib/scanners/highlight/common.4th
-   src/lib/scanners/highlight/enriched.4th
-   src/lib/scanners/highlight/html.4th
-   src/lib/scanners/highlight/deps.4th
-] load-list
-
-" enriched" string-const> HIGHLIGHT-DEFAULT-OUTPUT
-
-def make-highlight-output ( name ++ output )
-  arg0 CASE
-    s" enriched" OF-STR ' enriched-highlighter droptail-1 ENDOF
-    s" html" OF-STR ' html-highlighter droptail-1 ENDOF
-    s" deps" OF-STR ' deps-highlighter droptail-1 ENDOF
-    drop ' enriched-highlighter droptail-1
-  ENDCASE
 end
 
 ( Single stream highlight functions: )
@@ -175,14 +239,41 @@ def highlight-stdin ( output ++ state )
   the-reader @ arg0 highlight/2 exit-frame
 end
 
+
+( Output formatters: )
+
+tmp" BUILDER-TARGET" defined?/2 [UNLESS]
+  alias> copies-entry-as> copy-as>
+  : to-out-addr cs - ;
+[THEN]
+  
+s[ src/lib/scanners/highlight/common.4th
+   src/lib/scanners/highlight/enriched.4th
+   src/lib/scanners/highlight/html.4th
+   src/lib/scanners/highlight/deps.4th
+   src/lib/scanners/highlight/stats.4th
+] load-list
+
+" enriched" string-const> HIGHLIGHT-DEFAULT-OUTPUT
+
+def make-highlight-output ( name ++ output )
+  arg0 CASE
+    s" enriched" OF-STR ' enriched-highlighter droptail-1 ENDOF
+    s" html" OF-STR ' html-highlighter droptail-1 ENDOF
+    s" deps" OF-STR ' deps-highlighter droptail-1 ENDOF
+    s" stats" OF-STR ' stats-highlighter droptail-1 ENDOF
+    drop ' enriched-highlighter droptail-1
+  ENDCASE
+end
+
 ( Multiple file highlighting: )
 
 def file-heading ( path output )
-  arg1 arg0 highlight-output-file-heading 2 return0-n
+  ' highlight-output-file-heading tail-0
 end
 
 def file-footing ( output -- )
-  arg1 arg0 highlight-output-file-footing 1 return0-n
+  ' highlight-output-file-footing tail-0
 end
 
 def write-error-opening ( error-code path -- )
@@ -201,10 +292,10 @@ def highlight-file-list-fn ( reader-buffer size output path ++ output )
   arg1 exit-frame
 end
 
-def highlight-file-list ( reader-buffer size output path-list -- )
+def highlight-file-list ( reader-buffer size output path-list ++ output )
   ' highlight-file-list-fn arg3 3 partial-after arg2 2 partial-after
   arg0 arg1 3 overn revmap-cons/3
-  4 return0-n
+  arg1 exit-frame
 end
 
 ( Recursive highlighting: )
@@ -245,9 +336,10 @@ def recursive-highlight-fn ( state path ++ state )
   arg0
   arg1 recursive-highlight-state-output @
   highlight-file/4 IF
+    set-local0
     arg1 recursive-highlight-state-output @ file-footing
     arg1 recursive-highlight-state-recurser @ IF
-      highlight-state-seen-files @
+      local0 highlight-state-seen-files @
       arg1
       arg1 recursive-highlight-state-recurser @
       dup IF exec-abs exit-frame ELSE 3 dropn THEN

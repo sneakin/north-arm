@@ -80,3 +80,13 @@ endcol
 defcol espace
   int32 1 space-s current-error peek write drop
 endcol
+
+" 	" string-const> tab-s
+
+defcol tab
+  int32 1 tab-s current-output peek write drop
+endcol
+
+defcol etab
+  int32 1 tab-s current-error peek write drop
+endcol

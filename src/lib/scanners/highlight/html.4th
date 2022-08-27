@@ -80,6 +80,10 @@ def write-escaped-html/2 ( str n )
   repeat-frame
 end
 
+def write-escaped-html ( str -- )
+  arg0 string-length ' write-escaped-html/2 tail+1
+end
+
 ( File section and token writers: )
 
 def html-style ( css media -- )
@@ -89,18 +93,20 @@ def html-style ( css media -- )
   2 return0-n
 end
 
-def html-highlight-heading
+def html-highlight-heading ( output -- )
   s" <html>
   <head>" write-line/2
   html-highlight-screen-style " screen" html-style
   html-highlight-print-style " print" html-style
   s"   </head>
   <body>" write-string/2
+  1 return0-n
 end
 
-def html-highlight-footing
+def html-highlight-footing ( output -- )
   s"   </body>
 </html>" write-string/2
+  1 return0-n  
 end
 
 def html-any
@@ -127,87 +133,44 @@ def html-heading
   1 return0-n
 end
 
-def html-file-heading ( str -- )
+def html-file-heading ( str output -- )
   s" <div class='file'>" write-line/2
-  arg0 html-heading
+  arg1 html-heading
   s" <pre>" write-string/2
-  1 return0-n
+  2 return0-n
 end
 
 def html-file-footing
   s" </pre></div>" write-line/2
 end
 
-def html-terminated-text ( buffer size done-fn state -- )
-  arg3 arg2 arg1 arg0 highlight-state-reader @ reader-read-until
-  shift write-escaped-html/2
-  0 equals? IF repeat-frame THEN
-  arg3 arg2 arg0 highlight-state-reader @ reader-next-token drop write-string/2
-  4 return0-n
-end
-
 def html-comment
   0
   s" <span class='comment'>" write-string/2
   arg2 arg1 write-string/2
-  highlight-max-token-size @ stack-allot set-local0
-  local0
-  highlight-max-token-size @
-  ' comment-done arg0 html-terminated-text
+  ' write-escaped-html/2 ' comment-done arg0 highlight-terminated-text
   s" </span>" write-string/2
   nl
   3 return0-n
 end
 
 def html-string
-  0
   s" <bold class='string'>" write-string/2
   arg2 arg1 write-escaped-html/2
-  arg0 highlight-state-last-token @ arg0 highlight-state-last-size @
-  ' string-done arg0 highlight-state-reader @ reader-read-until drop
-  dup arg0 highlight-state-last-length !
-  2dup null-terminate
-  write-escaped-html/2
-  16 stack-allot 16
-  arg0 highlight-state-reader @
-  reader-next-token drop write-string/2
+  arg0 highlight-string
+  arg0 highlight-state-last-token @ arg0 highlight-state-last-length @
+  write-escaped-html/2 write-escaped-html/2
   s" </bold>" write-string/2
   space
   3 return0-n
 end  
 
-def html-token-list-loop ( buffer size state cons -- cons )
-  arg2 cell-size 3 * int< IF
-    s" Warning: token list too large." error-line/2
-    arg0 4 return1-n
-  THEN
-  arg3 arg2 arg1 highlight-state-reader @ reader-next-token
-  0 int<= IF arg0 4 return1-n THEN
-  2dup null-terminate
-  over s" ]" string-equals?/3 IF arg0 4 return1-n ELSE 3 dropn THEN
-  over s" (" string-equals?/3 IF 3 dropn arg1 html-comment nl repeat-frame ELSE 3 dropn THEN
-  over s" )" string-equals?/3 IF 5 dropn repeat-frame ELSE 3 dropn THEN
-  2dup write-line/2
-  ( create a cons pointing to the string and last cons
-    after the read string in the buffer )
-  arg3 over + 1 +
-  arg3 over !
-  arg0 over cell-size + !
-  dup set-arg0
-  dup cell-size 3 * + set-arg3
-  arg2 3 overn - cell-size 3 * - set-arg2
-  3 dropn repeat-frame
-end
-
 def html-token-list
+  0 ' write-escaped-html ' nl compose set-local0
   s" <span class='keyword delimiting list'>" write-string/2
   arg2 arg1 write-string/2 space
   s" </span>" write-string/2
-  arg0 highlight-state-last-token @
-  arg0 highlight-state-last-size @
-  arg0
-  0 html-token-list-loop
-  arg0 highlight-state-token-list !
+  arg0 highlight-token-list 0 local0 revmap-cons/3
   s" <span class='keyword end-delimiting list'>" write-string/2
   s" ] " write-string/2
   s" </span>" write-string/2
@@ -460,11 +423,12 @@ end
 to-out-addr const> highlight-html-dict
 
 def html-highlighter
-' html-file-footing
-' html-file-heading
-' html-highlight-footing
-' html-highlight-heading
-' html-any
-highlight-html-dict cs +
-here exit-frame
+  ' html-comment
+  ' html-file-footing
+  ' html-file-heading
+  ' html-highlight-footing
+  ' html-highlight-heading
+  ' html-any
+  highlight-html-dict cs +
+  here exit-frame
 end

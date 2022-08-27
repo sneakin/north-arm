@@ -26,9 +26,9 @@ def load-runner
   src/runner/thumb/linux.4th
   src/runner/thumb/linux/signals/syscalls.4th
   src/runner/thumb/ffi.4th
-  src/runner/thumb/logic.4th
+  src/runner/logic.4th
   src/runner/thumb/math/cmp.4th
-  src/runner/thumb/math/signed.4th
+  src/runner/math/signed.4th
   src/runner/math/division.4th
   src/runner/thumb/math/division.4th
   src/runner/thumb/math/carry.4th
@@ -43,10 +43,10 @@ def load-runner
   src/runner/proper.4th
   src/runner/aliases.4th
   src/runner/thumb/state.4th
-   src/runner/dictionary.4th
-   src/runner/thumb/math-init.4th
-   version.4th
-   src/runner/thumb/init.4th
+  src/runner/dictionary.4th
+  src/runner/thumb/math-init.4th
+  version.4th
+  src/runner/thumb/init.4th
   ] load-list exit-frame
 end
 

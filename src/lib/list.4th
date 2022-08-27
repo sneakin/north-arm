@@ -73,7 +73,7 @@ end
 
 ( Lists as stacks: )
 
-def push-onto ( value pointer ++ cons... value )
+def push-onto ( value pointer ++ cons... new-list )
   arg0 peek arg1 cons dup arg0 poke ( fixme for bash: no poke )
   exit-frame
 end

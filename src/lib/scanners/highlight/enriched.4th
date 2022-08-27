@@ -9,7 +9,7 @@ def write-escaped-enriched-byte
   1 return0-n
 end
 
-def write-escaped-enriched/2 ( str n )
+def write-escaped-enriched/2 ( str n -- )
   arg0 0 int<= IF 2 return0-n THEN
   arg1 peek-byte write-escaped-enriched-byte
   arg1 1 + set-arg1
@@ -17,13 +17,19 @@ def write-escaped-enriched/2 ( str n )
   repeat-frame
 end
 
-def enriched-highlight-heading
+def write-escaped-enriched ( str -- )
+  arg0 string-length ' write-escaped-enriched/2 tail+1
+end
+
+def enriched-highlight-heading ( output -- )
   s" Content-Type: text/enriched" write-line/2
   s" Text-Width: 70" write-line/2
   nl
+  1 return0-n
 end
 
-def enriched-highlight-footing
+def enriched-highlight-footing ( output )
+  1 return0-n
 end
 
 def enriched-any
@@ -54,15 +60,16 @@ def enriched-double-hr ( size )
   s" =" arg0 enriched-hr/3 1 return0-n
 end
 
-def enriched-file-heading ( str -- )
-  arg0 string-length dup enriched-double-hr
-  arg0 enriched-heading
+def enriched-file-heading ( str output -- )
+  arg1 string-length dup enriched-double-hr
+  arg1 enriched-heading
   enriched-hr nl nl nl
-  1 return0-n
+  2 return0-n
 end
 
-def enriched-file-footing
+def enriched-file-footing ( output -- )
   nl nl
+  1 return0-n
 end
 
 def enriched-terminated-text ( buffer size done-fn state -- )
@@ -77,10 +84,7 @@ def enriched-comment
   0
   s" <bold><x-color><param>red</param>" write-string/2
   arg2 arg1 write-string/2
-  highlight-max-token-size @ stack-allot set-local0
-  local0
-  highlight-max-token-size @
-  ' comment-done arg0 enriched-terminated-text
+  ' write-escaped-enriched/2 ' comment-done arg0 highlight-terminated-text
   s" </x-color></bold>" write-string/2
   nl
   3 return0-n
@@ -90,51 +94,20 @@ def enriched-string
   0
   s" <bold><x-color><param>brightmagenta</param>" write-string/2
   arg2 arg1 write-escaped-enriched/2
-  arg0 highlight-state-last-token @ arg0 highlight-state-last-size @
-  ' string-done arg0 highlight-state-reader @ reader-read-until drop
-  dup arg0 highlight-state-last-length !
-  2dup null-terminate
-  write-escaped-enriched/2
-  16 stack-allot 16
-  arg0 highlight-state-reader @
-  reader-next-token drop write-string/2
+  arg0 highlight-string
+  arg0 highlight-state-last-token @ arg0 highlight-state-last-length @
+  write-escaped-enriched/2 write-escaped-enriched/2
   s" </x-color></bold>" write-string/2
   space
   3 return0-n
 end  
 
-def enriched-token-list-loop ( buffer size state cons -- cons )
-  arg2 cell-size 3 * int< IF
-    s" Warning: token list too large." error-line/2
-    arg0 4 return1-n
-  THEN
-  arg3 arg2 arg1 highlight-state-reader @ reader-next-token
-  0 int<= IF arg0 4 return1-n THEN
-  2dup null-terminate
-  over s" ]" string-equals?/3 IF arg0 4 return1-n ELSE 3 dropn THEN
-  over s" (" string-equals?/3 IF 3 dropn arg1 enriched-comment nl repeat-frame ELSE 3 dropn THEN
-  over s" )" string-equals?/3 IF 5 dropn repeat-frame ELSE 3 dropn THEN
-  2dup write-line/2
-  ( create a cons pointing to the string and last cons
-    after the read string in the buffer )
-  arg3 over + 1 +
-  arg3 over !
-  arg0 over cell-size + !
-  dup set-arg0
-  dup cell-size 3 * + set-arg3
-  arg2 3 overn - cell-size 3 * - set-arg2
-  3 dropn repeat-frame
-end
-
 def enriched-token-list
+  0 ' write-escaped-enriched ' nl compose set-local0
   s" <x-color><param>brightmagenta</param>" write-string/2
-  arg2 arg1 write-string/2 space
-  s" </x-color>" write-string/2
-  arg0 highlight-state-last-token @
-  arg0 highlight-state-last-size @
-  arg0
-  0 enriched-token-list-loop
-  arg0 highlight-state-token-list !
+  arg2 arg1 write-string/2
+  s" </x-color>" write-string/2 space
+  arg0 highlight-token-list 0 local0 revmap-cons/3
   s" <x-color><param>brightmagenta</param>" write-string/2
   s" ] " write-string/2
   s" </x-color>" write-string/2
@@ -150,14 +123,12 @@ def enriched-keyword
 end
 
 def enriched-keyword-open
-  ( s" <div class='definition'>" write-string/2 )
   nl
   arg2 arg1 arg0 enriched-keyword
   3 return0-n
 end
 
 def enriched-keyword-token
-  ( s" <div class='definition'>" write-string/2 )
   s" <x-color><param>brightmagenta</param>" write-string/2
   arg2 arg1 write-escaped-enriched/2
   space s" <bold>" write-string/2
@@ -179,7 +150,6 @@ def enriched-keyword-token-next
 end
 
 def enriched-keyword-top-token
-  ( s" <div class='definition'>" write-string/2 )
   arg2 arg1 arg0 enriched-keyword
   arg2 arg1 arg0 enriched-keyword-token-next
   nl
@@ -187,7 +157,6 @@ def enriched-keyword-top-token
 end
 
 def enriched-keyword-top-token2
-  ( s" <div class='definition'>" write-string/2 )
   arg2 arg1 arg0 enriched-keyword
   arg2 arg1 arg0 enriched-keyword-token-next
   space
@@ -197,7 +166,6 @@ def enriched-keyword-top-token2
 end
 
 def enriched-keyword-open-token
-  ( s" <div class='definition'>" write-string/2 )
   nl nl
   arg2 arg1 arg0 enriched-keyword-top-token
   3 return0-n
@@ -206,7 +174,6 @@ end
 def enriched-keyword-end
   nl
   arg2 arg1 arg0 enriched-keyword
-  ( s" </div>" write-string/2 )
   3 return0-n
 end
 
@@ -375,11 +342,12 @@ tmp" BUILDER-TARGET" defined?/2 [IF]
 to-out-addr const> highlight-enriched-dict
 
 def enriched-highlighter
-' enriched-file-footing
-' enriched-file-heading
-' enriched-highlight-footing
-' enriched-highlight-heading
-' enriched-any
-highlight-enriched-dict cs +
-here exit-frame
+  ' enriched-comment
+  ' enriched-file-footing
+  ' enriched-file-heading
+  ' enriched-highlight-footing
+  ' enriched-highlight-heading
+  ' enriched-any
+  highlight-enriched-dict cs +
+  here exit-frame
 end

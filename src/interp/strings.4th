@@ -144,7 +144,7 @@ end
 
 ( Allocating fresh copies of strings: )
 
-def allot-byte-string/2
+def allot-byte-string/2 ( str len ++ new-str len )
   arg0 int32 1 + stack-allot
   arg1 over arg0 copy-byte-string/3 int32 3 dropn
   arg0
@@ -152,7 +152,7 @@ def allot-byte-string/2
   exit-frame
 end
 
-def allot-byte-string ( str ++ )
+def allot-byte-string ( str ++ new-str len )
   arg0 arg0 string-length allot-byte-string/2 exit-frame
 end
 

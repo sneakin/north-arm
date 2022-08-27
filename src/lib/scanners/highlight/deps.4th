@@ -1,25 +1,24 @@
-def deps-highlight-heading
-end
-
-def deps-highlight-footing
-end
-
-def deps-any
-(
-  0 arg0 highlight-state-last-token @ !
-  0 arg0 highlight-state-last-length !
-)
-  3 return0-n
-end
-
-def deps-file-heading ( str -- )
-  arg0 write-string
-  s" :" write-string/2
+def deps-highlight-heading ( output -- )
   1 return0-n
 end
 
-def deps-file-footing
+def deps-highlight-footing ( output -- )
+  1 return0-n
+end
+
+def deps-any
+  3 return0-n
+end
+
+def deps-file-heading ( str output -- )
+  arg1 write-string
+  s" :" write-string/2
+  2 return0-n
+end
+
+def deps-file-footing ( output -- )
   nl
+  1 return0-n
 end
 
 def deps-terminated-text ( buffer size done-fn state -- )
@@ -31,56 +30,15 @@ def deps-terminated-text ( buffer size done-fn state -- )
 end
 
 def deps-comment
-  0
-  highlight-max-token-size @ stack-allot set-local0
-  local0
-  highlight-max-token-size @
-  ' comment-done arg0 deps-terminated-text
-  3 return0-n
+  0 ' comment-done arg0 highlight-terminated-text 3 return0-n
 end
 
 def deps-string
-  0
-  arg0 highlight-state-last-token @ arg0 highlight-state-last-size @
-  ' string-done arg0 highlight-state-reader @ reader-read-until drop
-  dup arg0 highlight-state-last-length !
-  2dup null-terminate
-  2 dropn
-  16 stack-allot 16
-  arg0 highlight-state-reader @
-  reader-next-token drop 2 dropn
-  3 return0-n
+  arg0 highlight-string 3 return0-n
 end  
 
-def deps-token-list-loop ( buffer size state cons -- cons )
-  arg2 cell-size 3 * int< IF
-    s" Warning: token list too large." error-line/2
-    arg0 4 return1-n
-  THEN
-  arg3 arg2 arg1 highlight-state-reader @ reader-next-token
-  0 int<= IF arg0 4 return1-n THEN
-  2dup null-terminate
-  over s" ]" string-equals?/3 IF arg0 4 return1-n ELSE 3 dropn THEN
-  over s" (" string-equals?/3 IF 3 dropn arg1 deps-comment repeat-frame ELSE 3 dropn THEN
-  over s" )" string-equals?/3 IF 5 dropn repeat-frame ELSE 3 dropn THEN
-  ( create a cons pointing to the string and last cons
-    after the read string in the buffer )
-  arg3 over + 1 +
-  arg3 over !
-  arg0 over cell-size + !
-  dup set-arg0
-  dup cell-size 3 * + set-arg3
-  arg2 3 overn - cell-size 3 * - set-arg2
-  3 dropn repeat-frame
-end
-
 def deps-token-list
-  arg0 highlight-state-last-token @
-  arg0 highlight-state-last-size @
-  arg0
-  0 deps-token-list-loop
-  arg0 highlight-state-token-list !
-  3 return0-n
+  arg0 highlight-token-list 3 return0-n
 end
 
 def deps-highlight-load
@@ -149,11 +107,12 @@ end
 to-out-addr const> highlight-deps-dict
 
 def deps-highlighter
-' deps-file-footing
-' deps-file-heading
-' deps-highlight-footing
-' deps-highlight-heading
-' deps-any
-highlight-deps-dict cs +
-here exit-frame
+  ' deps-comment
+  ' deps-file-footing
+  ' deps-file-heading
+  ' deps-highlight-footing
+  ' deps-highlight-heading
+  ' deps-any
+  highlight-deps-dict cs +
+  here exit-frame
 end

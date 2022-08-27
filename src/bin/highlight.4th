@@ -1,5 +1,14 @@
-( Can built with:
+( Can build with:
     ~bin/builder.android.3.elf -o bin/highlight src/include/interp.4th src/interp/cross.4th src/bin/highlight.4th~. )
+
+( todo rename to scantool )
+( todo sorting of stats, getopt options for outputs  )
+( todo todo and fixme stats )
+( todo stats formatting: column sizes, html? )
+( todo html css cmd line arguments )
+( todo output assoc list for construction )
+( todo stats assoc on structs )
+( todo interp powered )
 
 tmp" alias" defined?/2 [UNLESS] load-core [THEN]
 s[ src/lib/getopt.4th
