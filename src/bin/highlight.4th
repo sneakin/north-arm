@@ -95,14 +95,14 @@ def main
     ( ...files listed on the command line )
     local1 token-buffer-max local0 files-to-highlight @
     recurse-files @
-    IF 0 recursive-highlight ELSE highlight-file-list THEN
+    IF 0 verbosity @ recursive-highlight ELSE highlight-file-list THEN
   ELSE
     ( ...standard input )
     local1 token-buffer-max make-stdin-reader local0 highlight/2
     ( ...and any files loaded )
     recurse-files @ IF
       highlight-state-seen-files @
-      local1 token-buffer-max local0 4 overn 0 recursive-highlight
+      local1 token-buffer-max local0 4 overn 0 verbosity @ recursive-highlight
     THEN
   THEN
 

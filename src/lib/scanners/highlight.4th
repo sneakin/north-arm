@@ -210,16 +210,17 @@ end
 ( Recursive highlighting: )
 
 def allot-recursive-highlight-state
-  cell-size 5 * stack-allot-zero exit-frame
+  cell-size 6 * stack-allot-zero exit-frame
 end
 
-def recursive-highlight-state-buffer arg0 cell-size 4 * + set-arg0 end
+def recursive-highlight-state-buffer arg0 cell-size 5 * + set-arg0 end
 def recursive-highlight-state-buffer-size
-  arg0 cell-size 3 * + set-arg0
+  arg0 cell-size 4 * + set-arg0
 end
-def recursive-highlight-state-output arg0 cell-size 2 * + set-arg0 end
-def recursive-highlight-state-recurser arg0 cell-size + set-arg0 end
-def recursive-highlight-state-seen-paths end
+def recursive-highlight-state-output arg0 cell-size 3 * + set-arg0 end
+def recursive-highlight-state-recurser arg0 cell-size 2 * + set-arg0 end
+def recursive-highlight-state-seen-paths arg0 cell-size + set-arg0 end
+def recursive-highlight-state-verbosity end
 
 def recursive-highlight-seen? ( path state -- yes? )
   arg1 arg0 recursive-highlight-state-seen-paths @
@@ -232,8 +233,11 @@ def recursive-highlight-has-seen! ( path state ++ state )
 end
 
 def recursive-highlight-fn ( state path ++ state )
+  0
   arg0 arg1 recursive-highlight-seen? IF arg1 2 return1-n THEN
-  s" Highlighting " error-string/2 arg0 error-string enl
+  arg1 recursive-highlight-state-verbosity @ IF
+    s" Scanning " error-string/2 arg0 error-string enl
+  THEN
   arg0 arg1 recursive-highlight-state-output @ file-heading
   arg0 arg1 recursive-highlight-has-seen!
   arg1 recursive-highlight-state-buffer @
@@ -259,12 +263,13 @@ def recursive-highlight/2 ( list state ++ state )
   arg1 arg0 ' recursive-highlight-fn revmap-cons/3 exit-frame
 end
 
-def recursive-highlight ( reader-buffer size output list-paths all-paths ++ recursive-state )
+def recursive-highlight ( reader-buffer size output list-paths all-paths verbosity ++ recursive-state )
   0 allot-recursive-highlight-state set-local0
-  4 argn local0 recursive-highlight-state-buffer !
-  arg3 local0 recursive-highlight-state-buffer-size !
-  arg2 local0 recursive-highlight-state-output !
+  5 argn local0 recursive-highlight-state-buffer !
+  4 argn local0 recursive-highlight-state-buffer-size !
+  arg3 local0 recursive-highlight-state-output !
   ' recursive-highlight/2 local0 recursive-highlight-state-recurser !
-  arg0 local0 recursive-highlight-state-seen-paths !
-  arg1 local0 recursive-highlight/2 exit-frame
+  arg1 local0 recursive-highlight-state-seen-paths !
+  arg0 local0 recursive-highlight-state-verbosity !
+  arg2 local0 recursive-highlight/2 exit-frame
 end
