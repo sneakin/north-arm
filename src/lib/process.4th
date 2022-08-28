@@ -59,14 +59,36 @@ def process-fork ( fn process -- running? )
   THEN
 end
 
-def process-close
-  ( Close the process' pipes. )
+def process-close-input
+  ( Close the process' input pipe. )
   arg0 process -> input fd-pair-close
+  1 return0-n
+end
+
+def process-close-output
+  ( Close the process' output pipe. )
   arg0 process -> output fd-pair-close
   1 return0-n
 end
 
-def process-start ( fn process -- ok? )
+def process-close
+  ( Close the process' pipes. )
+  arg0 process-close-input
+  arg0 process-close-output
+  1 return0-n
+end
+
+def process-check-status
+  ( Check's a process' status. )
+  arg0 process -> pid peek pid-status 1 return1-n
+end
+
+def process-wait
+  ( Wait for a process' status. )
+  arg0 process -> pid peek waitpid 1 return1-n
+end
+
+def process-start-word ( fn process -- ok? )
   ( Open new pipes and fork a new process. )
   arg0 process-open-pipes IF
     arg1 arg0 process-fork IF
@@ -80,15 +102,23 @@ def process-start ( fn process -- ok? )
   THEN 2 return1-n
 end
 
-def process-spawn/1 ( fn ++ process )
+def process-spawn-word/1 ( fn ++ process )
   ( Allocates a new process and starts it interpreting. )
   0
   process make-instance set-local0
-  arg0 local0 process-start IF local0 exit-frame ELSE 0 set-arg0 THEN
+  arg0 local0 process-start-word IF
+    local0 exit-frame
+  ELSE 0 set-arg0
+  THEN
 end
 
-def process-spawn ( ++ process )
-  ' interp process-spawn/1 dup IF exit-frame ELSE 0 return1 THEN
+def process-spawn-interp ( ++ process )
+  ' interp process-spawn-word/1 dup IF exit-frame ELSE 0 return1 THEN
+end
+
+def process-spawn-cmd ( cmdline ++ process )
+  ' os-exec arg0 partial-first process-spawn-word/1
+  dup IF exit-frame ELSE 0 set-arg0 THEN
 end
 
 def process-write ( str length process -- bytes-wrote )
@@ -98,7 +128,7 @@ def process-write ( str length process -- bytes-wrote )
   write 3 return1-n
 end
 
-def process-read ( str length proress -- bytes-read )
+def process-read ( str length process -- bytes-read )
   ( Reads into string the ouput a process has writen to the output pipe. )
   arg1 arg2
   arg0 process -> output fd-pair . output peek
@@ -117,11 +147,6 @@ def process-print
   ( Prints out a process' pending output. )
   1024 stack-allot 1024 arg0 process-print-loop
   1 return0-n
-end
-
-def process-wait
-  ( Check's a process' status. )
-  arg0 process -> pid peek pid-status 1 return1-n
 end
 
 def process-kill
