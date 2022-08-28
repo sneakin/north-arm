@@ -21,6 +21,10 @@ def deps-file-footing ( output -- )
   1 return0-n
 end
 
+def deps-load-error ( err-code path state -- )
+  3 return0-n
+end
+
 def deps-comment
   0 ' comment-done arg0 highlight-terminated-text 3 return0-n
 end
@@ -100,6 +104,7 @@ to-out-addr const> highlight-deps-dict
 
 def deps-highlighter
   ' deps-comment
+  ' deps-load-error
   ' deps-file-footing
   ' deps-file-heading
   ' deps-highlight-footing

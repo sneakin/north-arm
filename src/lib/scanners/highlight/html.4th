@@ -109,6 +109,13 @@ def html-highlight-footing ( output -- )
   1 return0-n  
 end
 
+def html-load-error ( err-code path state -- )
+  s" Failed to open: " write-string/2
+  arg0 write-string space
+  arg1 write-int nl
+  3 return0-n
+end
+
 def html-any
   arg2 arg1 write-escaped-html/2
   space
@@ -136,7 +143,7 @@ end
 def html-file-heading ( str output -- )
   s" <div class='file'>" write-line/2
   arg1 html-heading
-  s" <pre>" write-string/2
+  s" <pre>" write-string/2 ( todo another callback to add pre only when the file opens? )
   2 return0-n
 end
 
@@ -424,6 +431,7 @@ to-out-addr const> highlight-html-dict
 
 def html-highlighter
   ' html-comment
+  ' html-load-error
   ' html-file-footing
   ' html-file-heading
   ' html-highlight-footing

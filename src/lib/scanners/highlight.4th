@@ -30,8 +30,9 @@ def highlight-output-heading-fn arg0 cell-size 2 * + set-arg0 end
 def highlight-output-footing-fn arg0 cell-size 3 * + set-arg0 end
 def highlight-output-file-heading-fn arg0 cell-size 4 * + set-arg0 end
 def highlight-output-file-footing-fn arg0 cell-size 5 * + set-arg0 end
-def highlight-output-comment-fn arg0 cell-size 6 * + set-arg0 end
-def highlight-output-data arg0 cell-size 7 * + set-arg0 end
+def highlight-output-load-error-fn arg0 cell-size 6 * + set-arg0 end
+def highlight-output-comment-fn arg0 cell-size 7 * + set-arg0 end
+def highlight-output-data arg0 cell-size 8 * + set-arg0 end
 
 def highlight-output-heading
   arg0 highlight-output-heading-fn @ tail-0
@@ -47,6 +48,10 @@ end
 
 def highlight-output-file-footing
   arg0 highlight-output-file-footing-fn @ tail-0
+end
+
+def highlight-output-load-error
+  arg0 highlight-output-load-error-fn @ droptail-1
 end
 
 def highlight-output-comment
@@ -251,6 +256,7 @@ s[ src/lib/scanners/highlight/common.4th
    src/lib/scanners/highlight/enriched.4th
    src/lib/scanners/highlight/html.4th
    src/lib/scanners/highlight/deps.4th
+   src/lib/scanners/highlight/flat-deps.4th
    src/lib/scanners/highlight/stats.4th
 ] load-list
 
@@ -261,6 +267,7 @@ def make-highlight-output ( name ++ output )
     s" enriched" OF-STR ' enriched-highlighter droptail-1 ENDOF
     s" html" OF-STR ' html-highlighter droptail-1 ENDOF
     s" deps" OF-STR ' deps-highlighter droptail-1 ENDOF
+    s" flat-deps" OF-STR ' flat-deps-highlighter droptail-1 ENDOF
     s" stats" OF-STR ' stats-highlighter droptail-1 ENDOF
     drop ' enriched-highlighter droptail-1
   ENDCASE
@@ -268,27 +275,19 @@ end
 
 ( Multiple file highlighting: )
 
-def file-heading ( path output )
-  ' highlight-output-file-heading tail-0
-end
-
-def file-footing ( output -- )
-  ' highlight-output-file-footing tail-0
-end
-
-def write-error-opening ( error-code path -- )
-  s" Failed to open: " write-string/2
-  arg0 write-string space
-  arg1 write-int nl
-  2 return0-n
+def highlight-error-opening ( error-code path output -- )
+  s" Failed to open: " error-string/2
+  arg1 error-string espace
+  arg2 error-int enl
+  ' highlight-output-load-error tail-0
 end
 
 def highlight-file-list-fn ( reader-buffer size output path ++ output )
-  arg0 arg1 file-heading
+  arg0 arg1 highlight-output-file-heading
   arg3 arg2 arg0 arg1 highlight-file/4 UNLESS
-    arg0 write-error-opening
+    arg0 arg1 highlight-error-opening
   THEN
-  arg1 file-footing
+  arg1 highlight-output-file-footing
   arg1 exit-frame
 end
 
@@ -329,7 +328,7 @@ def recursive-highlight-fn ( state path ++ state )
   arg1 recursive-highlight-state-verbosity @ IF
     s" Scanning " error-string/2 arg0 error-string enl
   THEN
-  arg0 arg1 recursive-highlight-state-output @ file-heading
+  arg0 arg1 recursive-highlight-state-output @ highlight-output-file-heading
   arg0 arg1 recursive-highlight-has-seen!
   arg1 recursive-highlight-state-buffer @
   arg1 recursive-highlight-state-buffer-size @
@@ -337,7 +336,7 @@ def recursive-highlight-fn ( state path ++ state )
   arg1 recursive-highlight-state-output @
   highlight-file/4 IF
     set-local0
-    arg1 recursive-highlight-state-output @ file-footing
+    arg1 recursive-highlight-state-output @ highlight-output-file-footing
     arg1 recursive-highlight-state-recurser @ IF
       local0 highlight-state-seen-files @
       arg1
@@ -346,8 +345,8 @@ def recursive-highlight-fn ( state path ++ state )
     ELSE drop
     THEN
   ELSE
-    arg0 write-error-opening
-    arg1 recursive-highlight-state-output @ file-footing
+    arg0 arg1 recursive-highlight-state-output @ highlight-error-opening
+    arg1 recursive-highlight-state-output @ highlight-output-file-footing
   THEN arg1 exit-frame
 end
        

@@ -159,6 +159,11 @@ def stats-file-footing
   exit-frame
 end
 
+def stats-load-error ( err-code path state -- )
+  3 return0-n
+end
+
+
 ( Word handlers: )
 
 def stats-any
@@ -298,6 +303,7 @@ to-out-addr const> highlight-stats-dict
 def stats-highlighter
   make-stats-collector
   ' stats-comment
+  ' stats-load-error
   ' stats-file-footing
   ' stats-file-heading
   ' stats-highlight-footing

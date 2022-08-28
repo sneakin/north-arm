@@ -1,3 +1,7 @@
+( Syntax highlighting writen in text/enriched. )
+
+( text/enriched output helpers: )
+
 def write-escaped-enriched-byte
   arg0 CASE
     60 WHEN s" <<" write-string/2 ;;
@@ -19,23 +23,6 @@ end
 
 def write-escaped-enriched ( str -- )
   arg0 string-length ' write-escaped-enriched/2 tail+1
-end
-
-def enriched-highlight-heading ( output -- )
-  s" Content-Type: text/enriched" write-line/2
-  s" Text-Width: 70" write-line/2
-  nl
-  1 return0-n
-end
-
-def enriched-highlight-footing ( output )
-  1 return0-n
-end
-
-def enriched-any
-  arg2 arg1 write-escaped-enriched/2
-  space
-  3 return0-n
 end
 
 def enriched-heading
@@ -60,6 +47,23 @@ def enriched-double-hr ( size )
   s" =" arg0 enriched-hr/3 1 return0-n
 end
 
+( Output handlers: )
+
+def enriched-highlight-heading ( output -- )
+  s" Content-Type: text/enriched" write-line/2
+  s" Text-Width: 70" write-line/2
+  nl
+  1 return0-n
+end
+
+def enriched-highlight-footing ( output )
+  1 return0-n
+end
+
+def enriched-load-error ( err-code path state -- )
+  ' write-error-opening droptail-1
+end
+
 def enriched-file-heading ( str output -- )
   arg1 string-length dup enriched-double-hr
   arg1 enriched-heading
@@ -72,12 +76,12 @@ def enriched-file-footing ( output -- )
   1 return0-n
 end
 
-def enriched-terminated-text ( buffer size done-fn state -- )
-  arg3 arg2 arg1 arg0 highlight-state-reader @ reader-read-until
-  shift write-escaped-enriched/2
-  0 equals? IF repeat-frame THEN
-  arg3 arg2 arg0 highlight-state-reader @ reader-next-token drop write-string/2
-  4 return0-n
+( Word handlers: )
+
+def enriched-any
+  arg2 arg1 write-escaped-enriched/2
+  space
+  3 return0-n
 end
 
 def enriched-comment
@@ -232,13 +236,8 @@ def enriched-highlight-load-list
 end
 
 
-(
-tmp" BUILDER-TARGET" defined?/2 [IF]
-  ' init-highlight-dict dict-entry-data @ from-out-addr
-[ELSE]
-  init-highlight-dict
-[THEN]
-)
+( Enriched output dictionary: )
+
 0
 ' enriched-keyword-top-token copies-entry-as> var>
 ' enriched-keyword-top-token copies-entry-as> const>
@@ -343,6 +342,7 @@ to-out-addr const> highlight-enriched-dict
 
 def enriched-highlighter
   ' enriched-comment
+  ' enriched-load-error
   ' enriched-file-footing
   ' enriched-file-heading
   ' enriched-highlight-footing
