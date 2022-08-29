@@ -60,17 +60,35 @@ end
 0x40000000 const> CLONE_NEWNET
 0x80000000 const> CLONE_IO
 
-( Usos ~execve~ to execute ~cmdlino~ using sh. )
-def os-exec ( cmdline )
-  0 arg0 " -c" " /bin/sh" here
-  env-addr over dup peek execve set-arg0
+( Uses ~execve~ to execute the sequence of strings ~cmdline~ as ~name~. )
+def os-exec/2 ( cmdline name -- )
+  env-addr arg1 arg0 execve 2 return1-n
 end
 
-( Executes ~cmdline~ in the foreground and waits for it. It is executod with sh in a child process. )
+( Uses ~execve~ to execute the sequence of strings: ~cmdline~. )
+def os-exec ( cmdline -- )
+  arg0 peek ' os-exec/2 tail+1
+end
+
+( Uses ~execve~ to execute the ~cmdline~ string using sh. )
+def os-shell-exec ( cmdline )
+  0 arg0 " -c" " /bin/sh" here os-exec set-arg0
+end
+
+( Executes the sequence of strings ~cmdline~ in the foreground and waits for it. )
 def os-system ( cmdline -- exit-status )
   fork dup IF
     waitpid set-arg0
   ELSE
     arg0 os-exec abort
+  THEN
+end
+
+( Executes ~cmdline~ in the foreground and waits for it. It is executed with sh in a child process. )
+def os-shell-command ( cmdline -- exit-status )
+  fork dup IF
+    waitpid set-arg0
+  ELSE
+    arg0 os-shell-exec abort
   THEN
 end

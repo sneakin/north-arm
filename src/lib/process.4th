@@ -117,7 +117,7 @@ def process-spawn-interp ( ++ process )
 end
 
 def process-spawn-cmd ( cmdline ++ process )
-  ' os-exec arg0 partial-first process-spawn-word/1
+  ' os-shell-exec arg0 partial-first process-spawn-word/1
   dup IF exit-frame ELSE 0 set-arg0 THEN
 end
 
