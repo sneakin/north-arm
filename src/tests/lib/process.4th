@@ -57,7 +57,7 @@ def test-process-kill
   s" hello " local0 process-write
   1 sleep
   local0 process-check-status 0 assert-equals
-  local0 process-term 0 int>= assert 
+  local0 process-kill 0 int>= assert 
   local0 process-wait wtermsig SIGKILL assert-equals
   1 sleep
   local0 process-check-status ECHILD negate assert-equals
