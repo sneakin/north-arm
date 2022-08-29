@@ -24,13 +24,14 @@ end
 
 0 var> tty-winch-sigaction
 
-defcol tty-winch-handler
-  s" WINCH" error-line/2
+def tty-winch-handler
+  s" WINCH " error-string/2
   tty-update-size
-  tty-columns peek error-hex-uint espace
-  tty-lines peek error-hex-uint enl
-  3 set-overn 2 dropn exit
-endcol
+  tty-columns peek error-uint
+  s" x" error-string/2
+  tty-lines peek error-uint enl
+  3 return0-n
+end
 
 def tty-install-winch
   make-sigaction tty-winch-sigaction poke

@@ -1,6 +1,6 @@
 load-core
-" src/runner/thumb/linux/signals/constants.4th" load
-" src/runner/thumb/linux/signals/types.4th" load
+" src/lib/linux/signals/constants.4th" load
+" src/lib/linux/signals/types.4th" load
 " src/lib/case.4th" load
 " src/lib/assert.4th" load
 

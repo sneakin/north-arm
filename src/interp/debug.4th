@@ -14,28 +14,34 @@ def print-args
   arg0 error-hex-int nl nl
 end
 
-def print-regs-loop ( highs lows n )
+def print-regs-loop ( highs lows n -- )
   arg0 8 int< IF
     s" r" error-string/2
-    arg0 error-hex-uint
-    s"   " error-string/2
-    arg1 peek error-hex-uint
-    s"   r" error-string/2
-    arg0 8 + error-hex-uint
-    s"   " error-string/2
-    arg2 peek error-hex-uint enl
+    arg0 error-uint
+    tab arg1 peek dup error-hex-uint
+    0x10000000 uint< IF tab THEN tab
+    s" r" error-string/2
+    arg0 8 + error-uint
+    tab arg2 peek error-hex-uint enl
     arg1 cell-size + set-arg1
     arg2 cell-size + set-arg2
     arg0 1 + set-arg0 repeat-frame
   ELSE
-    s" LR " error-string/2
-    arg1 peek error-hex-uint enl
+    3 return0-n
   THEN
+end
+
+def print-regs/2 ( low high -- )
+  0 ' print-regs-loop tail+1
+end
+
+def print-regs/1 ( ptr -- )
+  arg0 cell-size 8 * + arg0 print-regs/2 1 return0-n
 end
 
 def print-regs
   0 dup save-low-regs set-local0
-  save-high-regs local0 0 print-regs-loop
+  save-high-regs local0 print-regs/2
 end
 
 ( Memory dumping: )
@@ -56,7 +62,7 @@ def cmemdump/2 ( ptr num-bytes )
 end
 
 defcol cmemdump
-  rot swap cmemdump/2
+  shift cmemdump/2
   int32 2 dropn
 endcol
 
@@ -65,7 +71,7 @@ def memdump/2 ( ptr num-bytes )
 end
 
 defcol memdump
-  rot swap memdump/2
+  shift memdump/2
   int32 2 dropn
 endcol
 

@@ -1,3 +1,21 @@
+( Process status deconstructuring: )
+
+def wexitstatus arg0 8 bsr 0xFF logand set-arg0 end
+def wcoredump arg0 0x80 logand set-arg0 end
+def wtermsig arg0 0x7F logand set-arg0 end
+def wifexited arg0 wtermsig 0 equals? set-arg0 end
+def wifstopped arg0 wtermsig 0x7F equals? set-arg0 end
+def wifsignaled arg0 wtermsig 1 + 2 int>= set-arg0 end
+def wifcontinued arg0 0xFFFF equals? set-arg0 end
+
+( Process exit code construction: )
+
+def make-wexitcode ( signal-number exit-code -- status )
+  arg0 8 bsl arg1 logior 2 return1-n
+end
+
+def make-wstopcode ( signal-number -- status )  arg0 8 bsl 0x7F logior set-arg0 end
+
 1 const> W_NOHANG
 2 const> W_UNTRACED
 2 const> W_STOPPED

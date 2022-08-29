@@ -67,6 +67,10 @@ def wait4 ( rusage opts status pid -- result )
   args 4 114 syscall 4 return1-n
 end
 
+def waitid ( opts sig-info pid which -- result )
+  args 4 280 syscall 4 return1-n
+end
+
 ( Input & output: )
 
 0 defconst> standard-input

@@ -149,10 +149,20 @@ def process-print
   1 return0-n
 end
 
-def process-kill
+def process-signal ( signal process -- -errno )
   ( Terminates a process and closes the pipes returning the exit status. )
-  SIGTERM arg0 process -> pid peek kill
-  arg0 process-close
-  arg0 process-wait
-  1 return1-n
+  arg1 arg0 process -> pid peek kill
+  2 return1-n
+end  
+
+def process-term
+  ( Terminates a process with TERM signal and closes the pipes returning the exit status. )
+  SIGTERM arg0 process-signal
+  arg0 process-close 1 return1-n
+end  
+
+def process-kill
+  ( Terminates a process with KILL signal and closes the pipes returning the exit status. )
+  SIGKILL arg0 process-signal
+  arg0 process-close 1 return1-n
 end  
