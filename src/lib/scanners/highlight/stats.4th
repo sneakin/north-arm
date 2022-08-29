@@ -281,7 +281,9 @@ end
 ' stats-keyword-var copies-entry-as> var>
 ' stats-keyword-var copies-entry-as> defvar>
 ' stats-keyword-const copies-entry-as> const>
+' stats-keyword-const copies-entry-as> const-offset>
 ' stats-keyword-const copies-entry-as> defconst>
+' stats-keyword-const copies-entry-as> defconst-offset>
 ' stats-keyword-token copies-entry-as> out-immediate-as
 ' stats-keyword-token copies-entry-as> immediate-as
 ' stats-keyword-token2 copies-entry-as> alias>

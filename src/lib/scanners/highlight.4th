@@ -51,7 +51,7 @@ def highlight-output-file-footing
 end
 
 def highlight-output-load-error
-  arg0 highlight-output-load-error-fn @ droptail-1
+  arg0 highlight-output-load-error-fn @ tail-0
 end
 
 def highlight-output-comment
@@ -252,7 +252,8 @@ tmp" BUILDER-TARGET" defined?/2 [UNLESS]
   : to-out-addr cs - ;
 [THEN]
   
-s[ src/lib/scanners/highlight/common.4th
+s[ src/lib/linux/errno.4th
+   src/lib/scanners/highlight/common.4th
    src/lib/scanners/highlight/enriched.4th
    src/lib/scanners/highlight/html.4th
    src/lib/scanners/highlight/deps.4th
@@ -278,7 +279,8 @@ end
 def highlight-error-opening ( error-code path output -- )
   s" Failed to open: " error-string/2
   arg1 error-string espace
-  arg2 error-int enl
+  arg2 error-int
+  arg2 errno->string dup IF espace error-string THEN enl
   ' highlight-output-load-error tail-0
 end
 

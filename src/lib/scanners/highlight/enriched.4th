@@ -60,8 +60,11 @@ def enriched-highlight-footing ( output )
   1 return0-n
 end
 
-def enriched-load-error ( err-code path state -- )
-  ' write-error-opening droptail-1
+def enriched-load-error ( err-code path output -- )
+  s" Failed to open: " write-string/2
+  arg2 write-int
+  arg2 errno->string dup IF space write-string THEN nl
+  3 return0-n
 end
 
 def enriched-file-heading ( str output -- )
@@ -241,8 +244,10 @@ end
 0
 ' enriched-keyword-top-token copies-entry-as> var>
 ' enriched-keyword-top-token copies-entry-as> const>
+' enriched-keyword-top-token copies-entry-as> const-offset>
 ' enriched-keyword-top-token copies-entry-as> defvar>
 ' enriched-keyword-top-token copies-entry-as> defconst>
+' enriched-keyword-top-token copies-entry-as> defconst-offset>
 ' enriched-keyword-top-token copies-entry-as> string-const>
 ' enriched-keyword-top-token copies-entry-as> symbol>
 ' enriched-keyword-top-token copies-entry-as> copies-entry-as>

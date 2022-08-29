@@ -109,10 +109,10 @@ def html-highlight-footing ( output -- )
   1 return0-n  
 end
 
-def html-load-error ( err-code path state -- )
+def html-load-error ( err-code path output -- )
   s" Failed to open: " write-string/2
-  arg0 write-string space
-  arg1 write-int nl
+  arg2 write-int
+  arg2 errno->string dup IF space write-string THEN nl
   3 return0-n
 end
 
@@ -330,8 +330,10 @@ end
 0
 ' html-keyword-top-token copies-entry-as> var>
 ' html-keyword-top-token copies-entry-as> const>
+' html-keyword-top-token copies-entry-as> const-offset>
 ' html-keyword-top-token copies-entry-as> defvar>
 ' html-keyword-top-token copies-entry-as> defconst>
+' html-keyword-top-token copies-entry-as> defconst-offset>
 ' html-keyword-top-token copies-entry-as> string-const>
 ' html-keyword-top-token copies-entry-as> symbol>
 ' html-keyword-top-token copies-entry-as> copies-entry-as>
