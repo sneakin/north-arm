@@ -155,7 +155,7 @@ def html-comment
   0
   s" <span class='comment'>" write-string/2
   arg2 arg1 write-string/2
-  ' write-escaped-html/2 ' comment-done arg0 highlight-terminated-text
+  ' write-escaped-html/2 ' comment-done arg0 scantool-terminated-text
   s" </span>" write-string/2
   nl
   3 return0-n
@@ -164,8 +164,8 @@ end
 def html-string
   s" <bold class='string'>" write-string/2
   arg2 arg1 write-escaped-html/2
-  arg0 highlight-string
-  arg0 highlight-state-last-token @ arg0 highlight-state-last-length @
+  arg0 scantool-string
+  arg0 scantool-state-last-token @ arg0 scantool-state-last-length @
   write-escaped-html/2 write-escaped-html/2
   s" </bold>" write-string/2
   space
@@ -177,7 +177,7 @@ def html-token-list
   s" <span class='keyword delimiting list'>" write-string/2
   arg2 arg1 write-string/2 space
   s" </span>" write-string/2
-  arg0 highlight-token-list 0 local0 revmap-cons/3
+  arg0 scantool-token-list 0 local0 revmap-cons/3
   s" <span class='keyword end-delimiting list'>" write-string/2
   s" ] " write-string/2
   s" </span>" write-string/2
@@ -219,8 +219,8 @@ def html-keyword-token
   ( s" <div class='definition'>" write-string/2 )
   arg2 arg1 arg0 html-defining-keyword
   space s" <bold class='name'>" write-string/2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  arg0 highlight-state-reader @ reader-next-token
+  scantool-max-token-size @ stack-allot scantool-max-token-size @
+  arg0 scantool-state-reader @ reader-next-token
   drop write-escaped-html/2
   s" </bold>" write-string/2
   space
@@ -230,8 +230,8 @@ end
 
 def html-keyword-token-next
   s" <u class='keyword next name'>" write-string/2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  arg0 highlight-state-reader @ reader-next-token drop
+  scantool-max-token-size @ stack-allot scantool-max-token-size @
+  arg0 scantool-state-reader @ reader-next-token drop
   2dup anchor-name-start write-escaped-html/2 anchor-end
   s" </u>" write-string/2
   3 return0-n
@@ -306,9 +306,9 @@ end
 
 def html-highlight-load
   arg2 arg1 arg0 html-keyword-eol
-  arg0 highlight-state-last-word @ ' html-string dict-entry-equiv? IF
-    ( arg2 arg1 arg0 highlight-load exit-frame )
-    ' highlight-load tail-0
+  arg0 scantool-state-last-word @ ' html-string dict-entry-equiv? IF
+    ( arg2 arg1 arg0 scantool-load exit-frame )
+    ' scantool-load tail-0
   ELSE
     3 return0-n
   THEN
@@ -316,9 +316,9 @@ end
 
 def html-highlight-load-list
   arg2 arg1 arg0 html-keyword-eol
-  arg0 highlight-state-last-word @ ' html-token-list dict-entry-equiv? IF
-    ( arg2 arg1 arg0 highlight-load-list exit-frame )
-    ' highlight-load-list tail-0
+  arg0 scantool-state-last-word @ ' html-token-list dict-entry-equiv? IF
+    ( arg2 arg1 arg0 scantool-load-list exit-frame )
+    ' scantool-load-list tail-0
   ELSE
     3 return0-n
   THEN
@@ -429,9 +429,9 @@ end
 ' html-string copies-entry-as> "
 ' html-string copies-entry-as> tmp"
 ' html-comment copies-entry-as> ( ( bad emacs )
-to-out-addr const> highlight-html-dict
+to-out-addr const> scantool-html-dict
 
-def html-highlighter
+def html-scantool
   ' html-comment
   ' html-load-error
   ' html-file-footing
@@ -439,6 +439,6 @@ def html-highlighter
   ' html-highlight-footing
   ' html-highlight-heading
   ' html-any
-  highlight-html-dict cs +
+  scantool-html-dict cs +
   here exit-frame
 end

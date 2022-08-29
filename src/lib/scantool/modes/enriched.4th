@@ -91,7 +91,7 @@ def enriched-comment
   0
   s" <bold><x-color><param>red</param>" write-string/2
   arg2 arg1 write-string/2
-  ' write-escaped-enriched/2 ' comment-done arg0 highlight-terminated-text
+  ' write-escaped-enriched/2 ' comment-done arg0 scantool-terminated-text
   s" </x-color></bold>" write-string/2
   nl
   3 return0-n
@@ -101,8 +101,8 @@ def enriched-string
   0
   s" <bold><x-color><param>brightmagenta</param>" write-string/2
   arg2 arg1 write-escaped-enriched/2
-  arg0 highlight-string
-  arg0 highlight-state-last-token @ arg0 highlight-state-last-length @
+  arg0 scantool-string
+  arg0 scantool-state-last-token @ arg0 scantool-state-last-length @
   write-escaped-enriched/2 write-escaped-enriched/2
   s" </x-color></bold>" write-string/2
   space
@@ -114,7 +114,7 @@ def enriched-token-list
   s" <x-color><param>brightmagenta</param>" write-string/2
   arg2 arg1 write-string/2
   s" </x-color>" write-string/2 space
-  arg0 highlight-token-list 0 local0 revmap-cons/3
+  arg0 scantool-token-list 0 local0 revmap-cons/3
   s" <x-color><param>brightmagenta</param>" write-string/2
   s" ] " write-string/2
   s" </x-color>" write-string/2
@@ -139,8 +139,8 @@ def enriched-keyword-token
   s" <x-color><param>brightmagenta</param>" write-string/2
   arg2 arg1 write-escaped-enriched/2
   space s" <bold>" write-string/2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  arg0 highlight-state-reader @ reader-next-token
+  scantool-max-token-size @ stack-allot scantool-max-token-size @
+  arg0 scantool-state-reader @ reader-next-token
   drop write-escaped-enriched/2
   s" </bold></x-color>" write-string/2
   space
@@ -149,8 +149,8 @@ end
 
 def enriched-keyword-token-next
   s" <bold><underline><x-color><param>brightcyan</param>" write-string/2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  arg0 highlight-state-reader @ reader-next-token
+  scantool-max-token-size @ stack-allot scantool-max-token-size @
+  arg0 scantool-state-reader @ reader-next-token
   drop write-escaped-enriched/2
   s" </x-color></underline></bold>" write-string/2
   3 return0-n
@@ -220,9 +220,9 @@ end
 
 def enriched-highlight-load
   arg2 arg1 arg0 enriched-keyword-eol
-  arg0 highlight-state-last-word @ ' enriched-string dict-entry-equiv? IF
-    ( arg2 arg1 arg0 highlight-load exit-frame )
-    ' highlight-load tail-0
+  arg0 scantool-state-last-word @ ' enriched-string dict-entry-equiv? IF
+    ( arg2 arg1 arg0 scantool-load exit-frame )
+    ' scantool-load tail-0
   ELSE
     3 return0-n
   THEN
@@ -230,9 +230,9 @@ end
 
 def enriched-highlight-load-list
   arg2 arg1 arg0 enriched-keyword-eol
-  arg0 highlight-state-last-word @ ' enriched-token-list dict-entry-equiv? IF
-    ( arg2 arg1 arg0 highlight-load-list exit-frame )
-    ' highlight-load-list tail-0
+  arg0 scantool-state-last-word @ ' enriched-token-list dict-entry-equiv? IF
+    ( arg2 arg1 arg0 scantool-load-list exit-frame )
+    ' scantool-load-list tail-0
   ELSE
     3 return0-n
   THEN
@@ -343,9 +343,9 @@ end
 ' enriched-string copies-entry-as> "
 ' enriched-string copies-entry-as> tmp"
 ' enriched-comment copies-entry-as> ( ( bad emacs )
-to-out-addr const> highlight-enriched-dict
+to-out-addr const> scantool-enriched-dict
 
-def enriched-highlighter
+def enriched-scantool
   ' enriched-comment
   ' enriched-load-error
   ' enriched-file-footing
@@ -353,6 +353,6 @@ def enriched-highlighter
   ' enriched-highlight-footing
   ' enriched-highlight-heading
   ' enriched-any
-  highlight-enriched-dict cs +
+  scantool-enriched-dict cs +
   here exit-frame
 end

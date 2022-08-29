@@ -98,7 +98,7 @@ end
 
 ( Stats Report: )
 
-def stats-highlight-heading
+def stats-scantool-heading
   s" Stats" write-line/2
   nl
   s" Files" write-line/2
@@ -127,32 +127,32 @@ def write-stats-per-file
   arg0 car arg0 cdr set-arg0 ' write-stats-per-file/2 tail+1
 end
 
-def stats-highlight-footing
+def stats-scantool-footing
   nl
   s" Definitions" write-line/2
   nl
   s" Word	# words	# callers" write-line/2
-  arg0 highlight-output-data @ stats-collector-per-def @ ' write-stats-per-def map-car
+  arg0 scantool-output-data @ stats-collector-per-def @ ' write-stats-per-def map-car
   nl
   nl
   s" Summary" write-line/2
   nl
   s"   # Files: " write-string/2
-  arg0 highlight-output-data @ stats-collector-file-count @ write-int nl
+  arg0 scantool-output-data @ stats-collector-file-count @ write-int nl
   s"   # Defs: " write-string/2
-  arg0 highlight-output-data @ stats-collector-defs-total @ write-int nl
+  arg0 scantool-output-data @ stats-collector-defs-total @ write-int nl
 end
 
 ( Output handlers: )
 
 def stats-file-heading ( str output -- )
-  arg0 highlight-output-data @ stats-collector-file-count inc!
-  arg1 arg0 highlight-output-data @ stats-collector-current-file !
+  arg0 scantool-output-data @ stats-collector-file-count inc!
+  arg1 arg0 scantool-output-data @ stats-collector-current-file !
   2 return0-n
 end
 
 def stats-file-footing
-  arg0 highlight-output-data @
+  arg0 scantool-output-data @
   local0 stats-collector-current-file @
   local1 local0 stats-collector-for-file local1 write-stats-per-file/2
   0 local0 stats-collector-current-file !
@@ -167,7 +167,7 @@ end
 ( Word handlers: )
 
 def stats-any
-  arg0 highlight-state-output @ highlight-output-data @
+  arg0 scantool-state-output @ scantool-output-data @
   dup stats-collector-current-def @ dup IF
     local0 inc-stats-collector-words-per-def!
   ELSE drop
@@ -177,99 +177,99 @@ def stats-any
 end
 
 def stats-terminated-text ( buffer size done-fn state -- )
-  arg3 arg2 arg1 arg0 highlight-state-reader @ reader-read-until
+  arg3 arg2 arg1 arg0 scantool-state-reader @ reader-read-until
   shift 2 dropn
   0 equals? IF repeat-frame THEN
-  arg3 arg2 arg0 highlight-state-reader @ reader-next-token drop 2 dropn
+  arg3 arg2 arg0 scantool-state-reader @ reader-next-token drop 2 dropn
   4 return0-n
 end
 
 def stats-comment
-  0 ' comment-done arg0 highlight-terminated-text
+  0 ' comment-done arg0 scantool-terminated-text
   3 return0-n
 end
 
 def stats-string
-  arg0 highlight-string 3 return0-n
+  arg0 scantool-string 3 return0-n
 end  
 
 def stats-token-list
-  arg0 highlight-token-list 3 return0-n
+  arg0 scantool-token-list 3 return0-n
 end
 
-def stats-highlight-load
-  ( arg2 arg1 arg0 highlight-load exit-frame )
-  arg0 highlight-state-last-word @ ' stats-string dict-entry-equiv? IF
-    arg0 highlight-state-output @ highlight-output-data @ inc-stats-collector-current-load-count!
-    ' highlight-load tail-0
+def stats-scantool-load
+  ( arg2 arg1 arg0 scantool-load exit-frame )
+  arg0 scantool-state-last-word @ ' stats-string dict-entry-equiv? IF
+    arg0 scantool-state-output @ scantool-output-data @ inc-stats-collector-current-load-count!
+    ' scantool-load tail-0
   ELSE
     3 return0-n
   THEN
 end
 
-def stats-highlight-load-list
-  arg0 highlight-state-last-word @ ' stats-token-list dict-entry-equiv? IF
-    arg0 highlight-state-output @ highlight-output-data @
-    arg0 highlight-state-token-list @ cons-count
+def stats-scantool-load-list
+  arg0 scantool-state-last-word @ ' stats-token-list dict-entry-equiv? IF
+    arg0 scantool-state-output @ scantool-output-data @
+    arg0 scantool-state-token-list @ cons-count
     inc-stats-collector-current-load-count!/2
-    ' highlight-load-list tail-0
+    ' scantool-load-list tail-0
   ELSE
     3 return0-n
   THEN
 end
 
 def stats-keyword-token
-  arg0 highlight-state-last-token @ arg0 highlight-state-last-size @
-  arg0 highlight-state-reader @ reader-next-token
-  drop arg0 highlight-state-last-length !
+  arg0 scantool-state-last-token @ arg0 scantool-state-last-size @
+  arg0 scantool-state-reader @ reader-next-token
+  drop arg0 scantool-state-last-length !
   3 return0-n
 end
 
 def stats-keyword-token2
-  highlight-max-token-size @ stack-allot highlight-max-token-size @
-  2dup arg0 highlight-state-reader @ reader-next-token
+  scantool-max-token-size @ stack-allot scantool-max-token-size @
+  2dup arg0 scantool-state-reader @ reader-next-token
   3 dropn
-  arg0 highlight-state-reader @ reader-next-token
+  arg0 scantool-state-reader @ reader-next-token
   3 return0-n
 end
 
 def stats-keyword-def
   arg2 arg1 arg0 stats-keyword-token
-  arg0 highlight-allot-last
-  over arg0 highlight-state-output @ highlight-output-data @ stats-collector-current-def !
-  arg0 highlight-state-output @ highlight-output-data @ stats-collector-defs-total inc!
-  arg0 highlight-state-output @ highlight-output-data @ stats-collector-current-file @
-  arg0 highlight-state-output @ highlight-output-data @ inc-stats-collector-defs-per-file!
+  arg0 scantool-allot-last
+  over arg0 scantool-state-output @ scantool-output-data @ stats-collector-current-def !
+  arg0 scantool-state-output @ scantool-output-data @ stats-collector-defs-total inc!
+  arg0 scantool-state-output @ scantool-output-data @ stats-collector-current-file @
+  arg0 scantool-state-output @ scantool-output-data @ inc-stats-collector-defs-per-file!
   exit-frame
 end
 
 def stats-keyword-end
-  0 arg0 highlight-state-output @ highlight-output-data @ stats-collector-current-def !
+  0 arg0 scantool-state-output @ scantool-output-data @ stats-collector-current-def !
   3 return0-n
 end
 
 def stats-keyword-var
   arg2 arg1 arg0 stats-keyword-token
-  arg0 highlight-allot-last
-  arg0 highlight-state-output @ highlight-output-data @ stats-collector-current-file @
-  arg0 highlight-state-output @ highlight-output-data @ inc-stats-collector-vars-per-file!
+  arg0 scantool-allot-last
+  arg0 scantool-state-output @ scantool-output-data @ stats-collector-current-file @
+  arg0 scantool-state-output @ scantool-output-data @ inc-stats-collector-vars-per-file!
   exit-frame
 end
 
 def stats-keyword-const
   arg2 arg1 arg0 stats-keyword-token
-  arg0 highlight-allot-last
-  arg0 highlight-state-output @ highlight-output-data @ stats-collector-current-file @
-  arg0 highlight-state-output @ highlight-output-data @ inc-stats-collector-constants-per-file!
+  arg0 scantool-allot-last
+  arg0 scantool-state-output @ scantool-output-data @ stats-collector-current-file @
+  arg0 scantool-state-output @ scantool-output-data @ inc-stats-collector-constants-per-file!
   exit-frame
 end
 
-( Highlight Output: )
+( Stats dictdonary: )
 
 0
-' stats-highlight-load copies-entry-as> load
-' stats-highlight-load copies-entry-as> load/2
-' stats-highlight-load-list copies-entry-as> load-list
+' stats-scantool-load copies-entry-as> load
+' stats-scantool-load copies-entry-as> load/2
+' stats-scantool-load-list copies-entry-as> load-list
 ' stats-keyword-def copies-entry-as> def
 ' stats-keyword-def copies-entry-as> defcol
 ' stats-keyword-def copies-entry-as> :
@@ -300,17 +300,17 @@ end
 ' stats-string copies-entry-as> "
 ' stats-string copies-entry-as> tmp"
 ' stats-comment copies-entry-as> ( ( bad emacs )
-to-out-addr const> highlight-stats-dict
+to-out-addr const> scantool-stats-dict
 
-def stats-highlighter
+def stats-scantool
   make-stats-collector
   ' stats-comment
   ' stats-load-error
   ' stats-file-footing
   ' stats-file-heading
-  ' stats-highlight-footing
-  ' stats-highlight-heading
+  ' stats-scantool-footing
+  ' stats-scantool-heading
   ' stats-any
-  highlight-stats-dict cs +
+  scantool-stats-dict cs +
   here exit-frame
 end
