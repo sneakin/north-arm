@@ -9,7 +9,7 @@ end
 def print-signal-state
   s" PID " error-string/2 getpid error-uint
   s"  caught signal " error-string/2
-  arg0 error-uint space arg0 signal->string error-string enl
+  arg0 error-uint ' signal->string IF space arg0 signal->string error-string THEN enl
   s" Registers now:" error-string/2 enl
   print-regs
   s" From frame: " error-string/2
