@@ -30,5 +30,6 @@ def builder-load
     THEN
   THEN
   " src/cross/builder/run.interp.4th" load
+  s" Builder loaded." error-line/2
   exit-frame
 end

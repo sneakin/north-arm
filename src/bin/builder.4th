@@ -1,6 +1,7 @@
 ' alias [UNLESS] load-core [THEN]
 " src/lib/getopt.4th" load
-
+" src/interp/dictionary/revmap.4th" load
+" src/interp/dictionary/dump.4th" load
 " src/cross/builder/interp.4th" load
 
 null var> sources
@@ -8,6 +9,9 @@ null var> sources
 DEFAULT-ENTRY-POINT var> entry-point
 false var> verbosity
 0 var> start-interpreter
+false var> do-dump-dict
+
+" ht:e:vricb:o:dQ" string-const> OPTS
 
 def reset!
   builder-reset!
@@ -16,11 +20,6 @@ def reset!
   0 start-interpreter !
 end
 
-def inc!
-  arg0 @ 1 + arg0 !
-  1 return0-n
-end
-  
 def process-opts
   arg0 CASE
     s" h" WHEN-STR false 2 return1-n ;;
@@ -33,6 +32,7 @@ def process-opts
     s" b" WHEN-STR arg1 builder-output-format ! true 2 return1-n ;;
     s" o" WHEN-STR arg1 builder-output-file ! true 2 return1-n ;;
     s" d" WHEN-STR start-interpreter inc! true 2 return1-n ;;
+    s" Q" WHEN-STR true do-dump-dict ! true 2 return1-n ;;
     s" *" WHEN-STR arg1 sources push-onto true exit-frame ;;
     drop false 2 return1-n
   ESAC  
@@ -61,8 +61,6 @@ def north-stacks-init!
   exit-frame
 end
 
-" ht:e:vricb:o:d" string-const> OPTS
-
 def build
   reset!
 
@@ -78,6 +76,7 @@ def build
     s"         -r  Do not include the runner." write-line/2
     s"         -i  Do include the interpreter." write-line/2
     s"         -c  Do include the aliases to ease cross compiling." write-line/2
+    s"         -Q  Dump the dictionary and exit." write-line/2
     s"         -d  Increase counter to start interpreter" write-line/2
     s"         -v  Increase verbosity" write-line/2
     -1 sysexit
@@ -96,6 +95,7 @@ def build
     s" With cross: " error-string/2 builder-with-cross @ error-int enl
     s" Intpreter: " error-string/2 start-interpreter @ error-int enl
     s" Sources:" error-line/2 sources @ ' error-line map-car
+    s" Dump dictionary?" error-string/2 do-dump-dict error-bool enl
   THEN
 
   start-interpreter @ 1 equals? IF interp THEN
@@ -104,6 +104,7 @@ def build
 
   builder-load
 
+  do-dump-dict @ IF dump-dict 0 return1 THEN
   start-interpreter @ 2 equals? IF interp THEN
   ( builder-target @ string-const> BUILDER-TARGET )
 
@@ -115,5 +116,5 @@ def build
   ELSE 6 dropn
   THEN
 
-  exit-frame
+  0 exit-frame
 end
