@@ -144,6 +144,8 @@ end
 def scantool-token-list-loop ( buffer size state cons -- cons )
   arg2 cell-size 3 * int< IF
     s" Warning: token list too large." error-line/2
+    s" List so far: " error-string/2
+    ' error-string ' espace compose arg0 0 roll revmap-cons/3 enl
     arg0 4 return1-n
   THEN
   arg3 arg2 arg1 scantool-state-reader @ reader-next-token
