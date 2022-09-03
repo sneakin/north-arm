@@ -72,6 +72,7 @@ def fancy-stack-zero-past-links ( stack-min link-cols counter -- )
 end
 
 def fancy-stack-write-pointer-classes ( ptr -- )
+  ( write four columns of flags: Code/Pointer/Thumb, stack, data, Code/On stack/offset. )
   arg0 peek potential-pointer? IF
     arg0 peek thumb-pointer?
     IF s" t"
@@ -98,21 +99,54 @@ def parent-frame-above ( target frame -- frame )
   THEN arg0 2 return1-n
 end
 
+def dead-frame?/2 ( parent fp -- yes? )
+  ( find a last common ancestor with the current frame )
+  arg0 arg1 uint< IF
+    arg0 peek stack-pointer? IF
+      arg0 peek
+      dup arg1 equals? IF true ELSE set-arg0 repeat-frame THEN
+    ELSE false
+    THEN
+  ELSE false
+  THEN 2 return1-n
+end
+
+def dead-frame? arg0 peek arg0 dead-frame?/2 set-arg0 end
+
+def fancy-frame-pointer-kind ( next-fp fp -- kind )
+  arg1 arg0 equals? IF
+    1
+  ELSE
+    0
+    arg0 stack-pointer? IF
+      arg0 peek arg1 equals?
+      IF 2 ELSE arg1 arg0 dead-frame?/2 IF 3 THEN THEN THEN
+  THEN 2 return1-n
+end
+
 def fancy-stack/4 ( stop-ptr start-ptr link-cols next-fp -- )
   arg2 arg3 uint<= UNLESS 4 return0-n THEN
-  arg2 arg0 equals? IF
-    s" * "
-  ELSE arg2 peek arg0 equals? IF s" x " ELSE s"   " THEN 
-  THEN write-string/2
+  arg0 arg2 fancy-frame-pointer-kind CASE
+    1 OF s" * " ENDOF ( current, direct ancestor of current )
+    2 OF s" x " ENDOF ( dead sibling )
+    3 OF s" X " ENDOF ( very dead frames )
+    drop s"   "
+  ENDCASE write-string/2
+  ( ptr moved past next-fp )
   arg2 arg0 uint>= IF arg2 arg0 parent-frame-above set-arg0 THEN
+  ( address value )
   arg2 write-hex-uint space
   arg2 peek write-tabbed-hex-uint
+  ( update the link waterfall )
   arg2 peek arg1 fancy-stack-maybe-add-link
   arg2 peek cs + arg1 fancy-stack-maybe-add-link
   arg2 arg1 0 fancy-stack-zero-past-links
+  ( write out the waterfall )
   arg1 fancy-stack-cols peek arg2 pointer fancy-stack-link map-seq-n/4
+  ( additional info )
   space
   arg2 fancy-stack-write-pointer-classes nl
+  ( repeat )
   arg2 up-stack set-arg2
   drop-locals repeat-frame
 end
