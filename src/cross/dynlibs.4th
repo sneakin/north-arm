@@ -67,7 +67,8 @@ def import> ( library : name returns symbol arity ++ library )
       THEN
     THEN
   THEN
-  error
-  ( todo drop out-dict )
+  ( drop the new word )
+  out-dict @ dict-entry-link @ from-out-addr out-dict !
+  local0 dmove
   arg0 exit-frame
 end

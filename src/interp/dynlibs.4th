@@ -32,7 +32,7 @@ end
 def library> ( : path ++ handle )
   next-token negative? IF 0 return1 THEN
   2dup *libraries* peek assoc-string-2
-  dup IF return1
+  dup IF cdr return1
   ELSE
     drop allot-byte-string/2 drop
     RTLD-NOW over dlopen dup UNLESS not-found 0 return1 THEN
@@ -62,13 +62,12 @@ def import> ( library : name returns symbol arity ++ )
           arg0 exit-frame
 	THEN
       ELSE
+	next-token 2 dropn ( eat the tailing integer )
         not-found
       THEN
     THEN
   THEN
-  ( todo drop dict on error )
-  error
-  arg0 exit-frame
+  dict-drop return0
 end
 
 [ELSE]
