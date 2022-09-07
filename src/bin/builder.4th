@@ -10,8 +10,9 @@ DEFAULT-ENTRY-POINT var> entry-point
 false var> verbosity
 0 var> start-interpreter
 false var> do-dump-dict
+false var> show-version
 
-" ht:e:vricb:o:dQ" string-const> OPTS
+" hVt:e:vricb:o:dQ" string-const> OPTS
 
 def reset!
   builder-reset!
@@ -23,6 +24,7 @@ end
 def process-opts
   arg0 CASE
     s" h" WHEN-STR false 2 return1-n ;;
+    s" V" WHEN-STR true show-version ! true 2 return1-n ;;
     s" e" WHEN-STR arg1 entry-point ! true 2 return1-n ;;
     s" t" WHEN-STR arg1 builder-target ! true 2 return1-n ;;
     s" v" WHEN-STR verbosity inc! true 2 return1-n ;;
@@ -64,11 +66,14 @@ end
 def build
   reset!
 
+  ( todo init builder-target-bits and endian by target and option )
+  
   ' process-opts OPTS getopt UNLESS
     s" Usage: " write-string/2 0 get-argv write-string
     s"  [-" write-string/2 OPTS write-string s" ] files..." write-string/2 nl
     nl
     s"         -h  Help" write-line/2
+    s"         -V  Print version info." write-line/2
     s"  -t target  Platform to target" write-line/2
     s"    -e word  Word to use as the entry point." write-line/2
     s"    -b name  Output format" write-line/2
@@ -79,8 +84,10 @@ def build
     s"         -Q  Dump the dictionary and exit." write-line/2
     s"         -d  Increase counter to start interpreter" write-line/2
     s"         -v  Increase verbosity" write-line/2
-    -1 sysexit
+    -1 return1
   THEN
+
+  show-version @ IF about 0 return1 THEN
 
   north-stacks-init!
   interp-init
@@ -106,7 +113,6 @@ def build
 
   do-dump-dict @ IF dump-dict 0 return1 THEN
   start-interpreter @ 2 equals? IF interp THEN
-  ( builder-target @ string-const> BUILDER-TARGET )
 
   entry-point @
   dup string-length

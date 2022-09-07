@@ -399,10 +399,21 @@ def interp-init
   exit-frame
 end
 
-def about
+def banner
   copyright error-line
 end
-  
+
+def about
+  banner nl
+  s" Build Time:" write-string/2 tab NORTH-BUILD-TIME write-int nl
+  s"    Builder:" write-string/2 tab NORTH-BUILDER write-string nl
+  s"    Git Ref:" write-string/2 tab NORTH-GIT-REF write-string nl
+  nl
+  s"   Platform:" write-string/2 tab NORTH-PLATFORM write-string nl
+  s"       Bits:" write-string/2 tab NORTH-BITS write-int nl
+  s"  Cell size:" write-string/2 tab cell-size write-int nl
+end
+
 def interp-boot
-  interp-init about interp
+  interp-init banner interp exit-frame
 end
