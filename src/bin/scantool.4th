@@ -48,7 +48,7 @@ def usage
   s"        -i  Start an interpreter before scanning." write-line/2
   s"        -v  Be verbose and print out debug messages." write-line/2
   s"   -c path  Load a North script to configure scanning." write-line/2
-  s"   -m name  Use the named mode: enriched, html, deps, flat-deps" write-line/2
+  s"   -m name  Use the named mode: enriched, html, deps, flat-deps, stats" write-line/2
 end
 
 def north-stacks-init!

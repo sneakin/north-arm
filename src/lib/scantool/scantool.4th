@@ -263,7 +263,7 @@ s[ src/lib/linux/errno.4th
    src/lib/scantool/modes/stats.4th
 ] load-list
 
-" enriched" string-const> SCANTOOL-DEFAULT-OUTPUT
+" stats" string-const> SCANTOOL-DEFAULT-OUTPUT
 
 def make-scantool-output ( name ++ output )
   arg0 CASE
