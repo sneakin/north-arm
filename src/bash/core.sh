@@ -87,6 +87,7 @@ feval()
     # Save caller state
     local last_expr=( "${EVAL_EXPR[@]}" )
     local last_eip="$EIP"
+    local err=0
     # Set the evaluation state
     EVAL_EXPR=( "$@" )
     EIP=0
@@ -96,12 +97,14 @@ feval()
 	if fexec "${EVAL_EXPR[$EIP]}"; then
 	    EIP=$(($EIP + 1))
         else
-            echo "Error evaling at ${EIP}: ${EVAL_EXPR[@]}" 1>&2
-            echo "Caller at ${last_eip}: ${last_expr[@]}"
-            return -1
+            echo "Error evaling ${EVAL_EXPR[$EIP]} at ${EIP}:" 1>&2
+	    echo "  ${EVAL_EXPR[@]}" 1>&2
+	    err=1
+	    break
         fi
     done
     # Restore caller state
     EVAL_EXPR=( "${last_expr[@]}" )
     EIP="$last_eip"
+    return "${err}"
 }
