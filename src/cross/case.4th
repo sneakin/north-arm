@@ -59,4 +59,4 @@
 alias> out-OF out-WHEN out-immediate-as OF
 alias> out-OF-STR out-WHEN-STR out-immediate-as OF-STR
 alias> out-ENDOF out-;; out-immediate-as ENDOF
-alias> out-ENDCASE out-ESAC outsimmediate-as ENDCASE
+alias> out-ENDCASE out-ESAC out-immediate-as ENDCASE
