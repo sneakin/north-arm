@@ -20,3 +20,6 @@ DICT['dpeek-byte']='feval dpeek'
 DICT['dpoke-byte']='feval swap 255 logand swap dpoke'
 DICT['dpop-byte']='feval dpop 255 logand'
 DICT['dpush-byte']='feval 255 logand dpush'
+
+DICT['dpeek-off']='feval + dpeek'
+DICT['dpoke-off']='feval + dpoke'

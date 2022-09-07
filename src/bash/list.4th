@@ -30,6 +30,8 @@ def revmap-car/3 ( cons state fn ++ state )
   arg2 reverse->seq-n arg1 arg0 map-seq-n exit-frame
 end
 
+alias> revmap-cons/3 revmap-car/3
+
 def load-1
   arg0 load true exit-frame
 end

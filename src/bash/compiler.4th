@@ -11,6 +11,10 @@ null var> this-word
 
 ( Defining words: )
 
+: defined?
+  get-word null? not swap drop
+;
+
 : make-const
   swap " fpush " ++
   swap set-word!
@@ -45,10 +49,17 @@ null var> this-word
   drop
 ;
 
+: maybe-compiler-warning
+  dup defined?
+  1 unless-jump return
+  number? 1 unless-jump return
+  " Warning: " error-string dup error-string " not found" error-line
+;
+
 : compiling-read-loop
   next-token
   null? 1 unless-jump return
-  compiling-immediates immediate-exec drop
+  compiling-immediates immediate-exec 2 if-jump
   compiling-state ?exec
   compiling 1 if-jump return
   loop
@@ -64,7 +75,7 @@ null var> this-word
 
 : compiling-init
   literal IDICT set-compiling-immediates
-  0 set-compiling-state
+  literal maybe-compiler-warning set-compiling-state
 ;
 
 ( Stack operations: )
@@ -143,10 +154,6 @@ alias> up-stack/2 -
 ;
 
 alias> :: :
-
-: defined?
-  get-word null? not swap drop
-;
 
 ( Now that immediates can execute: )
 
@@ -261,9 +268,12 @@ alias> or logior
 
 320 var> token-buffer-max ( used to condition the about message )
 1 const> op-size
+4 var> cell-size
 
 alias> ! dpoke
 alias> @ dpeek
+alias> peek-off dpeek-off
+alias> poke-off dpoke-off
 alias> string-const> const>
 alias> tmp" s"
 
@@ -292,6 +302,10 @@ alias> tmp" s"
 : peek " warning: peeker" error-line ;
 : poke " warning: poker" error-line ;
 
+: data-null? ( value ++ yes? ) null? over 0 equals? or ;
+
 " src/bash/platform.4th" load
 " src/bash/frames.4th" load
 " src/bash/list.4th" load
+" src/bash/seq.4th" load
+" src/bash/process.4th" load

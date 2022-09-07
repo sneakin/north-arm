@@ -141,10 +141,12 @@ DICT['int32']="${DICT[literal]}"
 #
 # String ops
 #
+DICT['char-code']="v=\$(printf %d \"'\${STACK[0]}\"); fpop; fpush \$v"
+DICT['code-char']="v=\$(echo -e \\\\x\$(printf %.2x \"\${STACK[0]}\")); fpop; fpush \$v"
+
 DICT['++']='v="${STACK[0]}${STACK[1]}"; fpop 2; fpush "$v"'
 DICT['string-length']='v="${STACK[0]}"; fpop; fpush "${#v}"'
 DICT['string-peek']="v=\"\${STACK[1]}\"; n=\"\${STACK[0]}\"; fpop 2; fpush \$(printf \"%d\" \'\"\${v:\$n:1}\")"
-DICT['char-code']="v=\$(printf %d \"'\${STACK[0]}\"); fpop; fpush \$v"
 DICT['has-spaces?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([ \t\n\r\v]) ]]; then fpush 1; else fpush 0; fi'
 DICT['has-special-chars?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([*?!~$=]) ]]; then fpush 1; else fpush 0; fi'
 DICT['quote-string']='v="${STACK[0]}"; fpop; fpush "$(printf %q "$v")"'
@@ -185,7 +187,11 @@ DICT['current-frame']='fpush $FP'
 DICT['set-current-frame']='FP="${STACK[0]}"; fpop'
 DICT['exit-frame']='feval end-frame ; EIP="${#EVAL_EXPR[@]}"'
 DICT['return0']='feval forget-frame ; EIP="${#EVAL_EXPR[@]}"'
+DICT['return0-n']='n="${STACK[0]}"; feval forget-frame "${n}" dropn ; EIP="${#EVAL_EXPR[@]}"'
 DICT['return1']='tmp="${STACK[0]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp"'
+DICT['return1-n']='tmp="${STACK[1]}"; n="${STACK[0]}"; feval forget-frame "${n}" dropn ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp"'
+DICT['return2']='tmp1="${STACK[0]}"; tmp2="${STACK[1]}"; feval forget-frame ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp1" "$tmp2"'
+DICT['return2-n']='tmp1="${STACK[1]}"; tmp2="${STACK[2]}"; n="${STACK[0]}"; feval forget-frame "${n}" dropn ; EIP="${#EVAL_EXPR[@]}" ; fpush "$tmp1" "$tmp2"'
 
 #
 # Environment access
