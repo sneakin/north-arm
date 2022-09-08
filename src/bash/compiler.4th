@@ -288,6 +288,7 @@ alias> tmp" s"
 ;
 
 : error-line/2 drop error-line ;
+: error-int ,,i drop ;
 : error-hex-int negative? IF " -" error-string abs-int THEN ,,h drop ;
 : error-hex-uint ,,h drop ;
 : error-string/2 drop error-string ;
