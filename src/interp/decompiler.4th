@@ -144,7 +144,7 @@ def decompile ( entry )
       ' do-const WHEN arg0 decompile-const ;;
       ' do-var WHEN arg0 s" var>" decompile-data-var ;;
       ' do-inplace-var WHEN arg0 s" inplace-var>" decompile-inplace-var ;;
-      ' do-data-var WHEN arg0 s" data-var>" decompile-data-var ;;
+      ' do-data-var WHEN arg0 s" var>" decompile-data-var ;;
         arg0 is-op?
 	IF arg0 decompile-op
 	ELSE arg0 decompile-unknown-entry
