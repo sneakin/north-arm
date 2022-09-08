@@ -418,3 +418,7 @@ alias> ins2! uint32!
     emit-load-uint32
   THEN
 ;
+
+: patch-ldr-pc! ( where reg -- )
+  swap dhere over - 2 - roll ldr-pc swap ins!
+;
