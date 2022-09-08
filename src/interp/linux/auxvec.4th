@@ -22,29 +22,7 @@
 26 defconst> AT-HWCAP2
 31 defconst> AT-EXECFN
 
-( todo inverted list of auxvec constants )
-( w[
-AT-NULL
-AT-IGNORE
-AT-EXECFD
-AT-PHDR
-AT-PHENT
-AT-PHNUM
-AT-PAGESZ
-AT-BASE
-AT-FLAGS
-AT-ENTRY
-AT-NOTELF
-AT-UID
-AT-EUID
-AT-GID
-AT-EGID
-AT-PLATFORM
-AT-HWCAP
-AT-CLKTCK
-AT-SECURE
-AT-BASE-PLATFORM
-AT-RANDOM
-AT-HWCAP2
-AT-EXECFN
-] defconst> AUXVEC-KEYS )
+def auxvec->string
+  arg0 ' AT-NULL ' AT-EXECFN cs bound-dict-lookup-by-value
+  IF dict-entry-name peek cs int-add ELSE " Unknown" THEN set-arg0
+end

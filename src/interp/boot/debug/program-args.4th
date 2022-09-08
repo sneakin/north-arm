@@ -26,8 +26,8 @@ end
 def print-auxvec/1
   arg0 dup peek dup IF
     ( todo print field name; assoc list? )
-    write-hex-uint tab
-    cell-size + dup peek write-hex-uint nl
+    dup write-hex-uint tab auxvec->string write-string tab
+    cell-size + dup peek dup write-int tab write-hex-uint nl
     cell-size + set-arg0 repeat-frame
   THEN
 end
