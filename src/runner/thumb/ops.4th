@@ -4,6 +4,7 @@ r4 const> fp
 r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip
+r8 const> data-reg
 
 ( target-thumb2? )
 BUILDER-TARGET tmp" thumb2" drop contains? [IF]
@@ -63,6 +64,7 @@ BUILDER-TARGET tmp" thumb2" drop contains? [IF]
       0 r0 bit-set pushr ,ins
       ( ldr-pc is 4 byte aligned. Determine if the offset will be padded: )
       dhere to-out-addr 2 logand
+      s" Branch aligned: " error-string/2 espace dhere to-out-addr error-hex-uint espace dup error-int espace enl
       dup 6 + r0 ldr-pc ,ins
       ( stash the offset in IP and restore R0 )
       r0 ip movrr ,ins
@@ -437,9 +439,11 @@ defop pointer
   emit-next
 endop
 
+( Data literals: )
 defalias> cstring pointer
 defalias> string literal
 defalias> uint32 int32
+
 
 ( Constants: )
 
@@ -460,13 +464,39 @@ endop
 
 ( Variables: )
 
-defop do-var
+defop do-inplace-var
   ( load the word in R1's data's address into ToS )
   0 r0 bit-set pushr ,ins
   0 r1 r0 mov-lsl ,ins
   0 dict-entry-data r0 add# ,ins
   emit-next
 endop
+
+defalias> do-var do-inplace-var
+
+defop do-data-var
+  ( load the address in the data segmenh of the word in R1's data's offset )
+  0 r0 bit-set pushr ,ins
+  0 r1 r0 mov-lsl ,ins
+  0 dict-entry-data r0 r0 ldr-offset ,ins
+  cs-reg r0 r0 ldr ,ins
+  2 r0 r0 mov-lsl ,ins
+  data-reg r0 addrr ,ins
+  emit-next
+endop
+
+defop ds
+  0 r0 bit-set pushr ,ins
+  data-reg r0 movrr ,ins
+  emit-next
+endop
+
+defop set-ds
+  r0 data-reg movrr ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+endop
+
 
 ( Dictionary helpers: )
 
@@ -493,6 +523,27 @@ endop
 : emit-set-word-data ( offset data-reg tmp-reg )
   int32 3 overn int32 2 overn emit-load-word
   0 dict-entry-data int32 2 overn int32 4 overn str-offset ,ins
+  int32 3 dropn
+;
+
+: emit-get-var
+  over over emit-load-word
+  swap drop
+  int32 0 dict-entry-data over dup ldr-offset ,ins
+  dup cs-reg over ldr ,ins
+  int32 2 over dup mov-lsl ,ins
+  data-reg over addrr ,ins
+  int32 0 over dup ldr-offset ,ins
+  drop
+;
+
+: emit-set-var ( offset data-reg tmp-reg )
+  int32 3 overn int32 2 overn emit-load-word
+  int32 0 dict-entry-data int32 2 overn dup ldr-offset ,ins
+  dup cs-reg over ldr ,ins
+  int32 2 over dup mov-lsl ,ins
+  data-reg over addrr ,ins
+  int32 0 over int32 4 overn str-offset ,ins
   int32 3 dropn
 ;
 

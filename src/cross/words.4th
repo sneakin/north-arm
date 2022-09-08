@@ -1,5 +1,7 @@
 ( Bash output word functions )
 
+( todo would better match boot/cross by adding an out-origin )
+
 " op-" const> -op-prefix
 
 : make-label
@@ -13,6 +15,13 @@
 : to-out-addr out-origin - ;
 : from-out-addr out-origin + ;
 
+: align-code ( alignment -- )
+  dhere to-out-addr swap pad-addr from-out-addr
+  dhere over over - cell-size / 0 fill-seq
+  dmove
+;
+
+
 ( The output dictionary: )
 
 0 var> out-dict
@@ -21,6 +30,21 @@
 : dict-entry-name ;
 : dict-entry-code cell-size + ;
 : dict-entry-data cell-size 2 mult + ;
+: dict-entry-link cell-size 3 mult + ;
+
+( Iteration: )
+
+def dict-map/4 ( dict origin state fn )
+  arg3 data-null? UNLESS
+    arg1 arg3 arg0 exec set-arg1
+    arg3 dict-entry-link uint32@ data-null? UNLESS
+      arg2 + set-arg3
+      repeat-frame
+    ELSE drop
+    THEN
+  ELSE drop
+  THEN arg1 exit-frame
+end
 
 ( Output dictionary lookups: )
 
@@ -68,6 +92,10 @@
 ;
 
 : create> next-token create ;
+
+: does ( word code-word -- word )
+  dict-entry-code uint32@ swap dict-entry-code uint32!
+;
 
 : copies-entry ( link source-entry )
   dup dict-entry-data uint32@

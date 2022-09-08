@@ -14,9 +14,18 @@ defcol dmove
 endcol
 
 defalias> dpeek peek
+defalias> dpeek-off peek-off
 defalias> dpeek-byte peek-byte
+defalias> dpeek-off-byte peek-off-byte
+defalias> dpeek-short peek-short
+defalias> dpeek-off-short peek-off-short
+
 defalias> dpoke poke
+defalias> dpoke-off poke-off
 defalias> dpoke-byte poke-byte
+defalias> dpoke-off-byte poke-off-byte
+defalias> dpoke-short poke-short
+defalias> dpoke-off-short poke-off-short
 
 ( todo bc & x86 runners move then poke )
 

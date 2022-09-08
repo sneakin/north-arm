@@ -1,4 +1,14 @@
+( ~readelf~ can't be believed. Real mapping will have data located at: data - elf_cs + real_cs. The values in the file get offset randomly.
+
+Auxvec #3 gives the program headers and #9 gives the entry point.
+)
+
 0x80000 const> elf32-code-segment
+0xA0000 const> elf32-data-segment
+0x2000 const> elf32-data-segment-size
+52 const> elf32-header-size
+
+: elf32-data-segment-offset elf32-data-segment elf32-code-segment - ;
 
 : write-elf32-header
 ( ' id uint8 16 array-field )
@@ -41,20 +51,20 @@ target-thumb? IF 40 ELSE target-x86? IF 3 ELSE 0 THEN THEN ,uint16
 ( ' flags uint32 field )
 0x5400486 ,uint32
 ( ' ehsize uint16 field )
-52 ,uint16
+elf32-header-size ,uint16
 ( ' phentsize uint16 field )
 32 ,uint16
 ( ' phentnum uint16 field )
-1 ,uint16
+2 ,uint16
 ( ' shentsize uint16 field )
 40 ,uint16
 ( ' shentnum uint16 field )
-3 ,uint16
+4 ,uint16
 ( ' shstrindx uint16 field )
-2 ,uint16
+3 ,uint16
 ;
 
-: write-elf32-program-code-header
+: write-elf32-code-program-header
 ( ' type uint32 field )
 1 ,uint32
 ( ' offset uint32 field )
@@ -64,13 +74,37 @@ elf32-code-segment ,uint32
 ( ' paddr uint32 field )
 elf32-code-segment ,uint32
 ( ' filesz uint32 field )
-dup to-out-addr ,uint32
+dup ,uint32
 ( ' memsz uint32 field )
-to-out-addr ,uint32
+,uint32
 ( ' flags uint32 field )
 7 ,uint32
 ( ' align uint32 field )
-0x1000 ,uint32
+4096 ,uint32
+;
+
+: write-elf32-data-program-header/4
+( ' type uint32 field )
+1 ,uint32
+( ' offset uint32 field )
+4 overn to-out-addr ,uint32
+( ' vaddr uint32 field )
+2 overn ,uint32
+( ' paddr uint32 field )
+2 overn ,uint32
+( ' filesz uint32 field )
+3 overn ,uint32
+( ' memsz uint32 field )
+dup ,uint32
+( ' flags uint32 field )
+6 ,uint32
+( ' align uint32 field )
+4096 ,uint32
+4 dropn
+;
+
+: write-elf32-data-program-header
+  2 overn write-elf32-data-program-header/4
 ;
 
 : write-elf32-code-section-header
@@ -119,6 +153,29 @@ swap to-out-addr ,uint32
 0 ,uint32
 ;
 
+: write-elf32-data-section-header
+( ' name uint32 field )
+7 ,uint32
+( ' type uint32 field )
+1 ,uint32
+( ' flags uint32 field )
+3 ,uint32
+( ' addr uint32 field )
+,uint32
+( ' offset uint32 field )
+swap to-out-addr ,uint32
+( ' size uint32 field )
+,uint32
+( ' link uint32 field )
+0 ,uint32
+( ' info uint32 field )
+0 ,uint32
+( ' addralign uint32 field )
+4096 ,uint32
+( ' entsize uint32 field )
+0 ,uint32
+;
+
 : write-elf32-abi-tag-section-header
 ( ' name uint32 field )
 23 ,uint32
@@ -137,7 +194,7 @@ swap to-out-addr ,uint32
 ( ' info uint32 field )
 0 ,uint32
 ( ' addralign uint32 field )
-4 ,uint32
+4096 ,uint32
 ( ' entsize uint32 field )
 0 ,uint32
 ;
@@ -190,19 +247,22 @@ swap to-out-addr ,uint32
   24 from-out-addr uint32!
 ;
 
-: write-elf32-ending ( code-start entry ++  )
+: write-elf32-ending ( data-start code-start entry ++  )
   dhere write-elf32-string-section
 
   0x10 pad-data
   dhere
-  0 over write-elf32-program-code-header
+  ( commented code cuts .text at the start of .data )
+  0 ( 3 overn 6 overn - elf32-header-size + ) over to-out-addr write-elf32-code-program-header
+  5 overn 3 overn over - elf32-data-segment elf32-data-segment-size write-elf32-data-program-header/4 ( todo .tdata? )
   
   dhere
   write-elf32-zero-section-header
-  5 overn 3 overn over - write-elf32-code-section-header
+  5 overn 7 overn over - write-elf32-code-section-header
+  6 overn 4 overn over - elf32-data-segment write-elf32-data-section-header
   3 overn 3 overn over - write-elf32-string-section-header
 
   ( needs entry + 1, section header, and program header offsets )
   4 overn elf32-code-segment +
-  rot swap rewrite-elf32-header
+  shift rewrite-elf32-header
 ;

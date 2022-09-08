@@ -1,6 +1,5 @@
-( could be stub32 but uses features not available with Bash: variables that use peek and poke. )
 
-0x80000 const> elf32-code-segment
+( could be stub32 but uses features not available with Bash: variables that use peek and poke. )
 
 : write-elf32-dynamic-header
 ( ' id uint8 16 array-field )
@@ -43,17 +42,17 @@
 ( ' flags uint32 field )
 0x5400486 ,uint32
 ( ' ehsize uint16 field )
-52 ,uint16
+elf32-header-size ,uint16
 ( ' phentsize uint16 field )
 32 ,uint16
 ( ' phentnum uint16 field )
-4 ,uint16
+6 ,uint16
 ( ' shentsize uint16 field )
 40 ,uint16
 ( ' shentnum uint16 field )
-4 ,uint16
+6 ,uint16
 ( ' shstrindx uint16 field )
-2 ,uint16
+3 ,uint16
 ;
 
 : write-elf32-dynamic-string-section
@@ -74,9 +73,9 @@
 ( ' type uint32 field )
 6 ,uint32
 ( ' offset uint32 field )
-to-out-addr dup ,uint32
+swap to-out-addr dup ,uint32
 ( ' vaddr uint32 field )
-elf32-code-segment + dup ,uint32
++ dup ,uint32
 ( ' paddr uint32 field )
 ,uint32
 ( ' filesz uint32 field )
@@ -433,7 +432,7 @@ end
   write-elf32-dynamic-symbol-table
 ;
 
-: write-elf32-dynamic-ending ( code-start entry ++  )
+: write-elf32-dynamic-ending ( data-start code-start entry ++  )
   dhere write-elf32-dynamic-string-section
   dhere write-elf32-interp
   write-elf32-dynamic
@@ -441,23 +440,28 @@ end
   0x10 pad-data
 
   ( Program headers: )
+  ( todo bss segment for data )
   dhere
-  32 4 * over write-elf32-phdr-program-header
+  32 6 * over elf32-code-segment write-elf32-phdr-program-header
   4 overn 4 overn swap - 5 overn write-elf32-interp-program-header
-  0 dhere 32 2 * + write-elf32-program-code-header
   3 overn 3 overn swap - 4 overn write-elf32-dynamic-program-header
+  0 6 overn 9 overn - elf32-header-size + write-elf32-code-program-header
+  8 overn 6 overn over - elf32-data-segment elf32-data-segment-size write-elf32-data-program-header/4
+  dup 32 6 * elf32-code-segment 3 overn to-out-addr + write-elf32-data-program-header
 
   ( Section headers: )
   dhere
   write-elf32-zero-section-header
-  8 overn over over - write-elf32-code-section-header
+  8 overn 10 overn over - write-elf32-code-section-header
+  9 overn 7 overn over - elf32-data-segment write-elf32-data-section-header
   6 overn 6 overn over - write-elf32-string-section-header
-  4 overn 4 overn over - write-elf32-dynamic-section-header
-  ( todo symbols from dictionary )
-  
+  5 overn 4 overn over - write-elf32-dynamic-section-header
+  2 overn 2 overn over - elf32-code-segment 3 overn to-out-addr + write-elf32-data-section-header
+  ( todo exported symbols from dictionary )
+
   ( needs entry + 1, section header, and program header offsets )
   7 overn elf32-code-segment +
-  rot swap rewrite-elf32-header
+  shift rewrite-elf32-header
 ;
 
 def elf32-target-android!

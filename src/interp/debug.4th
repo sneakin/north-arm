@@ -44,6 +44,36 @@ def print-regs
   save-high-regs local0 print-regs/2
 end
 
+def print-inplace-var
+  arg0 ' do-inplace-var dict-entry-equiv? IF 1 return0-n THEN
+  s" I" write-string/2 tab
+  arg0 dict-entry-name @ cs + write-string tab
+  arg0 exec-abs @ write-int nl
+  1 return0-n
+end
+
+def print-data-var
+  arg0 ' do-data-var dict-entry-equiv? IF 1 return0-n THEN
+  s" D" write-string/2 space
+  arg0 dict-entry-data @ cs + ( data-var-init-slot @ ) car write-int tab
+  arg0 dict-entry-name @ cs + write-string tab
+  arg0 exec-abs @ write-int tab
+  arg0 dict-entry-data @ cs + ( data-var-init-value @ ) cdr write-int nl
+  1 return0-n
+end
+
+def print-var
+  arg0 dict-entry-code @ CASE
+    ' do-inplace-var dict-entry-code @ OF arg0 print-inplace-var ENDOF
+    ' do-data-var dict-entry-code @ OF arg0 print-data-var ENDOF
+  ENDCASE
+  1 return0-n
+end
+
+def print-vars
+  dict ' print-var dict-map
+end
+
 ( Memory dumping: )
 
 def memdump/3 ( ptr num-bytes printer )

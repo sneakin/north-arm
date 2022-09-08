@@ -47,16 +47,6 @@ def symbol>
   exit-frame
 end
 
-def does-var
-  arg0 pointer do-var does
-end
-
-def var>
-  create> does-var
-  args peek over dict-entry-data poke
-  exit-frame
-end
-
 def immediate/1
   arg0 copy-dict-entry
   immediates peek over dict-entry-link poke

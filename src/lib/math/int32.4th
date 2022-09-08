@@ -28,7 +28,7 @@ def int32-factorial-loop
     arg1 arg0 int-mul set-arg0
     arg1 1 int-sub set-arg1
     repeat-frame
-  ELSE arg0 2 return1-n
+  THEN arg0 2 return1-n
 end
 
 def int32-factorial
@@ -98,7 +98,7 @@ def inc!/2 ( place n -- value+n )
   2 return1-n
 end
 
-def inc! ( place ) arg0 1 inc!/2 set-arg0 end
+def inc! ( place -- value+1 ) arg0 1 inc!/2 set-arg0 end
 
 def dec!/2 ( place n )
   arg1 peek arg0 - dup arg1 poke

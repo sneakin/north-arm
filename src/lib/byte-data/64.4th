@@ -9,3 +9,8 @@
 : uint64@ ( place -- value )
   dpeek
 ;
+
+alias> ,cell ,int64
+alias> .cell .int64
+alias> cell@ int64@
+alias> cell! int64!

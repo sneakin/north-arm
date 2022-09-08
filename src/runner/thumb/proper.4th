@@ -3,10 +3,10 @@
 defop proper-enter-r1
   ( Save eip on the return-stack and interpret the list of words pointed by r1. )
   ( push eip onto the return-stack )
-  out' return-stack r2 emit-get-word-data
+  out' return-stack r2 emit-get-var
   cell-size r2 add# ,ins
   0 r2 eip str-offset ,ins
-  out' return-stack r2 r3 emit-set-word-data
+  out' return-stack r2 r3 emit-set-var
   ( load r1 into eip )
   0 r1 eip mov-lsl ,ins
   emit-next
@@ -15,10 +15,10 @@ endop
 defop proper-exit
   ( Return from a list of words. Return address comes from the return-stack. )
   ( pop eip )
-  out' return-stack r2 emit-get-word-data
+  out' return-stack r2 emit-get-var
   0 r2 eip ldr-offset ,ins
   cell-size r2 sub# ,ins
-  out' return-stack r2 r3 emit-set-word-data
+  out' return-stack r2 r3 emit-set-var
   emit-next
 endop
 

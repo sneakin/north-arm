@@ -1,5 +1,5 @@
 : out-string-list-fn
-  dhere swap .s ,byte-string
+  dhere swap ,byte-string
   out-dcons
 ;
 

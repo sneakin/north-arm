@@ -1,5 +1,16 @@
 ( Byte data functions for Bash interpreter. )
 
+def byte-string@/3 ( ptr str n -- str length )
+  arg2 arg0 seq-peek
+  dup 0 equals? IF arg1 arg0 3 return2-n THEN
+  code-char arg1 ++ set-arg1
+  arg0 1 + set-arg0
+  repeat-frame
+end
+
+def byte-string@ arg0 " " 0 byte-string@/3 1 return2-n end
+
+
 ( todo Works on 32 bit Bash? )
 
 : ,uint64 ( value -- )

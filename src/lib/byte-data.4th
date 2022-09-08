@@ -24,7 +24,7 @@ alias> uint8@ dpeek-byte
   1 + swap 8 bsr swap uint8!
 ;
 
-( todo optimize? )
+( todo optimize for byte by byte in stage0, longs and double longs elsewhere? )
 
 : ,uint32
   dup ,uint8
@@ -53,6 +53,7 @@ alias> uint8@ dpeek-byte
 ( fixme doesn't work with 32 bit cells )
 
 NORTH-STAGE 0 int> [IF]
+  " src/lib/byte-data/stage1.4th" load
   cell-size 4 equals? [IF]
     " src/lib/byte-data/32.4th" load
   [ELSE]
@@ -104,7 +105,6 @@ alias> int64! uint64!
   over 0xFF00 logand 8 bsl logior
   over 0xFF0000 logand 8 bsr logior
   swap 0xFF000000 logand 24 bsr logior
-  swap drop
 ;
 
 ( Big endian: )
@@ -115,6 +115,10 @@ alias> int64! uint64!
 
 : UINT32@
   uint32@ byte-swap-uint32
+;
+
+: UINT32!
+  swap byte-swap-uint32 swap uint32!
 ;
 
 ( Data stack alignment & padding: )

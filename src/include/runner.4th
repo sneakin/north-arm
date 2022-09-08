@@ -17,7 +17,6 @@ s[
    src/cross/constants.4th
    src/cross/defining/variables.4th
    src/lib/stack.4th
-   src/cross/defining/colon-boot.4th
    src/cross/defining/colon.4th
 
    src/interp/boot/cross/case.4th
@@ -26,7 +25,7 @@ s[
 ( Platform ops and words )
 s[ src/runner/thumb/frames.4th
    src/runner/frames.4th
-   src/cross/defining/frames-boot.4th
+   src/cross/defining/frames.4th
    src/runner/constants.4th
    src/runner/thumb/copiers.4th
    src/runner/cells.4th
@@ -48,7 +47,7 @@ s[ src/runner/thumb/frames.4th
    src/runner/thumb/vfp-constants.4th
    src/runner/thumb/proper.4th
    src/runner/proper.4th
-   src/interp/data-stack.4th
+   ( src/interp/data-stack.4th )
    src/runner/thumb/state.4th
    src/runner/dictionary.4th
    src/runner/frame-tailing.4th
@@ -68,14 +67,13 @@ s[
    src/cross/constants.4th
    src/cross/defining/variables.4th
    src/lib/stack.4th
-   src/cross/defining/colon-boot.4th
    src/cross/defining/colon.4th
 
    src/interp/boot/cross/case.4th
 
    src/runner/x86/frames.4th
    src/runner/frames.4th
-   src/cross/defining/frames-boot.4th
+   src/cross/defining/frames/interp.4th
 
    src/runner/constants.4th
    src/runner/cells.4th
@@ -93,4 +91,8 @@ s[
    version.4th
    src/runner/x86/init.4th
 ] load-list
+[THEN]
+
+NORTH-STAGE 0 int> [IF]
+  s[ src/runner/imports.4th ] load-list
 [THEN]

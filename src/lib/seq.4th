@@ -20,6 +20,7 @@ end
 
 def make-seqn args return1 end
 def seqn-size arg0 peek set-arg0 end
+def seqn-byte-size arg0 seqn-size 1 + cell-size * set-arg0 end
 def seqn-nth arg0 1 + cell-size * arg1 + return1 end
 
 def seqn-peek ( seq n -- value )
@@ -58,6 +59,13 @@ def fill-seq ( seq n value -- )
   repeat-frame
 end
 
+def fill ( ptr num-bytes value -- )
+  arg1 0 int> UNLESS 3 return0-n THEN
+  arg1 1 - set-arg1
+  arg0 arg2 arg1 poke-off-byte
+  repeat-frame
+end
+
 ( Allocating: )
 
 def stack-allot-zero
@@ -69,4 +77,11 @@ end
 def stack-allot-zero-seq
   arg0 cell-size * stack-allot-zero
   exit-frame
+end
+
+( Copying: )
+
+def copy-seq-n ( src dest -- )
+  arg1 arg0 arg1 seqn-byte-size copy
+  2 return0-n
 end

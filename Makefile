@@ -183,12 +183,11 @@ RUNNER_THUMB_SRC=\
 	src/cross/defining/constants.4th \
 	src/cross/constants.4th \
 	src/cross/defining/variables.4th \
-	src/cross/defining/colon-boot.4th \
 	src/cross/defining/colon.4th \
 	src/interp/boot/cross/case.4th \
 	src/runner/thumb/frames.4th \
 	src/runner/frames.4th \
-	src/cross/defining/frames-boot.4th \
+	src/cross/defining/frames.4th \
 	src/runner/constants.4th \
 	src/runner/thumb/copiers.4th \
 	src/runner/cells.4th \

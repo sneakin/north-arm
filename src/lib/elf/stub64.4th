@@ -1,4 +1,7 @@
 0x80000 const> elf64-code-segment
+0xA0000 const> elf64-data-segment
+0x2000 const> elf64-data-segment-size
+64 const> elf64-header-size
 
 : write-elf64-header
 ( ' id uint8 16 array-field )
@@ -41,20 +44,20 @@
 ( ' flags uint32 field )
 0x5400486 ,uint32
 ( ' ehsize uint16 field )
-64 ,uint16
+elf64-header-size ,uint16
 ( ' phentsize uint16 field )
 56 ,uint16
 ( ' phentnum uint16 field )
-1 ,uint16
+2 ,uint16
 ( ' shentsize uint16 field )
 64 ,uint16
 ( ' shentnum uint16 field )
-3 ,uint16
+4 ,uint16
 ( ' shstrindx uint16 field )
 2 ,uint16
 ;
 
-: write-elf64-program-code-header
+: write-elf64-code-program-header
 ( ' type uint32 field )
 1 ,uint32
 ( ' flags uint32 field )
@@ -66,11 +69,35 @@ elf64-code-segment ,uint64
 ( ' paddr uint64 field )
 elf64-code-segment ,uint64
 ( ' filesz uint64 field )
-dup to-out-addr ,uint64
+dup ,uint64
 ( ' memsz uint64 field )
-to-out-addr ,uint64
+,uint64
 ( ' align uint64 field )
 0x1000 ,uint64
+;
+
+: write-elf64-data-program-header/4
+( ' type uint32 field )
+1 ,uint32
+( ' flags uint32 field )
+6 ,uint32
+( ' offset uint64 field )
+4 overn to-out-addr ,uint64
+( ' vaddr uint64 field )
+2 overn ,uint64
+( ' paddr uint64 field )
+2 overn ,uint64
+( ' filesz uint64 field )
+3 overn ,uint64
+( ' memsz uint64 field )
+dup ,uint64
+( ' align uint64 field )
+0x1000 ,uint64
+4 dropn
+;
+
+: write-elf64-data-program-header
+  2 overn write-elf64-data-program-header/4
 ;
 
 : write-elf64-code-section-header
@@ -84,6 +111,29 @@ to-out-addr ,uint64
 swap to-out-addr dup elf64-code-segment + ,uint64
 ( ' offset uint64 field )
 ,uint64
+( ' size uint64 field )
+,uint64
+( ' link uint32 field )
+0 ,uint32
+( ' info uint32 field )
+0 ,uint32
+( ' addralign uint64 field )
+4096 ,uint64
+( ' entsize uint64 field )
+0 ,uint64
+;
+
+: write-elf64-data-section-header
+( ' name uint32 field )
+7 ,uint32
+( ' type uint32 field )
+1 ,uint32
+( ' flags uint64 field )
+3 ,uint64
+( ' addr uint64 field )
+,uint64
+( ' offset uint64 field )
+to-out-addr ,uint64
 ( ' size uint64 field )
 ,uint64
 ( ' link uint32 field )
@@ -190,16 +240,18 @@ swap to-out-addr ,uint64
   24 from-out-addr uint64!
 ;
 
-: write-elf64-ending ( code-start entry ++  )
+: write-elf64-ending ( data-start code-start entry ++  )
   dhere write-elf64-string-section
 
   0x10 pad-data
   dhere
-  0 over write-elf64-program-code-header
+  0 over to-out-addr write-elf64-code-program-header
+  5 overn 3 overn over - elf64-data-segment elf64-data-segment-size write-elf64-data-program-header/4 ( todo .tdata? )
   
   dhere
   write-elf64-zero-section-header
-  5 overn 3 overn over - write-elf64-code-section-header
+  5 overn 7 overn over - write-elf64-code-section-header
+  6 overn 4 overn over - elf64-data-segment write-elf64-data-section-header
   3 overn 3 overn over - write-elf64-string-section-header
 
   ( needs entry + 1, section header, and program header offsets )

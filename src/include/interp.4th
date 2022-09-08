@@ -42,17 +42,10 @@ s[ src/interp/debug.4th
    src/interp/decompiler.4th
 ] load-list
 
-s[ src/interp/loaders.4th
-] load-list
+s[ src/interp/loaders.4th ] load-list
 
-target-android? [IF]
-  s[ src/runner/imports/android.4th
-  ] load-list
-[THEN]
-
-target-gnueabi? [IF]
-  s[ src/runner/imports/linux.4th
-  ] load-list
+NORTH-STAGE 1 int> [IF]
+s[ src/interp/imports.4th ] load-list
 [THEN]
 
 ( Extra fun )

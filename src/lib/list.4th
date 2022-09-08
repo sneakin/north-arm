@@ -71,6 +71,14 @@ def skip-first ( n lst -- nth-item )
   arg0 2 return1-n
 end
 
+def list->seq-fn ( count cell -- cell count+1 )
+  arg0 arg1 1 + 2 return2-n
+end
+
+def list->seqn ( list ++ seqn )
+  arg0 0 cons 0 ' list->seq-fn map-car/3 here exit-frame
+end
+
 ( Lists as stacks: )
 
 def push-onto ( value pointer ++ cons... new-list )

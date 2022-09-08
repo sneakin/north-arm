@@ -1,7 +1,7 @@
-library> ld-android.so
-library> libdl.so
-import> dlopen 1 dlopen 2
-import> dlsym 1 dlsym 2
-import> dlclose 0 dlclose 1
-library> libc.so
-import> cputs 0 puts 1
+target-android? [IF]
+  s[ src/runner/imports/android.4th ] load-list
+[THEN]
+
+target-gnueabi? [IF]
+  s[ src/runner/imports/linux.4th ] load-list
+[THEN]

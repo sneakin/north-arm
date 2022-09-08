@@ -87,8 +87,24 @@ def decompile-proper
   nl
 end
 
-def decompile-var
+def decompile-inplace-var
   arg2 dict-entry-data peek write-uint space
+  arg1 arg0 write-string/2 space
+  arg2 write-dict-entry-name
+  nl
+end
+
+def decompile-const
+  arg0 dict-entry-data @ arg0 equals? IF
+    s" symbol> " write-string/2
+    arg0 write-dict-entry-name nl
+  ELSE
+    arg0 s" const>" decompile-inplace-var
+  THEN
+end
+
+def decompile-data-var
+  arg2 dict-entry-data peek cs + 1 seq-peek write-uint space
   arg1 arg0 write-string/2 space
   arg2 write-dict-entry-name
   nl
@@ -125,8 +141,10 @@ def decompile ( entry )
     arg0 dict-entry-code-word CASE
       ' do-col WHEN arg0 decompile-colon ;;
       ' do-proper WHEN arg0 decompile-proper ;;
-      ' do-const WHEN arg0 s" const>" decompile-var ;;
-      ' do-var WHEN arg0 s" var>" decompile-var ;;
+      ' do-const WHEN arg0 decompile-const ;;
+      ' do-var WHEN arg0 s" var>" decompile-data-var ;;
+      ' do-inplace-var WHEN arg0 s" inplace-var>" decompile-inplace-var ;;
+      ' do-data-var WHEN arg0 s" data-var>" decompile-data-var ;;
         arg0 is-op?
 	IF arg0 decompile-op
 	ELSE arg0 decompile-unknown-entry

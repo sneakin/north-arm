@@ -29,7 +29,7 @@ def builder-load
     ELSE s" Unsupported target" error-line/2 -1 sysexit ( todo error )
     THEN
   THEN
-  " src/cross/builder/run.interp.4th" load
+  " src/cross/builder/run/interp.4th" load
   s" Builder loaded." error-line/2
   exit-frame
 end

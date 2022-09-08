@@ -1,6 +1,6 @@
 ( Basic FFI callers: )
 
-( todo save state before calling? r4-7 saved by called per ABI. )
+( todo save state before calling? r4-7 saved by called per ABI. r8-15? )
 
 ( FFI code words that load the function from the data field into R0: )
 

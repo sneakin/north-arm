@@ -42,6 +42,14 @@ dhere var> out-origin
 : to-out-addr out-origin peek - ;
 : from-out-addr out-origin peek + ;
 
+( fixme duplicated in cross/words.4th )
+( todo zero unused memory? )
+: align-code ( alignment -- )
+  dhere to-out-addr swap pad-addr from-out-addr
+  dhere over over - cell-size / 0 fill-seq
+  dmove
+;
+
 ( The output dictionary: )
 
 0 var> out-dictionary

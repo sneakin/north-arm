@@ -1,5 +1,9 @@
 ( Architecture predicates: )
 
+def platform-target-bash?
+  arg0 " bash" contains? set-arg0
+end
+
 def platform-target-thumb?
   arg0 " thumb" contains? set-arg0
 end

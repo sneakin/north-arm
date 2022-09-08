@@ -26,6 +26,7 @@ def dict-map/4 ( dict origin state fn )
     dup null? UNLESS
       arg2 + set-arg3
       repeat-frame
+    ELSE drop
     THEN
   THEN arg1 exit-frame
 end

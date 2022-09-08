@@ -1,5 +1,7 @@
 " thumb-linux-android" string-const> DEFAULT-BUILDER-TARGET
 DEFAULT-BUILDER-TARGET var> builder-target
+32 var> builder-target-bits
+true var> builder-target-little-endian
 true var> builder-with-runner
 false var> builder-with-interp
 false var> builder-with-cross
