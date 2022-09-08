@@ -144,7 +144,7 @@ DICT['int32']="${DICT[literal]}"
 # String ops
 #
 DICT['char-code']="v=\$(printf %d \"'\${STACK[0]}\"); fpop; fpush \$v"
-DICT['code-char']="v=\$(echo -e \\\\x\$(printf %.2x \"\${STACK[0]}\")); fpop; fpush \$v"
+DICT['code-char']="v=\"\$(echo -e \\\\x\$(printf %.2x \"\${STACK[0]}\"))\"; fpop; fpush \"\$v\""
 
 DICT['++']='v="${STACK[0]}${STACK[1]}"; fpop 2; fpush "$v"'
 DICT['string-length']='v="${STACK[0]}"; fpop; fpush "${#v}"'

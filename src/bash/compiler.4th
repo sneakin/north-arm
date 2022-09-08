@@ -53,7 +53,7 @@ null var> this-word
   dup defined?
   1 unless-jump return
   number? 1 unless-jump return
-  " Warning: " error-string dup error-string " not found" error-line
+  " Warning: " error-string dup error-string "  not found" error-line
 ;
 
 : compiling-read-loop
