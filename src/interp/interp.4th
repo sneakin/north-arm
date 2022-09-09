@@ -35,15 +35,18 @@ def prompt-depth
   top-frame prompt-here peek int-sub cell-size int-div return1
 end
 
-defcol prompt
+defcol default-prompt
   prompt-here peek error-hex-uint
   s" :" error-string/2
   prompt-here peek peek error-int
   s"  > " error-string/2
 endcol
 
+( todo should be in the prompt reader )
+0 defvar> prompt
+
 defcol prompt-read ( reader buffer max-length )
-  prompt
+  prompt @ dup IF exec-abs ELSE drop THEN
   ( fixme perfect spot for a tailcall / continue> )
   ' fd-reader-fn jump-data
 endcol
@@ -396,6 +399,7 @@ def interp-init
   token-buffer-max stack-allot string-buffer poke
   ( stdin reader )
   token-buffer-max stack-allot token-buffer-max make-prompt-reader the-reader poke
+  ' default-prompt prompt poke
   exit-frame
 end
 
