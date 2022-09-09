@@ -31,7 +31,7 @@
 
 : assertion-message
   IF assertion-passed 2 dropn
-  ELSE assertion-failed
+  ELSE assertion-failed space
        write-string "  != " write-string write-string nl
   THEN
 ;
