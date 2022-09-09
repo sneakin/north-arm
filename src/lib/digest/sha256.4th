@@ -2,7 +2,9 @@
   See RFC 6234 at https://www.rfc-editor.org/rfc/rfc6234 for details.
 )
 
-s[ src/lib/endian.4th ] load-list
+s[ src/lib/endian.4th
+   src/lib/digest/hexdigest.4th
+] load-list
 
 def copy-UINT32 ( src dest n -- )
   ( Byte swap ~n~ big endian uint32's from ~src~ and store them in ~dest~. )
@@ -287,6 +289,7 @@ def sha256-update ( byte-ptr length state -- state )
   0 ' sha256-update/4 tail+1
 end
 
+( todo be non-destructive )
 def sha256-end ( state -- state )
   ( standard pads to 512 bits [64 bytes] with a leading 1 bit, zeros, and in the last 64 bits the message length )
   arg0 sha256-state-buffer-size @
@@ -327,23 +330,14 @@ def sha256-hash ( state -- hash-values )
 end
 
 
-( Hex digest output: )
+( String conversion and IO: )
 
-def sha256-hash->string/4 ( ptr size hash-value n -- ptr length )
-  ( convert each working variable into an 8 byte string to make one big 128 byte string )
-  arg0 16 uint>=
-  arg0 8 * arg2 uint>= or IF
-    arg3 arg0 1 - 8 *
-    arg2 64 uint> IF 2dup null-terminate THEN
-    4 return2-n
-  THEN
-  arg1 arg0 seq-peek
-  arg3 arg0 8 * + 0 true uint->hex-string/4 4 dropn
-  arg0 1 + set-arg0 repeat-frame
+def sha256->string/3 ( ptr size sha256-state -- ptr real-size )
+  8 arg2 arg1 arg0 sha256-state-hash 0 hexdigest/5 3 return2-n
 end
 
 def write-sha256
   0 64 stack-allot-zero set-local0
-  local0 64 arg0 sha256-state-hash 0 sha256-hash->string/4 write-string/2
+  local0 64 arg0 sha256->string/3 write-string/2
   1 return0-n
 end

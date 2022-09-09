@@ -3,8 +3,8 @@ s[ src/lib/digest/sha256.4th
 ] load-list
 
 def assert-sha256 ( sha256-state str len -- )
-  68 stack-allot-zero
-  dup 68 arg2 sha256-state-hash 0 sha256-hash->string/4 drop
+  128 stack-allot-zero
+  dup 128 arg2 sha256->string/3 drop
   arg1 arg0 assert-byte-string-equals/3
   3 return0-n
 end
