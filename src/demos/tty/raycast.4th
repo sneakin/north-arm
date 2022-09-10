@@ -37,6 +37,39 @@ def float32-lerp ( weight min max -- value )
   float32-add 3 return1-n
 end
 
+pi 2f float32-div const> pi/2
+pi/2 2f float32-div const> pi/4
+
+0 var> sin-lut
+
+def byte->radians
+  arg0 int32->float32 128 int32->float32 float32-div pi float32-mul set-arg0
+end
+
+def radians->byte
+  arg0 pi float32-div 128 int32->float32 float32-mul float32->int32 0xFF logand set-arg0
+end
+
+def lut-sin
+  sin-lut @ arg0 radians->byte seq-peek set-arg0
+end
+
+def lut-cos
+  arg0 pi/2 float32-add lut-sin set-arg0
+end
+
+def trig-lut-init-loop
+  arg0 256 int< UNLESS 1 return0-n THEN
+  arg0 byte->radians float32-sin sin-lut @ arg0 seq-poke
+  arg0 1 + set-arg0 repeat-frame
+end
+
+def trig-lut-init
+  1028 stack-allot sin-lut !
+  0 trig-lut-init-loop
+  exit-frame
+end
+
 ( 2D vectors: )
 
 def vec2d-sub ( y2 x2 y1 x1 -- y x )
@@ -340,19 +373,19 @@ end
 def raycaster-fish-eye-correct ( distance vertical-angle fov/2 -- fixed-distance )
   ( Verticals get bowed so the middle verticals look too tall. This makes the outer verticals taller. )
   arg1 int32->float32 ( ,f space ) degrees->radians ( ,f space )
-  float32-cos ( ,f space )
+  lut-cos ( ,f space )
   arg2 ( ,f space )
   float32-mul  ( ,f nl ) 3 return1-n
 end
 
 def raycaster-hit-dist-y ( wx px angle -- dist )
   arg2 arg1 - int32->float32
-  arg0 int32->float32 degrees->radians float32-cos float32-div 3 return1-n
+  arg0 int32->float32 degrees->radians lut-cos float32-div 3 return1-n
 end
 
 def raycaster-hit-dist-x ( wy py angle -- dist )
   arg2 arg1 - int32->float32
-  arg0 int32->float32 degrees->radians float32-sin float32-div 3 return1-n
+  arg0 int32->float32 degrees->radians lut-sin float32-div 3 return1-n
 end
 
 def raycaster-angle-north-south? ( angle -- yes? )
@@ -674,7 +707,7 @@ def raycaster-draw-sun ( size vangle hangle camera world context )
   ( Vfov = FoV/w * h )
   ( h/2 - h*sin[time%360] )
   arg0 tty-context-height 2 /
-  4 argn int32->float32 degrees->radians float32-sin
+  4 argn int32->float32 degrees->radians lut-sin
   over local0 + int32->float32 float32-mul float32->int32 -
   ( w/2 - W/FoV * A )
   arg0 tty-context-width dup 2 /
@@ -790,6 +823,7 @@ end
 
 def raycaster-init
   raycaster-texture-init
+  trig-lut-init
   exit-frame
 end
 
