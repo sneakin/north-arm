@@ -116,20 +116,6 @@ end
 
 ( The world: )
 
-struct: World
-pointer<any> field: cells
-int field: width
-int field: height
-
-def make-world
-  World make-instance
-  arg1 over World -> height !
-  arg0 over World -> width !
-  arg2 over World -> cells !
-  exit-frame
-end
-
-" src/demos/tty/raycaster-worlds.4th" load
 0 var> raycaster-textures
 
 def raycaster-digit-textures
@@ -138,7 +124,7 @@ def raycaster-digit-textures
   arg0 10 int< IF repeat-frame ELSE 1 return0-n THEN
 end
 
-def raycaster-init
+def raycaster-texture-init
   128 cell-size * stack-allot
   dup raycaster-textures !
   0x80000044 over 0 seq-poke
@@ -159,22 +145,6 @@ def raycaster-init
   exit-frame
 end
 
-def world-contains? ( y x world -- yes? )
-  arg2 0 int>=
-  arg2 arg0 World -> height @ int< and UNLESS false 3 return1-n THEN
-  arg1 0 int>=
-  arg1 arg0 World -> width @ int< and UNLESS false 3 return1-n THEN
-  true 3 return1-n
-end
-
-def world-get-cell-value ( y x world -- value )
-  arg2 arg1 arg0 world-contains? IF
-    arg0 World -> cells @
-    arg0 World -> width @ arg2 * arg1 +
-    string-peek
-  ELSE 0 THEN 3 return1-n
-end
-
 def world-cell-floor? ( cell ++ yes? )
   arg0 32 equals?
   arg0 0 equals? or
@@ -191,6 +161,74 @@ def world-cell-sky? ( cell ++ yes? )
   arg0 0 equals? IF true return1 THEN
   arg0 10 equals? return1
 end
+
+( Fun Worlds )
+
+struct: World
+pointer<any> field: fun
+pointer<any> field: data
+int field: width
+int field: height
+
+def make-world
+  World make-instance
+  arg0 over World -> width !
+  arg1 over World -> height !
+  arg2 over World -> data !
+  arg3 over World -> fun !
+  exit-frame
+end
+
+def world-contains? ( y x world -- yes? )
+  arg2 0 int>=
+  arg2 arg0 World -> height @ int< and UNLESS false 3 return1-n THEN
+  arg1 0 int>=
+  arg1 arg0 World -> width @ int< and UNLESS false 3 return1-n THEN
+  true 3 return1-n
+end
+
+def world-get-cell-value ( y x world -- value )
+  arg2 arg1 arg0 world-contains? IF
+    arg2 arg1 arg0 arg0 World -> fun @ exec-abs
+  ELSE 0 THEN 3 return1-n
+end
+
+struct: StaticWorld
+pointer<any> field: cells
+int field: width
+int field: height
+
+def static-world-contains? ( y x world -- yes? )
+  arg2 0 int>=
+  arg2 arg0 StaticWorld -> height @ int< and UNLESS false 3 return1-n THEN
+  arg1 0 int>=
+  arg1 arg0 StaticWorld -> width @ int< and UNLESS false 3 return1-n THEN
+  true 3 return1-n
+end
+
+def static-world-get-cell-value ( y x world static-world -- value )
+  arg3 arg2 arg0 static-world-contains? IF
+    arg0 StaticWorld -> cells @
+    arg0 StaticWorld -> width @ arg3 * arg2 +
+    string-peek
+  ELSE 0 THEN 4 return1-n
+end
+
+def make-static-world-fun ( world ++ fun )
+  ' static-world-get-cell-value arg0 partial-first exit-frame
+end
+
+def make-static-world
+  0 0
+  StaticWorld make-instance set-local0
+  arg0 local0 StaticWorld -> width !
+  arg1 local0 StaticWorld -> height !
+  arg2 local0 StaticWorld -> cells !
+  local0 make-static-world-fun
+  local0 arg1 arg0 make-world
+  exit-frame
+end
+
 
 ( Casting rays through the world: )
 
@@ -224,7 +262,7 @@ def cast-ray-fn ( world y x angle ++ world | hit )
   arg3 true 4 return2-n
 end
 
-256 var> RAYCAST-CAST-LENGTH ( fixme crashes when set too small: nothing to render? )
+1024 var> RAYCAST-CAST-LENGTH ( fixme crashes when set too small: nothing to render? crashes w/ too big of a world )
 
 def cast-ray ( world y x angle ++ hit )
   arg0 int32->float32 degrees->vec2d
@@ -749,6 +787,13 @@ def raycaster-outer-loop ( start-time camera world -- )
   arg2 0 arg1 arg0 local0 raycaster-inner-loop
   IF drop-locals repeat-frame ELSE 3 return0-n THEN
 end
+
+def raycaster-init
+  raycaster-texture-init
+  exit-frame
+end
+
+" src/demos/tty/raycaster-worlds.4th" load
 
 def raycaster ( world )
   0
