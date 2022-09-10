@@ -43,7 +43,7 @@ def builder-run ( entry len src-cons )
   target-static? UNLESS NORTH-STAGE 2 int>= IF elf32-dynamic-stub THEN THEN
   
   builder-output-file peek IF
-    S_IRXU S_IRGRP logior S_IXGRP logior S_IROTH logior S_IXOTH logior
+    S_IRWXU S_IRGRP logior S_IXGRP logior S_IROTH logior S_IXOTH logior
     builder-output-file peek open-output-file/2
     negative? IF
       s" Unable to open output file." error-line/2

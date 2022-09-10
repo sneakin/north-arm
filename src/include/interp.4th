@@ -13,6 +13,7 @@ s[ src/lib/seq.4th
    src/interp/characters.4th
    src/interp/reader.4th
    src/interp/numbers.4th
+   src/lib/linux/constants.4th
    src/interp/linux/program-args.4th
    src/interp/linux/auxvec.4th
    src/interp/linux/hwcaps.4th
