@@ -3,7 +3,7 @@ alias> uint8! dpoke-byte
 alias> uint8@ dpeek-byte
 
 : ddump-binary-bytes
-  dup dhere equals IF return THEN
+  dup dhere equals IF drop return THEN
   dup uint8@ write-byte
   1 + loop
 ;

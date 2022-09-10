@@ -349,7 +349,7 @@ end
 ( File loading: )
 
 def open-output-file/2 ( mode path -- fid )
-  arg1 O_CREAT O_WRONLY logior arg0 open 2 return1-n
+  arg1 O_TRUNC O_CREAT logior O_WRONLY logior arg0 open 2 return1-n
 end
 
 def open-output-file ( path -- fid )
