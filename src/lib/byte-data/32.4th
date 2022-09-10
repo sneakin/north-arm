@@ -17,6 +17,6 @@
 ;
 
 alias> ,cell ,uint32
-alias> .cell .uint32
+alias> cell! uint32!
 alias> cell@ uint32@
 alias> cell! uint32!
