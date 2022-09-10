@@ -2,56 +2,6 @@ alias> ,uint8 dpush-byte
 alias> uint8! dpoke-byte
 alias> uint8@ dpeek-byte
 
-: ddump-binary-bytes
-  dup dhere equals IF drop return THEN
-  dup uint8@ write-byte
-  1 + loop
-;
-
-: ,uint16
-  dup ,uint8
-  8 bsr ,uint8
-;
-
-: uint16@
-  dup uint8@
-  swap 1 + uint8@ 8 bsl
-  logior
-;
-
-: uint16!
-  2dup uint8!
-  1 + swap 8 bsr swap uint8!
-;
-
-( todo optimize for byte by byte in stage0, longs and double longs elsewhere? )
-
-: ,uint32
-  dup ,uint8
-  dup 8 bsr ,uint8
-  dup 16 bsr ,uint8
-  24 bsr ,uint8
-;
-
-: uint32!
-  2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap 2dup uint8!
-  1 + swap 8 bsr swap uint8!
-;
-
-: uint32@
-  dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + dup uint8@
-  swap 1 + uint8@
-  8 bsl logior
-  8 bsl logior
-  8 bsl logior
-;
-
-( fixme doesn't work with 32 bit cells )
-
 NORTH-STAGE 0 int> [IF]
   " src/lib/byte-data/stage1.4th" load
   cell-size 4 equals? [IF]

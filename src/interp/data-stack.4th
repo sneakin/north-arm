@@ -39,6 +39,11 @@ defcol dpush-byte
   dhere int32 1 + dmove
 endcol
 
+defcol dpush-short
+  swap dhere poke-short
+  dhere int32 2 + dmove
+endcol
+
 defcol dpop
   dhere cell-size - dup dmove
   peek swap
@@ -47,6 +52,11 @@ endcol
 defcol dpop-byte
   dhere int32 1 - dup dmove
   peek-byte swap
+endcol
+
+defcol dpop-short
+  dhere int32 2 - dup dmove
+  peek-short swap
 endcol
 
 defcol ddrop
