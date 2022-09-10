@@ -31,6 +31,7 @@ s[ src/runner/thumb/frames.4th
    src/runner/cells.4th
    src/runner/stack.4th
    src/runner/copy.4th
+   src/lib/linux/constants.4th
    src/runner/thumb/linux.4th
    src/runner/thumb/linux/signals/syscalls.4th
    src/runner/thumb/ffi.4th
@@ -84,6 +85,7 @@ s[
    src/runner/math/signed.4th
    src/runner/math.4th
    src/runner/aliases.4th
+   src/lib/linux/constants.4th
    src/runner/x86/linux.4th
    src/runner/dictionary.4th
    src/runner/frame-tailing.4th

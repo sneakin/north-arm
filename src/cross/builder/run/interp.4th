@@ -4,6 +4,14 @@ tmp" open-output-file/2" defined?/2 [UNLESS]
   end
 [THEN]
 
+tmp" S_IRWXU" defined?/2 [UNLESS]
+00700 const> S_IRWXU
+00040 const> S_IRGRP
+00010 const> S_IXGRP
+00004 const> S_IROTH
+00001 const> S_IXOTH
+[THEN]
+   
 tmp" fill" defined?/2 [UNLESS]
    s[ src/lib/seq.4th ] load-list
 [THEN]
@@ -35,7 +43,8 @@ def builder-run ( entry len src-cons )
   target-static? UNLESS NORTH-STAGE 2 int>= IF elf32-dynamic-stub THEN THEN
   
   builder-output-file peek IF
-    0755 builder-output-file peek open-output-file/2
+    S_IRXU S_IRGRP logior S_IXGRP logior S_IROTH logior S_IXOTH logior
+    builder-output-file peek open-output-file/2
     negative? IF
       s" Unable to open output file." error-line/2
       false 3 return1-n
