@@ -408,10 +408,12 @@ def banner
 end
 
 def about
-  banner nl
-  s" Build Time:" write-string/2 tab NORTH-BUILD-TIME write-int nl
-  s"    Builder:" write-string/2 tab NORTH-BUILDER write-string nl
-  s"    Git Ref:" write-string/2 tab NORTH-GIT-REF write-string nl
+  copyright write-string nl
+  s"  Build Time:" write-string/2 tab NORTH-BUILD-TIME write-int nl
+  s"     Builder:" write-string/2 tab NORTH-BUILDER write-string nl
+  s"     Git Ref:" write-string/2 tab NORTH-GIT-REF write-string nl
+  s" Binary Size:" write-string/2 tab *program-size* write-int nl
+  *program-sha256* cs uint> IF s"     SHA-256:" write-string/2 tab *program-sha256* write-string nl THEN
   nl
   s"   Platform:" write-string/2 tab NORTH-PLATFORM write-string nl
   s"       Bits:" write-string/2 tab NORTH-BITS write-int nl

@@ -10,3 +10,5 @@ BUILDER-TARGET string-const> NORTH-PLATFORM
 
 elf-data-segment-offset defconst> *ds-offset*
 elf-data-segment-size  defconst> *ds-size*
+
+0 defconst-offset> *program-sha256*

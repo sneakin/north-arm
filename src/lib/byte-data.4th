@@ -85,14 +85,15 @@ alias> int64! uint64!
 
 : ,byte-string/3
   ( string length n )
-  2dup equals IF 0 ,uint8 return THEN
+  2dup equals IF 0 ,uint8 3 dropn return THEN
   3 overn 2 overn string-peek ,uint8
   1 + loop
 ;
 
+: ,byte-string/2 0 ,byte-string/3 ;
+
 : ,byte-string
   dup string-length 0 ,byte-string/3
-  3 dropn
 ;
 
 : byte-swap-uint16

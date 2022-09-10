@@ -4,7 +4,28 @@ tmp" open-output-file/2" defined?/2 [UNLESS]
   end
 [THEN]
 
-s[ src/cross/output/data-vars.4th ] load-list
+tmp" fill" defined?/2 [UNLESS]
+   s[ src/lib/seq.4th ] load-list
+[THEN]
+   
+s[ src/cross/output/data-vars.4th
+   src/lib/digest/sha256.4th
+] load-list
+
+def builder-compute-output-hash ( origin size out-ptr out-size -- out-ptr out-size )
+  make-sha256-state
+  arg3 arg2 3 overn sha256-begin sha256-update sha256-end
+  arg1 arg0 3 overn sha256->string/3 4 return2-n
+end
+
+def builder-patch-hash ( origin size word -- )
+  s" Hashed " error-string/2 arg1 error-int s"  bytes to: " error-string/2
+  dhere to-out-addr arg0 dict-entry-data !
+  72 stack-allot
+  arg2 arg1 3 overn 72 builder-compute-output-hash
+  2dup error-string/2 enl ,byte-string/2
+  3 return0-n
+end
 
 def builder-run ( entry len src-cons )
   0
@@ -57,14 +78,13 @@ def builder-run ( entry len src-cons )
   write-elf-ending
   s" *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
 
+  s" *program-sha256*" cross-lookup IF out-origin @ dhere over - roll builder-patch-hash ELSE not-found drop THEN
+
   " Writing to " error-string
   current-output peek set-local0
-  builder-output peek dup IF
-    current-output poke
-    builder-output-file peek
-  ELSE
-    drop
-    " stdout"
+  builder-output peek dup
+  IF current-output poke builder-output-file peek
+  ELSE drop " stdout"
   THEN error-line
   
   out-origin peek ddump-binary-bytes
