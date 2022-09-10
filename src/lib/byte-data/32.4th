@@ -16,7 +16,7 @@
   swap 4 + uint32@
 ;
 
-alias> ,cell ,int32
-alias> .cell .int32
-alias> cell@ int32@
-alias> cell! int32!
+alias> ,cell ,uint32
+alias> .cell .uint32
+alias> cell@ uint32@
+alias> cell! uint32!
