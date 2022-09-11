@@ -3,6 +3,8 @@
 0x2000 const> elf64-data-segment-size
 64 const> elf64-header-size
 
+: elf64-data-segment-offset elf64-data-segment elf64-code-segment - ;
+
 : write-elf64-header
 ( ' id uint8 16 array-field )
 ( EI_MAG0 0 File identification )
