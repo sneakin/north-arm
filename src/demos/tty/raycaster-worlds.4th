@@ -79,10 +79,10 @@ D              *
 ****************" 12 17 make-static-world const> world4
 
 " *****************       ***
-*    AAAA      BW          *
-*    bwwb      BW          *
-*    bwwb                  *
-*    bwwb                  *
+*   bAAAAb     BW          *
+*   bbwwbb     BW          *
+*   bbwwbb                 *
+*   bbwwbb                 *
 *              BW          X
 *              BW          X
 *              BW          X
