@@ -72,26 +72,43 @@ def tty-marquee-brightness-inc!
   arg1 TtyMarquee -> attr poke-byte
   2 return0-n
 end
-    
-def test-tty-marquee
-  0 0 0 0
+
+def tty-marquee-ticker
+  arg0 tty-marquee-update
+  ( arg0 3 int< IF
+    arg0 1 tty-marquee-brightness-inc!
+  THEN )
+  arg0 arg1 tty-marquee-draw
+  arg1 2 return1-n
+end
+
+def test-tty-make-marquees ( h w seq length n ++ seq )
+  arg0 arg1 int< UNLESS arg2 exit-frame THEN
+  s" Hello world"
+  arg3
+  4 argn arg1 / arg0 *
+  arg0 dup 1 logand IF negate THEN
+  make-tty-marquee
+  dup arg2 arg0 seq-poke    
+  arg0 0x7 logand 4 bsl swap TtyMarquee -> color poke-byte
+  arg0 1 + set-arg0 repeat-frame
+end
+
+def test-tty-marquee ( frames #marquees -- )
+  0 0 0
+  arg0 cell* stack-allot set-local2
   tty-getsize make-tty-screen set-local0
-  s" Hello world" local0 TtyScreen -> width @ local0 TtyScreen -> height @ 3 / arg0 make-tty-marquee set-local2
-  0x10 local2 TtyMarquee -> color poke-byte
-  s" Hello world" local0 TtyScreen -> width @ local0 TtyScreen -> height @ 3 / 2 * arg0 negate make-tty-marquee set-local3
-  0x20 local3 TtyMarquee -> color poke-byte
+  local0 TtyScreen -> height @ local0 TtyScreen -> width @
+  local2 arg0 0 test-tty-make-marquees
   tty-hide-cursor
   tty-alt-buffer
   get-time-secs set-local1
   local0 tty-screen-redraw
-  local3 local2 local0 arg1 DOTIMES[
+  local2 arg0 local0 arg1 DOTIMES[
     arg2 tty-screen-erase
-    arg3 tty-marquee-update
-    arg3 1 tty-marquee-brightness-inc!
-    arg4 tty-marquee-update
-    arg4 -1 tty-marquee-brightness-inc!
-    arg3 arg2 TtyScreen -> back @ tty-marquee-draw
-    arg4 arg2 TtyScreen -> back @ tty-marquee-draw
+    arg4 cell-size + arg3
+    arg2 TtyScreen -> back @
+    ' tty-marquee-ticker map-seq-n/4
     arg2 tty-screen-swap
   ]DOTIMES
   tty-normal-buffer
@@ -99,5 +116,4 @@ def test-tty-marquee
   get-time-secs local1 -
   arg1 int32->float32 over int32->float32 float32-div
   dup nl tty-normal s" FPS: " write-string/2 write-float32 nl
-  return2
 end
