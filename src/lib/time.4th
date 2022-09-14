@@ -3,6 +3,9 @@
 36525 const> days-per-year-100x
 days-per-year-100x 12 int-div const> days-per-month-100x
 
+36525 defconst> days-per-year-100x
+days-per-year-100x 12 int-div defconst> days-per-month-100x
+
 def secs->hours
   arg0 3600 floored-div set-arg0
 end
@@ -55,6 +58,13 @@ end
 399 const> date-stamp-years-in-era-1
 146097 const> date-stamp-days-in-era
 146096 const> date-stamp-days-in-era-1
+
+1970 defconst> nix-epoch-year
+719468 defconst> date-stamp-days-to-1970
+400 defconst> date-stamp-years-in-era
+399 defconst> date-stamp-years-in-era-1
+146097 defconst> date-stamp-days-in-era
+146096 defconst> date-stamp-days-in-era-1
 
 def time->date arg0 secs->days set-arg0 end
 def date->time arg0 days->secs set-arg0 end  

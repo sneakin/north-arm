@@ -409,7 +409,7 @@ end
 
 def about
   copyright write-string nl
-  s"  Build Time:" write-string/2 tab NORTH-BUILD-TIME write-int nl
+  s"  Build Time:" write-string/2 tab NORTH-BUILD-TIME write-time-stamp nl
   s"     Builder:" write-string/2 tab NORTH-BUILDER write-string nl
   s"     Git Ref:" write-string/2 tab NORTH-GIT-REF write-string nl
   s" Binary Size:" write-string/2 tab *program-size* write-int nl

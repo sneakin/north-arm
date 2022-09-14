@@ -17,6 +17,7 @@ s[ src/lib/seq.4th
    src/interp/linux/program-args.4th
    src/interp/linux/auxvec.4th
    src/interp/linux/hwcaps.4th
+   src/lib/time.4th
    src/interp/interp.4th
 ] load-list
 
