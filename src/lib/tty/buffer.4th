@@ -38,7 +38,8 @@ end
 
 def tty-buffer-draw-row ( cells width pen-state -- )
   arg2 TtyCell . attr peek-byte arg2 TtyCell . color peek-byte arg0 tty-pen-update-write
-  arg2 TtyCell . char peek-byte control-code? IF drop 32 THEN write-byte
+  arg2 TtyCell . char peek
+  dup -1 equals? UNLESS control-code? IF drop 32 THEN write-utf32-char THEN
   arg2 TtyCell struct -> byte-size @ + set-arg2
   arg1 1 - set-arg1
   arg1 0 > IF repeat-frame THEN 3 return0-n
@@ -95,7 +96,7 @@ def tty-buffer-set-cell ( char color attr row col buffer -- )
   arg2 arg1 arg0 tty-buffer-clips? UNLESS
     arg0 TtyBuffer -> cells @
     arg2 arg0 tty-buffer-pitch * + arg1 TtyCell struct -> byte-size @ * +
-    5 argn over TtyCell . char poke-byte
+    5 argn over TtyCell . char poke
     4 argn over TtyCell . color poke-byte
     3 argn over TtyCell . attr poke-byte
   THEN 6 return0-n

@@ -2,6 +2,14 @@ struct: TtyPenState
 uint<8> field: color
 uint<8> field: attr
 
+def tty-pen-write-byte
+  arg0 write-byte
+end
+
+def tty-pen-write-char
+  arg0 -1 equals? UNLESS arg0 write-utf32-char THEN
+end
+
 def tty-pen-write-attr-diff ( new-attr old-attr -- )
   arg1 TTY-CELL-BRIGHTNESS logand
   arg0 TTY-CELL-BRIGHTNESS logand 2dup equals? UNLESS

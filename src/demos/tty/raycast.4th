@@ -177,6 +177,7 @@ def raycaster-texture-init
   0x13 over char-code T seq-poke
   0x77 over char-code * seq-poke
   0x40 over char-code ~ seq-poke
+  ( todo ░▒▓█▄▌▐▀ needs more than a byte and unicode encoder, or a remapping. could use for real shading in 16, 256, millions of colors. )
   0 raycaster-digit-textures
   exit-frame
 end
@@ -728,13 +729,15 @@ def raycaster-minimap ( camera world context wy wx sy sx height width row -- )
   arg0 arg2 int<
   IF repeat-frame
   ELSE
-    0x71 7 argn TtyContext -> color poke-byte
+    6 argn arg2 2 / + 5 argn arg1 4 / + 8 argn world-get-cell-value
+    raycaster-textures @ swap seq-peek
+    TTY-CELL-BG logand 0x70 logior 7 argn TtyContext -> color poke-byte
     TTY-CELL-NORMAL 7 argn TtyContext -> attr poke-byte
     4 argn arg2 2 / +
     arg3 arg1 2 / dup 1 logand - + ( shift by 1 when width/2 is odd, ie: 88 columns )
     7 argn tty-context-move-to
-    char-code : 7 argn tty-context-write-byte
-    char-code ) 7 argn tty-context-write-byte
+    0x1f607 7 argn tty-context-write-byte
+    -1 7 argn tty-context-write-byte
     10 return0-n
   THEN
 end

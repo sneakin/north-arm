@@ -231,7 +231,7 @@ alias> store-local0 set-local0
 defcol arg4 4 argn swap endcol
 
 def frame-argn
-  arg0 current-frame parent-frame @ fargn @ set-arg0
+  arg1 arg0 fargn @ 2 return1-n
 end
 
 defcol returnN
