@@ -145,31 +145,6 @@ cell-size 3 * swap
 pointer<any> swap
 here struct-field cons type value-of struct-add-field
 
-( Struct fields: )
-" name"
-cell-size swap
-cell-size 0 * swap
-pointer<any> swap
-here struct-field cons struct value-of struct-add-field
-
-" byte-size"
-cell-size swap
-cell-size 1 * swap
-uint<32> swap
-here struct-field cons struct value-of struct-add-field
-
-" super"
-cell-size swap
-cell-size 2 * swap
-pointer<any> swap
-here struct-field cons struct value-of struct-add-field
-
-" fields"
-cell-size swap
-cell-size 3 * swap
-pointer<any> swap
-here struct-field cons struct value-of struct-add-field
-
 ( Creating struct fields: )
 
 def struct-create-field ( name name-length type struct )

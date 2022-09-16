@@ -1,4 +1,4 @@
-s[ src/lib/linux/stat.4th ] load-list
+( s[ src/lib/linux/stat.4th ] load-list )
 
 4096 const> PAGE-SIZE
 

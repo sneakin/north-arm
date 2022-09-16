@@ -8,4 +8,6 @@
       s[ src/lib/math/64/int64.4th ] load-list
     [THEN]
   [THEN]
+[ELSE]
+  s[ src/lib/math/32/int64.4th ] load-list
 [THEN]
