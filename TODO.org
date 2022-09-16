@@ -8,15 +8,59 @@ Build an ELF file that can execute the code to build itself.
 ** Secondary:
 North Runner compatible with the x86 runner that can mmap a file to execute.
 ** Get out of the Turing Tar Pit.
+** Used to make a useful program like a game.
+   
 * Tasks
+
 ** September!
+*** Pi Zero 1:
+    Has no thumb2 so no coprocessor, no float.
+    Build included ~lib/math/float32.4th~ with constants computed using floats.
+    Add ~hardfloat~, ~softfloat~, and ~nofloat~ to the platform string?
+    A features list supplied to the builder?
+    Runtime detection of features? FPU? Thumb 1 or 2? Division?
+    
+    ~runner/imports.4th~ crashed a bootstrap to static build. > stage1 checked worked around.
+    
+*** TTY Buffer with Unicode
+    Buffer cells need to have a larger char field.
+    Should have an indication and option to the terminal's encoding.
+    Internally utf32 will be used. No need to encode for utf8 if the terminal is utf32.
+    
 *** No way to call foreign function pointers without making a word.
-*** Move boot/cross.4th int src/cross?
-*** Output cell-size: Use ~out-cell-size~ in cross compiling and other ouput words. ~out-op-size~ could replace ~-op-size~ too.
-**** Use ~,cell~ instead of ~,uint32~ to make cross words more portable. ~,out-cell~?
-*** Have a (super) lite version of the runner and interpreter. Only cell sized math. Minimal syscalls. No debugging aids. Barely able to load-core.
-*** Thumb and x86 assemblers need to built into the builder.
+*** Cross compiling
+**** Move boot/cross.4th into src/cross?
+**** Output cell-size: Use ~out-cell-size~ in cross compiling and other ouput words. ~out-op-size~ could replace ~-op-size~ too.
+***** Use ~,cell~ instead of ~,uint32~ to make cross words more portable. ~,out-cell~?
+**** Thumb and x86 assemblers need to built into the builder.
     Placing each in separate dictionaries could work. defop/endop could load/unload could work for all but macros. Builder adds those words?
+*** Have a (super) lite version of the runner and interpreter.
+    Only cell sized math.
+    No floats.
+    Minimal syscalls.
+    No debugging aids.
+    Barely able to load-core.
+    A build option to strip unused words?
+*** TTY
+**** input layered on top of a reader's buffering and function pointers
+**** input w/ nonblocking support: prior state saved and continuable
+     Output too? Buffered output: dumped out in the select loop when ready?
+**** fully updating TTY code from old North
+     No aliases. Normalized vocab.
+**** using readeval
+**** usable in binaries
+*** Binary self verification
+**** Hashing
+***** SHA
+****** TODO sha-224, 512, etc.
+****** DONE SHA-256
+***** TODO Internally: FFI imports need relocs out of the code segment
+**** Signature
+***** ECC or RSA?
+***** Big integers
+***** Key storage
+      Standards may require a full ASN.1 stack.
+
 ** August
 *** big integers
 **** int64 file organization
@@ -32,8 +76,9 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
     Defines constants and immediates needed during compilation, and generates accessors needed in compiled output.
 *** More dictionary meta data: files loaded, definition source location
 *** process.4th
-**** function to start with a provided function
-**** execve wrapper to run system commands: needs to builh/copy env and an argv array of strings
+**** DONE function to start with a provided function
+**** DONE execve wrapper to run system commands: needs to build/copy env and an argv array of strings
+
 ** July
 *** self contained binaries
 **** boot/core and friends
@@ -45,13 +90,17 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 *** actual compilation to machine code
 **** DONE sized sequences for code fields
 **** copy code field, may need a trampoline field or every interpreted word needs a copied code sequence
+**** define code to translate direct threads
 *** Dictionaries
 **** Remove dedicated register
+     Use data var.
 **** Association list
 **** Ops with doop code, assembly data fields?
+     Call code field that then jumps to data.
 **** Reorder ~dict-map~ arguments to make ~fn~ last.
 **** Delay writing out until the end of building?
 *** error handler, catch and throw
+
 ** <=June?
 *** struct fields don't resolve right w/ b and b1 fields.
 *** swap tty-cursor-to's arguments to row, column
@@ -63,6 +112,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
      Little endian puts LSB at the lower address. Stack ordering has LSB at the higher address.
      But byte order in code needs to be consistent on big and little endian systems, which may need 64 bit support in the integer reader instead of faking it.
 *** core.4th needs a split to allow inclusion in binary
+
 ** Sooner than later
 *** current-tty and standard-tty that opens /dev/tty for IO
 **** needs writes that take an fd
@@ -70,18 +120,19 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 *** Crashes with ~literal int32 123~
 *** s" places the string onto the data stack polluting the binary. Special interp version for defproper?
 *** DONE [#A] structures
-*** TODO [#A] variables with data on stack or data segment. initialized on load
+*** DONE [#A] variables with data on stack or data segment. initialized on load
 *** [#B] ELF exports
 *** TODO [#A] Build improvement
 **** Multiple targets: thumb 1 & 2, a32, a64, x86, bacaw; android, linux, baremetal; static, dynamic
-**** Dependencies: only execute/scan for load
+**** DONE Dependencies: only execute/scan for load
 *** Local variables
 *** North porting
 *** [#B] Error handler
 *** [#C] Zero copy reading
 Would only work when the token does not span reads.
 *** Compiling to assembly
-*** egl & TTY drawing
+*** egl / gles & TTY drawing
+Vulkan on Android doesn't report any devices to 32 bit code.
 *** bare metal
 **** Pi Zero / 2
 **** Pi 3
@@ -92,18 +143,23 @@ Would only work when the token does not span reads.
 *** quine
 The ability to dump the program to source code into a loadable and buildable format.
 **** Disasm
-***** integrated into dictionary dump
+***** TODO integrated into dictionary dump
 ***** DONE Sized sequences for code fields
 **** immediates
-**** hexadecimal prefixes
+Find equivalent words to add ~immediate~ and/or ~immediate-as~ after the definition.
+**** hexadecimal 0x prefixes
 **** DONE cstring needs to not appear before string literals
 *** [#A] builder binary
 **** Needs immediate dictionary writing and overrides.
-**** Command line arguments
+**** DONE Command line arguments
+
+
 ** Standard Forth
+
+*** Fully standard list of words
 *** Comma & period words
 Standard Forth uses these for stream output.
-Switching to < or > like standard stack ops.
+Switch to < or > like standard stack ops?
 **** byte data
 ,ins breaks the rule on ~,word~ and ~.word~.
 **** asm ops
@@ -157,6 +213,7 @@ what's motd ( -> ' hello )
 **** TODO Remove brackets on toplevel use.
 *** locals
 { arg1 arg0 | local0 -- result }
+
 ** String readers have length limit of token-buffer-max. Could/should read more.
 ** Full cpio archive concatenated onto binary.
 *** needs memory decoding instead of file reads
@@ -164,7 +221,7 @@ what's motd ( -> ' hello )
 *** cpio encoder
 *** compressed?
 ** Postpone lookup with and without immediates
-** Using ~'~ in a definition should be like ~literal~
+** Using ~'~ in a definition should be like ~literal~ or more like ~pointer~?
 #BEGIN_SRC
 : ' hello literal hey assert-equals
 #END_SRC
@@ -192,6 +249,7 @@ Lacks thumb2 and therefore division and coprocessor ops.
 *** TODO Detect thumb2 in HWCAPS on start
 **** trap SIGILL
 *** TODO A32 coprocessor ops
+**** Use aarch32 code to make coprocessor calls?
 *** DONE Do new branch ops work?
 ** compile loop:
 *** DONE relocate calls and pointers but not data literals
@@ -203,6 +261,7 @@ Lacks thumb2 and therefore division and coprocessor ops.
 *** DONE Rewrite from bash to Forth?
 *** Reuse reader from North Core? read-byte level.
 Call frames, stack & data pointer math
+*** Split into buffered reader and tokenizer
 ** Writing
 *** DONE ddump to binary file
 *** DONE initial code / header & footer
@@ -212,7 +271,7 @@ Call frames, stack & data pointer math
 **** EXE files
 *** extract strings from data into section
 *** symbol table section
-*** TODO Data RO and BSS sections
+*** DONE Data RO and BSS sections
 ** Defining words
 *** DONE Compiled words: create & def -> :
 *** DONE Compiler words: :
@@ -224,6 +283,8 @@ Call frames, stack & data pointer math
 *** memory / variable watches
 *** execution stepping
 *** exception and signal trapping
+*** stack printing, back traces
+*** resuming execution
 ** Assemblers
 *** TODO Two passes with labels
 *** TODO New-lines write instructions; one per line
@@ -231,30 +292,20 @@ Call frames, stack & data pointer math
 **** Seg faults
 **** constants
 **** load-core features
-**** ISAs
-***** Bacaw
-***** x86
-***** TODO athumb
-****** TODO Branching and return in Thumb; to call ops in ops and call threading
-****** Thumb Assembler meta words: mov checks arg range
-***** TODO aarch32
-****** TODO Status register and coprocessor ops
-****** TODO More op coverage
-***** aarch64
-****** assembler
-****** ELF64
-*** Bacaw
-*** x86
-*** athumb
-**** DONE Branching and return in Thumb; to call ops in ops and call threading
-**** Thumb Assembler meta words: mov checks arg range
-**** TODO On thumb, use aarch32 ops to access coprocessor
-*** TODO aarch32
-**** TODO Status register and coprocessor ops
-*** aarch64
-**** assembler
-**** ELF64
+*** ISAs
+**** Bacaw
+**** x86
+**** TODO athumb
+***** DONE Branching and return in Thumb; to call ops in ops and call threading
+***** Thumb Assembler meta words: mov checks arg range
+**** TODO aarch32
+***** TODO Status register and coprocessor ops
+***** TODO More op coverage
+**** aarch64
+***** assembler
+***** ELF64
 ** DONE jumps & loops
+*** Amounts in op-size instead of bytes.
 *** DONE relative jumps
 *** DONE returns
 *** DONE IF immediate to count offset
@@ -280,6 +331,8 @@ end
 4 1 2 + dup 3 overn f
 
 #+END
+
+
 ** Building
 Need to better handle targets and loading their sources. Too much duplication.
 Pass sources in as args from Makefile? Every file requires what it needs?
@@ -322,7 +375,7 @@ revmap-stack? stack-find?
 *** TODO Rename to curry?
 ** TODO [#A] Dictionary entry code value: has to point to real code?
 Would be nice to have colon definitions as code words.
-** TODO Variable data allocated on init, value outside the dictionary.
+** DONE Variable data allocated on init, value outside the dictionary.
 ** TODO Lisp style dictionary: assoc list of functions
 ** DONE Remove unasked output
 ** Tail call optimizations
@@ -379,9 +432,10 @@ load needs file opening and reading with a reader stack.
 *** DONE fork & exec
 ** Testing
 *** Move tests to assert-equals
-*** Test DSL
+*** Test DSL: group into suites, setup and teardown, run in child process?
 ** TODO quit needs to reset dict in case words are on the stack
-*** Variables stored outside dictionary.
+*** DONE Variables stored outside dictionary.
+*** TODO Move stack to top-frame and reinit everything.
 ** TODO remove early uses of R3 to track calls and returns
 ** DONE Organization
 *** bash forth
@@ -396,7 +450,7 @@ load needs file opening and reading with a reader stack.
 *** stage2
 **** compiler
 ** code fields need to point at words, not code
-** Tension between output offsets and pointers; dhere is an offset or translate when needed?
+** DONE Tension between output offsets and pointers; dhere is an offset or translate when needed?
 ** null (last dictionary) lets lookup return a null, default object.
 ** DONE string readers
 " returns a pointer & length when bash cross compiles.
@@ -423,17 +477,20 @@ Touches words that take pointer or a pointer/length pair.
 
 ** DONE load from strings
 ** save ELF runtime image
+   Write code segment, data segment, and stack to an ELF blob. Each part needs a segment and program headers to load to same memory location. Dynamic linking would move these.
 *** Needs .data size
+*** Stack will need to be made position independent and reindexed on load.
 ** Quine: dump loadable source code
+*** include textual source in binary? Could provide hints about immediates used.
 ** generic next that calls a function to get the next word depending on source or flavor
 To unify interpretation of tokens and indirect threads.
 *** immediates
 *** check if literals and pointers are words
-** include textual source in binary?
 ** TODO error handling that quits and/or starts a new interpreter loop
 ** Make output functions take an fd argument.
 ** TODO Eliminate needless padding
 Zero needed at end of definitions for decompile.
+[Data] segment needs to be aligned at 4096 bytes.
 ** map-seq, map-seqn: prefer lengths over terminator at end
 ** TODO back port compiling-read
 ** TODO DRY cross compiling code
@@ -452,6 +509,9 @@ dry up with comp' immediated as ' to use compiling-dict.
 *** Garbage collection
 **** Pointers that point down the stack are bad.
      The locals...
+**** Needs to collect from a set of roots:
+     values, pointers, sequences, offset code, live frames
+     Pointers to sequences of unknown size are one problem.
 ** after loop
 *** Exports, symbol table
 *** TODO builder executable that's passed files to build
@@ -468,7 +528,7 @@ Calling ops like any other procedure makes subroutine call threading easy.
 *** Ops can get back to next if next sets LR.
 *** When does next exit??
 Needs an explicit BYE. exit gets out of a thread, restoring eip.
-*** TODO Where LR should be restored?
+*** TODO Where LR should be saved and restored? Need a foreign interface to call in.
 **** Only save LR with an outer-exec? Exit by clearing stack and setting PC. Or exit up all the way.
 **** Mixing threading types? Puts responsibility on enter and exit to return to the right procedure caller.
 ***** Requires defcol to factor in a multiple valued return record. swap-call-frame
@@ -500,12 +560,13 @@ Inline exec
 **** integers
 **** floats
 **** optimize
-     exp has a trick reusing results
+     exp has a trick reusing results, powers of two can bit shift
 *** trigonometry: sin, cos, tan, asin, acos, atan
-**** circular
-**** hyperbolic
+**** TODO further test and verification
+**** DONE circular
+**** DONE hyperbolic
 **** float64
-*** big integers
+*** big integers (> 64 bits)
 **** arithmetic
 **** logic
 **** comparisons
@@ -513,6 +574,93 @@ Inline exec
 **** conversions
 
 * Thoughts
+** Cross compiling
+Top level interpreter and cross compiling ideally use the same vocabulary.
+Need to be able to enter and exit the cross compiling vocabulary.
+Likewise with the assemblers.
+Constants should appear in both environments.
+Compiling code should be able to alter the compiling environment.
+
+*** Vocabulary
+**** Immediates
+     IF ELSE THEN CASE OF ENDOF ENDCASE s" " ' s[
+
+**** Literalizers
+     
+**** Dictionary ops
+     create create> lookup drop-dict
+
+**** Defining words
+     var>
+     const>
+     defcol
+     def
+     :
+     immediate immediate-as
+     string-const>
+     symbol>
+
+*** Transitioning
+**** Prefixes alone?
+Used every where. Nice to be optional.
+**** Dictionary of word lists?
+Combine multiple sets. Mix and match on a per file basis?
+  
+**** More dictionary ops: Mark/forget/cut/append?
+Drop in primitives for modules.
+
+**** Modules?
+**** Saved environments
+     Store the dictionaries in a structure.
+     Save and switch to them at will.
+     Bit like a fork.
+     Marks with dict and idict?
+
+** Modules
+     Can be mixed together.
+     Prefixed
+     Essentially a list of word lists.
+     Default user to TopLevel.
+     Integration with files?
+     Lexical scoping
+     Still doesn't handle the mixed code segments.
+     
+module TopLevel
+endmodule
+
+module A
+  module B
+    def sq
+      arg0 arg0 * 1 return1-n
+    end
+  end
+
+  module C
+    def sq arg1 arg1 * arg0 arg0 * 2 return2-n end
+  end
+end
+
+4 A :: B :: sq
+
+A :: B include
+5 sq
+
+module D
+  A :: B include
+
+  def mag arg1 sq arg0 sq + 2 return1-n end
+end
+
+A :: C module E
+  arg0 include
+  def mag arg1 sq arg0 sq + 2 return1-n end
+end
+
+module F
+  ' D :: mag import-as> mag-int
+end
+
+     
 ** def syntax
 *** Current
 var>
