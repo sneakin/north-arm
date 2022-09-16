@@ -2,6 +2,17 @@
 
 ( todo highlight words; seqs with sizes, typed structs, color coding, unreachable/reachable. )
 
+' red defined? [UNLESS]
+alias> black nop
+alias> red nop
+alias> yellow nop
+alias> green nop
+alias> cyan nop
+alias> blue nop
+alias> magenta nop
+alias> white nop
+[THEN]
+
 40 var> fancy-stack-cols
 
 def potential-pointer? ( ptr -- yes? )
@@ -104,7 +115,11 @@ def dead-frame?/2 ( parent fp -- yes? )
   arg0 arg1 uint< IF
     arg0 peek stack-pointer? IF
       arg0 peek
-      dup arg1 equals? IF true ELSE set-arg0 repeat-frame THEN
+      dup arg0 equals?
+      IF false
+      ELSE
+	dup arg1 equals? IF true ELSE set-arg0 repeat-frame THEN
+      THEN
     ELSE false
     THEN
   ELSE false
@@ -127,10 +142,10 @@ end
 def fancy-stack/4 ( stop-ptr start-ptr link-cols next-fp -- )
   arg2 arg3 uint<= UNLESS 4 return0-n THEN
   arg0 arg2 fancy-frame-pointer-kind CASE
-    1 OF s" * " ENDOF ( current, direct ancestor of current )
-    2 OF s" x " ENDOF ( dead sibling )
-    3 OF s" X " ENDOF ( very dead frames )
-    drop s"   "
+    1 OF green s" * " ENDOF ( current, direct ancestor of current )
+    2 OF yellow s" x " ENDOF ( dead sibling )
+    3 OF red s" X " ENDOF ( very dead frames )
+    drop white s"   "
   ENDCASE write-string/2
   ( ptr moved past next-fp )
   arg2 arg0 uint>= IF arg2 arg0 parent-frame-above set-arg0 THEN
@@ -142,6 +157,7 @@ def fancy-stack/4 ( stop-ptr start-ptr link-cols next-fp -- )
   arg2 peek cs + arg1 fancy-stack-maybe-add-link
   arg2 arg1 0 fancy-stack-zero-past-links
   ( write out the waterfall )
+  white
   arg1 fancy-stack-cols peek arg2 pointer fancy-stack-link map-seq-n/4
   ( additional info )
   space
