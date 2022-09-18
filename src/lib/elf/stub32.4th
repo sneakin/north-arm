@@ -4,7 +4,7 @@ Auxvec #3 gives the program headers and #9 gives the entry point.
 )
 
 0x80000 const> elf32-code-segment
-0xA0000 const> elf32-data-segment
+0x100000 const> elf32-data-segment
 0x2000 const> elf32-data-segment-size
 52 const> elf32-header-size
 

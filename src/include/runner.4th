@@ -93,6 +93,6 @@ s[
 ] load-list
 [THEN]
 
-NORTH-STAGE 0 int> [IF]
+NORTH-STAGE 1 int> [IF]
   s[ src/runner/imports.4th ] load-list
 [THEN]

@@ -102,7 +102,7 @@ def build
     s" With cross: " error-string/2 builder-with-cross @ error-int enl
     s" Intpreter: " error-string/2 start-interpreter @ error-int enl
     s" Sources:" error-line/2 sources @ ' error-line map-car
-    s" Dump dictionary?" error-string/2 do-dump-dict error-bool enl
+    s" Dump dictionary?" error-string/2 do-dump-dict @ error-bool enl
   THEN
 
   start-interpreter @ 1 equals? IF interp THEN
