@@ -25,6 +25,22 @@ struct: timespec
 int<32> field: tv_sec
 int<32> field: tv_nsec
 
+def secs->timespec
+  arg0 0 int>= IF
+    timespec make-instance
+    arg0 over timespec -> tv_sec !
+    exit-frame
+  ELSE 0 set-arg0
+  THEN
+end
+
+def timeout->abs-timespec
+  arg0 0 int<
+  IF 0
+  ELSE get-time-secs arg0 + secs->timespec
+  THEN 1 return1-n
+end
+
 struct: timeval
 int<32> field: sec
 uint<64> field: usec

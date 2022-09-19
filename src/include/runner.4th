@@ -16,7 +16,7 @@ s[
    src/cross/defining/constants.4th
    src/cross/constants.4th
    src/cross/defining/variables.4th
-   src/lib/stack.4th
+   src/lib/map/stack.4th
    src/cross/defining/colon.4th
 
    src/interp/boot/cross/case.4th
@@ -31,6 +31,7 @@ s[ src/runner/thumb/frames.4th
    src/runner/cells.4th
    src/runner/stack.4th
    src/runner/copy.4th
+   src/runner/thumb/state.4th
    src/runner/thumb/linux.4th
    src/runner/thumb/linux/signals/syscalls.4th
    src/runner/thumb/ffi.4th
@@ -41,7 +42,6 @@ s[ src/runner/thumb/frames.4th
    src/runner/thumb/math/division.4th
    src/runner/thumb/math/carry.4th
    src/runner/thumb/math/int64.4th
-   src/runner/thumb/state.4th
    src/runner/math.4th
    src/runner/aliases.4th
    src/runner/thumb/vfp-constants.4th
@@ -66,7 +66,7 @@ s[
    src/cross/defining/constants.4th
    src/cross/constants.4th
    src/cross/defining/variables.4th
-   src/lib/stack.4th
+   src/lib/map/stack.4th
    src/cross/defining/colon.4th
 
    src/interp/boot/cross/case.4th

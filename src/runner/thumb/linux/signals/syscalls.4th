@@ -1,15 +1,3 @@
-def getpid ( ++ pid )
-  args 0 20 syscall return1
-end
-
-def pause
-  args 0 29 syscall return1
-end
-
-def kill ( signal pid -- result )
-  args 2 37 syscall 2 return1-n
-end
-
 def sigaction ( old-ptr sigaction signal -- result )
   args 3 67 syscall 3 return1-n
 end

@@ -1,30 +1,50 @@
-( " *read-terminator*" string-const> read-terminator )
+struct: Stack
+pointer<any> field: base
+uint value field: size
+pointer<any> field: here
 
-: map-stack-seq/4 ( stack-pointer state fn terminator -- state )
-  ( Example: read-terminator 1 2 3 4 here 0 ' + read-terminator map-stack-seq )
-  4 overn speek over equals IF 2 dropn swap drop return THEN
-  rot ( sp state fn term -> sp term fn state )
-  4 overn speek 3 overn exec
-  rot 4 overn up-stack 4 set-overn
-  loop
-;
+def stack-reset
+  arg0 Stack -> base @ arg0 Stack -> size @ +
+  cell-size - arg0 Stack -> here !
+end
 
-: map-stack-seq/3 read-terminator map-stack-seq/4 ;
-: map-stack-seq/2 0 swap read-terminator map-stack-seq/4 drop ;
+def init-stack ( ptr stack-size stack -- stack )
+  arg1 arg0 Stack -> size !
+  arg2 arg0 Stack -> base !
+  arg0 stack-reset
+  arg0 3 return1-n
+end
 
-: revmap-stack-seq-loop ( ptr acc fn down-iter )
-  4 overn over equals IF return THEN
-  3 overn over speek 4 overn exec
-  3 set-overn
-  down-stack loop
-;
+def destroy-stack
+  0 arg0 Stack -> base !
+  0 arg0 Stack -> size !
+  0 arg0 Stack -> here !
+  1 return0-n
+end
 
-: revmap-stack-seq/4 ( ptr acc fn term )
-  4 overn stack-find/2
-  dup 5 overn equals UNLESS
-    down-stack revmap-stack-seq-loop
-  THEN
-  2 dropn swap drop
-;
+def stack-stack-allot ( num-bytes stack -- ptr )
+  arg0 Stack -> here @
+  arg1 cell-size pad-addr -
+  dup arg0 Stack -> base @ uint<
+  IF drop 0
+  ELSE dup arg0 Stack -> here !
+  THEN 2 return1-n
+end
 
-: revmap-stack-seq/3 read-terminator revmap-stack-seq/4 ;
+def stack-push
+  arg0 Stack -> here cell-size dec!/2
+  arg1 swap !
+  2 return0-n
+end
+
+def stack-pop
+  arg0 Stack -> here @ @
+  arg0 Stack -> here cell-size inc!/2 drop
+  1 return1-n
+end
+
+def stack-mem-info ( stack -- free used )
+  arg0 Stack -> here @ arg0 Stack -> base @ -
+  arg0 Stack -> size @ over -
+  1 return2-n
+end

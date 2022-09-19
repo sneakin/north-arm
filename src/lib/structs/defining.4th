@@ -35,7 +35,7 @@ end
 ( The last struct that was defined: )
 null var> *this-struct*
 
-( Creahes a new dictionary entry with a struct as a value. )
+( Creates a new dictionary entry with a struct as a value. )
 def create-struct
   arg1 arg0 error-line/2
   arg1 arg0 create does-const

@@ -1,6 +1,6 @@
 s[
   src/lib/bit-fields.4th
-  src/lib/stack.4th
+  src/lib/map/stack.4th
 
   src/interp/boot/cross.4th
 

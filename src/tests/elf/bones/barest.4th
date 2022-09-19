@@ -1,5 +1,5 @@
 src/bash/compiler.4th load
-src/lib/stack.4th load
+src/lib/map/stack.4th load
 src/lib/byte-data.4th load
 src/lib/asm/arm.4th load
 

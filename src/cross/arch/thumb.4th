@@ -2,7 +2,7 @@
 s[
   src/lib/case.4th
   src/lib/stack-marker.4th
-  src/lib/stack.4th
+  src/lib/map/stack.4th
   src/lib/bit-fields.4th
   src/lib/byte-data.4th
 

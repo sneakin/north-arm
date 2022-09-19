@@ -89,3 +89,21 @@ defop int-addc ( a b -- lo hi )
   r1 r0 movrr ,ins
   emit-next
 endop
+
+defop uint-sub3 ( carry a b -- lo hi )
+  0 r1 bit-set r2 bit-set popr ,ins
+  0 r4 bit-set pushr ,ins
+  ( use R3 as the hi bytes, R4 as a zero for adc )
+  0 r3 mov# ,ins
+  0 r4 mov# ,ins
+  r1 r0 r0 sub ,ins
+  r4 r3 sbc ,ins
+  r0 r2 r0 sub ,ins
+  r4 r3 sbc ,ins
+  0 r4 bit-set popr ,ins
+  0 r0 bit-set pushr ,ins
+  r3 r0 movrr ,ins
+  emit-next
+endop
+
+alias> int-sub3 uint-sub3
