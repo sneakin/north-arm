@@ -100,12 +100,12 @@ end
 
 def inc! ( place -- value+1 ) arg0 1 inc!/2 set-arg0 end
 
-def dec!/2 ( place n )
+def dec!/2 ( place n -- value-n )
   arg1 peek arg0 - dup arg1 poke
   2 return1-n
 end
 
-def dec! ( place ) arg0 1 dec!/2 set-arg0 end  
+def dec! ( place -- n-1 ) arg0 1 dec!/2 set-arg0 end  
 
 def pinc! ( place )
   arg0 peek 1 + dup arg0 poke

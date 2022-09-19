@@ -6,7 +6,7 @@
 
 true [IF] ( Read now to bake in: )
 
-: html-highlight-read-style ( path ++ style-data )
+sys:: html-highlight-read-style ( path ++ style-data )
   allot-read-file
   negative? IF
     2 dropn " /* style failed to load */"

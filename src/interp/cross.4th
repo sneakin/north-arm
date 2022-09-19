@@ -21,6 +21,7 @@ defalias> spoke-byte poke-byte
 
 ( Top level words: )
 
+alias> sys:: :
 alias> : defproper
 ( alias> :: redefproper )
 alias> var> defvar>

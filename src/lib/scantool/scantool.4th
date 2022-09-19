@@ -251,7 +251,7 @@ end
 
 tmp" BUILDER-TARGET" defined?/2 [UNLESS]
   alias> copies-entry-as> copy-as>
-  : to-out-addr cs - ;
+  sys:: to-out-addr cs - ;
 [THEN]
   
 s[ src/lib/linux/errno.4th

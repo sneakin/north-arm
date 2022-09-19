@@ -285,9 +285,15 @@ def sha256-update/4 ( byte-ptr length state n -- state )
   THEN
 end
 
+' tail+1 defined? [IF]
 def sha256-update ( byte-ptr length state -- state )
   0 ' sha256-update/4 tail+1
 end
+[ELSE]
+def sha256-update ( byte-ptr length state -- state )
+  arg2 arg1 arg0 0 sha256-update/4 arg0 3 return1-n
+end
+[THEN]
 
 ( todo be non-destructive )
 def sha256-end ( state -- state )
