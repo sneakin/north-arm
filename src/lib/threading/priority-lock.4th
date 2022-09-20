@@ -15,7 +15,7 @@ def priority-lock-wait-for/2 ( seconds lock -- true | error false )
   arg0 priority-lock-ours? or
   IF true 2 return1-n
   ELSE
-    arg1 timeout->abs-timespec arg0 PriorityLock -> hole futex-lock-pi/2
+    arg1 timeout->abs-timespec value-of arg0 PriorityLock -> hole futex-lock-pi/2
     dup 0 equals? IF
       arg0 priority-lock-ours? UNLESS drop-locals repeat-frame THEN
       true 2 return1-n

@@ -30,15 +30,8 @@ def secs->timespec
     timespec make-instance
     arg0 over timespec -> tv_sec !
     exit-frame
-  ELSE 0 set-arg0
+  ELSE 0 1 return1-n
   THEN
-end
-
-def timeout->abs-timespec
-  arg0 0 int<
-  IF 0
-  ELSE get-time-secs arg0 + secs->timespec
-  THEN 1 return1-n
 end
 
 struct: timeval
@@ -65,7 +58,7 @@ def clock-get-secs ( clock-id -- timestamp )
   0 
   timespec make-instance set-local0
   local0 value-of arg0 clock-gettime
-  local0 timespec -> tv_sec peek set-arg0
+  local0 timespec -> tv_sec peek 1 return1-n
 end
 
 def get-time-secs
@@ -84,26 +77,27 @@ def get-time-usecs
   local0 timeval -> usec 4 + uint32@ return2
 end
 
+def timeout->abs-timespec
+  arg0 0 int<
+  IF 0 1 return1-n
+  ELSE get-time-secs arg0 + secs->timespec exit-frame
+  THEN
+end
+
 def sleep
-  0
-  timespec make-instance set-local0
-  arg0 local0 timespec -> tv_sec poke
-  0 local0 timespec -> tv_nsec poke
-  0 local0 value-of nanosleep
+  arg0 secs->timespec
+  0 over value-of nanosleep
   1 return0-n
 end
 
-def sleep-until/2 ( time clock-id -- remaining )
-  0
-  timespec make-instance set-local0
-  arg1 local0 timespec -> tv_sec poke
-  0 local0 timespec -> tv_nsec poke
-  local0 value-of dup TIMER-ABSTIME arg0 clock-nanosleep
-  local0 timespec -> tv_sec peek 2 return1-n
+def sleep-until/2 ( time clock-id -- time )
+  arg1 secs->timespec
+  dup value-of dup TIMER-ABSTIME arg0 clock-nanosleep
+  over timespec -> tv_sec peek 2 return1-n
 end
 
-def sleep-until ( time -- remaining )
-  arg0 CLOCK-REALTIME sleep-until/2 set-arg0
+def sleep-until ( time -- time )
+  arg0 CLOCK-REALTIME sleep-until/2 1 return1-n
 end
 
 
@@ -136,7 +130,7 @@ def clock64-get-secs ( clock-id -- timestamp-low timestamp-high )
   timespec64 make-instance set-local0
   local0 value-of arg0 clock64-gettime
   local0 timespec64 -> tv_sec uint64@
-  swap set-arg0 return1
+  swap 1 return2-n
 end
 
 def get-time64-secs
@@ -150,9 +144,9 @@ def sleep-until-64/2 ( time-low time-high clock-id -- remaining-low remaining-hi
   0 local0 timespec -> tv_nsec poke
   local0 value-of dup TIMER-ABSTIME arg0 clock64-nanosleep
   local0 timespec -> tv_sec uint64@
-  set-arg1 set-arg2 1 return0-n
+  3 return2-n
 end
 
 def sleep-until-64 ( time-low time-high -- remaining )
-  arg1 arg0 CLOCK-REALTIME sleep-until/2 set-arg0 set-arg1
+  arg1 arg0 CLOCK-REALTIME sleep-until/2 swap 2 return2-n
 end

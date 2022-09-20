@@ -13,7 +13,7 @@ end
 
 def lock-wait-for/2 ( seconds lock -- true | error false )
   arg0 lock-locked? IF
-    arg1 secs->timespec arg0 Lock -> hole futex-wait/2
+    arg1 secs->timespec value-of arg0 Lock -> hole futex-wait/2
     dup 0 equals? IF
       arg0 Lock -> hole @ IF drop-locals repeat-frame THEN
       true 2 return1-n

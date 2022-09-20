@@ -235,12 +235,18 @@ end
 
 def thread-wait-to-start/2 ( seconds thread -- started | error false )
   arg0 Thread -> state @ THREAD-RUNNING int>= IF true 2 return1-n THEN
-  arg1 secs->timespec THREAD-STARTING arg0 Thread -> state futex-wait/3
+  arg1 secs->timespec value-of THREAD-STARTING arg0 Thread -> state futex-wait/3
   dup 0 equals? IF
     arg0 Thread -> state @ THREAD-STARTING
     int<= IF drop-locals repeat-frame THEN
     true 2 return1-n
-  ELSE false 2 return2-n
+  ELSE
+    ( futex will return EWOULDBLOCK when the value already changed.
+      check the value one more time if it has. )
+    arg0 Thread -> state @ THREAD-RUNNING int>=
+    IF true 2 return1-n
+    ELSE false 2 return2-n
+    THEN
   THEN
 end
 
@@ -252,7 +258,7 @@ def thread-join/2 ( timeout thread -- true | error false )
   arg0 Thread -> tid @
   dup 0 uint> IF
     ( watch for the tid getting zeroed )
-    arg1 secs->timespec local0 arg0 Thread -> tid futex-wait/3
+    arg1 secs->timespec value-of local0 arg0 Thread -> tid futex-wait/3
     dup 0 equals? IF
       arg0 Thread -> tid @ IF drop-locals repeat-frame THEN
       true 2 return1-n
