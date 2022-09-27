@@ -25,7 +25,7 @@ end
 
 def struct-get-field-loop ( name len fields -- field )
   arg0 null? IF 0 return1 THEN
-  arg2 arg0 car value-of struct-field-name peek arg1 byte-string-equals?/3 IF
+  arg2 arg0 car value-of struct-field-name peek arg1 1 + byte-string-equals?/3 IF
     arg0 car return1
   THEN
   arg0 cdr set-arg0 repeat-frame

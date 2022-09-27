@@ -47,13 +47,14 @@ end
 
 def print-instance-field ( field instance )
   ( todo pick printer based on field type )
-  arg1 struct-field-name peek write-string space
+  s"   " write-string/2
   arg1 struct-field-offset peek
-  dup write-uint space
-  arg0 +
-  arg1 struct-field-byte-size peek
-  dup write-uint space
-  cmemdump
+  dup write-uint s" :" write-string/2
+  arg1 struct-field-byte-size peek dup write-uint space swap
+  arg1 struct-field-type peek value-of type-name peek write-string space
+  arg1 struct-field-name peek write-string space
+  arg0 + dup peek write-uint space
+  swap cmemdump
 end
 
 def print-instance-fields-loop ( struct-fields instance-value )

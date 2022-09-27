@@ -107,3 +107,14 @@ def test-struct-manually
 
 hello
 end
+
+struct: TestNameLength
+value field: x
+value field: xy
+
+def test-struct-name-length-bug
+  TestNameLength make-instance
+  dup TestNameLength -> x
+  over TestNameLength -> xy
+  assert-not-equals
+end

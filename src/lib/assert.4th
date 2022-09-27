@@ -22,7 +22,7 @@
 ;
 
 : assert-not-equals
-  2dup equals lognot dup assert IF
+  2dup equals not dup assert IF
     2 dropn
   ELSE
     space "  == " write-binop-message nl
