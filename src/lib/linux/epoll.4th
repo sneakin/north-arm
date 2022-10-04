@@ -32,14 +32,14 @@ NORTH-PLATFORM tmp" thumb" drop contains? and [IF]
   tmp" Unsupported platform" error-line ( todo raise an error )
 [THEN]
 
-( epoll wrappers forksinglemfile descriptors: )
+( epoll wrappers for single file descriptors: )
 
 def poll-fd/3 ( events fd timeout -- ready? || err )
   0 0
   EpollEvent make-instance set-local0
   0 epoll-create1 set-local1
   ( register fd )
-  arg2 local0 EpollEvent -> event !
+  arg2 local0 EpollEvent -> events !
   arg1 local0 EpollEvent -> data1 !
   0 local0 EpollEvent -> data2 !
   local0 value-of arg1 EPOLL-CTL-ADD local1 epoll-ctl

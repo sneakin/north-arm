@@ -168,7 +168,7 @@ end
 defcol thread-init ( thread fn-arg system-return fn-to-call ++ )
   0 set-current-frame
   5 overn Thread -> ds-base @ set-ds
-  5 overn Thread -> return-stack @ Stack -> here @ return-stack !
+  5 overn Thread -> return-stack @ Stack -> base @ return-stack !
   5 overn Thread -> return-stack @ Stack -> size @ *return-stack-size* !
   5 overn *current-thread* !
   THREAD-RUNNING *current-thread* @ Thread -> state !

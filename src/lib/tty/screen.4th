@@ -154,5 +154,5 @@ def tty-screen-resized?
   tty-getsize
   arg0 TtyScreen -> width @ equals?
   swap arg0 TtyScreen -> height @ equals?
-  logand not set-arg0
+  and not set-arg0
 end
