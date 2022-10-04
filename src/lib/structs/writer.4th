@@ -21,14 +21,15 @@ end
 ( Pointer dereferencing printers: )
 
 def print-pointer-type
-  s" Type: " write-string/2
   arg0 type-of value-of type-name peek write-string space
   arg0 type-of value-of type-super peek dup IF value-of type-name peek write-string ELSE drop THEN
-  arg0 type-of value-of type-byte-size peek space write-uint nl
+  arg0 write-hex-uint s" :" write-string/2
+  arg0 type-of value-of type-byte-size peek write-uint nl
 end
   
 def print-pointer<any>
   arg0 write-hex-uint space
+  s" Type: " write-string/2
   arg0 print-pointer-type
   s" Value: " write-string/2
   arg0 value-of write-uint nl
