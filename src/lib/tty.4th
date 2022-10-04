@@ -9,4 +9,5 @@ s[
   src/lib/tty/buffer.4th
   src/lib/tty/context.4th
   src/lib/tty/screen.4th
+  src/lib/tty/reader.4th
 ] load-list
