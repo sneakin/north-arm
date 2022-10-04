@@ -28,10 +28,16 @@ def priority-lock-wait-for
   arg0 -1 set-arg0 ' priority-lock-wait-for/2 tail+1
 end
 
-def priority-lock-acquire
-  arg0 priority-lock-wait-for IF
+def priority-lock-acquire/2 ( timeout lock -- true | error false )
+  arg1 arg0 priority-lock-wait-for/2 IF
     cached-gettid arg0 PriorityLock -> hole !
-  THEN 1 return0-n
+    true 2 return1-n
+  ELSE false 2 return2-n
+  THEN
+end
+
+def priority-lock-acquire
+  arg0 -1 set-arg0 ' priority-lock-acquire/2 tail+1
 end
 
 def priority-lock-release

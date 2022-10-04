@@ -28,10 +28,16 @@ def lock-wait-for ( lock -- true | error false )
   arg0 -1 set-arg0 ' lock-wait-for/2 tail+1
 end
 
-def lock-acquire ( lock -- )
-  arg0 lock-wait-for IF
+def lock-acquire/2 ( timeout lock -- true | error false )
+  arg1 arg0 lock-wait-for/2 IF
     cached-gettid arg0 Lock -> hole !
-  THEN 1 return0-n
+    true 2 return1-n
+  ELSE 2 return2-n
+  THEN
+end
+
+def lock-acquire ( lock -- )
+  -1 arg0 lock-acquire/2 1 return0-n
 end
 
 def lock-release ( lock -- )
