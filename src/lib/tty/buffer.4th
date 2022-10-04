@@ -15,11 +15,11 @@ end
 struct: TtyBuffer
 int field: width
 int field: height
-( todo mem width & height )
+( todo mem width & height & explicit pitch )
 pointer<any> field: cells
 
 def make-tty-buffer-mem ( rows cols buffer ++ TtyBuffer )
-  arg2 arg1 * TtyCell struct -> byte-size @ * cell-size + stack-allot-zero arg0 TtyBuffer -> cells !
+  arg2 arg1 * TtyCell sizeof * stack-allot-zero arg0 TtyBuffer -> cells !
   arg1 arg0 TtyBuffer -> width !
   arg2 arg0 TtyBuffer -> height !
   arg0 exit-frame
@@ -33,7 +33,7 @@ end
 
 def tty-buffer-pitch ( buffer -- pitch )
   arg0 TtyBuffer -> width @
-  TtyCell struct -> byte-size @ * set-arg0
+  TtyCell sizeof * set-arg0
 end
 
 def tty-buffer-draw-row ( cells width pen-state -- )

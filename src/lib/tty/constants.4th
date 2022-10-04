@@ -4,6 +4,7 @@
 0x3 const> TTY-CELL-BRIGHTNESS
 0xFC const> TTY-CELL-ATTRS
 
+( todo separate bright and bold? )
 0x0 const> TTY-CELL-NORMAL
 0x1 const> TTY-CELL-DIM
 0x2 const> TTY-CELL-BRIGHT

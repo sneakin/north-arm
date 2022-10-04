@@ -124,9 +124,7 @@ end
 
 def reader-read-until ( ptr max-length fn reader -- ptr bytes-read last-byte )
   arg3 arg2 arg1 arg0 int32 0 reader-read-until/5
-  set-arg1 set-arg2
-  drop-locals end-frame
-  drop swap drop exit
+  set-arg1 set-arg2 1 return0-n
 end
 
 def reader-next-token ( ptr max-length reader -- ptr length last-byte )
@@ -140,6 +138,13 @@ def reader-next-token ( ptr max-length reader -- ptr length last-byte )
   set-arg0
   2dup null-terminate
   set-arg1
+end
+
+def reader-skip-token ( reader -- ok? )
+  128 stack-allot
+  128 arg0 reader-next-token
+  negative? IF 1 return1-n THEN
+  true 1 return1-n
 end
 
 def reader-skip-tokens-until/4 ( ptr size fn reader )

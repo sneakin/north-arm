@@ -1,0 +1,307 @@
+;; todo whole buffer format
+
+(defconst TTY-IMG-VERSION "1.0")
+
+(defun string->plist (str &optional acc start)
+  "Convert a string of 'key=value' pairs into a plist. Keys without '=value' are also supported."
+  (while (< (or start 0) (length str))
+    (let* ((kv (string-match "\\([-_a-zA-Z]+\\)\\(=\\([^ \t\n]*\\)\\)?[ \t\n]?" str (or start 0))))
+      (if kv
+	  (progn
+	    (setf acc (cl-list* (intern (match-string 1 str))
+			     (match-string 3 str)
+			     acc))
+	    (setf start (match-end 0)))
+	(setf start (length str)))))
+  acc)
+
+(defconst tty-cell-base-size 6)
+(defvar-local tty-cell-padding 2) ;; bytes
+(defun tty-cell-size () (+ tty-cell-base-size tty-cell-padding))
+
+(defconst color-names
+  '("black" 
+    "red"
+    "green"
+    "yellow"
+    "blue"
+    "magenta"
+    "cyan"
+    "white"
+    "brightblack" 
+    "brightred"
+    "brightgreen"
+    "brightyellow"
+    "brightblue"
+    "brightmagenta"
+    "brightcyan"
+    "brightwhite"
+    ))
+
+(defun color->tty-color (str &optional last)
+  (or (cl-position str color-names :test #'string-equal) (or last 7)))
+
+(defun tty-color-name (n)
+  (elt color-names (logand n #x7)))
+
+(defun get-face-prop (prop face)
+  (let ((item (cl-find-if
+	       #'(lambda (p)
+		   (unless (atom p)
+		     (equal prop (if (atom (cl-first p))
+				     (cl-first p)
+				   (cl-first (cl-first p))))))
+	       face)))
+    (if (atom (cl-first item))
+	(cl-second item)
+      (cl-second (car item)))))
+
+(defun get-face-attrs (face)
+  (if (facep face)
+      (list (if (face-bold-p face) :bold)
+	    (if (face-italic-p face) :italic)
+	    (if (face-underline-p face) :underline)
+	    (if (face-inverse-video-p face) :inverse))
+    (list (if (cl-position 'bold face) :bold)
+	  (if (cl-position 'italic face) :italic)
+	  (if (cl-position 'underline face) :underline)
+	  (if (cl-position 'inverse-video face) :inverse)
+	  (if (cl-position 'invisible face) :invisible))))
+
+(defun face-attr-list->attr-byte (lst)
+  (logior (if (cl-position :dim lst) #x1 0)
+	  (if (cl-position :bright lst) #x2 0)
+	  (if (cl-position :bold lst) #x2 0)
+	  (if (cl-position :italic lst) #x10 0)
+	  (if (cl-position :underline lst) #x20 0)
+	  (if (cl-position :inverse lst) #x4 0)
+	  (if (cl-position :invisible lst) #x3 0)))
+
+(defun translate-to-tty (str &optional acc last-fg last-bg)
+  (dotimes (n (length str))
+    (let* ((face (get-text-property n 'face str))
+	   (fga (if (facep face)
+		    (face-foreground face)
+		  (or (get-face-prop :foreground face)
+		      "white")))
+	   (fg (color->tty-color fga last-fg))
+	   (bga (if (facep face)
+		    (face-background face)
+		  (or (get-face-prop :background face) "black")))
+	   (bg (color->tty-color bga (or last-bg 0)))
+	   (attrs (get-face-attrs face))
+	   (ch (aref str n)))
+      (unless (equal ch #xA)
+	(setf acc 
+	      (cons (list ch
+			  (logior (ash (logand fg #x7) 4)
+				  (logand bg #x7))
+			  (face-attr-list->attr-byte
+			   (cons (unless (< 0 (logand fg #x8)) :dim)
+				 attrs))
+			  fg bg attrs)
+		    acc))
+	(setf last-fg fg)
+	(setf last-bg bg))))
+  (nreverse acc))
+
+(defun pack-int32 (n)
+  (list (logand n #xFF)
+	(logand (ash n -8) #xFF)
+	(logand (ash n -16) #xFF)
+	(logand (ash n -24) #xFF)))
+
+(defun unpack-int32 (bytes)
+  (logior (elt bytes 0)
+	  (ash (elt bytes 1) 8)
+	  (ash (elt bytes 2) 16)
+	  (ash (elt bytes 3) 24)))
+
+(defun pack-byte (b) (logand b #xFF))
+(defun unpack-byte (b) (elt b 0))
+
+(defun tty-data->bytes (data-list)
+  (flatten-list
+   (mapcar #'(lambda (c)
+	       (list (pack-int32 (cl-first c))
+		     (pack-byte (cl-second c))
+		     (pack-byte (cl-third c))
+		     (make-list tty-cell-padding 0)))
+	   data-list)))
+
+(defun bytes->tty-data (bytes &optional acc)
+  (while (and bytes (<= 6 (length bytes)))
+      (let ((c (cl-subseq bytes 0 4))
+	    (color (unpack-byte (cl-subseq bytes 4 5)))
+	    (attr (unpack-byte (cl-subseq bytes 5 6)))
+	    (padding (cl-subseq bytes 6 (+ 6 tty-cell-padding))))
+	(setf bytes (cl-subseq bytes (+ 6 tty-cell-padding)))
+	(setf acc (cons (list c color attr padding) acc))
+	))
+  (nreverse acc))
+  
+(defun tty-attrs->list (attrs)
+  (cl-delete-if #'null
+	     (list (if (< 0 (logand 2 attrs)) 'bold)
+		   (if (< 0 (logand #x10 attrs)) 'italic)
+		   (if (< 0 (logand #x20 attrs)) 'underline)
+		   (if (< 0 (logand #x40 attrs)) 'strike))))
+
+
+(defun insert-tty-data-cell (cell n width)
+  (if (and width (< 0 n) (= (% n width) 0)) (insert "\n"))
+  (let* ((pt (point))
+	(attrs (tty-attrs->list (cl-third cell)))
+	(fg (tty-color-name (logand 7 (ash (cl-second cell) -4))))
+	(bg (tty-color-name (logand 7 (cl-second cell))))
+	(props `((:foreground ,(if (< 0 (logand 1 (cl-third cell)))
+				   fg
+				   (concat "bright" fg)))
+		 (:background ,bg)
+		 ,@attrs)))
+    (insert (unpack-int32 (cl-first cell)))
+    (put-text-property pt (+ 1 pt) 'face props)))
+
+(defun insert-tty-data (data &optional width)
+  (toggle-enable-multibyte-characters 1)
+  (seq-map-indexed #'(lambda (e n) (insert-tty-data-cell e n width))
+		   data)
+  (toggle-enable-multibyte-characters -1))
+
+(defun write-tty-data-to-buffer (data-list)
+  ;;(with-temp-buffer
+    ;;(toggle-enable-multibyte-characters)
+    ;;(set-buffer-file-coding-system 'raw-text)
+  (apply #'insert 
+	 (tty-data->bytes data-list))
+    ;;(write-region nil nil "~/char-inserted.wav")
+  ;;  )
+  )
+
+(defun translate-region-to-tty (&optional start end)
+  (translate-to-tty
+   (buffer-substring (or start (region-beginning))
+		     (or end (region-end)))))
+
+(defun yank-region-to-tty (&optional start end)
+  (let ((data (translate-to-tty
+	       (buffer-substring (or start (region-beginning))
+				 (or end (region-end))))))
+    (with-temp-buffer
+      (toggle-enable-multibyte-characters)
+      (set-buffer-file-coding-system 'raw-text)
+      (write-tty-data-to-buffer data)
+      (kill-region 1 (buffer-size)))))
+
+;; find the next tty-img
+;; line by line
+;;   read convert to tty data, write out
+;;   stop on the line starting with ']'
+
+(defun process-buffer-tty-image (&optional start end)
+  (goto-char (or start 1))
+  (let* ((img-start (search-forward-regexp "\\([0-9]+\\) +\\([0-9]+\\) +tty-img\\[[ \t\n]" end t))
+	 (decl-s (match-beginning 0))
+	 (decl (match-end 0))
+	 (height (match-string 1))
+	 (width (match-string 2)))
+    (if img-start
+	(progn
+	  (let* ((img-end (search-forward-regexp "[ \t\n]\\]" end t))
+		 (img-end-s (match-beginning 0))
+		 (img-end-e (match-end 0))
+		 (data (tty-data->bytes (translate-to-tty (buffer-substring decl img-end-s)))))
+	    (if img-end
+		(progn
+		  (goto-char decl)
+		  (delete-region decl img-end-s)
+		  (toggle-enable-multibyte-characters -1)
+		  (apply #'insert data)
+		  (toggle-enable-multibyte-characters 1)
+		  (cl-values (point) (point-max)))
+	      (cl-values nil))))
+      (progn
+	(cl-values nil)))))
+
+(defun process-buffer-tty-images (&optional start end)
+  (cl-multiple-value-bind (new-start new-end)
+      (process-buffer-tty-image start end)
+    (if new-start
+	(process-buffer-tty-images new-start
+				   new-end)
+      start)))
+
+(defun unprocess-buffer-tty-image (&optional start end)
+  (goto-char (or start 1))
+  (let* ((img-start (search-forward-regexp "\\([0-9]+\\) +\\([0-9]+\\) +tty-img\\[[ \t\n]" end t))
+	 (decl-s (match-beginning 0))
+	 (decl-e (match-end 0))
+	 (height (match-string 1))
+	 (width (match-string 2)))
+    (if img-start
+	(progn
+	  (let* ((img-end (search-forward-regexp "[ \t\n]\\]" end t))
+		 (img-end-s (match-beginning 0))
+		 (img-end-e (match-end 0))
+		 (data nil))
+	    (if img-end
+		(progn
+		  (setf data (bytes->tty-data (string-to-list (buffer-substring decl-e img-end-s))))
+		  (goto-char decl-e)
+		  (delete-region decl-e img-end-s)
+		  (insert-tty-data data (string-to-number width))
+		  (cl-values (point)))
+	      (progn
+		(cl-values end)))))
+      (progn
+	(cl-values nil)))))
+
+(defun unprocess-buffer-tty-images-loop (&optional start end)
+  (cl-multiple-value-bind (new-start)
+      (unprocess-buffer-tty-image start end)
+    (if new-start
+	(unprocess-buffer-tty-images-loop new-start
+				   end)
+      start)))
+
+(defun unprocess-buffer-tty-images (&optional start end)
+  (unprocess-buffer-tty-images-loop start end))
+
+(defconst tty-img-content-regexp
+  "([ \t\r\n]+Content-[Tt]ype: +\\(text/plain[+]\\|application/\\)north\\(.*\\)[ \t\r\n]+)\n?")
+
+(defun from-tty-image (beginning end)
+  (let* ((m (search-forward-regexp tty-img-content-regexp end t))
+	 (line (match-string 2))
+	 (kv (string->plist line))
+	 (cell-size  (plist-get kv 'cellsize)))
+    (if cell-size (setf tty-cell-padding (- (string-to-number cell-size) tty-cell-base-size)))
+    (message "Tty Image params: %s %s %i" kv cell-size (tty-cell-size)))
+  (replace-regexp tty-img-content-regexp "" nil beginning end)
+  (toggle-enable-multibyte-characters -1)
+  (unprocess-buffer-tty-images beginning end)
+  (toggle-enable-multibyte-characters 1)
+  (point-max))
+(defun to-tty-image (beginning end buffer)
+  (enriched-mode 0)
+  (setf tty-cell-padding (buffer-local-value 'tty-cell-padding buffer))
+  (message "Writing %i byte cells" (tty-cell-size))
+  (process-buffer-tty-images beginning end)
+  (goto-char 1)
+  (insert (format "( Content-Type: application/north; version=%s cellsize=%i )\n" TTY-IMG-VERSION (tty-cell-size)))
+  (point-max))
+
+(defun tty-image-mode (turn-on)
+  ;; todo ensure the format is set to save
+  (interactive))
+
+(unless (cl-find 'north-tty-image format-alist
+	      :key #'cl-first)
+  (push (list 'north-tty-image
+	      "tty-img blocks of UTF-32 + color, attributes"
+	      tty-img-content-regexp
+	      #'from-tty-image
+	      #'to-tty-image
+	      #'tty-image-mode
+	      nil)
+	format-alist))

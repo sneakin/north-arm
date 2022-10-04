@@ -1,7 +1,8 @@
 struct: TtyCell
-uint<32> field: char ( todo needs to hold unicode characters )
+uint<32> field: char
 uint<8> field: color ( bump to rgb? )
 uint<8> field: attr
+uint<16> field: padding
 
 def tty-cell-equals? ( a b -- yes? )
   arg1 TtyCell . char peek-byte
