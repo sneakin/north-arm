@@ -1,0 +1,371 @@
+Content-Type: text/enriched
+Text-Width: 70
+
+(
+
+paint: big and small, square and round brushes that can fill char, fg, bg, and/or attr.
+
+
+<x-color><param>brightcyan</param>👨 Man
+
+</x-color>)
+
+
+13 19 tty-img[
+ <x-color><param>chocolate1</param><x-color><param>black</param>░▒▓█▄▌▐▀</x-color></x-color><x-color><param>black</param> </x-color><x-color><param>brightblack</param> ░▒▓█▄▌▐▀</x-color><x-color><param>black</param>
+
+</x-color><x-color><param>white</param> </x-color><x-color><param>red</param>░▒▓█▄▌▐▀</x-color><x-color><param>brightred</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>white</param>
+
+</x-color><x-color><param>yellow</param> ░▒▓█▄▌▐▀</x-color><x-color><param>brightyellow</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>red</param>
+
+</x-color><x-color><param>green</param> ░▒▓█▄▌▐▀</x-color><x-color><param>brightgreen</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>yellow</param>
+
+</x-color><x-color><param>cyan</param> ░▒▓█▄▌▐▀</x-color><x-color><param>brightcyan</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>green</param>
+
+</x-color><x-color><param>blue</param> ░▒▓█▄▌▐▀</x-color><x-color><param>brightblue</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>cyan</param>
+
+</x-color><x-color><param>magenta</param> ░▒▓█▄▌▐▀</x-color><x-color><param>brightmagenta</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>cyan</param>
+
+</x-color><x-color><param>white</param> ░▒▓█▄▌▐▀</x-color><x-color><param>brightwhite</param>  ░▒▓█▄▌▐▀</x-color><x-color><param>magenta</param>
+
+</x-color><x-bg-color><param>yellow</param><x-color><param>red</param> ░▒▓█▄▌▐▀  ░▒▓█▄▌▐▀
+
+</x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>yellow</param> ░▒▓█▄▌▐▀  ░▒▓█▄▌▐▀
+
+</x-color></x-bg-color><x-bg-color><param>green</param><x-color><param>red</param> ░▒▓█▄▌▐▀  ░▒▓█▄▌▐▀</x-color></x-bg-color><x-color><param>red</param><x-bg-color><param>yellow</param>
+
+</x-bg-color></x-color><x-bg-color><param>red</param><x-color><param>green</param> ░▒▓█▄▌▐▀  ░▒▓█▄▌▐▀
+
+</x-color></x-bg-color><bold><x-bg-color><param>color-20</param><x-color><param>brightcyan</param> Hello
+
+</x-color></x-bg-color></bold>] const> palette
+
+
+41 16 tty-img[
+─ ━ │ ┃ ┄ ┅ ┆ ┇ 
+┈ ┉ ┊ ┋ ┌ ┍ ┎ ┏ 
+┐ ┑ ┒ ┓ └ ┕ ┖ ┗ 
+┘ ┙ ┚ ┛ ├ ┝ ┞ ┟ 
+┠ ┡ ┢ ┣ ┤ ┥ ┦ ┧ 
+┨ ┩ ┪ ┫ ┬ ┭ ┮ ┯ 
+┰ ┱ ┲ ┳ ┴ ┵ ┶ ┷ 
+┸ ┹ ┺ ┻ ┼ ┽ ┾ ┿ 
+╀ ╁ ╂ ╃ ╄ ╅ ╆ ╇ 
+╈ ╉ ╊ ╋ ╌ ╍ ╎ ╏ 
+═ ║ ╒ ╓ ╔ ╕ ╖ ╗ 
+╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ 
+╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ 
+╨ ╩ ╪ ╫ ╬ ╭ ╮ ╯ 
+╰ ╱ ╲ ╳ ╴ ╵ ╶ ╷ 
+╸ ╹ ╺ ╻ ╼ ╽ ╾ ╿ 
+▀ ▁ ▂ ▃ ▄ ▅ ▆ ▇ 
+█ ▉ ▊ ▋ ▌ ▍ ▎ ▏ 
+▐ ░ ▒ ▓ ▔ ▕ ▖ ▗ 
+▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟ 
+■ □ ▢ ▣ ▤ ▥ ▦ ▧ 
+▨ ▩ ▪ ▫ ▬ ▭ ▮ ▯ 
+▰ ▱ ▲ △ ▴ ▵ ▶ ▷ 
+▸ ▹ ► ▻ ▼ ▽ ▾ ▿ 
+◀ ◁ ◂ ◃ ◄ ◅ ◆ ◇ 
+◈ ◉ ◊ ○ ◌ ◍ ◎ ● 
+◐ ◑ ◒ ◓ ◔ ◕ ◖ ◗ 
+◘ ◙ ◚ ◛ ◜ ◝ ◞ ◟ 
+◠ ◡ ◢ ◣ ◤ ◥ ◦ ◧ 
+◨ ◩ ◪ ◫ ◬ ◭ ◮ ◯ 
+◰ ◱ ◲ ◳ ◴ ◵ ◶ ◷ 
+◸ ◹ ◺ ◻ ◼ ◽ ◾ ◿ 
+☀ ☁ ☂ ☃ ☄ ★ ☆ ☇ 
+☈ ☉ ☊ ☋ ☌ ☍ ☎ ☏ 
+☐ ☑ ☒ ☓ ☔ ☕ ☖ ☗ 
+☘ ☙ ☚ ☛ ☜ ☝ ☞ ☟ 
+☠ ☡ ☢ ☣ ☤ ☥ ☦ ☧ 
+☨ ☩ ☪ ☫ ☬ ☭ ☮ ☯ 
+☰ ☱ ☲ ☳ ☴ ☵ ☶ ☷ 
+] const> ding-bats
+
+
+8 16 tty-img[
+<x-bg-color><param>black</param><x-color><param>brightblack</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>red</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-bg-color>
+] const> tech-col-red ( Tech Columns Red Light on off )
+
+
+8 16 tty-img[
+<x-color><param>chocolate1</param><x-color><param>yellow</param>░▒▓██▓▒░</x-color><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>red</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-color><x-color><param>red</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>red</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-color><x-color><param>red</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+░▒▓██▓▒░░▒▓██▓▒░
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>░▒▓██▓▒░░▒▓██▓▒░</x-color></x-color><x-color><param>white</param>
+
+] const> tech-col-red-red ( </x-color>Tech Columns Red Light on off )
+
+
+8 8 tty-img[
+
+<x-color><param>chocolate1</param><x-color><param>yellow</param>░▒▓██▓▒░</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>red</param>░▒▓██▓▒░</x-color></x-color><x-color><param>red</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>green</param>░▒▓██▓▒░</x-color></x-color><x-color><param>green</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+░▒▓██▓▒░
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>░▒▓██▓▒░</x-color></x-color><x-color><param>white</param>
+
+] const> tech-col-red-green ( </x-color>Tech Column Red/Green light on )
+
+
+8 8 tty-img[
+
+<x-color><param>chocolate1</param><x-color><param>yellow</param>░▒▓██▓▒░</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>cyan</param>░▒▓██▓▒░</x-color></x-color><x-color><param>cyan</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>magenta</param>░▒▓██▓▒░</x-color></x-color><x-color><param>magenta</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>blue</param>░▒▓██▓▒░</x-color></x-color><x-color><param>blue</param>
+
+░▒▓██▓▒░
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>░▒▓██▓▒░</x-color></x-color><x-color><param>white</param>
+
+] const> tech-col-cyan-mag</x-color> ( Tech Column Cyan/magenta light on )
+
+
+16 16 tty-img[
+
+<x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒████▒▒▒▒████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████▒▒▒▒████▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color>] const> checkered ( Checkered )
+
+
+16 16 tty-img[
+
+<x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>████████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color>] const> white-wall ( White )
+
+
+16 16 tty-img[
+
+<x-color><param>chocolate1</param><x-color><param>white</param>▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color><x-color><param>chocolate1</param><x-color><param>white</param>▒███████████████</x-color></x-color><x-color><param>brightred</param>
+
+</x-color>] const> white-panel ( White Panel )
+
+
+16 18 tty-img[
+
+ <x-bg-color><param>black</param><x-color><param>white</param>                </x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>green</param>▒</x-color></x-bg-color>
+<x-bg-color><param>red</param><x-color><param>green</param>▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param>       </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param>     </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color></x-color><x-bg-color><param>black</param><x-color><param>white</param> </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>green</param> </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param>       </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param>     </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>green</param>  </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color></x-color>
+<x-bg-color><param>red</param><x-color><param>green</param>▒▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color></x-color><x-bg-color><param>black</param><x-color><param>white</param> </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>green</param> </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒▒▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒▒</x-bg-color><x-bg-color><param>black</param>   </x-bg-color><x-bg-color><param>red</param>▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>green</param>   </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒▒▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>green</param>     </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒▒▒▒</x-bg-color><x-bg-color><param>black</param>  </x-bg-color><x-bg-color><param>red</param>▒▒▒▒</x-bg-color><x-bg-color><param>black</param>   </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>green</param>       </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param>   </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param>    </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>green</param>        </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param> </x-bg-color><x-bg-color><param>red</param>▒▒</x-bg-color><x-bg-color><param>black</param>     </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>green</param>         </x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>red</param>▒▒▒</x-bg-color><x-bg-color><param>black</param>      </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          </x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>green</param>▒▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param>      </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          </x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>green</param>▒▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param>      </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          </x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>green</param>▒▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param>      </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          </x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>green</param>▒▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param>      </x-bg-color></x-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          </x-color></x-bg-color><x-bg-color><param>red</param><x-color><param>green</param>▒▒</x-color></x-bg-color><x-color><param>green</param><x-bg-color><param>black</param>      </x-bg-color></x-color>
+] const> dead-tree ( Dead Tree )
+
+
+21 32 tty-img[
+<x-bg-color><param>black</param><x-color><param>white</param>           ████                 </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ████████               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ██ ██ ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ████████               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ███  ███               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>           ████                 </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>            ██                  </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>        █████████               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>       ██   ██  ██              </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>      ██    ██   ██             </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     ██     ██    ██            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     ██    ████   ██            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     ██  ██    ██ ██            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     █  ██     ██  █            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>        ██     ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>        ██     ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ██    ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          ██   ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>           ██  ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>           ██   ██              </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>                 ██             </x-color></x-bg-color>
+] const> skeleton ( Skeleton )
+
+
+21 32 tty-img[
+<x-bg-color><param>black</param><x-color><param>white</param>           ████                 </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ████████               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ██ ██ ██               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ████████               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         ███  ███               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>           ████                 </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>            ██                  </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>        </x-color><x-color><param>red</param>█████████</x-color><x-color><param>white</param>               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>       </x-color><x-color><param>red</param>███████████</x-color><x-color><param>white</param>              </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>      </x-color><x-color><param>red</param>██</x-color><x-color><param>white</param>  </x-color><x-color><param>red</param>██████</x-color><x-color><param>white</param> </x-color><x-color><param>red</param>██</x-color><x-color><param>white</param>             </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     </x-color><x-color><param>red</param>██</x-color><x-color><param>white</param>    </x-color><x-color><param>red</param>████</x-color><x-color><param>white</param>   </x-color><x-color><param>red</param>██</x-color><x-color><param>white</param>            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     </x-color><x-color><param>red</param>██</x-color><x-color><param>white</param>    </x-color><x-color><param>blue</param>████</x-color><x-color><param>white</param>   </x-color><x-color><param>red</param>██</x-color><x-color><param>white</param>            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     ██  </x-color><x-color><param>blue</param>███</x-color><x-color><param>white</param>  </x-color><x-color><param>blue</param>███</x-color><x-color><param>white</param> ██            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>     █  </x-color><x-color><param>blue</param>███</x-color><x-color><param>white</param>    </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>  █            </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>        </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>     </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>        </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>     </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>         </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>    </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>          </x-color><x-color><param>yellow</param>██</x-color><x-color><param>white</param>   </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>           </x-color><x-color><param>yellow</param>██</x-color><x-color><param>white</param>  </x-color><x-color><param>blue</param>██</x-color><x-color><param>white</param>               </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>           </x-color><x-color><param>yellow</param>██</x-color><x-color><param>white</param>   </x-color><x-color><param>yellow</param>██</x-color><x-color><param>white</param>              </x-color></x-bg-color>
+<x-bg-color><param>black</param><x-color><param>white</param>                 </x-color><x-color><param>yellow</param>██</x-color><x-color><param>white</param>             </x-color></x-bg-color>
+] const> guy ( A guy )
+
+
+13 14 tty-img[
+    ██        
+   ████   ██  
+   ████  ██   
+    ██  ██    
+    ██████████
+    ██        
+    ██        
+   ████       
+   ██ ██      
+   ██  ██     
+    ██  ██    
+    ██ ██     
+    ████      
+] const> fighter
+
+
+7 7 tty-img[
+  █    
+ ██ █  
+  █████
+  █    
+ █ █   
+  █ █  
+  ██   
+] const> small-fighter
+
+
+3 28 tty-img[
+<x-bg-color><param>blue</param><x-color><param>black</param>║</x-color> <x-color><param>brightyellow</param><bold>                         </bold></x-color><x-color><param>black</param>║</x-color><x-color><param>brightyellow</param><bold>
+</bold></x-color><x-color><param>black</param>║</x-color> <x-color><param>brightyellow</param><bold> A message on the wall.  </bold></x-color><x-color><param>black</param>║</x-color><x-color><param>brightyellow</param><bold>
+</bold></x-color><x-color><param>black</param>║</x-color> <x-color><param>brightyellow</param><bold>                         </bold></x-color><x-color><param>black</param>║</x-color><x-color><param>brightyellow</param><bold>
+</bold></x-color></x-bg-color>] const> wall-message
+
+
+skeleton tty-buffer-draw nl
+
