@@ -3,7 +3,7 @@
 r4 const> fp
 r5 const> dict-reg
 r6 const> cs-reg
-r7 const> eip
+r7 const> eip ( todo suffix with reg? )
 r8 const> data-reg
 
 ( target-thumb2? )

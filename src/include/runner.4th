@@ -26,6 +26,7 @@ s[
 s[ src/runner/thumb/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames.4th
+   src/runner/thumb/constants.4th
    src/runner/constants.4th
    src/runner/thumb/copiers.4th
    src/runner/cells.4th
