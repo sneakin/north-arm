@@ -92,6 +92,16 @@ def tty-buffer-get-cell ( row col buffer ++ cell )
   THEN 3 return1-n
 end
 
+def tty-buffer-set-cell/4 ( cell row col buffer -- )
+  arg2 arg1 arg0 tty-buffer-clips? UNLESS
+    arg0 TtyBuffer -> cells @
+    arg2 arg0 tty-buffer-pitch * + arg1 TtyCell struct -> byte-size @ * +
+    arg3 TtyCell . char @ over TtyCell . char !
+    arg3 TtyCell . color peek-byte over TtyCell . color poke-byte
+    arg3 TtyCell . attr peek-byte over TtyCell . attr poke-byte
+  THEN 4 return0-n
+end
+
 def tty-buffer-set-cell ( char color attr row col buffer -- )
   arg2 arg1 arg0 tty-buffer-clips? UNLESS
     arg0 TtyBuffer -> cells @
@@ -204,4 +214,20 @@ end
 def tty-buffer-fill-rect ( char color attr y x h w buffer -- )
   7 argn 6 argn 5 argn 4 argn arg3 arg2 arg1 arg0 0 tty-buffer-fill-rect-loop
   8 return0-n
+end
+
+def tty-buffer-blit/10 ( src sy sx sh sw dest dy dx y x -- )
+  arg0 5 argn int>= IF arg1 1 + set-arg1 0 set-arg0 THEN
+  arg1 6 argn int>= IF 10 return0-n THEN
+  8 argn arg1 +
+  7 argn arg0 +
+  9 argn tty-buffer-get-cell
+  dup TtyCell . attr @ TTY-CELL-ATTR-MASKED logand IF
+    drop
+  ELSE
+    arg3 arg1 +
+    arg2 arg0 +
+    4 argn tty-buffer-set-cell/4
+  THEN
+  arg0 1 + set-arg0 repeat-frame
 end

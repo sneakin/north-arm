@@ -17,6 +17,8 @@ def make-tty-context
   exit-frame
 end
 
+( todo clipping )
+
 def tty-context-width
   arg0 TtyContext -> buffer @ TtyBuffer -> width @ set-arg0
 end
@@ -96,6 +98,27 @@ def tty-context-write-string/3 ( str n context -- )
   3 return0-n
 end
 
+def tty-context-write-int
+  36 stack-allot
+  arg1 over output-base @ int->string/3
+  arg0 tty-context-write-string/3
+  2 return0-n
+end
+
+def tty-context-write-hex-uint
+  36 stack-allot
+  arg1 over 16 16 uint->string/4
+  arg0 tty-context-write-string/3
+  2 return0-n
+end
+
+def tty-context-write-uint
+  36 stack-allot
+  arg1 over output-base @ uint->string/3
+  arg0 tty-context-write-string/3
+  2 return0-n
+end
+
 def tty-context-fill-rect ( h w context -- )
   arg0 TtyContext -> char @
   arg0 TtyContext -> color peek-byte
@@ -144,4 +167,23 @@ def tty-context-ellipse ( y1 x1 context -- )
   arg0 tty-context-get-pos arg2 arg1 arg0 TtyContext -> buffer @ tty-buffer-ellipse
   arg2 arg1 arg0 tty-context-move-to
   3 return0-n
+end
+
+def tty-context-blit/6 ( src sy sx sh sw context -- )
+  5 argn 4 argn arg3 arg2 arg1
+  arg0 TtyContext -> buffer @
+  arg0 TtyContext -> y @
+  arg0 TtyContext -> x @
+  0 0
+  tty-buffer-blit/10
+  0 arg3 arg0 tty-context-move-by
+  6 return0-n
+end
+
+def tty-context-blit/2 ( src context -- )
+  arg1 0 0
+  arg1 TtyBuffer -> height @
+  arg1 TtyBuffer -> width @
+  arg0 tty-context-blit/6
+  2 return0-n
 end

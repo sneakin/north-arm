@@ -37,7 +37,7 @@ def mailbox-push
   arg0 -1 set-arg0 ' mailbox-push/3 tail+1
 end
 
-def mailbox-pop/2 ( tiweout mailbox -- msg true | error false )
+def mailbox-pop/2 ( timeout mailbox -- msg true | error false )
   arg1 arg0 Mailbox -> queue @ ring-buffer-wait-for-msg/2 IF
     arg0 Mailbox -> read-lock @ priority-lock-acquire
     arg0 Mailbox -> queue @ ring-buffer-pop

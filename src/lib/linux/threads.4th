@@ -155,7 +155,6 @@ CLONE_SYSVSEM logior
 CLONE_CHILD_SETTID logior
 CLONE_CHILD_CLEARTID logior
 ( CLONE_SETTLS logior
- CLONE_CHILD_CLEARTID logior
  CLONE_DETACHED logior )
 const> THREAD-FLAGS
 
@@ -234,20 +233,9 @@ def thread-alive? ( thread -- yes? )
 end
 
 def thread-wait-to-start/2 ( seconds thread -- started | error false )
-  arg0 Thread -> state @ THREAD-RUNNING int>= IF true 2 return1-n THEN
-  arg1 secs->timespec value-of THREAD-STARTING arg0 Thread -> state futex-wait/3
-  dup 0 equals? IF
-    arg0 Thread -> state @ THREAD-STARTING
-    int<= IF drop-locals repeat-frame THEN
-    true 2 return1-n
-  ELSE
-    ( futex will return EWOULDBLOCK when the value already changed.
-      check the value one more time if it has. )
-    arg0 Thread -> state @ THREAD-RUNNING int>=
-    IF true 2 return1-n
-    ELSE false 2 return2-n
-    THEN
-  THEN
+  ' int>= THREAD-RUNNING partial-first
+  arg1 arg0 Thread -> state futex-wait-for-fun/3
+  IF true 2 return1-n ELSE false 2 return2-n THEN
 end
 
 def thread-wait-to-start
@@ -258,17 +246,15 @@ def thread-join/2 ( timeout thread -- true | error false )
   arg0 Thread -> tid @
   dup 0 uint> IF
     ( watch for the tid getting zeroed )
-    arg1 secs->timespec value-of local0 arg0 Thread -> tid futex-wait/3
-    dup 0 equals? IF
-      arg0 Thread -> tid @ IF drop-locals repeat-frame THEN
-      true 2 return1-n
-    THEN
+    arg1 0 arg0 Thread -> tid futex-wait-for-equals/3
+    IF true 2 return1-n THEN
   ELSE
     ( never started so wait for start )
     arg0 Thread -> state @ THREAD-RUNNING int< IF
       arg1 arg0 thread-wait-to-start/2 IF
 	drop-locals repeat-frame
       THEN
+    ELSE EAGAIN negate
     THEN
   THEN false 2 return2-n
 end

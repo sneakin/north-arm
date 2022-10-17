@@ -1,5 +1,7 @@
 ( Pixel buffers for a TTY screen with drawing optimized to only change state and write characters when changes have been made. )
 
+( todo cursor state, scroll region, scrolling, etc. )
+
 struct: TtyScreen
 int field: width
 int field: height

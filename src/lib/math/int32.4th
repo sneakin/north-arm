@@ -1,7 +1,13 @@
 ' defvar> [IF]
   10 defvar> int32-precision
+  0x7FFFFFFF defconst> INT32-MAX
+  -0x7FFFFFFF defconst> INT32-MIN
+  0xFFFFFFFF defconst> UINT32-MAX
 [ELSE]
   10 var> int32-precision
+  0x7FFFFFFF const> INT32-MAX
+  -0x7FFFFFFF const> INT32-MIN
+  0xFFFFFFFF const> UINT32-MAX
 [THEN]
 
 def sign-extend-from

@@ -29,6 +29,17 @@ def secs->timespec
   arg0 0 int>= IF
     timespec make-instance
     arg0 over timespec -> tv_sec !
+    0 over timespec -> tv_nsec !
+    exit-frame
+  ELSE 0 1 return1-n
+  THEN
+end
+
+def nanosecs->timespec
+  arg0 0 int>= IF
+    timespec make-instance
+    arg0 1000000000 divmod 3 overn timespec -> tv_nsec !
+    over timespec -> tv_sec !
     exit-frame
   ELSE 0 1 return1-n
   THEN
@@ -86,6 +97,12 @@ end
 
 def sleep
   arg0 secs->timespec
+  0 over value-of nanosleep
+  1 return0-n
+end
+
+def nsleep
+  arg0 nanosecs->timespec
   0 over value-of nanosleep
   1 return0-n
 end

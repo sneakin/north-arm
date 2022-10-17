@@ -1,4 +1,3 @@
-load-core
 s[ src/lib/linux/epoll.4th
    src/lib/linux/clock.4th
    src/lib/assert.4th
@@ -17,18 +16,18 @@ def test-epoll-api
   0 epoll-create1 4 set-localn
   4 localn 0 int> assert
   ( add the read end of the pipe )
-  EPOLLIN local0 EpollEvent -> event !
+  EPOLLIN local0 EpollEvent -> events !
   12345 local0 EpollEvent -> data1 !
   67890 local0 EpollEvent -> data2 !
   local0 value-of local3 EPOLL-CTL-ADD 4 localn epoll-ctl 0 assert-equals
   ( add the write end of the pipe )
-  EPOLLOUT local0 EpollEvent -> event !
+  EPOLLOUT local0 EpollEvent -> events !
   9876 54321 local0 EpollEvent -> data1 uint64!
   ( 9876 local0 EpollEvent -> data2 ! )
   local0 value-of local2 EPOLL-CTL-ADD 4 localn epoll-ctl 0 assert-equals
   ( check that the pipe has write event )
   1 EPOLL-TEST-NUM-EVENTS local1 4 localn epoll-wait 1 assert-equals
-  local1 0 EpollEvent struct-seq-nth EpollEvent . event @ EPOLLOUT assert-equals
+  local1 0 EpollEvent struct-seq-nth EpollEvent . events @ EPOLLOUT assert-equals
   local1 0 EpollEvent struct-seq-nth EpollEvent . data1 uint64@
   54321 assert-equals 9876 assert-equals
   ( write to the pipe )
@@ -36,10 +35,10 @@ def test-epoll-api
   ( poll )
   1 EPOLL-TEST-NUM-EVENTS local1 4 localn epoll-wait 2 assert-equals
   ( check that the pipe has an event )
-  local1 0 EpollEvent struct-seq-nth EpollEvent . event @ EPOLLOUT assert-equals
+  local1 0 EpollEvent struct-seq-nth EpollEvent . events @ EPOLLOUT assert-equals
   local1 0 EpollEvent struct-seq-nth EpollEvent . data1 uint64@
   54321 assert-equals 9876 assert-equals
-  local1 1 EpollEvent struct-seq-nth EpollEvent . event @ EPOLLIN assert-equals
+  local1 1 EpollEvent struct-seq-nth EpollEvent . events @ EPOLLIN assert-equals
   local1 1 EpollEvent struct-seq-nth EpollEvent . data1 @ 12345 assert-equals
   local1 1 EpollEvent struct-seq-nth EpollEvent . data2 @ 67890 assert-equals
   ( read the pipe )

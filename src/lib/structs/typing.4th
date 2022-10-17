@@ -78,3 +78,7 @@ def sizeof
   ELSE arg0 byte-size
   THEN 1 return1-n
 end
+
+def make-typed-pointer ( ptr type ++ instance )
+  ' cons tail-0
+end

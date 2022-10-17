@@ -4,10 +4,14 @@
 s[ src/lib/tty.4th
    src/lib/time.4th
    src/lib/linux/clock.4th
+   src/lib/linux/stat.4th
+   src/lib/io.4th
+   src/demos/tty/sprites/sprites.nth
 ] load-list
 [THEN]
 
 def demo-tty-drawing-draw-loop ( fn h w n context -- )
+  arg3 rand-n arg2 rand-n arg0 tty-context-move-to
   0x77 rand-n arg0 TtyContext -> color poke-byte
   arg3 rand-n arg2 rand-n arg0 4 argn exec-abs
   arg1 1 - set-arg1
@@ -16,6 +20,10 @@ end
 
 def demo-tty-drawing-loop
   arg0 tty-screen-resized? IF true 3 return1-n THEN
+  current-input @ 0 poll-fd-in IF
+    tty-read
+    false 3 return1-n
+  THEN
   0
   arg0 tty-screen-erase
   arg0 tty-screen-buffer make-tty-context set-local0
@@ -24,13 +32,15 @@ def demo-tty-drawing-loop
   arg1
   local0 tty-context-height 1 -
   local0 tty-context-width 1 -
-  over rand-n over rand-n local0 tty-context-move-to
   arg2 local0 demo-tty-drawing-draw-loop
-  arg0 tty-screen-swap ( -copy )
   ( 1 sleep )
-  s" FPS: " error-string/2
+  1 1 local0 tty-context-move-to
+  0x70 local0 TtyContext -> color poke-byte
+  TTY-CELL-NORMAL local0 TtyContext -> attr poke-byte
+  s" FPS: " local0 tty-context-write-string/3
   arg3 1 + dup set-arg3
-  1000 * get-time-secs 4 argn - / error-int enl
+  1000 * get-time-secs 4 argn - / local0 tty-context-write-int
+  arg0 tty-screen-swap ( -copy )
   drop-locals repeat-frame
 end
 
@@ -44,14 +54,21 @@ def demo-tty-drawing/2
   IF drop-locals repeat-frame THEN
 end
 
+8 var> tty-demo-loops
+
 def demo-tty-line
-  tty-columns @ ' tty-context-line demo-tty-drawing/2
+  tty-demo-loops @ ' tty-context-line demo-tty-drawing/2
 end
 
 def demo-tty-ellipse
-  tty-columns @ ' tty-context-ellipse demo-tty-drawing/2
+  tty-demo-loops @ ' tty-context-ellipse demo-tty-drawing/2
 end
 
 def demo-tty-circle
-  tty-columns @ ' tty-context-circle-rect demo-tty-drawing/2
+  tty-demo-loops @ ' tty-context-circle-rect demo-tty-drawing/2
+end
+
+def demo-tty-blit
+  ' tty-context-blit/2 guy 1 partial-after
+  tty-demo-loops @ over demo-tty-drawing/2
 end
