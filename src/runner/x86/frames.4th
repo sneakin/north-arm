@@ -15,7 +15,7 @@ endop
 defop end-frame
 endop
 
-defop return
+defop return0
 endop
 
 defop return0-n

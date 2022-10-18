@@ -9,7 +9,7 @@ def char-to-digit ( char -- digit )
     is-lower-alpha? IF
       int32 97
     ELSE
-      is-upper-alpha? IF int32 65 ELSE int32 -1 set-arg0 return THEN
+      is-upper-alpha? IF int32 65 ELSE int32 -1 set-arg0 return0 THEN
     THEN
     int32 10 -
   THEN
@@ -81,7 +81,7 @@ def parse-int ( str length -- n valid? )
     arg0 int32 1 int<= IF
       int32 0 set-arg1
       int32 0 set-arg0
-      return
+      return0
     THEN
     ( read the number )
     arg1 int32 1 + arg0 int32 1 - parse-uint IF

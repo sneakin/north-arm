@@ -102,7 +102,7 @@ end
 
 def write-uint/2 ( n fd )
   arg1 uint->string arg0 write-string/3
-  return
+  return0
 end
 
 defcol write-uint
@@ -117,7 +117,7 @@ endcol
 
 def write-int/2 ( n fd )
   arg1 int->string arg0 write-string/3
-  return
+  return0
 end
 
 defcol write-int

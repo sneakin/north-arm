@@ -30,9 +30,9 @@ def decompile-literal-word ( value word offset -- )
 end
 
 def decompile-colon-data
-  arg0 peek int32 0 equals? IF return THEN
+  arg0 peek int32 0 equals? IF return0 THEN
   arg0 peek cs +
-  dup dict-contains? UNLESS return THEN
+  dup dict-contains? UNLESS return0 THEN
   dup literalizes? IF
     arg0 op-size + dup set-arg0 peek
     swap dup CASE

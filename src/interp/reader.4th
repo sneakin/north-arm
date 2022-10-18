@@ -76,7 +76,7 @@ def reader-top-up
 end
 
 def reader-peek-byte ( reader -- byte )
-  arg0 reader-top-up negative? IF set-arg0 return THEN
+  arg0 reader-top-up negative? IF set-arg0 return0 THEN
   arg0 reader-buffer peek
   arg0 reader-offset peek
   string-peek set-arg0
@@ -88,7 +88,7 @@ endcol
 
 def reader-read-byte ( reader -- byte )
   arg0 reader-peek-byte
-  negative? IF set-arg0 return THEN
+  negative? IF set-arg0 return0 THEN
   arg0 reader-inc-offset!
   set-arg0
 end
@@ -131,7 +131,7 @@ def reader-next-token ( ptr max-length reader -- ptr length last-byte )
   pointer not-whitespace? arg0 reader-skip-until negative? IF
     set-arg0
     int32 0 set-arg1
-    return
+    return0
   THEN
   int32 2 dropn
   arg2 arg1 pointer whitespace? arg0 reader-read-until

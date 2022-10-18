@@ -15,7 +15,7 @@ def shift ( a b c -- c a b )
   arg1 set-arg0
   arg2 set-arg1
   set-arg2
-  return
+  return0
 end
 
 def roll ( a b c -- b c a )
@@ -23,7 +23,7 @@ def roll ( a b c -- b c a )
   arg2 set-arg0
   arg1 set-arg2
   set-arg1
-  return
+  return0
 end
 
 def swap-overn ( old-value ... new-value n -- new-value ... old-value )

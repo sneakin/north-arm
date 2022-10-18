@@ -45,7 +45,7 @@ def uint->hex-string/4 ( n out-ptr counter print-always? )
     arg1 int32 7 equals? IF int32 1 set-arg0 THEN
     repeat-frame
   THEN
-  return
+  return0
 end
 
 def uint->hex-string ( n out-ptr -- out-ptr length )
@@ -54,7 +54,7 @@ def uint->hex-string ( n out-ptr -- out-ptr length )
   arg0 dup set-arg1
   - set-arg0
   arg1 arg0 int32 1 + null-terminate
-  return
+  return0
 end
 
 def int->hex-string ( n out-ptr -- out-ptr length )
@@ -70,13 +70,13 @@ def int->hex-string ( n out-ptr -- out-ptr length )
   arg0 dup set-arg1
   - set-arg0
   arg1 arg0 int32 1 + null-terminate
-  return
+  return0
 end
 
 def write-hex-uint/2 ( n fd )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
   arg1 over uint->hex-string arg0 write-string/3
-  return
+  return0
 end
 
 defcol write-hex-uint
@@ -92,7 +92,7 @@ endcol
 def write-hex-int/2 ( n fd )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
   arg1 over int->hex-string arg0 write-string/3
-  return
+  return0
 end
 
 defcol write-hex-int

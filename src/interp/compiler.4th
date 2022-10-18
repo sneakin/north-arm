@@ -5,7 +5,7 @@ defcol locals-byte-size
 endcol
 
 def reverse-loop ( start ending )
-  arg1 arg0 uint>= IF return THEN
+  arg1 arg0 uint>= IF return0 THEN
   ( swap values )
   arg1 peek arg0 peek
   arg1 poke arg0 poke
@@ -95,16 +95,16 @@ def compile-token
 end
 
 def literalizes?
-  arg0 pointer literal equals? IF true set-arg0 return THEN
-  arg0 pointer int32 equals? IF true set-arg0 return THEN
-  arg0 pointer uint32 equals? IF true set-arg0 return THEN
-  arg0 pointer offset32 equals? IF true set-arg0 return THEN
-  arg0 pointer pointer equals? IF true set-arg0 return THEN
-  arg0 pointer cstring equals? IF true set-arg0 return THEN
-  arg0 pointer string equals? IF true set-arg0 return THEN
-  arg0 pointer uint64 equals? IF true set-arg0 return THEN
-  arg0 pointer int64 equals? IF true set-arg0 return THEN
-  false set-arg0
+  arg0 pointer literal equals? IF true 1 return1-n THEN
+  arg0 pointer int32 equals? IF true 1 return1-n THEN
+  arg0 pointer uint32 equals? IF true 1 return1-n THEN
+  arg0 pointer offset32 equals? IF true 1 return1-n THEN
+  arg0 pointer pointer equals? IF true 1 return1-n THEN
+  arg0 pointer cstring equals? IF true 1 return1-n THEN
+  arg0 pointer string equals? IF true 1 return1-n THEN
+  arg0 pointer uint64 equals? IF true 1 return1-n THEN
+  arg0 pointer int64 equals? IF true 1 return1-n THEN
+  false 1 return1-n
 end
 
 ( punt literalizes? could search a list of words registered, or flagged on a word, whenever next-word or a literalizing word is used. )
@@ -169,7 +169,7 @@ def defcol
 end
 
 def does-frame>
-  arg0 literal return does-col>/2
+  arg0 literal return0 does-col>/2
   literal begin-frame
   here cs - arg0 dict-entry-data poke
   exit-frame

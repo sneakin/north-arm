@@ -228,7 +228,7 @@ def uint64-divmod32-quotient-bit ( nlo nhi denom shift -- qlo qhi modlo modhi )
   arg0 0 int<= IF
     arg3 arg2 set-arg1 set-arg0
     0LL set-arg3 set-arg2
-    return
+    return0
   THEN
   arg0 1 - set-arg0
   arg3 arg2 arg0 int64-bsr
@@ -250,8 +250,8 @@ def uint64-divmod32/4 ( bit alo ahi b -- bit nlo nhi mod )
   ( s" div: " write-string/2
   arg3 write-int space
   arg1 .h s" :" write-string/2 arg2 .h space arg0 .h nl )
-  arg0 0 equals? IF ( todo error ) 0 set-arg0 0LL set-arg1 set-arg2 return THEN ( fixme return or return0? only load-core knows )
-  arg3 0 int< IF 0LL arg1 set-arg0 set-arg1 set-arg2 return THEN
+  arg0 0 equals? IF ( todo error ) 0 set-arg0 0LL set-arg1 set-arg2 return0 THEN
+  arg3 0 int< IF 0LL arg1 set-arg0 set-arg1 set-arg2 return0 THEN
   arg1 IF
     arg1 arg0 uint< IF
       ( s" less" write-line/2 )
@@ -269,7 +269,7 @@ def uint64-divmod32/4 ( bit alo ahi b -- bit nlo nhi mod )
     THEN
   ELSE
     arg2 arg0 uint-divmod set-arg0 set-arg2
-  THEN return
+  THEN return0
 end
 
 def uint64-divmod32 ( alo ahi b -- nlo nhi mod )

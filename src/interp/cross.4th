@@ -10,7 +10,6 @@ load-stage0-fun
 
 ( Words usod in definitions: )
 
-defalias> return0 return
 ( defalias> return proper-exit ) ( caused trouble with out' looking up return )
 defalias> equals equals?
 defalias> mult int-mul

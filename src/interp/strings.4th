@@ -65,7 +65,7 @@ defcol null-terminate ( str length -- )
 endcol
 
 def string-length-loop
-  arg1 arg0 string-peek int32 0 equals? IF return THEN
+  arg1 arg0 string-peek int32 0 equals? IF return0 THEN
   arg0 int32 1 + set-arg0
   repeat-frame
 end

@@ -40,7 +40,7 @@ defop current-frame
   emit-next
 endop
 
-defop return
+defop return0
   ( Restore FP and SP before exiting. )
   0 r0 bit-set pushr ,ins
   fp sp movrr ,ins
@@ -48,6 +48,8 @@ defop return
   0 r0 bit-set popr ,ins
   out' exit emit-op-jump
 endop
+
+defalias> return return0
 
 defop return0-n
   ( Restore FP and SP before exiting, dropping N args. )

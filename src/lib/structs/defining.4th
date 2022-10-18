@@ -91,7 +91,7 @@ end
 def inherits: ( : type )
   0
   ( read type )
-  next-type dup UNLESS s" Warning: Unknown type " error-line/2 return THEN
+  next-type dup UNLESS s" Warning: Unknown type " error-line/2 return0 THEN
   set-local0
   local0 *this-struct* peek value-of type-super poke
   ( add field )

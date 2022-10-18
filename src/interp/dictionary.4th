@@ -38,14 +38,14 @@ end
 ( Querying: )
 
 def dict-lookup/4 ( ptr length dict-entry origin -- ptr length entry found? )
-  arg1 null? IF int32 0 set-arg0 return THEN
+  arg1 null? IF int32 0 set-arg0 return0 THEN
   ( arg1 dict-entry-name peek arg0 + arg2 write-string/2 )
   arg1 dict-entry-name peek arg0 + arg3 arg2 string-equals?/3 IF
-    int32 1 set-arg0 return
+    int32 1 set-arg0 return0
   THEN
   int32 3 dropn
   arg1 dict-entry-link peek
-  dup null? IF int32 0 set-arg0 return THEN
+  dup null? IF int32 0 set-arg0 return0 THEN
   arg0 + set-arg1
   repeat-frame
 end

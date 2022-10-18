@@ -45,7 +45,7 @@ defcol droptail-1 ( ...args1 arg0 frame-ra fp ... word -- ...args1 frame-ra -> w
   drop
   current-frame return-address @ set-arg0
   dict-entry-data @ cs + ( tail-word-start-offset drop ) current-frame return-address !
-  return
+  return0
 endcol
 
 ( Executes word after dropping the locals and two arguments from the calling frame. )

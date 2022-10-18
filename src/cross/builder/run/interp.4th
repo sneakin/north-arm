@@ -81,7 +81,7 @@ def builder-run ( entry len src-cons )
   s" *init-data*" cross-lookup IF over to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
   code-origin peek
   ( entry point: )
-  s" init" cross-lookup UNLESS " no init found" error-line not-found return THEN
+  s" init" cross-lookup UNLESS " no init found" error-line not-found return0 THEN
   dict-entry-code uint32@ cell-size +
   ( finish the ELF file )
   write-elf-ending

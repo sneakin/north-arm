@@ -249,11 +249,11 @@ end
 
 def nested-skip-tokens-until/4 ( lead-fn term-fn inner-term-fn depth ++ )
   next-token
-  negative? IF ( todo error ) return THEN
+  negative? IF ( todo error ) return0 THEN
   over s" (" string-equals?/3 IF POSTPONE ( THEN 3 dropn
   2dup
   arg0 0 uint> IF arg1 ELSE arg2 THEN exec-abs
-  IF arg0 0 uint> IF arg0 1 - set-arg0 ELSE return THEN THEN
+  IF arg0 0 uint> IF arg0 1 - set-arg0 ELSE return0 THEN THEN
   arg3 exec-abs IF arg0 1 + set-arg0 THEN
   drop-locals repeat-frame
 end
@@ -364,7 +364,7 @@ def load
   token-buffer-max stack-allot ( fixme this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams )
   token-buffer-max
   s" Loading " error-string/2 arg0 error-line
-  arg0 open-input-file negative? IF return THEN
+  arg0 open-input-file negative? IF return0 THEN
   make-fd-reader the-reader poke
   interp
   the-reader peek fd-reader-close

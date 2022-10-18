@@ -3,7 +3,7 @@
 
 def top-frame-loop
   arg0 parent-frame dup IF set-arg0 repeat-frame THEN
-  return
+  return0
 end
 
 def top-frame

@@ -14,11 +14,13 @@ end
 def alias>
   create>
   ['] dup 12 unless-jump swap alias exit-frame
-  not-found enl dict-drop return
+  not-found enl dict-drop return0
 end
 
 ( todo necessary? bash loadable... )
+' return0 [UNLESS]
 alias> return0 return
+[THEN]
 alias> return proper-exit
 alias> equals equals?
 alias> speek peek
@@ -285,7 +287,7 @@ endcol
 
 : ,byte-string/3
   ( string length n )
-  2dup equals IF 0 dpush-byte return THEN
+  2dup equals IF 0 dpush-byte return0 THEN
   3 overn 2 overn string-peek dpush-byte
   1 + loop
 ;

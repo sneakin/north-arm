@@ -55,7 +55,7 @@ def cpio-stat ( path length cpio-archive -- )
 end
 
 def cpio-open?
-  ( Check if a cpio archive still has an open iile descriptor. )
+  ( Check if a cpio archive still has an open file descriptor. )
   arg0 cpio-archive -> fd peek -1 int> 1 return1-n
 end
 
