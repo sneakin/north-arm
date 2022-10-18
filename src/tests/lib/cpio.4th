@@ -7,7 +7,7 @@ src/lib/assert.4th
 src/lib/assertions/io.4th
 ] load-list
 
-57 const> TEST-CPIO-ARCHIVE-SIZE
+60 const> TEST-CPIO-ARCHIVE-SIZE
 " misc/cpio/binary.cpio" string-const> TEST-CPIO-BINARY-ARCHIVE
 " misc/cpio/odc.cpio" string-const> TEST-CPIO-ODC-ARCHIVE
 " misc/cpio/newc.cpio" string-const> TEST-CPIO-NEWC-ARCHIVE
@@ -71,12 +71,11 @@ def test-cpio-read ( expected-magic path )
   debug? IF local1 ' print-cpio-header map-car THEN
   ' assert-cpio-header arg1 partial-first local1 over map-car
   ( archived file reading )
-  s" src/interp/interp.4th" local1 local0 assert-cpio-file-contents
-  s" src/lib/list.4th" local1 local0 assert-cpio-file-contents
+  s" src/runner/copy.4th" local1 local0 assert-cpio-file-contents
+  s" src/runner/frames.4th" local1 local0 assert-cpio-file-contents
   s" src/bad-things.4th" local1 assert-cpio-lacks
   
   local0 close
-  boom
 end
 
 def test-cpio-binary

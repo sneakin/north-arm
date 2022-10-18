@@ -150,8 +150,12 @@ def .s
   args int32 96 ecmemdump
 end immediate-as [.s]
 
-defcol ?exec-abs
-  swap dup IF ( exec-abs ) jump-data ELSE drop THEN
+def colon?
+  arg0 dict-entry-code @ ' does-col dict-entry-code @ equals? return1
+end
+
+defcol ?jump-data
+  swap dup IF jump-data ELSE drop THEN
 endcol
 
 def alias>

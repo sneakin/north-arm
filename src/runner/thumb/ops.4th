@@ -147,6 +147,14 @@ endop
 
 ( Calling words: )
 
+defop ?exec-abs
+  0 r0 cmp# ,ins
+  2 bne ,ins
+  0 r0 bit-set popr ,ins
+  emit-next
+  out' exec-abs emit-op-jump
+endop
+
 defop jump
   ( Set eip. )
   0 r0 eip mov-lsl ,ins
