@@ -30,7 +30,7 @@ end
 def assert-cpio-header ( header magic -- )
   arg1 cpio-loaded-header kind-of? assert
   arg1 cpio-loaded-header -> magic uint32@ arg0 assert-equals
-  arg1 cpio-loaded-header -> name peek assert-file-exists
+  ( arg1 cpio-loaded-header -> name peek assert-file-exists )
   ( todo assert other stats? )
   2 return0-n
 end
@@ -58,6 +58,10 @@ end
 
 def assert-cpio-lacks
   arg2 arg1 arg0 cpio-find-file 0 assert-equals
+end
+
+def assert-cpio-has
+  arg2 arg1 arg0 cpio-find-file 0 assert-not-equals
 end
 
 def test-cpio-read ( expected-magic path )
@@ -251,12 +255,51 @@ def cpio-write-test-file ( path fmt -- )
   0
   arg1 open-output-file set-local0
   s" doc" local0 arg0 cpio-write-directory
-  s" Hello" s" hello.txt" local0 arg0 cpio-write-string/6
+  s" Hello" s" doc/hello.txt" local0 arg0 cpio-write-string/6
   s" It works." s" readme.txt" local0 arg0 cpio-write-string/6
   s" ../readme.txt" s" doc/readme.txt" local0 arg0 cpio-write-link
   local0 arg0 cpio-write-trailer
   local0 close
   2 return0-n
+end
+
+def test-cpio-roundtrip
+  0 0
+  128 stack-allot set-local0
+  local0 128 " misc/cpio/roundtrip-" arg0 dict-entry-name @ cs + string-append/4 2 dropn
+  local0 128 local0 " .cpio" string-append/4 2 dropn
+  local0 arg0 exec-abs cpio-write-test-file
+  ( read the new file )
+  local0 open-input-file set-local0
+  local0 negative? IF s" Error opening archive." write-line/2 return0 THEN
+  ( header reading )
+  local0 cpio-read-headers
+  UNLESS s" Error reading headers." write-line/2 return0 THEN
+  5 assert-equals
+  set-local1
+  ( local1 car print-instance )
+  debug? IF local1 ' print-cpio-header map-car THEN
+  ' assert-cpio-header arg0 exec-abs cpio-format-funs -> magic @ partial-first local1 over map-car
+  ( archived file reading )
+  s" doc/hello.txt" local1 assert-cpio-has
+  s" doc/readme.txt" local1 assert-cpio-has
+  s" readme.txt" local1 assert-cpio-has
+  s" src/bad-things.4th" local1 assert-cpio-lacks
+  
+  local0 close
+  1 return0-n
+end
+
+def test-cpio-roundtrip-newc
+  ' cpio-newc-format test-cpio-roundtrip
+end
+
+def test-cpio-roundtrip-odc
+  ' cpio-odc-format test-cpio-roundtrip
+end
+
+def test-cpio-roundtrip-old
+  ' cpio-old-format test-cpio-roundtrip
 end
 
 def test-cpio
@@ -275,4 +318,7 @@ def test-cpio
   test-cpio-newc-write-file
   test-cpio-newc-write-directory
   test-cpio-newc-write-link
+  test-cpio-roundtrip-newc
+  test-cpio-roundtrip-odc
+  test-cpio-roundtrip-old
 end
