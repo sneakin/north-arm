@@ -26,3 +26,7 @@ def allot-read-file ( path ++ ptr num-bytes )
   arg0 file-size dup 0 equals? IF 0 set-arg0 0 return1 THEN
   arg0 allot-read-file/2 exit-frame
 end
+
+def write-bytes ( ptr len fd -- len )
+  arg1 arg2 arg0 write 3 return1-n
+end

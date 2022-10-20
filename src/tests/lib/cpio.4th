@@ -7,6 +7,8 @@ src/lib/assert.4th
 src/lib/assertions/io.4th
 ] load-list
 
+( CPIO Reading: )
+
 60 const> TEST-CPIO-ARCHIVE-SIZE
 " misc/cpio/binary.cpio" string-const> TEST-CPIO-BINARY-ARCHIVE
 " misc/cpio/odc.cpio" string-const> TEST-CPIO-ODC-ARCHIVE
@@ -90,8 +92,187 @@ def test-cpio-newc
   0x70701 TEST-CPIO-NEWC-ARCHIVE test-cpio-read
 end
 
+( CPIO Writing: )
+
+def test-cpio-write-string/6
+  0 0 here pipe drop
+  0 1024 stack-allot-zero set-local2
+  0 cpio-header make-instance set-local3
+  ( write the cpio to the pipe )
+  s" Hello world!!" s" hello.txt" local0 arg0 cpio-write-string/6 assert
+  ( read the pipe )
+  local2 1024 local1 read-bytes
+  dup
+  ( verify amount wrote )
+  arg0 cpio-format-header-size 10 + 13 +
+  arg0 cpio-format-padder assert-equals
+  ( verify file name )
+  arg0 cpio-format-header-size local2 + s" hello.txt" assert-byte-string-equals/3
+  ( verify the contents )
+  arg0 cpio-format-header-size local2 + 10 + s" Hello world!!" assert-byte-string-equals/3
+  ( verify the mode indicates file )
+  local2 arg0 cpio-format-funs -> header-type @ make-typed-pointer
+  local3 arg0 cpio-format->cpio-header
+  local3 cpio-header -> mode @ CPIO-MODE-TYPE-MASK logand CPIO-MODE-TYPE-FILE assert-equals
+  ( clean up )
+  local0 close
+  local1 close
+  1 return0-n
+end
+
+def test-cpio-newc-write-string/6
+  cpio-newc-format ' test-cpio-write-string/6 tail+1
+end
+
+def test-cpio-odc-write-string/6
+  cpio-odc-format ' test-cpio-write-string/6 tail+1
+end
+
+def test-cpio-old-write-string/6
+  cpio-old-format ' test-cpio-write-string/6 tail+1
+end
+
+( todo remove unused format fun fields )
+
+def test-cpio-write-file
+  0 0 here pipe drop
+  0 4096 stack-allot-zero set-local2
+  0 cpio-header make-instance set-local3
+  ( write the README )
+  " README.org" local0 arg0 cpio-write-file assert
+  ( read the pipe )
+  local2 4096 local1 read-bytes
+  ( verify amount writen = header + name + contents )
+  dup
+  " README.org" dup string-length 1 +
+  arg0 cpio-format-header-size +
+  arg0 cpio-format-padder
+  swap file-size32 arg0 cpio-format-padder +
+  4096 min assert-equals
+  ( verify mode indicates a file )
+  local2 arg0 cpio-format-funs -> header-type @ make-typed-pointer
+  local3 arg0 cpio-format->cpio-header
+  local3 cpio-header -> mode @ CPIO-MODE-TYPE-MASK logand CPIO-MODE-TYPE-FILE assert-equals
+  ( clean up )
+  local0 close
+  local1 close
+  1 return0-n
+end
+
+def test-cpio-newc-write-file
+  cpio-newc-format ' test-cpio-write-file tail+1
+end
+
+def test-cpio-odc-write-file
+  cpio-odc-format ' test-cpio-write-file tail+1
+end
+
+def test-cpio-old-write-file
+  cpio-old-format ' test-cpio-write-file tail+1
+end
+
+def test-cpio-write-directory
+  0 0 here pipe drop
+  0 4096 stack-allot-zero set-local2
+  0 cpio-header make-instance set-local3
+  ( write a directory entry )
+  s" doc" local0 arg0 cpio-write-directory assert
+  ( read the pipe )
+  local2 4096 local1 read-bytes debug? IF ,i enl 2dup memdump THEN
+  ( verify amount writen = header + name )
+  dup
+  " doc" string-length 1 +
+  arg0 cpio-format-header-size +
+  arg0 cpio-format-padder
+  4096 min assert-equals
+  ( verify mode indicates a directory )
+  local2 arg0 cpio-format-funs -> header-type @ make-typed-pointer
+  local3 arg0 cpio-format->cpio-header
+  local3 cpio-header -> mode @ CPIO-MODE-TYPE-MASK logand CPIO-MODE-TYPE-DIRECTORY assert-equals
+  ( clean up )
+  local0 close
+  local1 close
+  1 return0-n
+end
+
+def test-cpio-newc-write-directory
+  cpio-newc-format ' test-cpio-write-directory tail+1
+end
+
+def test-cpio-odc-write-directory
+  cpio-odc-format ' test-cpio-write-directory tail+1
+end
+
+def test-cpio-old-write-directory
+  cpio-old-format ' test-cpio-write-directory tail+1
+end
+
+def test-cpio-write-link
+  0 0 here pipe drop
+  0 4096 stack-allot-zero set-local2
+  0 cpio-header make-instance set-local3
+  ( write an entry for a symlink )
+  s" ../readme.txt" s" doc/readme.txt" local0 arg0 cpio-write-link assert
+  ( read the pipe )
+  local2 4096 local1 read-bytes debug? IF .s enl ,i enl 2dup memdump THEN
+  ( verify amount writen = header + name + link target )
+  " doc/readme.txt" string-length 1 +
+  arg0 cpio-format-header-size +
+  arg0 cpio-format-padder
+  dup
+  " ../readme.txt" string-length
+  arg0 cpio-format-padder +
+  4096 min 3 overn assert-equals
+  ( verify the link's target )
+  local2 + s" ../readme.txt" assert-byte-string-equals/3
+  ( verify the mode indicates a link )
+  local2 arg0 cpio-format-funs -> header-type @ make-typed-pointer
+  local3 arg0 cpio-format->cpio-header
+  local3 cpio-header -> mode @ CPIO-MODE-TYPE-MASK logand CPIO-MODE-TYPE-LINK assert-equals
+  ( cleanup )
+  local0 close
+  local1 close
+  1 return0-n
+end
+
+def test-cpio-newc-write-link
+  cpio-newc-format ' test-cpio-write-link tail+1
+end
+
+def test-cpio-odc-write-link
+  cpio-odc-format ' test-cpio-write-link tail+1
+end
+
+def test-cpio-old-write-link
+  cpio-old-format ' test-cpio-write-link tail+1
+end
+
+def cpio-write-test-file ( path fmt -- )
+  0
+  arg1 open-output-file set-local0
+  s" doc" local0 arg0 cpio-write-directory
+  s" Hello" s" hello.txt" local0 arg0 cpio-write-string/6
+  s" It works." s" readme.txt" local0 arg0 cpio-write-string/6
+  s" ../readme.txt" s" doc/readme.txt" local0 arg0 cpio-write-link
+  local0 arg0 cpio-write-trailer
+  local0 close
+  2 return0-n
+end
+
 def test-cpio
   test-cpio-binary
   test-cpio-odc
   test-cpio-newc
+  test-cpio-old-write-string/6
+  test-cpio-old-write-file
+  test-cpio-old-write-directory
+  test-cpio-old-write-link
+  test-cpio-odc-write-string/6
+  test-cpio-odc-write-file
+  test-cpio-odc-write-directory
+  test-cpio-odc-write-link
+  test-cpio-newc-write-string/6
+  test-cpio-newc-write-file
+  test-cpio-newc-write-directory
+  test-cpio-newc-write-link
 end

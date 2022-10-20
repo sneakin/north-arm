@@ -173,6 +173,18 @@ def pwrite64 ( offset len ptr fd -- result )
   args 4 181 syscall 4 return1-n
 end
 
+def sendfile ( count offset-ptr in-fd out-fd -- result )
+  args 4 187 syscall 4 return1-n
+end
+
+def sendfile64 ( count offset64-ptr in-fd out-fd -- result )
+  args 4 239 syscall 4 return1-n
+end
+
+def copy-file-range ( flags len out-offset64-ptr fd-out in-offset64-ptr fd-in -- result )
+  args 6 391 syscall 6 return1-n
+end
+
 def ioctl ( arg cmd fd -- result )
   args 3 54 syscall 3 return1-n
 end
