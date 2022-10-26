@@ -85,7 +85,8 @@ def compile-token
   IF cs - COMPILING-IMMED
   ELSE
     arg1 arg0 compile-lookup
-    negative? IF 0 COMPILING-ERROR
+    negative? IF
+      0 COMPILING-ERROR
     ELSE
       IF compiling-offset peek - COMPILING-WORD
       ELSE COMPILING-INT
@@ -95,16 +96,18 @@ def compile-token
 end
 
 def literalizes?
-  arg0 pointer literal equals? IF true 1 return1-n THEN
-  arg0 pointer int32 equals? IF true 1 return1-n THEN
-  arg0 pointer uint32 equals? IF true 1 return1-n THEN
-  arg0 pointer offset32 equals? IF true 1 return1-n THEN
-  arg0 pointer pointer equals? IF true 1 return1-n THEN
-  arg0 pointer cstring equals? IF true 1 return1-n THEN
-  arg0 pointer string equals? IF true 1 return1-n THEN
-  arg0 pointer uint64 equals? IF true 1 return1-n THEN
-  arg0 pointer int64 equals? IF true 1 return1-n THEN
-  false 1 return1-n
+  arg0 CASE
+    pointer literal OF true ENDOF
+    pointer int32 OF true ENDOF
+    pointer uint32 OF true ENDOF
+    pointer offset32 OF true ENDOF
+    pointer pointer OF true ENDOF
+    pointer cstring OF true ENDOF
+    pointer string OF true ENDOF
+    pointer uint64 OF true ENDOF
+    pointer int64 OF true ENDOF
+    false
+  ENDCASE 1 return1-n
 end
 
 ( punt literalizes? could search a list of words registered, or flagged on a word, whenever next-word or a literalizing word is used. )
