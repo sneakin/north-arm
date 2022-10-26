@@ -19,7 +19,7 @@ end
 ( Iteration: )
 
 ( todo update callers that don't expect returns )
-def dict-map/4 ( dict origin state fn )
+def dict-map/4 ( dict origin state fn ++ state )
   arg3 null? UNLESS
     arg1 arg3 arg0 exec-abs set-arg1
     arg3 dict-entry-link peek

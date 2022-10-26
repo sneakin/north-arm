@@ -67,17 +67,30 @@ def decompile-entry-code
   ( Calls a code word )
   s" does> " write-string/2
   arg0 dict-entry-code peek
+  dup arg0 dict-entry-code-word write-dict-entry-name
   s" ( " write-string/2
-  dup write-hex-uint
+  write-hex-uint
   s"  ) " write-string/2
-  arg0 dict-entry-code-word write-dict-entry-name
+end
+
+def framed-definition?
+  arg0 dict-entry-data peek
+  dup IF cs + @ literal begin-frame equals?
+      ELSE false
+      THEN set-arg0
 end
 
 def decompile-colon
-  s" defcol " write-string/2 arg0 write-dict-entry-name nl space space
-  arg0 dict-entry-data peek dup IF cs + decompile-colon-data THEN
-  nl s" endcol" write-string/2
+  arg0 framed-definition? dup IF
+    s" def " write-string/2 arg0 write-dict-entry-name nl space space
+    op-size
+  ELSE
+    s" defcol " write-string/2 arg0 write-dict-entry-name nl space space
+    0
+  THEN
+  arg0 dict-entry-data peek dup IF cs + + decompile-colon-data THEN
   nl
+  local0 IF s" end" ELSE s" endcol" THEN write-string/2 nl
 end
 
 def decompile-proper
