@@ -64,8 +64,8 @@ DICT['immediate-lookup']='feval literal IDICT dict-lookup'
 DICT['set-immediate!']='feval literal IDICT dict-set!'
 DICT['iwords']='feval literal IDICT dict-list'
 
-declare -A out_immediates
-DICT['oiwords']='feval literal out_immediates dict-list'
+declare -A cross_immediates
+DICT['ciwords']='feval literal cross_immediates dict-list'
 
 #
 # Reading tokens

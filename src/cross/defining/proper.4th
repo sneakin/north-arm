@@ -14,7 +14,7 @@
   0 ,op
 ;
 
-" endproper" ' endcol swap out-immediate/2
+" endproper" ' endcol swap cross-immediate/2
 
 : lookup-or-create
   cross-lookup LOOKUP-WORD equals UNLESS
@@ -35,4 +35,4 @@
   literal pointer
   out-dict dict-entry-data uint32@
   literal jump
-; out-immediate-as loop
+; cross-immediate-as loop

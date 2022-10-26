@@ -8,25 +8,6 @@ dhere [UNLESS]
   tmp" Initialized data stack" error-line/2
 [THEN]
 
-s[ src/interp/boot/core.4th
-   src/interp/boot/data-segment.4th
-   src/interp/boot/vars.4th
-   src/interp/literalizers/int64.4th
-   src/lib/linux/errno.4th
-   src/lib/byte-data.4th
-   src/lib/case.4th
-   src/interp/data-stack-list.4th
-   src/runner/ffi.4th
-   src/interp/dynlibs.4th
-   src/interp/signals.4th
-   src/interp/tty.4th
-   src/interp/dictionary/revmap.4th
-   src/interp/dictionary/dump.4th
-   src/lib/structs.4th
-   src/lib/math.4th
-   src/lib/linux.4th
-   src/lib/io.4th
-] load-list
+" src/interp/boot/include.4th" load
 
-signals-init
-tty-init
+core-init

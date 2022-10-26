@@ -22,6 +22,7 @@ def builder-run ( entry-fn fn-length files-cons ++ )
   " copyright" cross-lookup IF code-origin to-out-addr over dict-entry-data uint32! ELSE not-found error-line THEN drop
   " _start" cross-lookup IF arg2 does-defalias ELSE not-found error-line THEN
   " *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
+  " immediates" cross-lookup IF out-immediates to-out-addr swap dict-entry-data uint32@ from-out-addr data-var-init-value uint32! ELSE not-found error-line THEN
   " *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found error-line THEN
   " *ds-offset*" cross-lookup IF elf-data-segment-offset swap dict-entry-data uint32! ELSE not-found error-line THEN
 

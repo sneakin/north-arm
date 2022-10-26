@@ -14,4 +14,4 @@ end
 : out-s[
   out-off' pointer
   out-read-list to-out-addr
-; out-immediate-as s[
+; cross-immediate-as s[

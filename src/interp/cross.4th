@@ -8,7 +8,14 @@
 
 load-stage0-fun
 
-( Words usod in definitions: )
+( ' defproper defined? [UNLESS] )
+s[ src/cross/defining/proper.4th ] load-list
+( [THEN] )
+
+( Track that this is loaded: )
+true const> NORTH-COMPILE-TIME
+
+( Words used in definitions: )
 
 ( defalias> return proper-exit ) ( caused trouble with out' looking up return )
 defalias> equals equals?
@@ -28,10 +35,11 @@ alias> const> defconst>
 alias> const-offset> defconst-offset>
 alias> symbol> defsymbol>
 
-alias> ' out' immediate
-
-alias> immediate out-immediate ( todo compiling or to output? )
+alias> immediate out-immediate
 alias> immediate-as out-immediate-as
+
+alias> sys' ' immediate
+alias> ' out' immediate
 
 ( And finally switch alias> over: )
 alias> alias> defalias>

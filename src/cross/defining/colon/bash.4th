@@ -15,16 +15,20 @@
   THEN
 ;
 
-: defcol-read
-  literal out_immediates set-compiling-immediates
+: defcol-read-init
+  literal cross_immediates set-compiling-immediates
   ' defcol-state-fn set-compiling-state
+;
+  
+: defcol-read
+  defcol-read-init
   read-terminator compiling-read
   here down-stack 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
 ;
 
 : endcol
   0 set-compiling
-; out-immediate
+; cross-immediate
 
 : does-col
   out' do-col dict-entry-code uint32@

@@ -18,6 +18,7 @@ s[ src/lib/seq.4th
    src/interp/linux/auxvec.4th
    src/interp/linux/hwcaps.4th
    src/lib/time.4th
+   src/interp/data-stack.4th
    src/interp/interp.4th
 ] load-list
 
@@ -25,9 +26,6 @@ s[ src/lib/seq.4th
 s[ src/interp/list.4th
    src/interp/compiler.4th
 ] load-list
-
-( Used by core.4th )
-s[ src/interp/data-stack.4th ] load-list
 
 ( Standand Forth colons )
 s[ src/interp/proper.4th

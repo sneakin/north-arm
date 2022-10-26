@@ -22,6 +22,9 @@ NORTH-STAGE 0 equals? [IF]
 : peek-next-def-data-var-slot
   *next-def-data-var-slot*
 ;
+
+: data-var-slot ;
+: data-var-init-value cell-size + ;
 [ELSE]
 : next-def-data-var-slot
   *next-def-data-var-slot* inc!

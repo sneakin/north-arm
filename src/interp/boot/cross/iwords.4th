@@ -7,13 +7,13 @@
   out-off' int32
   if-placeholder
   out-off' unless-jump
-; out-immediate-as IF
+; cross-immediate-as IF
 
 : out-UNLESS
   out-off' int32
   if-placeholder
   out-off' if-jump
-; out-immediate-as UNLESS
+; cross-immediate-as UNLESS
 
 : out-ELSE
   out-off' int32
@@ -22,10 +22,10 @@
   roll
   dup here stack-delta int32 3 - op-size *
   swap spoke
-; out-immediate-as ELSE
+; cross-immediate-as ELSE
 
 : out-THEN
   if-placeholder stack-find
   dup here stack-delta int32 3 - op-size *
   swap spoke
-; out-immediate-as THEN
+; cross-immediate-as THEN

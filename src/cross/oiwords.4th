@@ -1,19 +1,38 @@
-: immediate
-  s" Could immediate: " error-string/2
-  out-dict dict-entry-name peek from-out-addr error-string enl
-;
-: immediate-as
-  s" Could immediate-as: " error-string/2
-  out-dict dict-entry-name peek from-out-addr error-string espace
-  next-token error-string/2 enl
+NORTH-STAGE 0 equals? [IF]
+  0 var> out-immediates
+[ELSE]
+  ' output-immediates defined? [UNLESS]
+    0 var> output-immediates
+  [THEN]
+
+  : out-immediates output-immediates @ ;
+  : set-out-immediates output-immediates ! ;
+[THEN]
+
+: out-immediate/1 ( word )
+  out-immediates swap copies-entry set-out-immediates
 ;
 
 : out-immediate
-  s" Could out-immediate: " error-string/2
-  out-dict dict-entry-name peek from-out-addr error-string enl
+  out-dict out-immediate/1
 ;
+
+: out-immediate-only out-immediate drop-out-dict ;
+
 : out-immediate-as
-  s" Could out-immediate-as: " error-string/2
-  out-dict dict-entry-name peek from-out-addr error-string espace
-  next-token error-string/2 enl
+  out-immediates out-dict copies-entry-as> set-out-immediates
 ;
+
+' oiwords defined? [UNLESS]
+  NORTH-STAGE 0 equals? [IF]
+    : oiwords
+      out-immediates out-origin 0 ' oword-printer dict-map/4 enl
+      5 + dropn
+    ;
+  [ELSE]
+    : oiwords
+      out-immediates out-origin peek 0 ' oword-printer dict-map/4 enl
+      5 + dropn
+    ;
+  [THEN]
+[THEN]

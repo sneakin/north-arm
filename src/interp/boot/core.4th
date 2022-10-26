@@ -14,7 +14,7 @@ end
 def alias>
   create>
   ['] dup 12 unless-jump swap alias exit-frame
-  not-found enl dict-drop return0
+  not-found enl dict-drop
 end
 
 ( todo necessary? bash loadable... )
@@ -26,6 +26,7 @@ alias> equals equals?
 alias> speek peek
 alias> spoke poke
 alias> mult int-mul
+alias> sys' '
 
 def does-const
   arg0 pointer do-const does
@@ -157,13 +158,6 @@ end
 defcol ?jump-data
   swap dup IF jump-data ELSE drop THEN
 endcol
-
-def alias>
-  create>
-  ['] dup IF swap alias exit-frame
-  ELSE not-found enl dict-drop return0
-  THEN
-end
 
 : repeat-frame
   literal int32

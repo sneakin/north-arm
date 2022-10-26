@@ -13,6 +13,7 @@ NORTH-STAGE 0 int> [IF]
 s[
    src/cross/list.4th
    src/interp/boot/cross/iwords.4th
+   src/cross/oiwords.4th
    src/cross/defining/constants.4th
    src/cross/constants.4th
    src/cross/defining/variables.4th

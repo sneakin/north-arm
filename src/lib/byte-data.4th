@@ -2,19 +2,10 @@ alias> ,uint8 dpush-byte
 alias> uint8! dpoke-byte
 alias> uint8@ dpeek-byte
 
-NORTH-STAGE 0 int> [IF]
-  " src/lib/byte-data/stage1.4th" load
-  cell-size 4 equals? [IF]
-    " src/lib/byte-data/32.4th" load
-  [ELSE]
-     cell-size 8 int>= [IF]
-        " src/lib/byte-data/64.4th" load
-     [ELSE]
-        s" Only 32 and 64 bit cells supported." error-line/2 error ( todo raise error )
-     [THEN]
-  [THEN]
-[ELSE]
+NORTH-STAGE 0 equals? [IF]
   " src/lib/byte-data/stage0.4th" load
+[ELSE]
+  " src/lib/byte-data/stage1.4th" load
 [THEN]
 
 alias> ,int8 ,uint8

@@ -161,7 +161,7 @@ end
 def ( ( bad emacs )
   int32 41 skip-until-char
   the-reader peek reader-read-byte
-end
+end out-immediate
 
 def read-until
   arg2 arg1 arg0 the-reader peek reader-read-until
@@ -208,7 +208,7 @@ def c" ( ++ ...bytes length )
   int32 4 dropn
   string-buffer-length peek
   exit-frame
-end
+end out-immediate
 
 def s" ( ++ ...bytes length )
   ["]
@@ -269,7 +269,7 @@ defcol [IF]
     pointer [then?]
     nested-skip-tokens-until
   THEN
-endcol
+endcol out-immediate
 
 defcol [UNLESS]
   swap IF
@@ -278,18 +278,18 @@ defcol [UNLESS]
     pointer [then?]
     nested-skip-tokens-until
   THEN
-endcol
+endcol out-immediate
 
 defcol [ELSE]
   pointer [if-or-unless?]
   pointer [then?]
   pointer [then?]
   nested-skip-tokens-until
-endcol
+endcol out-immediate
 
 defcol [THEN]
   ( no need to do anything besides not crash )
-endcol
+endcol out-immediate
 
 ( Word lookups: )
 
@@ -355,6 +355,7 @@ end
 def open-output-file ( path -- fid )
   0640 arg0 open-output-file/2 set-arg0
 end
+
 def open-input-file ( path -- fd )
   0 O_RDONLY arg0 open set-arg0
 end
@@ -390,7 +391,17 @@ defcol .h swap error-hex-uint endcol
 defcol ,i over error-int endcol
 defcol .i swap error-int endcol
 
+128 1024 * defvar> *interp-data-stack-size*
+256 defvar> *interp-return-stack-size*
+
+def north-init-stacks!
+  return-stack peek UNLESS *interp-return-stack-size* @ proper-init THEN
+  dhere UNLESS *interp-data-stack-size* @ data-init-stack THEN
+  exit-frame
+end
+
 def interp-init
+  north-init-stacks!
   ( token-buffer )
   int32 0 token-buffer-length poke
   token-buffer-max stack-allot token-buffer poke

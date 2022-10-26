@@ -348,6 +348,7 @@ end
 ' html-keyword-token copies-entry-as> pointer
 ' html-keyword-token copies-entry-as> longify
 ' html-keyword-token copies-entry-as> char-code
+' html-keyword-token copies-entry-as> cross-immediate-as
 ' html-keyword-token copies-entry-as> out-immediate-as
 ' html-keyword-token copies-entry-as> immediate-as
 ' html-keyword-token copies-entry-as> copy-as>
@@ -361,8 +362,9 @@ end
 ' html-keyword-end copies-entry-as> endcol
 ' html-keyword-end copies-entry-as> end
 ' html-keyword-end copies-entry-as> endop
+' html-keyword copies-entry-as> cross-immediate
+' html-keyword copies-entry-as> out-immediate
 ' html-keyword copies-entry-as> immediate
-' html-keyword-token copies-entry-as> immediate-as
 ' html-keyword copies-entry-as> IF
 ' html-keyword copies-entry-as> ELSE
 ' html-keyword copies-entry-as> THEN

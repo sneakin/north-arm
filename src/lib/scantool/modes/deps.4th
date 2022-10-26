@@ -85,6 +85,7 @@ end
 ' deps-keyword-token copies-entry-as> :
 ' deps-keyword-token copies-entry-as> defop
 ' deps-keyword-token copies-entry-as> out-immediate-as
+' deps-keyword-token copies-entry-as> cross-immediate-as
 ' deps-keyword-token copies-entry-as> immediate-as
 ' deps-keyword-token2 copies-entry-as> alias>
 ' deps-keyword-token copies-entry-as> copy-as>

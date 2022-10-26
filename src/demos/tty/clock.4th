@@ -1,12 +1,12 @@
 ' alias [UNLESS] load-core [THEN]
 
 ' TtyScreen [UNLESS]
-s[ src/lib/time.4th
-   src/lib/linux/clock.4th
-   src/lib/linux/epoll.4th
-   src/lib/geometry/angles.4th
-   src/lib/tty.4th
-] load-list
+  s[ src/lib/structs.4th
+     src/lib/time.4th
+     src/lib/linux.4th
+     src/lib/geometry/angles.4th
+     src/lib/tty.4th
+  ] load-list
 [THEN]
 
 s[ src/demos/tty/clock/segments.4th
@@ -63,6 +63,7 @@ def tty-buffer-clock-loop ( screen tz )
   ELSE
     local0 sleep-until drop
     local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
+    2 tty-cursor-up
   THEN
   drop-locals repeat-frame
 end
@@ -150,13 +151,15 @@ def tty-analog-clock-loop ( screen tz -- )
     arg1 tty-screen-draw
   ELSE
     local1 sleep-until drop
-    local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN    
+    local1 CLOCK-REDRAW-PERIOD int-mod IF arg1 tty-screen-swap ELSE arg1 tty-screen-draw THEN
+    2 tty-cursor-up
   THEN
   drop-locals repeat-frame
 end
 
 def tty-analog-clock ( tz )
   0 tty-getsize make-tty-screen set-local0
+  tty-hide-cursor
   local0 tty-screen-erase
   local0 tty-screen-draw
   ( repeat this frame on resize )

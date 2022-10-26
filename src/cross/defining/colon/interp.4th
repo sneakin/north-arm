@@ -15,7 +15,7 @@
 ( todo an extra zero is padded between entries and first data )
 
 : defcol-read-init
-  out-immediates peek cs + compiling-immediates poke
+  cross-immediates peek cs + compiling-immediates poke
   out-dictionary peek compiling-dict poke
   out-origin peek compiling-offset poke
   ' out-literalizes? compiling-literalizes-fn poke
@@ -30,7 +30,7 @@
 
 : endcol
   0 compiling poke
-; out-immediate
+; cross-immediate
 
 : does-col
   out' do-col dict-entry-code uint32@

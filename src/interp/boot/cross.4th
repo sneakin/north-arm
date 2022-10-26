@@ -4,36 +4,36 @@ tmp" Loading cross compiling words..." error-line/2
 
 alias> exec-cs exec
 alias> exec exec-abs
-0 var> out-immediates
+0 var> cross-immediates
 
 alias> cstring-length string-length
 alias> cstring-peek string-peek
 
-def out-immediate/1 ( word )
+def cross-immediate/1 ( word )
   arg0 copy-dict-entry
-  out-immediates peek over dict-entry-link poke
-  dup cs - out-immediates poke
+  cross-immediates peek over dict-entry-link poke
+  dup cs - cross-immediates poke
   exit-frame
 end
 
-def out-immediate/3 ( src-word name name-length )
+def cross-immediate/3 ( src-word name name-length )
   0
-  arg2 out-immediate/1 set-local0
+  arg2 cross-immediate/1 set-local0
   arg1 arg0 allot-byte-string/2 drop cs -
   local0 dict-entry-name poke
   local0 exit-frame
 end
 
-: out-immediate/2 ( src-word name )
-  dup cstring-length out-immediate/3
+: cross-immediate/2 ( src-word name )
+  dup cstring-length cross-immediate/3
 ;
 
-: out-immediate dict out-immediate/1 ;
-: out-immediate-as dict next-token out-immediate/3 ;
+: cross-immediate dict cross-immediate/1 ;
+: cross-immediate-as dict next-token cross-immediate/3 ;
 
-' end-compile tmp" ;" out-immediate/3
+' end-compile tmp" ;" cross-immediate/3
 
-' ( out-immediate/1
+' ( cross-immediate/1
 
 ( Output memory offseting: )
 
@@ -50,8 +50,26 @@ dhere var> out-origin
   dmove
 ;
 
+: ,seq-pointer/3 ( seq size n -- )
+  2dup int> IF
+    3 overn over seq-peek ,h espace
+    dup IF to-out-addr THEN ,h enl
+    over cell-size * dhere + uint32!
+    1 + loop
+  ELSE drop
+       cell-size *
+       dhere 2dup + dmove
+       shift 2 dropn
+  THEN
+;
+
+: ,seq-pointer ( seq n -- )
+  0 ,seq-pointer/3
+;
+
 ( The output dictionary: )
 
+0 var> output-immediates
 0 var> out-dictionary
 
 defcol out-dict out-dictionary peek swap endcol
@@ -172,7 +190,7 @@ address and relative offset. )
 : out-off'
   ( Returns the offset of the outuut word named by the next token. Doubles as POSTPONE when cross compiling. )
   next-token cross-lookup-offset-or-break
-; immediate-as [out-off'] out-immediate-as ['] out-immediate-as POSTPONE
+; immediate-as [out-off'] cross-immediate-as POSTPONE
 
 ( fixme POSTPONE needs immediate lookup, but immediate support in the output is needed. )
 
@@ -187,7 +205,7 @@ address and relative offset. )
   ( Quote for output definitions. Uses the output dictionary. )
   out-off' pointer
   POSTPONE [out-off']
-; out-immediate-as '
+; cross-immediate-as '
 
 ( String readers: )
 
@@ -197,7 +215,7 @@ address and relative offset. )
   out-off' cstring
   swap to-out-addr
   dhere to-out-addr out-dict dict-entry-data poke
-; out-immediate-as "
+; cross-immediate-as "
 
 : out-dq-stringn
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
@@ -206,12 +224,17 @@ address and relative offset. )
   swap dup to-out-addr swap cstring-length
   out-off' int32 swap
   dhere to-out-addr out-dict dict-entry-data poke
-; out-immediate-as s"
+; cross-immediate-as s"
 
 ( Output dictionary listings: )
 
 def oword-printer
   arg0 dict-entry-name peek from-out-addr write-string space
+  arg1 1 + set-arg0
+end
+
+def ciwords
+  cross-immediates peek dup IF cs + ' words-printer dict-map THEN
 end
 
 def owords
@@ -219,5 +242,5 @@ def owords
 end
 
 def oiwords
-  out-immediates peek dup IF cs + ' words-printer dict-map THEN
+  output-immediates @ out-origin peek 0 ' oword-printer dict-map/4
 end

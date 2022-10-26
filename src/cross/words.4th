@@ -21,6 +21,22 @@
   dmove
 ;
 
+: ,seq-pointer/3 ( seq size n -- )
+  2dup int> IF
+    3 overn over seq-peek ,h espace
+    dup IF to-out-addr THEN ,h enl
+    over cell-size * dhere + uint32!
+    1 + loop
+  ELSE drop
+       cell-size *
+       dhere 2dup + dmove
+       shift 2 dropn
+  THEN
+;
+
+: ,seq-pointer ( seq n -- )
+  0 ,seq-pointer/3
+;
 
 ( The output dictionary: )
 
@@ -70,14 +86,17 @@ end
 
 ( Dictionary words for output: )
 
-: make-dict-entry/4 ( link data code name -- data-pointer )
-  dhere swap ,byte-string
+: make-dict-entry-with-interned-name/4 ( link data code name -- data-pointer )
   4 align-data
   dhere
   swap ,uint32
   swap ,uint32
   swap ,uint32
   swap ,uint32
+;
+
+: make-dict-entry/4 ( link data code name -- data-pointer )
+  dhere swap ,byte-string make-dict-entry-with-interned-name/4
 ;
 
 : make-dict-entry ( name )
@@ -101,7 +120,7 @@ end
   dup dict-entry-data uint32@
   swap dup dict-entry-code uint32@
   swap dict-entry-name uint32@
-  make-dict-entry/4
+  make-dict-entry-with-interned-name/4
 ;
 
 : copies-entry-as ( link source-entry new-name )
@@ -114,6 +133,10 @@ end
   next-token copies-entry-as
 ;
 
+: drop-out-dict
+  out-dict dict-entry-link uint32@ from-out-addr set-out-dict
+;
+
 : literalizes?
   dup ' int32 equals
   swap dup ' literal equals
@@ -123,4 +146,14 @@ end
   swap dup ' offset32 equals
   swap ' uint32 equals
   logior logior logior logior logior logior
+;
+
+: oword-printer ( state word -- new-state )
+  dict-entry-name uint32@ from-out-addr byte-string@ error-string/2 espace
+  1 +
+;
+
+: owords
+  out-dict out-origin 0 ' oword-printer dict-map/4 enl
+  5 + dropn
 ;

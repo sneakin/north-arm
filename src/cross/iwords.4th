@@ -1,20 +1,20 @@
 ( Immediates for output target words: )
 
-: out-immediate/2 ( src-word out-word )
-  swap get-word swap literal out_immediates dict-set!
+: cross-immediate/2 ( src-word out-word )
+  swap get-word swap literal cross_immediates dict-set!
 ;
 
-: out-immediate/1 ( word )
-  dup out-immediate/2
+: cross-immediate/1 ( word )
+  dup cross-immediate/2
 ;
 
-: out-immediate this-word out-immediate/1 ;
-: out-immediate-as this-word next-token out-immediate/2 ;
+: cross-immediate this-word cross-immediate/1 ;
+: cross-immediate-as this-word next-token cross-immediate/2 ;
 
-" feval 0 set-compiling" ' ; ' out_immediates dict-set!
+" feval 0 set-compiling" ' ; ' cross_immediates dict-set!
 
-' ( out-immediate/1
-' POSTPONE out-immediate/1
+' ( cross-immediate/1
+' POSTPONE cross-immediate/1
 
 : out-dq
   ( Read until a double quote, writing the contained data to the data stack and pushing the calls to leave a pointer on the stack for a definition. )
@@ -23,7 +23,7 @@
   ( Update the word being defined as it's definition will have moved. )
   ( todo update when mapping the stack? )
   dhere out-dict dict-entry-data uint32!
-; out-immediate-as "
+; cross-immediate-as "
 
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a quoted pointer and length on the stack for a definition. )
@@ -34,7 +34,7 @@
   ( Update the word being defined as it's definition will have moved. )
   ( todo update when mapping the stack? )
   dhere out-dict dict-entry-data uint32!
-; out-immediate-as s"
+; cross-immediate-as s"
 
 ( Control flow: )
 
@@ -42,13 +42,13 @@
   literal int32
   literal if-placeholder
   literal unless-jump
-; out-immediate-as IF
+; cross-immediate-as IF
 
 : out-UNLESS
   literal int32
   literal if-placeholder
   literal if-jump
-; out-immediate-as UNLESS
+; cross-immediate-as UNLESS
 
 : out-ELSE
   literal int32
@@ -57,16 +57,16 @@
   roll
   dup here stack-delta 3 - -op-size mult
   swap spoke
-; out-immediate-as ELSE
+; cross-immediate-as ELSE
 
 : out-THEN
   literal if-placeholder stack-find
   dup here stack-delta 3 - -op-size mult
   swap spoke
-; out-immediate-as THEN
+; cross-immediate-as THEN
 
 : out-RECURSE
   ' pointer
   out-dict dict-entry-data dpeek
   ' jump
-; out-immediate
+; cross-immediate

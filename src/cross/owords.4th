@@ -12,7 +12,7 @@
 
 : out-off'
   POSTPONE out' to-out-addr
-; out-immediate-as ['] immediate ( for postpone safety )
+; ( cross-immediate-as ['] ) immediate ( for postpone safety )
 
 : out-off''
   ( Pointer is not available during compile in north-bash. )
@@ -25,6 +25,6 @@
   ( Using literal as out' can't be used as it pushes an integer that causes double literalizing, and it's north-bash which pushes tokens. )
   literal pointer next-token
 ;
-out-immediate-as out-off'
-out-immediate-as out'
-out-immediate-as '
+cross-immediate-as out-off'
+cross-immediate-as out'
+cross-immediate-as '

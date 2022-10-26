@@ -1,8 +1,10 @@
+( todo remove this file? )
+
 frame-byte-size defconst> frame-size
 cell-size defconst> call-frame-size
 
-alias> doc( ( out-immediate
-alias> args( ( out-immediate
+alias> doc( ( immediate
+alias> args( ( immediate
 
 defalias> equals equals?
 
@@ -100,6 +102,7 @@ alias> c-defvar> defvar>
   next-token char-code
 ; out-immediate-as char-code
 
+(
 : immediate
 ;
 
@@ -109,6 +112,7 @@ alias> c-defvar> defvar>
 
 : immediate-only
 ;
+)
 
 : north-def-read
   defcol-read-init compiling-read
@@ -126,7 +130,7 @@ alias> c-defvar> defvar>
 
 defcol read-byte
   0
-  1 locals 1 read
+  1 locals current-input @ read
   drop swap
 endcol
 
@@ -135,18 +139,18 @@ defcol input-reset
 endcol
 
 defcol write-byte
-  swap here 1 swap 1 write 2 dropn
+  swap here 1 swap current-output @ write 2 dropn
 endcol
 
 defcol write-word
-  swap here cell-size swap 1 write 2 dropn
+  swap here cell-size swap current-output @ write 2 dropn
 endcol
 
 defcol jump-entry-data
   swap cs + dict-entry-data peek jump-cs
 end
 
-defalias> return0 return
+( defalias> return0 return )
 defalias> drop-call-frame drop2
 
 defalias> code-segment cs

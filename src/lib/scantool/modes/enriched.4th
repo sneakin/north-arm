@@ -263,6 +263,7 @@ end
 ' enriched-keyword-token copies-entry-as> longify
 ' enriched-keyword-token copies-entry-as> char-code
 ' enriched-keyword-token copies-entry-as> out-immediate-as
+' enriched-keyword-token copies-entry-as> cross-immediate-as
 ' enriched-keyword-token copies-entry-as> immediate-as
 ' enriched-keyword-token copies-entry-as> copy-as>
 ' enriched-keyword-token copies-entry-as> copies-entry-as>
@@ -275,8 +276,9 @@ end
 ' enriched-keyword-end copies-entry-as> endcol
 ' enriched-keyword-end copies-entry-as> end
 ' enriched-keyword-end copies-entry-as> endop
+' enriched-keyword copies-entry-as> out-immediate
+' enriched-keyword copies-entry-as> cross-immediate
 ' enriched-keyword copies-entry-as> immediate
-' enriched-keyword-token copies-entry-as> immediate-as
 ' enriched-keyword copies-entry-as> IF
 ' enriched-keyword copies-entry-as> ELSE
 ' enriched-keyword copies-entry-as> THEN

@@ -55,18 +55,11 @@ end
 defcol end-compile
   int32 0 compiling poke
 endcol
+out-immediate-as endcol
+out-immediate-as end
+out-immediate-as ;
 
-0
-out' [THEN] copies-entry-as> [THEN]
-out' [ELSE] copies-entry-as> [ELSE]
-out' [UNLESS] copies-entry-as> [UNLESS]
-out' [IF] copies-entry-as> [IF]
-out' end-compile copies-entry-as> endcol
-out' end-compile copies-entry-as> end
-out' end-compile copies-entry-as> ;
-out' ( copies-entry-as> ( ( bad emacs )
-out' c" copies-entry-as> c"
-to-out-addr defvar> immediates
+output-immediates @ to-out-addr defvar> immediates
 
 -1 defconst> COMPILING-ERROR
 0 defconst> COMPILING-INT

@@ -72,6 +72,7 @@ def builder-run ( entry len src-cons )
   s" copyright" cross-lookup IF code-origin peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
   s" _start" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
   s" *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
+  s" immediates" cross-lookup IF output-immediates peek to-out-addr swap dict-entry-data uint32@ from-out-addr data-var-init-value uint32! ELSE not-found drop THEN
   s" *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
   s" *ds-offset*" cross-lookup IF elf-data-segment-offset swap dict-entry-data uint32! ELSE not-found drop THEN
 

@@ -13,6 +13,7 @@ s[
   src/cross/words.4th
   src/cross/iwords.4th
   src/cross/owords.4th
+  src/cross/oiwords.4th
   src/cross/list.4th
   src/cross/defining/op.4th
   src/cross/defining/alias.4th

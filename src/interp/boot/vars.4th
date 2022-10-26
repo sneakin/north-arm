@@ -1,13 +1,13 @@
 ( Inplace variables: )
 
 ' do-inplace-var defined? [IF]
-def does-inplace-var
-  arg0 pointer do-inplace-var does
-end
+  def does-inplace-var
+    arg0 pointer do-inplace-var does
+  end
 [ELSE]
-def does-inplace-var
-  arg0 pointer do-var does
-end
+  def does-inplace-var
+    arg0 pointer do-var does
+  end
 [THEN]
 
 def inplace-var>
@@ -27,13 +27,13 @@ def data-var-init-values/2 ( word origin -- value slot )
 end
 
 ' tail+1 defined? [IF]
-def data-var-init-values ( word -- value slot )
-  cs ' data-var-init-values/2 tail+1
-end
+  def data-var-init-values ( word -- value slot )
+    cs ' data-var-init-values/2 tail+1
+  end
 [ELSE]
-def data-var-init-values ( word -- value slot )
-  arg0 cs data-var-init-values/2 1 return2-n
-end
+  def data-var-init-values ( word -- value slot )
+    arg0 cs data-var-init-values/2 1 return2-n
+  end
 [THEN]
 
 ' do-data-var defined? [IF]
@@ -57,13 +57,17 @@ end
 ( todo needs a destination and dictionary args to be useful when building )
 def reinit-data-vars!
   dict ' maybe-init-data-var dict-map
-  ( *init-data* cs + ds copy-seq-n ) ( what abaut new vars? )
 end
 
 ( A data-var with slot 0: the current size. )
 create> *next-data-var-slot*
 does> do-data-var
-data-segment-size 0 here cs - dict dict-entry-data !
+sys' data-var> defined? [IF]
+  dhere to-out-addr out-dict dict-entry-data uint32!
+  0 ,uint32 0 ,uint32
+[ELSE]
+  data-segment-size 0 here cs - dict dict-entry-data !
+[THEN]
 
 def next-data-var-slot
   *next-data-var-slot* inc! return1
@@ -74,7 +78,7 @@ def does-data-var ( init-value word -- [init-value slot] )
   arg0
   next-data-var-slot set-arg0
   args cs - over dict-entry-data poke
-  init-data-var
+  init-data-var return1
 end
 
 def data-var>
@@ -84,5 +88,5 @@ end
 
 alias> var> data-var>
 [ELSE]
-alias> var> inplace-var>
+  alias> var> inplace-var>
 [THEN]

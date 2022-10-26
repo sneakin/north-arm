@@ -282,6 +282,7 @@
   (unprocess-buffer-tty-images beginning end)
   (toggle-enable-multibyte-characters 1)
   (point-max))
+
 (defun to-tty-image (beginning end buffer)
   (enriched-mode 0)
   (setf tty-cell-padding (buffer-local-value 'tty-cell-padding buffer))

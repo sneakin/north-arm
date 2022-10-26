@@ -6,14 +6,14 @@
   out-off' begin-frame stack-find locals min
   here - -op-size 2 * + negate
   out-off' jump-rel
-; out-immediate
+; cross-immediate
 
 ( todo does-frame )
 ( todo needs to be adapted for interp )
 
 : def-read
   defcol-read-init compiling-read
-  out' return to-out-addr swap 1 +
+  out' return0 to-out-addr swap 1 +
   ( todo drop terminator search and use length )
   read-terminator over 3 + set-overn
   out' begin-frame to-out-addr over 2 + set-overn
@@ -27,4 +27,4 @@
 
 : end
   0 compiling poke
-; out-immediate
+; cross-immediate
