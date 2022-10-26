@@ -68,7 +68,7 @@ def decompile-entry-code
   s" does> " write-string/2
   arg0 dict-entry-code peek
   dup arg0 dict-entry-code-word write-dict-entry-name
-  s" ( " write-string/2
+  s"  ( " write-string/2
   write-hex-uint
   s"  ) " write-string/2
 end
