@@ -4,7 +4,7 @@ Using only a shell (and Emacs 🤫), statically and dynamically linked ELF files
 built that can load an assembler and cross compiler to rebuild
 themselves.
 
-Copyright (C) 2021 Nolan Eakins [mailto:sneakin+at+semanticgap.com]. All rights reserved.
+Copyright (C) 2020-2022 Nolan Eakins [mailto:sneakin+at+semanticgap.com]. All rights reserved.
 
 * Dependencies
 ** Runtime
@@ -12,6 +12,7 @@ Copyright (C) 2021 Nolan Eakins [mailto:sneakin+at+semanticgap.com]. All rights 
   - Termux on Android
   - GNU/Linux
 - Thumb capable ARM, with Thumb 2 preferred
+  - Or qemu-arm.
 ** Build
 - Bash
 - Make
@@ -30,17 +31,21 @@ Termux may set ~$LD_PRELOAD~ which requires unsetting it: ~LD_PRELOAD='' ./bin/i
 
 * Building
 
-~make~ is the preferred build tool.
+~make~ is the preferred build tool. If you're on a different architecture from your target,
+you will to set binfmt up to execute using Qemu.
 
 The default task, ~make all~, will use Bash to boot strap a static executable: ~bin/interp.elf~.
-This will then be used to rebuild itself as ~bin/interp.${linker}.1.elf~ and ~bin/builder.${linker}.1.elf~ which then builds a dynamically linked versions with the  ~2.elf~ suffix.
-~${linker}~ may be any or all of ~static~, ~android~, and ~gnueabi~.
-The ~OUT_TARGETS~ Make variable controls this.
-Be prepared to wait.
+Be prepared to wait:  ~make all HOST=x86_64-linux-static TARGET=thumb-linux-static~
 
-The build script ~src/bin/${app}.4th~ can be built by running ~make bin/${app}.elf~.
-This build will be done with Bash. ~make bin/${app}.1.elf~ will use ~bin/interp.1.elf~.
-The ~1~ can be changed to any value with 1, 2, and 3 typically used.
+This will then be used to rebuild itself as ~bin/interp.${linker}.1.elf~ and ~bin/builder.${linker}.1.elf~ which then builds a dynamically linked versions with the ~2.elf~ and ~3.elf~ suffixes.
+~${linker}~ may be any or all of ~static~, ~android~, and ~gnueabi~.
+The ~HOST~, ~TARGET~, and ~OUT_TARGETS~ Make variables control and define the platform triples.
+
+~make quick~ will skip the full rebuild of stage 0 by copying the ~./bootstrap/~ executables.
+
+The build scripts / top level programs found in ~src/bin/~ can be built by running ~make bin/${app}.elf~.
+This build will be done with Bash. ~make bin/${app}.1.elf~ will use ~bin/interp.${linker}.${stage}.elf~.
+The ~$stage~ can be changed to any value of 1, 2, and 3.
 
 ~make boot~ will rebuild ~./bootstrap/~ from a clean clone of the repository.
 
@@ -51,7 +56,10 @@ All executables built can be found in ~./bin/~.
 ** Bash
 
 ~./src/bash/forth.sh~ is Forth writen for Bash.
-It is used before any binary is available.
+It is used before any binary is available. ~./bin/fforth~
+is a shortcut capable of loading ~./bin/fforth.dict~ for
+a fast initial state. ~make bin/fforth.dict~ will build
+ that.
 
 ~load-core~ will load the compiling words.
 This load step can be skipped by using ~./bin/fforth~ after running ~make bin/fforth.dict~.
@@ -60,6 +68,9 @@ Build scripts under ~src/bin/~ can be ~cat~ into it and writen to a file:
 ~cat src/bin/interp.4th | ./src/bash/forth.sh > interp.elf~
 
 ** Boot strapped
+
+This describes any of the ~./bin/interp*~ executables.
+These will need Qemu if compiled for a different platform.
 
 A list of words can be printed with ~words~. Compiling words with ~iwords~.
 
@@ -82,10 +93,31 @@ Starts the self build of the ops needed for an interpreter.
 **** load-interp
 Loads the bare interpreter when building.
 
+**** Demos
+
+If ~httpss://github.com/sneakin/north~ has beenkcloned to ~../north~, the
+followingkdemos can be loaded:
+
+~src/demos/tty/drawing.4th~ exercises the drawing routines. Load and execute
+~demo-tty-line~, ~demo-tty-circle~, ~demo-tty-ellipse~, or ~demo-tty-blit~.
+
+~src/demos/tty/clock.4th~ has three clocks for the terminal:
+~tty-raw-clock-loop~, ~tty-buffer-clock~, and ~tty-analog-clock~. Each takes
+a timezone argument in the form of an offset in seconds.
+
+~src/demos/tty/raycast.4th~ is ray caster like Wolfenstein 3d and Ken's
+Labryinth. Load and execute ~raycaster-init~. Then ~world0~ to ~world9~ are
+defined. ~raycaster-turn~ will render and interact one screen and input line
+at a time. ~raycaster-real~ uses epoll and threads for a bore interactive
+experience.
+
 * Programming
 
 ** Scripts
 *** In binaries
+
+~./bin/builder.elf~
+
 *** Interpreting
 **** load
 
@@ -100,6 +132,7 @@ Loads the bare interpreter when building.
 *** return
 *** :
 *** alias>
+*** immediate
 
 ** Conditions
 *** IF
@@ -140,6 +173,7 @@ Loads the bare interpreter when building.
 *** def
 *** defvar>
 *** defconst>
+*** cross-immediate
 *** out-immediate
 *** out'
 *** out-off'
