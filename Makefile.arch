@@ -60,7 +60,7 @@ $$(error "Bad arch: $(2)")
 $$(error "Bad OS: $(2)")
 	endif
 
-	ifneq (,$$(findstring gnueabi,$(2)))
+	ifneq (,$$(findstring gnu,$(2)))
 		$(1)_ABI?=gnueabi
 		$(1)_STATIC?=false
 	else ifneq (,$$(findstring android,$(2)))
@@ -73,7 +73,9 @@ $$(error "Bad OS: $(2)")
 		$(1)_ABI?=dynamic
 		$(1)_STATIC?=false
 	else
-$$(error "Bad ABI: $(2)")
+$$(info "Bad ABI: $(2)")
+		$(1)_ABI?=static
+		$(1)_STATIC?=true
 	endif
 endef
 

@@ -412,3 +412,6 @@ bin/scantool.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/include/interp.4th \
 	src/interp/cross.4th \
 	src/bin/scantool.4th
+
+%.html: %.org
+	emacs $< --batch -f org-html-export-to-html --kill
