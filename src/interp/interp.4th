@@ -222,24 +222,48 @@ def [if?]
   arg1 s" [IF]" string-equals?/3 return1
 end
 
+def if?
+  arg1 s" IF" string-equals?/3 return1
+end
+
 def [unless?]
   arg1 s" [UNLESS]" string-equals?/3 return1
+end
+
+def unless?
+  arg1 s" UNLESS" string-equals?/3 return1
 end
 
 def [else?]
   arg1 s" [ELSE]" string-equals?/3 return1
 end
 
+def else?
+  arg1 s" ELSE" string-equals?/3 return1
+end
+
 def [then?]
   arg1 s" [THEN]" string-equals?/3 return1
+end
+
+def then?
+  arg1 s" THEN" string-equals?/3 return1
 end
 
 def [else-or-then?]
   arg1 arg0 [else?] rot swap [then?] rot int32 2 dropn or return1
 end
 
+def else-or-then?
+  arg1 arg0 else? rot swap then? rot int32 2 dropn or return1
+end
+
 def [if-or-unless?]
   arg1 arg0 [if?] rot swap [unless?] rot int32 2 dropn or return1
+end
+
+def if-or-unless?
+  arg1 arg0 if? rot swap unless? rot int32 2 dropn or return1
 end
 
 ( todo top level IF nesting, reuse bash version? )
@@ -262,23 +286,35 @@ defcol nested-skip-tokens-until ( lead-fn term-fn inner-term-fn -- )
   3 swapn rot swap 0 nested-skip-tokens-until/4 4 dropn
 endcol
 
+defcol skip-bracketed-conditional-tokens
+  pointer [if-or-unless?]
+  pointer [else-or-then?]
+  pointer [then?]
+  nested-skip-tokens-until
+endcol
+
+defcol skip-conditional-tokens
+  pointer if-or-unless?
+  pointer else-or-then?
+  pointer then?
+  nested-skip-tokens-until
+endcol
+
 defcol [IF]
-  swap UNLESS
-    pointer [if-or-unless?]
-    pointer [else-or-then?]
-    pointer [then?]
-    nested-skip-tokens-until
-  THEN
+  swap UNLESS skip-bracketed-conditional-tokens THEN
 endcol out-immediate
 
+defcol IF
+  swap UNLESS skip-conditional-tokens THEN
+endcol
+
 defcol [UNLESS]
-  swap IF
-    pointer [if-or-unless?]
-    pointer [else-or-then?]
-    pointer [then?]
-    nested-skip-tokens-until
-  THEN
+  swap IF skip-bracketed-conditional-tokens THEN
 endcol out-immediate
+
+defcol UNLESS
+  swap IF skip-conditional-tokens THEN
+endcol
 
 defcol [ELSE]
   pointer [if-or-unless?]
@@ -287,10 +323,23 @@ defcol [ELSE]
   nested-skip-tokens-until
 endcol out-immediate
 
+defcol ELSE
+  pointer if-or-unless?
+  pointer then?
+  pointer then?
+  nested-skip-tokens-until
+endcol
+
+( fixme did/should the last token get eaten? THEN was leftover on an ELSE when the alias was used. )
+
 defcol [THEN]
   ( no need to do anything besides not crash )
 endcol out-immediate
 
+defcol THEN
+  ( no need to do anything besides not crash )
+endcol
+  
 ( Word lookups: )
 
 defcol not-found/2

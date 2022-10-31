@@ -323,6 +323,16 @@ doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
 doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 	$(HTMLER) $^ > $@
 
+# Stage 0
+
+%$(EXECEXT): %.4th
+	cat $< | $(FORTH) > $@
+	chmod u+x $@
+
+bin/%$(EXECEXT): src/bin/%.4th
+	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
+	chmod u+x $@
+
 # Per stage variabless:
 
 define define_stage # stage
@@ -355,7 +365,8 @@ $(foreach stage,1 2 3, \
 
 STAGE0_FORTH=$(RUNNER) ./bin/interp$(EXECEXT)
 STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
-STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
+#STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
+STAGE1_BUILDER=$(RUNNER) ./bin/builder.$(RUN_OS).1$(EXECEXT)
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
 bin/builder$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
@@ -366,14 +377,6 @@ bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
 bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
-
-%$(EXECEXT): %.4th
-	cat $< | $(FORTH) > $@
-	chmod u+x $@
-
-bin/%$(EXECEXT): src/bin/%.4th
-	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
-	chmod u+x $@
 
 # Barebones ELF files:
 bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
@@ -408,10 +411,7 @@ test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpi
 	./scripts/bintopng.sh d $< $@
 
 # Scantool for stats and syntax highlighting.
-bin/scantool.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
-	src/include/interp.4th \
-	src/interp/cross.4th \
-	src/bin/scantool.4th
+bin/scantool.$(TARGET_ABI).$(STAGE)$(EXECEXT): src/include/interp.4th src/interp/cross.4th src/bin/scantool.4th
 
 %.html: %.org
 	emacs $< --batch -f org-html-export-to-html --kill

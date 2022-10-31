@@ -58,6 +58,12 @@ def immediate/1
   exit-frame
 end
 
+def immediate/2
+  arg0 immediate/1
+  arg1 cs - immediates peek cs + dict-entry-name poke
+  exit-frame
+end
+
 def immediate
   dict immediate/1
   exit-frame
@@ -82,48 +88,44 @@ end
   here int32 2 up-stack/2 stack-find/2
 ;
 
-symbol> if-placeholder
-
-: IF
-  literal int32 if-placeholder
-  literal unless-jump
-; immediate
-
-: UNLESS
-  literal int32 if-placeholder
-  literal if-jump
-; immediate
-
-: ELSE
-  literal int32
-  if-placeholder stack-find
-  if-placeholder literal jump-rel
-  roll
-  dup here stack-delta int32 3 - op-size *
-  swap spoke
-; immediate
-
-: THEN
-  if-placeholder stack-find
-  dup here stack-delta int32 3 - op-size *
-  swap spoke
-; immediate
-
 def immediate-as/1
-  arg0 immediate/1
   next-token allot-byte-string/2
-  IF
-    cs -
-    immediates peek cs + dict-entry-name poke
-    exit-frame
-  ELSE return0
-  THEN
+  4 if-jump return0
+  arg0 immediate/2
+  exit-frame
 end
 
 def immediate-as
   dict immediate-as/1
   exit-frame
 end
+
+symbol> if-placeholder
+
+: interp-IF
+  literal int32 if-placeholder
+  literal unless-jump
+; immediate-as IF
+
+: interp-UNLESS
+  literal int32 if-placeholder
+  literal if-jump
+; immediate-as UNLESS
+
+: interp-ELSE
+  literal int32
+  if-placeholder stack-find
+  if-placeholder literal jump-rel
+  roll
+  dup here stack-delta int32 3 - op-size *
+  swap spoke
+; immediate-as ELSE
+
+: interp-THEN
+  if-placeholder stack-find
+  dup here stack-delta int32 3 - op-size *
+  swap spoke
+; immediate-as THEN
 
 defcol ''
   literal pointer swap
