@@ -2,16 +2,60 @@
 
 * Goals
 ** Ultimate:
-ELF file that only has an offset thread into a dynamically linked symbol table and interpreter.
+
+ELF file that only has an offset thread into a dynamically linked
+symbol table and interpreter.
+
 ** DONE Primary:
+
 Build an ELF file that can execute the code to build itself.
+
 ** Secondary:
-North Runner compatible with the x86 runner that can mmap a file to execute.
-** Get out of the Turing Tar Pit.
-** Used to make a useful program like a game.
-   
+
+North Runner compatible with the x86 runner that can mmap a file to
+execute.
+
+** Thirdly
+Get out of the Turing Tar Pit.
+Make a useful program like a game.
+
+** Fourthly
+
+A fully self contained binary that can output its own code that can be
+used to rebuild.
+
+- minimal features
+- full features
+
+
 * Tasks
 
+** November
+*** Rename ~offset32~ to something like ~literal+cs~ or ~cs+int32~? Then ~offset~ is free for relative pointer literals: ~eip + literal~. ~eip+int32~?
+
+*** Cross compiled structures
+
+    - Types need to be output AND available to the compiler.
+    - Type and structure accessors need to be output and available too.
+    - Field immediates need to be available to the cross compiler and may need variants.
+      
+**** A ~toplevel~ set of words to enter and exit the interp and cross compile contexts?
+     
+*** Dictionary list
+*** TTY, socket, signal polling & input
+*** Loaded / compiled files list; ~require~ and ~include?~
+~load-core~ needs less use if it's compiled in. Actually crashes if core is already loaded.
+*** Interp command line args
+    - files... :: list of files
+    - -e :: eval string
+    - -i :: always prompt
+    - -D var=value :: set ~var~ to ~value~ before any interpreting; may need a type indicator
+    - -D \[data|return\]-stack=number :: stack sizes, location
+    - -v :: verbosity
+    - -d :: debug; may duplicate the above?
+    - -I :: add search path
+*** ~tty-img[~ breaks github browsing: encode?
+    
 ** September!
 *** Pi Zero 1:
     Has no thumb2 so no coprocessor, no float.
@@ -28,12 +72,14 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
     Internally utf32 will be used. No need to encode for utf8 if the terminal is utf32.
     
 *** No way to call foreign function pointers without making a word.
+
 *** Cross compiling
-**** Move boot/cross.4th into src/cross/interp.4th?
+**** Move boot/cross.4th into src/cross/interp.4th? src/cross/words/interp.4th? src/cross/interp/words.4th?
 **** Output cell-size: Use ~out-cell-size~ in cross compiling and other ouput words. ~out-op-size~ could replace ~-op-size~ too.
 ***** Use ~,cell~ instead of ~,uint32~ to make cross words more portable. ~,out-cell~?
 **** Thumb and x86 assemblers need to built into the builder.
     Placing each in separate dictionaries could work. defop/endop could load/unload could work for all but macros. Builder adds those words?
+
 *** Have a (super) lite version of the runner and interpreter.
     Only cell sized math.
     No floats.
@@ -41,6 +87,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
     No debugging aids.
     Barely able to load-core.
     A build option to strip unused words?
+
 *** TTY
 **** input layered on top of a reader's buffering and function pointers
 **** input w/ nonblocking support: prior state saved and continuable
@@ -49,6 +96,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
      No aliases. Normalized vocab.
 **** using readeval
 **** usable in binaries
+
 *** Binary self verification
 **** Hashing
 ***** SHA
@@ -66,7 +114,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 **** int64 file organization
 **** parse-int for int64
 **** int64 literal words
-*** defining immediates in binary
+*** DONE defining immediates in binary
     Three sets of immediates:
       * interpreter: top level, interpretable, used in evaluated defs
       * cross compiling: interpretable, only used when [cross] compiling
@@ -82,7 +130,7 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 ** July
 *** self contained binaries
 **** boot/core and friends
-***** immediates
+***** DONE immediates
 ***** better dictionary separation by switching modes & dictionaries
 **** clock, raycaster
 **** eliminate aliases
@@ -102,7 +150,8 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 *** error handler, catch and throw
 
 ** <=June?
-*** struct fields don't resolve right w/ b and b1 fields.
+*** TODO struct fields don't resolve right w/ b and b1 fields.
+    Fixed?
 *** swap tty-cursor-to's arguments to row, column
 *** cross-lookup in bash takes one argument, interp's version takes two.
 *** DONE cpio file format as arguments
@@ -111,10 +160,11 @@ North Runner compatible with the x86 runner that can mmap a file to execute.
 **** TODO byte order differs from stack / argument and poked memory order
      Little endian puts LSB at the lower address. Stack ordering has LSB at the higher address.
      But byte order in code needs to be consistent on big and little endian systems, which may need 64 bit support in the integer reader instead of faking it.
-*** core.4th needs a split to allow inclusion in binary
+*** DONE core.4th needs a split to allow inclusion in binary
 
 ** Sooner than later
 *** current-tty and standard-tty that opens /dev/tty for IO
+    When TTY output to a pipe is desired?
 **** needs writes that take an fd
 **** reads need fd too
 *** Crashes with ~literal int32 123~
@@ -149,8 +199,13 @@ The ability to dump the program to source code into a loadable and buildable for
 Find equivalent words to add ~immediate~ and/or ~immediate-as~ after the definition.
 **** hexadecimal 0x prefixes
 **** DONE cstring needs to not appear before string literals
-*** [#A] builder binary
-**** Needs immediate dictionary writing and overrides.
+**** Reconstruction of immediate words
+***** IF/ELSE/THEN
+***** CASE ENDCASE
+**** Non-cell data values
+Arrays, strings, lists, (function) pointers
+*** DONE [#A] builder binary
+**** DONE Needs immediate dictionary writing and overrides.
 **** DONE Command line arguments
 
 
@@ -191,7 +246,7 @@ lshift rshift arshift
 
 include file : loads file
 include? file : loads file if it's not already loaded
-forget file : unload the file's definitions
+forget file : unload the file's definitions (a word to free and forget?)
 anew : called when entering a new file for bookkeeping for forget.
 ? +!
 *** DONE struct
@@ -217,8 +272,9 @@ what's motd ( -> ' hello )
 ** String readers have length limit of token-buffer-max. Could/should read more.
 ** Full cpio archive concatenated onto binary.
 *** needs memory decoding instead of file reads
+Use the reader.
 *** And/or cpio header file offset argument
-*** cpio encoder
+*** DONE cpio encoder
 *** compressed?
 ** Postpone lookup with and without immediates
 ** Using ~'~ in a definition should be like ~literal~ or more like ~pointer~?
@@ -239,7 +295,7 @@ what's motd ( -> ' hello )
 ** runner ops
 *** TODO exec -> exec-cs-offset, interp/boot/cross.4th aliases to exec-cs
 *** DONE call ops and return to next
-*** variables on stack
+*** DONE variables on stack
 *** array index interpreter
 *** array of words common with x86 to boot strap a full list of words
 ** Pi Zero
@@ -403,7 +459,7 @@ load needs file opening and reading with a reader stack.
 *** import for use in current module
 *** brings in name spacing: what word lists to search when compiling
 *** in-package & export/public & import interplays
-** Lambda / Code blocks & lists: use [ ] to delineate
+** TODO Lambda / Code blocks & lists: use [ ] to delineate
 ** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
 *** TODO Exports
@@ -487,7 +543,7 @@ To unify interpretation of tokens and indirect threads.
 *** immediates
 *** check if literals and pointers are words
 ** TODO error handling that quits and/or starts a new interpreter loop
-** Make output functions take an fd argument.
+** Make output functions take an fd or stream argument.
 ** TODO Eliminate needless padding
 Zero needed at end of definitions for decompile.
 [Data] segment needs to be aligned at 4096 bytes.
