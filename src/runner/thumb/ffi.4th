@@ -82,6 +82,7 @@ endop
 : emit-exec-pc ( cell-offset -- )
   out' exec-r1-abs dict-entry-code uint32@ cell-size + r2 emit-load-int32
   cs-reg r2 r2 add ,ins
+  dhere to-out-addr 2 logand IF 1 + THEN
   cell-size mult r1 ldr-pc ,ins
   r2 bx ,ins
 ;
@@ -105,23 +106,21 @@ endcol
 
 ( todo push the ABI's locals in cs-reg and dict-reg, but before the callback's args. )
 
-( fixme FFI callbacks are loading state from wrong offsets. changes depending on how the trampoline's length. )
-
 : ffi-callback-exec ( landing-zone -- )
   ( set eip to callback landing zone, will get pushed on call )
   dict-entry-data uint32@ eip emit-load-int32
   ( syscalls wipe the registers. State needs to be loaded from after the branch. )
-  dhere 0 ,ins
-  dhere 0 ,ins
+  dhere 0 ,ins ( dict-reg )
+  dhere 0 ,ins ( data-reg via cs-reg )
+  cs-reg data-reg movrr ,ins
+  dhere 0 ,ins ( cs-reg )
   cs-reg eip eip add ,ins
-  3 emit-exec-pc
-  2 pad-data ( pad to get the size aligned for ldr-pc )
-  ( above is variable length, so patch in PC relative state loading of dict and cs. )
-  ( dict, cs, and a word will appended here when copied )
-  dhere over - cell-size + cs-reg ldr-pc swap ins!
-  dhere over -
-  over to-out-addr 2 logand UNLESS cell-size - THEN
-  dict-reg ldr-pc swap ins!
+  1 emit-exec-pc
+  4 pad-data ( pad to get the size aligned for ldr-pc )
+  ( a word, dict, cs, and ds will be appended here when copied by ~ffi-callback-with~, so patch in PC relative loading. )
+  cell-size 2 * cs-reg patch-ldr-pc!
+  cell-size 3 * cs-reg patch-ldr-pc!
+  cell-size dict-reg patch-ldr-pc! ( todo could do without dict here )
 ;
 
 : ffi-callback-exec-0
@@ -132,7 +131,7 @@ endcol
   out' ffi-callback-lz-1 ffi-callback-exec
 ;
 
-( Ops to be copied in trampolines that are called from C with args that are in registers: )
+( Ops get copied in trampolines that are called from C where the args are in registers: )
 ( ARM abi: lr = return address, r0-3 = args0-3, arg4+ on stack )
 ( TBD safe to assume r4-7 are exec state: cs, fp, eip? store as data after code? )
 

@@ -66,7 +66,7 @@ alias> int64! uint64!
 ( Data stack alignment & padding: )
 
 : pad-addr ( addr alignment )
-  2dup + over / over mult
+  2dup 1 - + over / over mult
   rot 2 dropn
 ;
 

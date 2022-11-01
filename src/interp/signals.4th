@@ -74,21 +74,23 @@ def print-signal-state
     arg2 128 cmemdump
   THEN
   s" Signal context registers: " error-line/2
-  arg2 signal-state-registers print-regs/1
+  arg2 signal-state-registers NORTH-BUILD-TIME 1634096442 int> IF print-regs/1 ELSE print-regs THEN
   ( fails if the signal happens in a syscall as FP and EIP are reused )
-  s" EIP: " error-string/2
-  arg2 signal-state-registers dict-reg seq-peek
-  arg2 signal-state-registers eip-reg seq-peek print-eip
-  s" Stack: " error-line/2
-  arg2 signal-state-registers 0 seq-peek error-hex-uint espace
-  arg2 signal-state-registers sp-reg seq-peek 128 cmemdump
-  arg2 signal-state-registers fp-reg seq-peek
-  dup stack-pointer? IF
-    s" Frames: " error-line/2
+  NORTH-BUILD-TIME 1634096442 int> IF
+    s" EIP: " error-string/2
     arg2 signal-state-registers dict-reg seq-peek
-    stack-frame-depth @ print-stack-trace
+    arg2 signal-state-registers eip-reg seq-peek print-eip
+    s" Stack: " error-line/2
+    arg2 signal-state-registers 0 seq-peek error-hex-uint espace
+    arg2 signal-state-registers sp-reg seq-peek 128 cmemdump
+    arg2 signal-state-registers fp-reg seq-peek
+    dup stack-pointer? IF
+      s" Frames: " error-line/2
+      arg2 signal-state-registers dict-reg seq-peek
+      stack-frame-depth @ print-stack-trace
+    THEN
+    ( todo proper call trace )
   THEN
-  ( todo proper call trace )
 end
 
 def signals-abort-handler
