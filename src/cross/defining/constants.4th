@@ -29,5 +29,5 @@
 
 ( Self referential symbols: )
 : defsymbol>
-  create> does-const dup to-out-addr swap dict-entry-data poke
+  create> does-const-offset dup to-out-addr swap dict-entry-data poke
 ;

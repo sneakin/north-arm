@@ -116,6 +116,15 @@ def decompile-const
   THEN
 end
 
+def decompile-const-offset
+  arg0 dict-entry-data @ arg0 cs - equals? IF
+    s" symbol> " write-string/2
+    arg0 write-dict-entry-name nl
+  ELSE
+    arg0 s" const-offset>" decompile-inplace-var
+  THEN
+end
+
 def decompile-data-var
   arg2 dict-entry-data peek cs + 1 seq-peek write-uint space
   arg1 arg0 write-string/2 space
@@ -155,6 +164,7 @@ def decompile ( entry )
       ' do-col WHEN arg0 decompile-colon ;;
       ' do-proper WHEN arg0 decompile-proper ;;
       ' do-const WHEN arg0 decompile-const ;;
+      ' do-const-offset WHEN arg0 decompile-const-offset ;;
       ' do-var WHEN arg0 s" var>" decompile-data-var ;;
       ' do-inplace-var WHEN arg0 s" inplace-var>" decompile-inplace-var ;;
       ' do-data-var WHEN arg0 s" var>" decompile-data-var ;;
