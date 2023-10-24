@@ -250,3 +250,16 @@
   0 0 1 1 0xF 6 overn mrc
   swap drop
 ;
+
+( Table branch byte: branch by the byte stored in table times two. )
+: tbb ( index-reg base-reg -- hi lo )
+  ( 1 1 1 0  1 0 0 0  1 1 0 1  Rn, 1 1 1 1  0 0 0 0  0 0 0 0  Rm )
+  0xF logand 0xE8D0 logior
+  swap 0xF logand 0xF000 logior 16 bsl logior
+;
+
+( Table branch half word: branch by the short stored in table times two. )
+: tbh ( index-reg base-reg -- hi lo )
+  ( 1 1 1 0  1 0 0 0  1 1 0 1  Rn, 1 1 1 1  0 0 0 0  0 0 0 1  Rm )
+  tbb 0x100000 logior
+;

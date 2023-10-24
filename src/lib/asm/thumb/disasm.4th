@@ -407,6 +407,13 @@ here const> DISASM-HI-REGS
   drop int32 12
 ;
 
+: disasm-tbb ( op32 -- index base tbb 6 )
+  dup 0x100000 logand IF literal tbh ELSE literal tbb THEN swap
+  dup 0xF logand disasm-register swap
+  dup 16 bsr 0xF logand disasm-register swap
+  drop int32 6
+;
+
 : disasm-op2 ( op32 -- ...words count )
   ( v2 operations )
   dup 0xF0F0FFF0 logand 0xF0F0FB90 equals? IF disasm-sdiv proper-exit THEN
@@ -414,6 +421,7 @@ here const> DISASM-HI-REGS
   ( v2 coprocessor )
   dup 0xF00EFFFF logand 0x8000F3EF equals? IF disasm-mrs proper-exit THEN
   dup 0xF00EFFF0 logand 0x8000F380 equals? IF disasm-msr proper-exit THEN
+  dup 0xFFE0FFF0 logand 0xF000E8D0 equals? IF disasm-tbb proper-exit THEN
   dup 0x0000FFF0 logand 0xEC40 equals? IF disasm-mcrr proper-exit THEN
   dup 0x0000FFF0 logand 0xEC50 equals? IF disasm-mrrc proper-exit THEN
   dup 0x0000FF10 logand 0xEC00 equals? IF disasm-stc proper-exit THEN
