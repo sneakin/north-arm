@@ -132,12 +132,13 @@ endop
 
 defop next
   ( load word eip points at )
+  dhere
   0 eip r1 ldr-offset ,ins
   ( todo apply op-mask )
   ( increase eip )
   -op-size eip add# ,ins
   out' exec-r1 emit-op-call
-  -12 branch ,ins
+  dhere - 4 - branch ,ins
 endop
 
 : emit-next
