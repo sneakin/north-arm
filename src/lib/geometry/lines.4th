@@ -1,3 +1,7 @@
+( doing textured lines: may need to make callers do the step loop for multiple lerps )
+( todo fractional x,y for raycaster: pass line state to callback )
+( todo reordering start and end breaks the raycaster, why bresenham was used explicitly and why axis rays fail w/ vline and hline )
+ 
 ( Horizontal lines: )
 
 ' maxmin [UNLESS]
@@ -6,25 +10,25 @@ def maxmin
 end
 [THEN]
 
-def hline-fn-loop ( fn accum y x2 x1 ++ accum )
+def hline-fn-loop ( fn[accum y x ++ accum more?] accum y x2 x1 ++ accum )
   arg3 arg2 arg0 4 argn exec-abs UNLESS exit-frame THEN set-arg3
   arg0 1 + set-arg0
   arg0 arg1 int<= IF repeat-frame ELSE arg3 exit-frame THEN
 end
 
-def hline-fn ( fn accum y x2 x1 ++ accum )
+def hline-fn ( fn[accum y x ++ accum more?] accum y x2 x1 ++ accum )
   4 argn arg3 arg2 arg1 arg0 maxmin hline-fn-loop exit-frame
 end
 
 ( Vertical lines: )
 
-def vline-fn-loop ( fn accum y2 y1 x ++ accum )
+def vline-fn-loop ( fn[accum y x ++ accum more?] accum y2 y1 x ++ accum )
   arg3 arg1 arg0 4 argn exec-abs UNLESS exit-frame THEN set-arg3
   arg1 1 + set-arg1
   arg1 arg2 int<= IF repeat-frame ELSE arg3 exit-frame THEN
 end
 
-def vline-fn ( fn accum y2 y1 x ++ accum )
+def vline-fn ( fn[accum y x ++ accum more?] accum y2 y1 x ++ accum )
   4 argn arg3 arg2 arg1 maxmin arg0 vline-fn-loop exit-frame
 end
 
@@ -40,116 +44,82 @@ int field: d2
 int field: m2
 int field: dir
 
-def make-line-state ( dir y x dy dx ++ LineState )
+def init-line-state ( state d_pri d_sec -- state )
+  arg0 2 * arg2 LineState -> d2 !
+  arg2 LineState -> d2 @ arg1 2 * - arg2 LineState -> m2 !
+  arg2 LineState -> d2 @ arg1 - arg2 LineState -> err !
+  arg2 3 return1-n
+end
+
+def make-line-state ( y x dy dx ++ LineState )
   LineState make-instance
+  arg0 0 int> IF 1 ELSE -1 THEN over LineState -> dir !
   arg3 over LineState -> y !
   arg2 over LineState -> x !
   arg1 over LineState -> dy !
-  arg0 over LineState -> dx !
-  4 argn over LineState -> dir !
-  exit-frame
+  arg0 dup 0 int< IF negate THEN
+  dup 3 overn LineState -> dx !
+  arg1 2dup int< IF swap THEN init-line-state exit-frame
 end
 
-def make-line-state-x ( dir y x dy dx ++ LineState )
-  4 argn arg3 arg2 arg1 arg0 make-line-state
-  arg1 2 * over LineState -> d2 !
-  dup LineState -> d2 @ arg0 2 * - over LineState -> m2 !
-  dup LineState -> d2 @ arg0 - over LineState -> err !
-  exit-frame
-end
+
+( todo inc and dec )
 
 ( |dx| > dy )
-def line-fn-loop-x ( fn accum state ++ accum )
-  arg1 arg0 LineState -> y @ arg0 LineState -> x @ arg2 exec-abs set-arg1
+def ma-line-step-x ( state -- more? )
   arg0 LineState -> err @ 0 int>= IF
-    arg0 LineState -> y @ 1 + arg0 LineState -> y !
-    arg0 LineState -> m2 @ arg0 LineState -> err @ + arg0 LineState -> err !
-  ELSE arg0 LineState -> d2 @ arg0 LineState -> err @ + arg0 LineState -> err !
+    arg0 LineState -> y inc!
+    arg0 LineState -> err arg0 LineState -> m2 @ inc!/2
+  ELSE arg0 LineState -> err arg0 LineState -> d2 @ inc!/2
   THEN
-  arg0 LineState -> x @ arg0 LineState -> dir @ + arg0 LineState -> x !
-  arg0 LineState -> dx @ 1 - arg0 LineState -> dx !
-  arg0 LineState -> dx @ 0 int>= IF repeat-frame ELSE arg1 exit-frame THEN
+  arg0 LineState -> x arg0 LineState -> dir @ inc!/2
+  arg0 LineState -> dx dec!
+  arg0 LineState -> dx @ 0 int>= set-arg0
 end
 
-def line-fn-loop-x0 ( fn accum y1 x1 y0 x0 ++ accum )
-  arg2 arg0 int> IF 1 ELSE -1 THEN arg1 arg0 arg3 arg1 - arg2 arg0 - make-line-state-x
-  5 argn 4 argn 3 overn line-fn-loop-x exit-frame
+def ma-line-loop-x ( fn[accum y x ++ accum more?] accum state ++ accum )
+  arg1 arg0 LineState -> y @ arg0 LineState -> x @ arg2 exec-abs UNLESS exit-frame THEN set-arg1
+  arg0 ma-line-step-x IF repeat-frame ELSE arg1 exit-frame THEN
 end
 
-def line-fn-loop-x0 ( fn accum dir y x dy dx ++ accum )
-  4 argn arg3 arg2 arg1 arg0  make-line-state-x
-  6 argn 5 argn 3 overn line-fn-loop-x exit-frame
-end
-
-def make-line-state-y ( dir y x dy dx ++ LineState )
-  4 argn arg3 arg2 arg1 arg0 make-line-state
-  arg0 2 * over LineState -> d2 !
-  dup LineState -> d2 @ arg1 2 * - over LineState -> m2 !
-  dup LineState -> d2 @ arg1 - over LineState -> err !
-  exit-frame
-end
 
 ( |dy| > dx )
-def line-fn-loop-y ( fn accum state ++ accum )
-  arg1 arg0 LineState -> y @ arg0 LineState -> x @ arg2 exec-abs set-arg1
+def ma-line-step-y ( state -- done? )
   arg0 LineState -> err @ 0 int>= IF
-    arg0 LineState -> x @ arg0 LineState -> dir @ + arg0 LineState -> x !
-    arg0 LineState -> m2 @ arg0 LineState -> err @ + arg0 LineState -> err !
-  ELSE arg0 LineState -> d2 @ arg0 LineState -> err @ + arg0 LineState -> err !
+    arg0 LineState -> x arg0 LineState -> dir @ inc!/2
+    arg0 LineState -> err arg0 LineState -> m2 @ inc!/2
+  ELSE arg0 LineState -> err arg0 LineState -> d2 @ inc!/2
   THEN
-  arg0 LineState -> y @ 1 + arg0 LineState -> y !
-  arg0 LineState -> dy @ 1 - arg0 LineState -> dy !
-  arg0 LineState -> dy @ 0 int>= IF repeat-frame ELSE arg1 exit-frame THEN
+  arg0 LineState -> y inc!
+  arg0 LineState -> dy dec!
+  arg0 LineState -> dy @ 0 int>= set-arg0
 end
 
-def line-fn-loop-y0 ( fn accum y1 x1 y0 x0 ++ accum )
-  arg2 arg0 int> IF 1 ELSE -1 THEN arg1 arg0 arg3 arg1 - arg2 arg0 - make-line-state-y
-  5 argn 4 argn 3 overn line-fn-loop-y exit-frame
-end
-
-def line-fn-loop-y0 ( fn accum dir y x dy dx ++ accum )
-  4 argn arg3 arg2 arg1 arg0 make-line-state-y
-  6 argn 5 argn 3 overn line-fn-loop-y exit-frame
+def ma-line-loop-y ( fn[accum y x ++ accum more?] accum state ++ accum )
+  arg1 arg0 LineState -> y @ arg0 LineState -> x @ arg2 exec-abs UNLESS exit-frame THEN set-arg1
+  arg0 ma-line-step-y IF repeat-frame ELSE arg1 exit-frame THEN
 end
 
 
 ( todo when integer rise/run is zero, use run/rise )
 
-def ma-line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+def ma-line-fn ( fn[accum y x ++ accum more?] accum y2 x2 y1 x1 ++ accum )
   ( swap start and end so y1 > y2 )
   arg1 arg3 int> IF
     arg3 arg1 set-arg3 set-arg1
     arg2 arg0 set-arg2 set-arg0
   THEN
   ( local0 => dx )
-  arg2 arg0 - dup UNLESS ( dx == 0: vertical )
-    drop
-    5 argn 4 argn arg3 arg1 arg0 vline-fn-loop exit-frame
-  THEN
+  arg2 arg0 -
   ( local1 => dy )
-  arg3 arg1 - dup UNLESS ( dy == 0: horizontal )
-    2 dropn
-    5 argn 4 argn arg1 arg2 arg0 hline-fn exit-frame
-  THEN
-  ( handle the four cases )
-  local0 0 int> IF
-    local0 local1 int> IF
-      5 argn 4 argn 1 arg1 arg0 local1 local0 line-fn-loop-x0
-    ELSE
-      5 argn 4 argn 1 arg1 arg0 local1 local0 line-fn-loop-y0
-    THEN
-  ELSE
-    local0 negate set-local0
-    local0 local1 int> IF
-      5 argn 4 argn -1 arg1 arg0 local1 local0 line-fn-loop-x0
-    ELSE
-      5 argn 4 argn -1 arg1 arg0 local1 local0 line-fn-loop-y0
-    THEN
-  THEN
-  4 argn exit-frame
+  arg3 arg1 -
+	arg1 arg0 local1 local0 make-line-state
+  5 argn 4 argn 3 overn
+  dup LineState -> dx @ local1 int> IF ma-line-loop-x ELSE ma-line-loop-y THEN exit-frame
 end
 
-( Another Bresenham line drawer, see: http://members.chello.at/~easyfilter/bresenham.html )
+( Another Bresenham line drawer, see: http://members.chello.at/~easyfilter/bresenham.html
+  that always calls the function going from start point to end point. )
 struct: LineState2
 int field: x1
 int field: y1
@@ -161,7 +131,13 @@ int field: sx
 int field: sy
 int field: err
 
-def line-state2-step
+def line-state2-done?
+  arg0 LineState2 -> x1 @ arg0 LineState2 -> x2 @ equals?
+  arg0 LineState2 -> y1 @ arg0 LineState2 -> y2 @ equals?
+  and set-arg0
+end
+
+def line-state2-step ( state -- )
   ( Abrash's line breaks this and line-fn's loop into x and y functions )
   arg0 LineState2 -> err @ 1 bsl ( 2 * )
   dup arg0 LineState2 -> dy @ int>= IF
@@ -172,16 +148,10 @@ def line-state2-step
     arg0 LineState2 -> dx @ arg0 LineState2 -> err @ + arg0 LineState2 -> err !
     arg0 LineState2 -> sy @ arg0 LineState2 -> y1 @ + arg0 LineState2 -> y1 !
   THEN
-  return0
+  1 return0-n
 end
 
-def line-state2-done?
-  arg0 LineState2 -> x1 @ arg0 LineState2 -> x2 @ equals?
-  arg0 LineState2 -> y1 @ arg0 LineState2 -> y2 @ equals?
-  and set-arg0
-end
-
-def line-fn-loop ( state fn accum ++ accum )
+def bresenham-line-loop ( state fn accum ++ accum )
   ( call fn )
   arg0
   arg2 LineState2 -> y1 @
@@ -190,13 +160,11 @@ def line-fn-loop ( state fn accum ++ accum )
   ( done? )
   arg2 line-state2-done?
   IF arg0 exit-frame
-  ELSE ( next pixel )
-    arg2 line-state2-step drop
-    repeat-frame
+  ELSE arg2 line-state2-step repeat-frame
   THEN
 end
 
-def bresenham-line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+def bresenham-line-fn ( fn[accum y x ++ accum more?] accum y2 x2 y1 x1 ++ accum )
   ( local0: dx )
   arg2 arg0 - 
   ( local1: dy )
@@ -211,17 +179,19 @@ def bresenham-line-fn ( fn accum y2 x2 y1 x1 ++ accum )
   local0 0 int> IF 1 ELSE -1 THEN over LineState2 -> sx !
   local1 0 int> IF 1 ELSE -1 THEN over LineState2 -> sy !
   dup LineState2 -> dx @ over LineState2 -> dy @ + over LineState2 -> err !
-  5 argn 4 argn line-fn-loop exit-frame
+  5 argn 4 argn bresenham-line-loop exit-frame
 end
 
-def line-fn ( fn accum y2 x2 y1 x1 ++ accum )
+alias> line-fn-inner ma-line-fn
+
+def line-fn ( fn[accum y x ++ accum more?] accum y2 x2 y1 x1 ++ accum )
   arg2 arg0 equals? IF ( dx == 0: vertical )
     5 argn 4 argn arg1 arg3 arg0 vline-fn
   ELSE
     arg3 arg1 equals? IF ( dy == 0: horizontal )
       5 argn 4 argn arg1 arg2 arg0 hline-fn
     ELSE
-      5 argn 4 argn arg3 arg2 arg1 arg0 bresenham-line-fn
+      5 argn 4 argn arg3 arg2 arg1 arg0 line-fn-inner
     THEN
   THEN exit-frame
 end

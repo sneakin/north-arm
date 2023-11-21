@@ -184,7 +184,7 @@ end
 
 8 const> raycaster-angle-bits
 4 const> raycaster-ray-bits
-90 var> raycaster-init-fov
+64 var> raycaster-init-fov
 0.5f dup float32-mul dup float32-mul ( dup float32-mul ) float32-negate const> hit-fudge-factor
 0 var> use-x
 
