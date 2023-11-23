@@ -1,0 +1,177 @@
+=Idle +Idle
+=Number	+Number
+=Token +Label
+=Word +Idle
+=Cmnt +Comment
+=ItalicCmnt +Comment italic
+=UnderlineCmnt +Comment underline
+=Immediate +Immediate
+=NewWord +Ident
+=String +Constant
+=ControlCode +Control
+=TopLevel +Keyword
+=Defining +Defining
+=FrameWord +Keyword
+=LoopWord +Loop
+=Operator +Operator
+
+:reset Idle
+	*	first	noeat
+	" \t\n"	reset
+
+:first Idle
+	*	code	noeat
+	"("	comment	recolor=-1
+	
+:comment Cmnt
+	*	comment
+	"~"	italic_comment
+	"_"	underline_comment
+	")"	reset
+:italic_comment ItalicCmnt
+	*	italic_comment
+	"~"	comment
+	")"	reset
+:underline_comment UnderlineCmnt
+	*	underline_comment
+	"_"	comment
+	")"	reset
+
+:code Idle
+	*	token noeat buffer
+	"-+"	minus recolor=-1
+	"0-9"	number	recolor=-1
+	"\f\b"	ctrlcode	recolor=-1
+	" \t\n"	reset
+
+:minus Idle
+	*	operator noeat recolor=-2
+	"+-"	minus
+	"A-Za-z"	token noeat recolor=-2
+	"0-9"	number noeat recolor=-2
+
+:ctrlcode ControlCode
+	*	reset	noeat
+
+:number Number
+	*	reset	noeat
+	"0-9A-Fa-fx."	number
+
+:token Idle
+	*	word	noeat strings
+	":"	immediate
+	";"	immediate
+	"'"	immediate
+	"POSTPONE"	immediate
+	"IF"	immediate
+	"UNLESS"	immediate
+	"ELSE"	immediate
+	"THEN"	immediate
+	"[IF]"	immediate
+	"[UNLESS]"	immediate
+	"[ELSE]"	immediate
+	"[THEN]"	immediate
+	"alias>"	toplevel
+	"defalias>"	toplevel
+	"var>"	toplevel
+	"defvar>"	toplevel
+	"const>"	toplevel
+	"defconst>"	toplevel
+	"string-const>"	toplevel
+	"defstring-const>"	toplevel
+	"symbol>"	toplevel
+	"defsymbol>"	toplevel
+	"defcol"	def
+	"endcol"	end
+	"defop"	def
+	"endop"	end
+	"def"	def
+	"end"	end
+	"struct:"	def
+	"field:"	def
+	"s\""	string
+	"\""	string
+	"s["	string_list
+	"arg0"	frameword
+	"arg1"	frameword
+	"arg2"	frameword
+	"arg3"	frameword
+	"argn"	frameword
+	"local0"	frameword
+	"local1"	frameword
+	"local2"	frameword
+	"local3"	frameword
+	"localn"	frameword
+	"exit-frame"	frameword
+	"return0"	frameword
+	"return0-n"	frameword
+	"return1-n"	frameword
+	"return2-n"	frameword
+	"return2-n"	frameword
+	"repeat-frame"	loopword
+	"loop"	loopword
+	"->"	operator
+	"!"	operator
+	"@"	operator
+	"+"	operator
+	"-"	operator
+	"/"	operator
+	"*"	operator
+done
+	"'"	quote	recolor=-1
+	"a-zA-Z0-9-_+<>=/*:\"'[]@!"	token
+	
+:quote Immediate
+	*	defword recolor=-1
+	" \t\n"	quote
+
+:def Defining
+	*	defword	recolor=-1
+	" \t\n"	def
+
+:end Defining
+	*	end	recolor=-1
+	" \t\n"	reset
+
+:toplevel TopLevel
+	*	defword	recolor=-1
+	" \t\n"	toplevel
+	
+:defword NewWord
+	*	defword
+	" \t\n"	reset
+
+:immediate Immediate
+	*	immediate
+	" \t\n"	reset
+	
+:word Word
+	*	word
+	" \t\n"	reset
+	
+:string String
+	*	string
+	"\""	reset
+	
+:string_list_end TopLevel
+        *	string_list_end
+	" \t\n"	reset
+	
+:string_list_inner String
+	*	string_list_inner
+	"]"	string_list_end noeat
+	
+:string_list TopLevel
+	*	string_list_inner
+
+:frameword FrameWord
+	*	frameword
+	" \t\n" reset
+	
+:loopword LoopWord
+	*	loopword
+	" \t\n" reset
+	
+:operator Operator
+	*	frameword
+	" \t\n" reset

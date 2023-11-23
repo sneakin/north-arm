@@ -150,12 +150,14 @@ def tty-buffer-resize! ( rows cols buffer ++ buffer allot? )
   false 2 return1-n
 end
 
-def tty-buffer-line-cell/6 ( char color attr buffer y x -- buffer )
+( todo have set-cell return clipping status to pass along for more? )
+
+def tty-buffer-line-cell/6 ( char color attr buffer y x -- buffer more? )
   5 argn 4 argn arg3 arg1 arg0 arg2 tty-buffer-set-cell
   arg2 true 6 return2-n
 end
 
-def tty-buffer-line-cell ( buffer y x -- buffer )
+def tty-buffer-line-cell ( buffer y x -- buffer more? )
   0x43 0x77 0 arg1 arg0 arg2 tty-buffer-set-cell true 2 return1-n
 end
 

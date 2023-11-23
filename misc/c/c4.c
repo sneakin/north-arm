@@ -3,6 +3,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 #ifdef AVR
 typedef int off_t;

@@ -1,13 +1,17 @@
 ( Data stack readurs & writers for stage > 0: )
 
-: ddump-binary-bytes
-  dhere over - swap current-output @ write
+: ddump-binary-bytes/2 ( data-start fd -- )
+  dhere 3 overn - shift write
   negative? IF
     s" Error dumping data: " error-string/2
     errno->string error-string/2 enl
   ELSE
     drop
   THEN
+;
+
+: ddump-binary-bytes ( data-start -- )
+  current-output @ ddump-binary-bytes/2
 ;
 
 : byte-string@ ( nop, the pointer is fine ) ;

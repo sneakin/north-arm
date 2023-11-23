@@ -4,6 +4,7 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 union Cell;
 struct Word;
