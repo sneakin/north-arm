@@ -1,7 +1,7 @@
 ' alias [UNLESS] load-core [THEN]
 
 s[ src/north/words.4th
-   ../north/src/01/tty.4th
+   vendor/north/src/01/tty.4th
 ] load-list
 
 def color-prompt

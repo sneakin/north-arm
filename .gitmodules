@@ -1,0 +1,3 @@
+[submodule "vendor/north"]
+	path = vendor/north
+	url = https://github.com/sneakin/north.git
