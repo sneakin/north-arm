@@ -3,8 +3,7 @@
 ' alias> [UNLESS] load-core [THEN]
 
 ' TtyBuffer [UNLESS]
-  s[ src/lib/structs.4th
-     src/lib/linux.4th
+  s[ src/lib/linux.4th
      src/lib/io.4th
      src/lib/threading/lock.4th
      src/lib/tty.4th
