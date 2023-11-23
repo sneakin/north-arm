@@ -38,15 +38,29 @@ end
    see http://members.chello.at/~easyfilter/bresenham.html )
 
 struct: LineState
-int field: x1
+int field: x1 ( starting )
 int field: y1
-int field: x2
+int field: x2 ( ending )
 int field: y2
-int field: dx
-int field: dy
-int field: sx
-int field: sy
-int field: err
+int field: dx ( |x2 - x1| )
+int field: dy ( |y2 - y1| )
+int field: sx ( step in x dir: -1 or +1 )
+int field: sy ( step in y dir )
+int field: err ( error accumulator )
+
+def make-line-state ( y2 x2 y1 x1 ++ state )
+  LineState make-instance
+  arg0 over LineState -> x1 !
+  arg1 over LineState -> y1 !
+  arg2 over LineState -> x2 !
+  arg3 over LineState -> y2 !
+  arg2 arg0 - dup abs-int 3 overn LineState -> dx !
+  0 int> IF 1 ELSE -1 THEN over LineState -> sx !
+  arg3 arg1 - dup abs-int negate 3 overn LineState -> dy !
+  0 int> IF 1 ELSE -1 THEN over LineState -> sy !
+  dup LineState -> dx @ over LineState -> dy @ + over LineState -> err !
+  exit-frame
+end
 
 def line-state-done?
   arg0 LineState -> x1 @ arg0 LineState -> x2 @ equals?
@@ -55,7 +69,6 @@ def line-state-done?
 end
 
 def line-state-step ( state -- )
-  ( Abrash's line breaks this and line-fn's loop into x and y functions )
   arg0 LineState -> err @ 1 bsl ( 2 * )
   dup arg0 LineState -> dy @ int>= IF
     arg0 LineState -> dy @ arg0 LineState -> err @ + arg0 LineState -> err !
@@ -82,20 +95,7 @@ def bresenham-line-loop ( state fn accum ++ accum )
 end
 
 def bresenham-line-fn ( fn[accum y x ++ accum more?] accum y2 x2 y1 x1 ++ accum )
-  ( local0: dx )
-  arg2 arg0 - 
-  ( local1: dy )
-  arg3 arg1 -
-  LineState make-instance
-  arg0 over LineState -> x1 !
-  arg1 over LineState -> y1 !
-  arg2 over LineState -> x2 !
-  arg3 over LineState -> y2 !
-  local0 abs-int over LineState -> dx !
-  local1 abs-int negate over LineState -> dy !
-  local0 0 int> IF 1 ELSE -1 THEN over LineState -> sx !
-  local1 0 int> IF 1 ELSE -1 THEN over LineState -> sy !
-  dup LineState -> dx @ over LineState -> dy @ + over LineState -> err !
+  arg3 arg2 arg1 arg0 make-line-state
   5 argn 4 argn bresenham-line-loop exit-frame
 end
 
