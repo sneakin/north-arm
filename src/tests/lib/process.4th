@@ -1,3 +1,5 @@
+' alias [UNLESS] load-core [THEN]
+
 s[ src/lib/linux/errno.4th
    src/lib/process.4th
    src/lib/time.4th

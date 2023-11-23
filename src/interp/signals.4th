@@ -33,11 +33,17 @@ def print-stack-frame-args ( fp max n -- )
   THEN 3 return0-n
 end
 
+6 var> stack-print-assumed-arity
+
+def live-code-pointer?
+  arg0 stack-pointer? arg0 code-pointer? or 1 return1-n
+end
+
 def print-stack-frame
-  arg0 error-hex-uint espace
-  s" -> " error-string/2
-  arg1 arg0 return-address peek op-size - peek print-op-name
-  arg0 4 0 print-stack-frame-args
+  arg0 error-hex-uint s" : " error-string/2
+  arg1 arg0 return-address peek
+  dup live-code-pointer? IF op-size - peek print-op-name THEN
+  arg0 stack-print-assumed-arity @ 0 print-stack-frame-args
   enl 2 return0-n
 end
 
@@ -53,7 +59,7 @@ end
 
 def print-eip ( dict eip -- )
   arg0 error-hex-uint espace
-  arg0 stack-pointer? arg0 code-pointer? or IF
+  arg0 live-code-pointer? IF
     arg1 arg0 op-size - peek print-op-name espace
     arg1 arg0 peek print-op-name
   THEN enl 2 return0-n
