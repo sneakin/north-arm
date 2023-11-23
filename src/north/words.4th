@@ -447,6 +447,11 @@ def write-char-seq/2
   arg1 arg0 0 write-char-seq/3 2 return0-n
 end
 
+alias> prompt-fn prompt
+
+def prompt
+  prompt-fn @ exec-abs
+end
 
 ( tty-enter-raw-mode tty-exit-raw-mode: needs termios or ioctl wrappers )
 ( def tty-enter-raw-mode end
