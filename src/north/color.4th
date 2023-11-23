@@ -13,7 +13,7 @@ def color-prompt
 end
 
 def color-init
-  ' color-prompt prompt !
+  ' color-prompt prompt-fn !
 end
 
 tty-getsize 0 int> swap 0 int> and [IF] color-init [THEN]
