@@ -1,8 +1,7 @@
 ' alias [UNLESS] load-core [THEN]
 
 ' TtyScreen [UNLESS]
-  s[ src/lib/structs.4th
-     src/lib/time.4th
+  s[ src/lib/time.4th
      src/lib/linux.4th
      src/lib/geometry/angles.4th
      src/lib/tty.4th

@@ -117,6 +117,14 @@ def sleep-until ( time -- time )
   arg0 CLOCK-REALTIME sleep-until/2 1 return1-n
 end
 
+def time-on-under? ( time seconds -- yes? )
+  get-time-secs arg1 - arg0 int<= 2 return1-n
+end
+
+def time-on-over? ( time seconds -- yes? )
+  get-time-secs arg1 - arg0 int>= 2 return1-n
+end
+
 
 ( 64 bit: )
 

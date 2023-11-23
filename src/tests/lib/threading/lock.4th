@@ -1,4 +1,6 @@
-s[ src/lib/linux/threads.4th
+' alias defined? [UNLESS] load-core [THEN]
+
+s[ src/lib/linux.4th
    src/lib/threading/lock.4th
    src/lib/sleepers.4th
    src/lib/assert.4th

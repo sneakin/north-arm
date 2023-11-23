@@ -203,14 +203,6 @@ def make-time/6 ( year month day hours minutes secs -- time )
   args make-time/1 6 return1-n
 end
 
-def time-on-under? ( time seconds -- yes? )
-  get-time-secs arg1 - arg0 int<= 2 return1-n
-end
-
-def time-on-over? ( time seconds -- yes? )
-  get-time-secs arg1 - arg0 int>= 2 return1-n
-end
-
 ( Output: )
 
 def write-time
