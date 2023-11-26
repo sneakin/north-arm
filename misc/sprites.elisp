@@ -158,9 +158,17 @@
 				   fg
 				   (concat "bright" fg)))
 		 (:background ,bg)
-		 ,@attrs)))
-    (insert (unpack-int32 (cl-first cell)))
-    (put-text-property pt (+ 1 pt) 'face props)))
+		 ,@attrs))
+	(char (char-to-string (unpack-int32 (cl-first cell)))))
+    ;;(when (< n 2000)
+    ;;(message (format "Props %i %i %s %s %s\n" n pt char cell props)))
+    (insert char)
+    ;;(font-lock-unfontify-region pt (+ 1 pt))
+    (set-text-properties pt (+ 1 pt) `(face ,props font-lock-face ,props fontified t))
+    ;;(put-text-property pt (+ 1 pt) 'face props)
+    ;;(put-text-property pt (+ 1 pt) 'font-lock-face props)
+    ;;(put-text-property pt (+ 1 pt) 'fontified t)
+    ))
 
 (defun insert-tty-data (data &optional width)
   (toggle-enable-multibyte-characters 1)
@@ -213,6 +221,7 @@
 		 (data (tty-data->bytes (translate-to-tty (buffer-substring decl img-end-s)))))
 	    (if img-end
 		(progn
+		  ;;(message (format "process %i %i %i %i" img-start decl img-end img-end-s))
 		  (goto-char decl)
 		  (delete-region decl img-end-s)
 		  (toggle-enable-multibyte-characters -1)
@@ -284,7 +293,7 @@
   (point-max))
 
 (defun to-tty-image (beginning end buffer)
-  (enriched-mode 0)
+  (enriched-mode -1)
   (setf tty-cell-padding (buffer-local-value 'tty-cell-padding buffer))
   (message "Writing %i byte cells" (tty-cell-size))
   (process-buffer-tty-images beginning end)

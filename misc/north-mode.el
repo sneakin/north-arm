@@ -21,6 +21,20 @@
 (dolist (w north-syntax--font-lock-keywords)
   (forth-syntax--define w #'forth-syntax--state-font-lock-keyword))
 
+;;; Has to be patched to keep the font-lock-face property of tty-img's.
+(defun forth-syntax-propertize (start end)
+  (save-excursion
+    ;; sneakin: this is the troublesome line
+    ;;(remove-text-properties start end '(font-lock-face))
+    (let* ((guess (forth-syntax--guess-state start))
+	   (state (cdr guess)))
+      ;;(message "forth-syntax-propertize: %s %s %s" start end guess)
+      (goto-char (car guess))
+      (while (< (point) end)
+	(let ((start (point)))
+	  (setq state (funcall state))
+	  (cl-assert (< start (point))))))))
+
 (defun forth-syntax--word-state (font-lock-face)
   (let ((start forth-syntax--current-word-start))
     (put-text-property start (point) 'font-lock-face font-lock-face)
@@ -49,9 +63,11 @@
     (goto-char pos)
     (cond ((re-search-forward forward-regexp nil t)
 	   (message (format "tty img 2 %s %s" pos (point)))
+	   ;;(message (format "tty img 2 %s %s %s" pos (point) (buffer-substring pos (point))))
 	   ;;(forth-syntax--set-syntax (1- (point)) (point) "|")
-	   ;;(process-buffer-tty-image pos (point))
+	   ;;(process-buffer-tty-image (- pos 15) (point))
 	   ;;(font-lock-unfontify-region pos (point))
+	   ;;(set-text-properties pos (point) `(font-lock-face (:foreground "red") fontified t))
 	   (goto-char (point))
 	   #'forth-syntax--state-normal)
 	  (t
