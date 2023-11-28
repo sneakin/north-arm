@@ -6,7 +6,9 @@ s[ src/runner/thumb/ops.4th
  ] load-list
 
 NORTH-STAGE 0 int> [IF]
-  s[ src/cross/dynlibs.4th ] load-list
+  s[ src/cross/dynlibs.4th
+     src/cross/exports.4th
+  ] load-list
 [THEN]
 
 ( Cross compiler )
@@ -96,5 +98,7 @@ s[
 [THEN]
 
 NORTH-STAGE 1 int> [IF]
-  s[ src/runner/imports.4th ] load-list
+  s[ src/runner/imports.4th src/runner/exports.4th ] load-list
+  ( todo imports.4th interfers with C interop. )
+  ( s[ src/runner/exports.4th ] load-list )
 [THEN]

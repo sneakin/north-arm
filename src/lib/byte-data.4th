@@ -37,6 +37,15 @@ alias> int64! uint64!
   dup string-length 0 ,byte-string/3
 ;
 
+def ,seq ( seq n -- )
+  ( todo use copy )
+  arg0 0 uint> UNLESS 2 return0-n THEN
+  arg0 1 - set-arg0
+  arg1 peek ,uint32
+  arg1 cell-size + set-arg1
+  repeat-frame
+end
+
 : byte-swap-uint16
   dup 0xFF logand 8 bsl
   swap 0xFF00 logand 8 bsr logior

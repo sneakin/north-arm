@@ -60,7 +60,7 @@ def import> ( library : name returns symbol arity ++ library )
     set-local1
     next-token negative? UNLESS
       ( register symbol for importing before next-integer over writes )
-      elf32-add-dynamic-symbol/2 local1 local0 rot
+      elf32-add-dynamic-import/2 local1 local0 rot
       next-integer IF
         out-import
         arg0 exit-frame

@@ -44,8 +44,9 @@ s[ src/interp/debug.4th
 
 s[ src/interp/loaders.4th ] load-list
 
+( todo imports.4th interfers with C interop. )
 NORTH-STAGE 1 int> [IF]
-s[ src/interp/imports.4th ] load-list
+  s[ src/interp/imports.4th ] load-list
 [THEN]
 
 ( Extra fun )
