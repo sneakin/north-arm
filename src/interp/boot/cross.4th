@@ -156,6 +156,10 @@ end
   THEN
 ;
 
+: drop-out-dict
+  out-dictionary peek dict-entry-link peek from-out-addr out-dictionary poke
+;
+
 ( Output quote: )
 
 def dallot-next-token

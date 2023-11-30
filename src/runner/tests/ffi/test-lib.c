@@ -1,5 +1,7 @@
 #define try(fn, args...) if(fn != 0) fn(args)
 
+unsigned long n_test_var = 0x1234;
+
 typedef void (*nputs_fn)(const char *);
 static nputs_fn _nputs = 0;
 void nputs(const char *s)

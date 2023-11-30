@@ -98,7 +98,7 @@ s[
 [THEN]
 
 NORTH-STAGE 1 int> [IF]
-  s[ src/runner/imports.4th src/runner/exports.4th ] load-list
   ( todo imports.4th interfers with C interop. )
-  ( s[ src/runner/exports.4th ] load-list )
+  s[ src/runner/imports.4th ] load-list
+  NORTH-STAGE 3 int> [IF] s[ src/runner/exports.4th ] load-list [THEN]
 [THEN]

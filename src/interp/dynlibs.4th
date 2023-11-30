@@ -70,6 +70,63 @@ def import> ( library : name returns symbol arity ++ )
   dict-drop return0
 end
 
+def does-indirect-var ( ptr word -- )
+  arg1 arg0 dict-entry-data !
+  arg0 ' do-indirect-var does
+  2 return0-n
+end
+
+def import-var> ( library : new-word symbol ++ library )
+  0 create> set-local0
+  next-token negative? UNLESS
+    drop arg0 dlsym dup IF
+      local0 does-indirect-var
+      arg0 exit-frame
+    THEN
+  THEN
+  ( drop the new word )
+  dict-drop
+end
+
+def import-value> ( library : new-word symbol ++ library )
+  0 create> set-local0
+  local0 does-const
+  next-token negative? UNLESS
+    drop arg0 dlsym dup IF
+      local0 dict-entry-data !
+      arg0 exit-frame
+    THEN
+  THEN
+  ( drop the new word )
+  dict-drop
+end
+
+def import-const> ( library : new-word symbol ++ library )
+  0 create> set-local0
+  local0 ' do-indirect-const does
+  next-token negative? UNLESS
+    drop arg0 dlsym dup IF
+      local0 dict-entry-data !
+      arg0 exit-frame
+    THEN
+  THEN
+  ( drop the new word )
+  dict-drop
+end
+
+def import-word> ( library : new-word symbol ++ library )
+  0 create> set-local0
+  next-token negative? UNLESS
+    drop arg0 dlsym dup IF
+      dup dict-entry-code @ local0 dict-entry-code !
+      dup dict-entry-data @ local0 dict-entry-data !
+      arg0 exit-frame
+    THEN
+  THEN
+  ( drop the new word )
+  dict-drop
+end
+
 [ELSE]
 
 def dynamic-linking-warning
@@ -87,7 +144,31 @@ def import>
   next-token
   next-token
   next-token
-  0 return1
+end
+
+def import-var>
+  dynamic-linking-warning
+  next-token
+end
+
+def import-constant>
+  dynamic-linking-warning
+  next-token
+end
+
+def import-word>
+  dynamic-linking-warning
+  next-token
+end
+
+def import-op>
+  dynamic-linking-warning
+  next-token
+end
+
+def import-func>
+  dynamic-linking-warning
+  next-token
 end
 
 [THEN]
