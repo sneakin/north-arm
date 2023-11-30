@@ -57,7 +57,7 @@ def unescape-string/2 ( string length -- string new-length )
   arg1 arg0 0 0 unescape-string/4 return1-1
 end
 
-( todo POSTPONE needs a like word that useskdict for the source. )
+( todo POSTPONE needs a like word that uses dict for the source. )
 alias> top-s" s"
 
 def es"

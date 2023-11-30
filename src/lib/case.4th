@@ -13,6 +13,8 @@
     ENDCASE
 )
 
+( fixme empty else clause [?] generates a ~0 jump-rel~ that can be eliminated )
+
 symbol> case-start-marker
 symbol> case-marker
 

@@ -14,7 +14,7 @@
 " feval 0 set-compiling" ' ; ' cross_immediates dict-set!
 
 ' ( cross-immediate/1
-' POSTPONE cross-immediate/1
+' POSTPONE cross-immediate/1 ( fixme looks up cross-immediates and not out-immediates. Breaks CASE. )
 
 : out-dq
   ( Read until a double quote, writing the contained data to the data stack and pushing the calls to leave a pointer on the stack for a definition. )

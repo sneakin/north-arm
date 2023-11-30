@@ -99,6 +99,8 @@ def int32-seq
   here arg0 exit-frame
 end
 
+( todo swap place and n so it reads as an op on place? )
+
 def inc!/2 ( place n -- value+n )
   arg1 peek arg0 + dup arg1 poke
   2 return1-n
