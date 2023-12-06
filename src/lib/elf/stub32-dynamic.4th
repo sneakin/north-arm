@@ -211,7 +211,27 @@ elf32-code-segment + ,uint32
 0 var> *out-dynamic-num-symbols*
 0 var> *out-dynamic-relocs*
 
+20 const> R_ARM_COPY ( android no support )
+21 const> R_ARM_GLOB_DAT
 22 const> R_ARM_JUMP_SLOT
+23 const> R_ARM_RELATIVE
+24 const> R_ARM_GOTOFF
+25 const> R_ARM_GOTPC
+26 const> R_ARM_GOT32
+27 const> R_ARM_PLT32
+28 const> R_ARM_CALL
+29 const> R_ARM_JUMP24
+30 const> R_ARM_THM_JUMP32
+31 const> R_ARM_BASE_ABS
+
+
+0 const> ELF32-SHN-UNDEF
+0xff00 const> ELF32-SHN-LORESERVE
+0xff00 const> ELF32-SHN-LOPROC
+0xff1f const> ELF32-SHN-HIPROC
+0xfff1 const> ELF32-SHN-ABS
+0xfff2 const> ELF32-SHN-COMMON
+0xffff const> ELF32-SHN-HIRESERVE
 
 0x00 const> ELF32-STB-LOCAL
 0x10 const> ELF32-STB-GLOBAL
@@ -242,36 +262,51 @@ def elf32-add-dynamic-symbol/2 ( name length ++ symbol )
   local0 exit-frame
 end
 
-def elf32-add-dynamic-import/2 ( name length ++ index )
+def elf32-add-dynamic-import-func/2 ( name length ++ index )
   *out-dynamic-num-symbols* peek
   arg1 arg0 elf32-add-dynamic-symbol/2
   ELF32-STB-GLOBAL ELF32-STT-FUNC logior over elf32-symbol-info poke
   local0 exit-frame
 end
 
-def elf32-add-dynamic-export-code-object/3 ( value name length ++ symbol )
+def elf32-add-dynamic-import-object/2 ( name length ++ index )
   *out-dynamic-num-symbols* peek
   arg1 arg0 elf32-add-dynamic-symbol/2
+  ELF32-STB-LOCAL ELF32-STT-OBJECT logior swap elf32-symbol-info poke
+  local0 exit-frame
+end
+
+def elf32-add-dynamic-export/3 ( value name length ++ symbol )
+  *out-dynamic-num-symbols* peek
+  arg1 arg0 elf32-add-dynamic-symbol/2
+  arg2 over elf32-symbol-value poke
+  exit-frame
+end
+
+def elf32-add-dynamic-export-value/3 ( value name length ++ symbol )
+  arg2 arg1 arg0 elf32-add-dynamic-export/3
+  ELF32-STB-GLOBAL ELF32-STT-NOTYPE logior over elf32-symbol-info poke
+  ELF32-SHN-ABS over elf32-symbol-shndx poke  
+  exit-frame
+end
+
+def elf32-add-dynamic-export-code-object/3 ( value name length ++ symbol )
+  arg2 elf32-code-segment + arg1 arg0 elf32-add-dynamic-export/3
   ELF32-STB-GLOBAL ELF32-STT-OBJECT logior over elf32-symbol-info poke
-  arg2 elf32-code-segment + over elf32-symbol-value poke
   1 over elf32-symbol-shndx poke  
   exit-frame
 end
 
 def elf32-add-dynamic-export-data/3 ( value name length ++ symbol )
-  *out-dynamic-num-symbols* peek
-  arg1 arg0 elf32-add-dynamic-symbol/2
+  arg2 elf32-data-segment + arg1 arg0 elf32-add-dynamic-export/3
   ELF32-STB-GLOBAL ELF32-STT-OBJECT logior over elf32-symbol-info poke
-  arg2 elf32-data-segment + over elf32-symbol-value poke
   6 over elf32-symbol-shndx poke  
   exit-frame
 end
 
 def elf32-add-dynamic-export-func/3 ( fn name length ++ symbol )
-  *out-dynamic-num-symbols* peek
-  arg1 arg0 elf32-add-dynamic-symbol/2
+  arg2 elf32-code-segment + arg1 arg0 elf32-add-dynamic-export/3
   ELF32-STB-GLOBAL ELF32-STT-FUNC logior over elf32-symbol-info poke
-  arg2 elf32-code-segment + over elf32-symbol-value poke
   1 over elf32-symbol-shndx poke  
   exit-frame
 end
@@ -454,7 +489,7 @@ end
 def write-elf32-symbol-hash
   *out-dynamic-symbols* peek
   *out-dynamic-num-symbols* peek
-  dup 4 int-div 2 max
+  dup 8 int-div 1 max
   0
   local0 local1 local2 elf32-build-hash/3 set-local3
   ( local3 local1 cell-size * 2 * cmemdump )

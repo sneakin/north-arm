@@ -40,10 +40,6 @@ def out-fficaller-for ( returns arity ++ out-word )
   dict-entry-code peek return1
 end
 
-  ( todo find any prior import entry. single symbol w/ multiple relocs )
-  ( todo add relocation to list, symbol to another )
-  ( store name, data, library, and space for a string table address to import list )
-
 def out-import ( word returns symbol-index arity ++ )
   ( make relocation for data )
   arg3 dict-entry-data arg1 elf32-add-dynamic-jump-slot
@@ -54,13 +50,14 @@ def out-import ( word returns symbol-index arity ++ )
 end
 
 def import> ( library : name returns symbol arity ++ library )
+  ( Import a C ABI function. )
   0 0
   create> set-local0
   next-integer IF
     set-local1
     next-token negative? UNLESS
       ( register symbol for importing before next-integer over writes )
-      elf32-add-dynamic-import/2 local1 local0 rot
+      elf32-add-dynamic-import-func/2 local1 local0 rot
       next-integer IF
         out-import
         arg0 exit-frame
@@ -68,7 +65,64 @@ def import> ( library : name returns symbol arity ++ library )
     THEN
   THEN
   ( drop the new word )
-  out-dict @ dict-entry-link @ from-out-addr out-dict !
+  drop-out-dict
   local0 dmove
-  arg0 exit-frame
+end
+
+( todo )
+
+def import-var> ( library : new-word symbol ++ library )
+  ( Import a C variable as a Forth variable. )
+  0 create> set-local0
+  out' do-indirect-var dict-entry-code @ local0 dict-entry-code !
+  next-token negative? UNLESS
+    elf32-add-dynamic-import-object/2
+    local0 dict-entry-data over R_ARM_GLOB_DAT elf32-add-dynamic-reloc
+    arg0 exit-frame
+  THEN
+  ( drop the new word )
+  drop-out-dict
+  local0 dmove
+end
+
+( todo does it work? it was getting offset. )
+
+def import-value> ( library : new-word symbol ++ library )
+  ( Import a symbol's value directly as a constant. )
+  0 create> set-local0
+  out' do-const dict-entry-code @ local0 dict-entry-code !
+  next-token negative? UNLESS
+    elf32-add-dynamic-import-object/2
+    local0 dict-entry-data over R_ARM_GLOB_DAT elf32-add-dynamic-reloc
+    arg0 exit-frame
+  THEN
+  ( drop the new word )
+  drop-out-dict
+  local0 dmove
+end
+
+def import-const> ( library : new-word symbol ++ library )
+  ( Import a symbol's value as an address to a constant value. )
+  0 create> set-local0
+  out' do-indirect-const dict-entry-code @ local0 dict-entry-code !
+  next-token negative? UNLESS
+    elf32-add-dynamic-import-object/2
+    local0 dict-entry-data over R_ARM_GLOB_DAT elf32-add-dynamic-reloc
+    arg0 exit-frame
+  THEN
+  ( drop the new word )
+  drop-out-dict
+  local0 dmove
+end
+
+( todo how to set both the code and data fields? )
+
+def import-word> ( library : new-word symbol ++ library )
+  0 create> set-local0
+  next-token negative? UNLESS
+    arg0 exit-frame
+  THEN
+  ( drop the new word )
+  drop-out-dict
+  local0 dmove
 end

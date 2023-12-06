@@ -484,13 +484,33 @@ endop
 defalias> do-var do-inplace-var
 
 defop do-data-var
-  ( load the address in the data segmenh of the word in R1's data's offset )
+  ( load the address in the data segment of the word in R1's data's offset )
   0 r0 bit-set pushr ,ins
   0 r1 r0 mov-lsl ,ins
   0 dict-entry-data r0 r0 ldr-offset ,ins
   cs-reg r0 r0 ldr ,ins
   2 r0 r0 mov-lsl ,ins
   data-reg r0 addrr ,ins
+  emit-next
+endop
+
+( todo place in separate file for small builds )
+
+defop do-indirect-var
+  ( load the address from the word in R1's data's offset )
+  0 r0 bit-set pushr ,ins
+  0 r1 r0 mov-lsl ,ins
+  0 dict-entry-data r0 r0 ldr-offset ,ins
+  ( cs-reg r0 addrr ,ins )
+  emit-next
+endop
+
+defop do-indirect-const
+  ( load the address from the word in R1's data's offset )
+  0 r0 bit-set pushr ,ins
+  0 r1 r0 mov-lsl ,ins
+  0 dict-entry-data r0 r0 ldr-offset ,ins
+  0 r0 r0 ldr-offset ,ins
   emit-next
 endop
 

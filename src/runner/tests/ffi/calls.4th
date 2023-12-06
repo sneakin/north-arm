@@ -80,11 +80,20 @@ import> test-lib-ffi-cb-1-0 0 ffi_cb_1_0 1
 import> test-lib-ffi-cb-2-0 0 ffi_cb_2_0 1
 import> test-lib-ffi-cb-0-1 0 ffi_cb_0_1 1
 import> test-lib-ffi-cb-1-1 0 ffi_cb_1_1 1
+import-var> test-lib-var n_test_var
+import-const> test-lib-const n_test_var
+import-value> test-lib-value n_test_var
 
 defcol dbg-write-line
   .s
   swap write-line
 endcol
+
+def test-ffi-var
+  test-lib-var @ 0x1234 assert-equals
+  test-lib-const 0x1234 assert-equals
+  test-lib-value ' test-lib-const dict-entry-data @ assert-equals
+end
 
 defcol test-ffi-cb-0
   s" cb 0" write-line/2 .s print-regs
@@ -154,6 +163,7 @@ end
 def test-ffi-call
   test-ffi-imports
   test-ffi-call-libc
+  test-ffi-var
   
   ' dbg-write-line 1 0 ffi-callback test-lib-init
   test-ffi-call-test-lib

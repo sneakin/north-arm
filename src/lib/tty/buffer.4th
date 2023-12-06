@@ -218,6 +218,8 @@ def tty-buffer-fill-rect ( char color attr y x h w buffer -- )
   8 return0-n
 end
 
+( todo use ' copy )
+
 def tty-buffer-blit/10 ( src sy sx sh sw dest dy dx y x -- )
   arg0 5 argn int>= IF arg1 1 + set-arg1 0 set-arg0 THEN
   arg1 6 argn int>= IF 10 return0-n THEN

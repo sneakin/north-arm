@@ -28,7 +28,7 @@ OUT_TARGETS?=$(TARGET_ABI)
 
 OUTPUTS=lib/ffi-test-lib$(SOEXT)
 
-$(foreach stage,1 2 3, \
+$(foreach stage,1 2 3 4, \
   $(foreach target,$(OUT_TARGETS), \
     $(eval OUTPUTS+= \
        bin/builder.$(target).$(stage)$(EXECEXT) \
@@ -355,9 +355,9 @@ bin/runner.$(1).$(2)$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
 endef
 
 # Define instances of the above:
-$(foreach stage,1 2 3,$(eval $(call define_stage,$(stage))))
+$(foreach stage,1 2 3 4,$(eval $(call define_stage,$(stage))))
 
-$(foreach stage,1 2 3, \
+$(foreach stage,1 2 3 4, \
   $(foreach target,static android gnueabi, \
     $(eval $(call define_stage_targets,$(target),$(stage)))))
 

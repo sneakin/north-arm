@@ -55,7 +55,11 @@ used to rebuild.
     - -d :: debug; may duplicate the above?
     - -I :: add search path
 *** ~tty-img[~ breaks github browsing: encode?
-    
+*** number-type function to set what numeric type [-+*/%] operate on
+    One use is trig functions for float32 and float64.
+    Another is using the interpreter as a calculator.
+
+
 ** September!
 *** Pi Zero 1:
     Has no thumb2 so no coprocessor, no float.
@@ -171,7 +175,7 @@ used to rebuild.
 *** s" places the string onto the data stack polluting the binary. Special interp version for defproper?
 *** DONE [#A] structures
 *** DONE [#A] variables with data on stack or data segment. initialized on load
-*** [#B] ELF exports
+*** DONE [#B] ELF exports
 *** TODO [#A] Build improvement
 **** Multiple targets: thumb 1 & 2, a32, a64, x86, bacaw; android, linux, baremetal; static, dynamic
 **** DONE Dependencies: only execute/scan for load
@@ -288,8 +292,8 @@ Use the reader.
 ** For op specific data: if the word is in R1, can that be used to address the data field for...? perhaps not for init.
 ** dynamic linking
 *** GNU
-**** .dynstr section header for the dynamic string table
-**** find what's keeping relocations from using actual symbol addresses
+**** DONE .dynstr section header for the dynamic string table
+**** DONE find what's keeping relocations from using actual symbol addresses
 **** Android / GNU switch
 ** TODO abs-int or int-abs?
 ** runner ops
@@ -326,7 +330,7 @@ Call frames, stack & data pointer math
 **** Blobs for Bacaw
 **** EXE files
 *** extract strings from data into section
-*** symbol table section
+*** DONE symbol table section
 *** DONE Data RO and BSS sections
 ** Defining words
 *** DONE Compiled words: create & def -> :
@@ -360,8 +364,9 @@ Call frames, stack & data pointer math
 **** aarch64
 ***** assembler
 ***** ELF64
+**** xtensa
 ** DONE jumps & loops
-*** Amounts in op-size instead of bytes.
+*** TODO Amounts in op-size instead of bytes.
 *** DONE relative jumps
 *** DONE returns
 *** DONE IF immediate to count offset
@@ -463,15 +468,16 @@ load needs file opening and reading with a reader stack.
 ** DONE To cross compile: need const>, var>, get-word, set-word, IF/ELSE/THEN
 ** ELF32
 *** TODO Exports
-*** TODO ELF dynamic linking of imports
+*** DONE ELF dynamic linking of imports
 **** DONE Proper symbol flags
 **** DONE Library loading
 **** DONE Function imports
 **** TODO Add symbols only once
-**** TODO Dynamically linked variable
+**** DONE Dynamically linked variable
 *** ELF .o files with symbol table
-*** TODO ELF symbol table of imports
-*** TODO proper DT_HASH
+*** DONE ELF symbol table of imports
+*** DONE proper DT_HASH
+*** TODO DT_GNU_HASH
 ** Runner's jumps op offset or byte offset?
 ** Compile list of words into list of assembly calls.
 ** North
@@ -839,8 +845,11 @@ grep --exclude \*~ -Hn -E "todo|fixme" -r ./src | sed -E -e 's/(.+):([0-9]+):(.*
 
 #+RESULTS:
 #+begin_src org
+./src/ash/core.sh:304:# FIXME goes on too far
 ./src/bash/builtins.sh:113:# TODO var> needs to store value on stack by making a const> to here.
 ./src/bash/core.sh:7:# TODO try using a variable to track here. with zeroing out on pop. no quoting truncation. 
+./src/cross/dynlibs.4th:72:( TODO )
+./src/cross/exports.4th:47:( TODO export for C callers:
 ./src/demos/tty/raycast.4th:942:    TODO Logic, io, etc?
 ./src/demos/tty/raycast.4th:945:TODO Split prompt reading and drawing.
 ./src/demos/tty/raycast.4th:946:TODO Sky needs to be drawn with the verticals. Computed as it's drawn or sampled from an updated buffer.
@@ -853,25 +862,27 @@ grep --exclude \*~ -Hn -E "todo|fixme" -r ./src | sed -E -e 's/(.+):([0-9]+):(.*
 FIXME "boo" == "boot"? Need to check lengths on both. Checking for 0 byte at end works, but not perfect. [[file:./src/interp/strings.4th::5]]
 FIXME "literal int32 0" caused problems. [[file:./src/interp/list.4th::31]]
 FIXME 0xA00 caused segfault, decompile also stopped short. [[file:./src/tests/lib/math/int64.4th::61]]
-FIXME FFI callbacks are loading state from wrong offsets. changes depending on how the trampoline's length. [[file:./src/runner/thumb/ffi.4th::108]]
-FIXME POSTPONE needs immediate lookup, but immediate support in the output is needed. [[file:./src/interp/boot/cross.4th::177]]
+FIXME POSTPONE needs immediate lookup, but immediate support in the output is needed. [[file:./src/interp/boot/cross.4th::199]]
 FIXME causes an artifact in the rays. may need more precision and/or ditching degrees [[file:./src/demos/tty/raycast.4th::43]]
 FIXME could use Lock instead of pointer, but the accessor provides no type cons [[file:./src/lib/threading/barriers/counted.4th::4]]
 FIXME crashes when set too small: nothing to render? crashes w/ too big of a world. down to havinh misaligned floor and ceilings. [[file:./src/demos/tty/raycast.4th::344]]
+FIXME did/should the last token get eaten? THEN was leftover on an ELSE when the alias was used. [[file:./src/interp/interp.4th::333]]
 FIXME does it fail on ops that use R1 to access the entry? [[file:./src/runner/thumb/ops.4th::94]]
 FIXME drop the drop [[file:./src/interp/list.4th::25]]
 FIXME duplicated [[file:./src/lib/scantool/scantool.4th::138]]
 FIXME duplicated in cross/words.4th [[file:./src/interp/boot/cross.4th::45]]
 FIXME duplicates include/thumb-asm.4th a bit [[file:./src/cross/arch/thumb.4th::1]]
+FIXME empty else clause [?] generates a ~0 jump-rel~ that can be eliminated [[file:./src/lib/case.4th::16]]
 FIXME extraneous negates? [[file:./src/lib/math/float32.4th::141]]
 FIXME for bash: no poke [[file:./src/lib/list.4th::85]]
 FIXME going to r8 and not rax [[file:./src/tests/lib/asm/test-x86.4th::94]]
-FIXME how to get cat to notice the closed pipe? [[file:./src/tests/lib/process.4th::103]]
+FIXME how to get cat to notice the closed pipe? [[file:./src/tests/lib/process.4th::105]]
 FIXME in-range? from north-words [[file:./src/demos/tty/raycast.4th::863]]
 FIXME invert needs a pen's state tracking [[file:./src/tests/lib/tty/screen.4th::18]]
 FIXME length one short in base 8 from parsing max int [[file:./src/interp/numbers.4th::32]]
 FIXME literal work in both? [[file:./src/cross/defining/proper.4th::34]]
-FIXME may not have a begin-frame to find. [[file:./src/interp/boot/core.4th::170]]
+FIXME looks up cross-immediates and not out-immediates. Breaks CASE. [[file:./src/cross/iwords.4th::17]]
+FIXME may not have a begin-frame to find. [[file:./src/interp/boot/core.4th::166]]
 FIXME maybe inverted [[file:./src/runner/x86/ops.4th::482]]
 FIXME nan right? [[file:./src/runner/thumb/vfp-constants.4th::3]]
 FIXME needs to be byte exact, adding padding on allot and going beyond here [[file:./src/lib/tty/buffer.4th::75]]
@@ -879,7 +890,7 @@ FIXME needs to read fd directly? [[file:./src/north/words.4th::327]]
 FIXME one too many [[file:./src/lib/structs/defining.4th::64]]
 FIXME one too many [[file:./src/lib/structs/seq-field.4th::9]]
 FIXME ops return using LR; originally may have reused frame [[file:./src/north/words.4th::183]]
-FIXME perfect spot for a tailcall / continue> [[file:./src/interp/interp.4th::55]]
+FIXME perfect spot for a tailcall / continue> [[file:./src/interp/interp.4th::50]]
 FIXME postpone needed, or is there a cross POSTPONE? [[file:./src/cross/case.4th::28]]
 FIXME postpone needed, or is there a cross POSTPONE? [[file:./src/interp/boot/cross/case.4th::32]]
 FIXME reader breaks at multiples of its buffer? [[file:./src/interp/characters.4th::24]]
@@ -887,13 +898,13 @@ FIXME rounded up? [[file:./src/runner/tests/float.4th::147]]
 FIXME something does not like single byte names [[file:./src/lib/asm/bit-op.4th::31]]
 FIXME swap load-thumb-asm? [[file:./src/cross/builder/bash.4th::55]]
 FIXME the moon only makes half way around. [[file:./src/demos/tty/raycast.4th::893]]
-FIXME this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams [[file:./src/interp/interp.4th::370]]
+FIXME this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams [[file:./src/interp/interp.4th::414]]
 FIXME top level IF gets shadowed by core.4th's IF [[file:./src/lib/lib/lz4.4th::8]]
 FIXME using this or modrm-mem is wrong especially with a sib [[file:./src/lib/asm/x86.4th::245]]
 FIXME when current-frame = 0, top-frame returns?? [[file:./src/lib/callcc.4th::12]]
-FIXME word ends up in the binary. [[file:./src/interp/boot/cross.4th::179]]
+FIXME word ends up in the binary. [[file:./src/interp/boot/cross.4th::201]]
 FIXME? value of 1 makes more sense? [[file:./src/runner/tests/math.4th::37]]
-TODO  needs to be variable [[file:./src/interp/boot/core.4th::276]]
+TODO  needs to be variable [[file:./src/interp/boot/core.4th::272]]
 TODO +/-1, 0 special cases of N [[file:./src/lib/math/float32.4th::235]]
 TODO .tdata? [[file:./src/lib/elf/stub32.4th::257]]
 TODO .tdata? [[file:./src/lib/elf/stub64.4th::251]]
@@ -904,7 +915,7 @@ TODO Data segment allocation and copying [[file:./src/lib/callcc.4th::7]]
 TODO Data stack allocation [[file:./src/lib/callcc.4th::8]]
 TODO Detect byte order of the old [binary] format. [[file:./src/lib/cpio.4th::78]]
 TODO Infinite ray is caused by hline and vline. They need to traverse from x0 -> x1 and not min to max [[file:./src/demos/tty/raycast.4th::1]]
-TODO POSTPONE needs a like word that useskdict for the source. [[file:./src/north/words.4th::60]]
+TODO POSTPONE needs a like word that uses dict for the source. [[file:./src/north/words.4th::60]]
 TODO Sort two element seqs into pairs that use merge-lists for list->seq input? Do away with merge-seqs. [[file:./src/lib/sort/merge-sort.4th::109]]
 TODO TODO and FIXME stats [[file:./src/bin/scantool.4th::6]]
 TODO TtyBuffer drawing [[file:./src/demos/tty/clock/tty.4th::10]]
@@ -913,22 +924,23 @@ TODO [e]poll based reactor [[file:./src/lib/process.4th::3]]
 TODO \x, \u, proper \0 [[file:./src/north/words.4th::32]]
 TODO a flop and bin-flop code word that calls a smaller op in data.code words that assist inlining. [[file:./src/runner/thumb/vfp.4th::3]]
 TODO add multiple inheritance to struct: type, offset [[file:./src/lib/structs/defining.4th::104]]
-TODO add relocation to list, symbol to another [[file:./src/cross/dynlibs.4th::44]]
 TODO add struct-fields for struct and struct-field [[file:./src/lib/structs/struct.4th::10]]
 TODO adjust output dictionary and pointers by out-offset; or make dhere, dpoke, dpeek offset? [[file:./src/interp/boot/cross.4th::1]]
 TODO align-data that's origin aware so 4k align is relative to any origin' not abs addresses [[file:./src/cross/builder/run/interp.4th::56]]
 TODO an async next-token that can accumulate each call. presently will block until a token is read if it reads a byte, even in raw mode [[file:./src/demos/tty/raycast.4th::1266]]
 TODO an extra zero is padded between entries and first data [[file:./src/cross/defining/colon/interp.4th::15]]
 TODO another callback to add pre only when the file opens? [[file:./src/lib/scantool/modes/html.4th::146]]
-TODO apply offset in reversal, token lists so lookup is done on reversal? immediate lookup during read? [[file:./src/interp/compiler.4th::81]]
-TODO apply op-mask [[file:./src/runner/thumb/ops.4th::136]]
+TODO apply offset in reversal, token lists so lookup is done on reversal? immediate lookup during read? [[file:./src/interp/compiler.4th::74]]
+TODO apply op-mask [[file:./src/runner/thumb/indexed.4th::7]]
+TODO apply op-mask [[file:./src/runner/thumb/ops.4th::137]]
 TODO are output immediates placing output words in defs? [[file:./src/interp/boot/cross/iwords.4th::3]]
 TODO arg for fd & total number of digits [[file:./src/interp/output/float32.4th::17]]
 TODO array reference fields [[file:./src/lib/structs/seq-field.4th::3]]
-TODO as a seqn [[file:./src/runner/ffi.4th::41]]
-TODO as a seqn [[file:./src/runner/ffi.4th::59]]
+TODO as a seqn [[file:./src/runner/ffi.4th::54]]
+TODO as a seqn [[file:./src/runner/ffi.4th::78]]
 TODO asin, acos, atan [[file:./src/lib/math/float32.4th::290]]
 TODO assert other stats? [[file:./src/tests/lib/cpio.4th::34]]
+TODO at-start [[file:./src/interp/boot/include.4th::30]]
 TODO atomic types [[file:./src/lib/structs/writer.4th::75]]
 TODO auto writers to data stack [[file:./src/lib/asm/bit-op.4th::6]]
 TODO backwards return list [[file:./src/lib/asm/thumb/disasm.4th::331]]
@@ -938,32 +950,33 @@ TODO be non-destructive [[file:./src/lib/digest/sha256.4th::298]]
 TODO benchmark / testing execution time and memory use with big O: loop through different sizes and try to match curve to big O equation. chart output? [[file:./src/lib/bm.4th::10]]
 TODO benchmark, optimize [[file:./src/lib/math/float32.4th::123]]
 TODO better 32 and 64 bit detection at compile time [[file:./src/lib/linux/stat.4th::63]]
-TODO better error [[file:./src/north/north.4th::75]] THEN
+TODO better error [[file:./src/north/north.4th::77]] THEN
 TODO binary output structures [[file:./src/lib/structs/defining.4th::3]]
 TODO bionic and glibc have different return values. [[file:./src/runner/tests/ffi/calls.4th::55]]
-TODO bring back IF [[file:./src/interp/interp.4th::251]]
-TODO bss segment for data [[file:./src/lib/elf/stub32-dynamic.4th::443]]
+TODO bring back IF [[file:./src/interp/interp.4th::270]]
+TODO bss segment for data [[file:./src/lib/elf/stub32-dynamic.4th::567]]
 TODO byte-string-equals? needs? [[file:./src/lib/io.4th::12]]
 TODO cap number digits to buffer size, will require useless divide[s] or divide by radix [[file:./src/interp/output/dec.4th::5]]
-TODO capture stderr too. explains the prompts. [[file:./src/tests/lib/process.4th::8]]
+TODO capture stderr too. explains the prompts. [[file:./src/tests/lib/process.4th::10]]
 TODO changing during compilation of output words may conflict with the execution ops. [[file:./src/cross/constants.4th::3]]
 TODO cleanup thread before it exits? [[file:./src/lib/linux/threads.4th::3]]
 TODO clipping [[file:./src/lib/tty/context.4th::20]]
 TODO cmp r0 before pop [[file:./src/runner/thumb/copiers.4th::38]]
 TODO comparisons conditions without 1 or 0 on stack. [[file:./src/runner/thumb/vfp.4th::4]]
-TODO compiling or to output? [[file:./src/interp/cross.4th::37]]
 TODO constants for fields > 1 [[file:./src/lib/asm/bit-op.4th::4]]
 TODO constants need to be vars. single return strings. lists & strings on stack prevent straight arg ordering. [[file:./src/cross/builder/interp.4th::1]]
 TODO copy the data [[file:./src/runner/thumb/init.4th::14]]
+TODO could do without dict here [[file:./src/runner/thumb/ffi.4th::123]]
 TODO could reuse and combine to half iterations [[file:./src/lib/math/float32.4th::223]]
 TODO cursor state, scroll region, scrolling, etc. [[file:./src/lib/tty/screen.4th::3]]
 TODO decode popr/pushr register bitfield [[file:./src/lib/asm/thumb/disasm.4th::189]]
-TODO detect comments; switch to leader, terminator pairs? [[file:./src/interp/interp.4th::253]]
+TODO detect comments; switch to leader, terminator pairs? [[file:./src/interp/interp.4th::272]]
 TODO detect format from magic [[file:./src/lib/cpio.4th::46]]
-TODO detect if word is aarch32 or thumb [[file:./src/lib/asm/thumb/disasm.4th::465]]
+TODO detect if word is aarch32 or thumb [[file:./src/lib/asm/thumb/disasm.4th::473]]
 TODO disassembly of a value to forth [[file:./src/lib/asm/bit-op.4th::5]]
 TODO do not drop the locals from the stack [[file:./src/runner/frame-tailing.4th::41]]
-TODO does int32 get left behind for numbers as [IF] conditions? [[file:./src/interp/interp.4th::252]]
+TODO does int32 get left behind for numbers as [IF] conditions? [[file:./src/interp/interp.4th::271]]
+TODO does it work? it was getting offset. [[file:./src/cross/dynlibs.4th::88]]
 TODO does-frame [[file:./src/cross/defining/frames/bash.4th::7]]
 TODO does-frame [[file:./src/cross/defining/frames/interp.4th::11]]
 TODO don't shift, convert to float? [[file:./src/demos/tty/raycast.4th::329]]
@@ -972,13 +985,14 @@ TODO don't this here [[file:./src/demos/tty/raycast.4th::711]]
 TODO drop stack values, setup return landing pad; moy not be possible with the bash forth [[file:./src/lib/catch-bash.4th::53]]
 TODO drop stack values? [[file:./src/lib/catch.4th::55]]
 TODO drop terminator search and use length [[file:./src/cross/defining/frames/interp.4th::17]]
-TODO drop terminator search and use length [[file:./src/north/north.4th::116]]
+TODO drop terminator search and use length [[file:./src/north/north.4th::120]]
 TODO drop the loop counters? [[file:./src/north/tests/dotimes.4th::14]]
-TODO drop to debugger before resignaling [[file:./src/interp/signals.4th::97]]
+TODO drop to debugger before resignaling [[file:./src/interp/signals.4th::105]]
 TODO duplicated by include/runner.4th [[file:./src/cross/builder/bash.4th::7]]
 TODO dynamic link sections to load libc [[file:./src/tests/elf/bones/with-data.4th::340]]
+TODO elf64 [[file:./src/cross/exports.4th::3]]
 TODO error [[file:./src/cross/builder/interp.4th::29]]
-TODO error [[file:./src/interp/interp.4th::257]] return0 THEN
+TODO error [[file:./src/interp/interp.4th::276]] return0 THEN
 TODO error [[file:./src/lib/asm/x86.4th::301]]
 TODO error [[file:./src/lib/asm/x86.4th::357]]
 TODO error [[file:./src/lib/math/32/int64.4th::253]] 0 set-arg0 0LL set-arg1 set-arg2 return0 THEN
@@ -986,36 +1000,41 @@ TODO error [[file:./src/lib/module.4th::49]] not-found 0 set-arg0 THEN
 TODO error [[file:./src/lib/process.4th::101]]
 TODO error [[file:./src/lib/structs/defining.4th::29]]
 TODO error [[file:./src/lib/structs/struct-field.4th::62]] s" No field" write-line/2
-TODO error [[file:./src/north/north.4th::82]]
-TODO error [[file:./src/north/north.4th::91]]
-TODO error [[file:./src/north/north.4th::95]]
+TODO error [[file:./src/north/north.4th::84]]
+TODO error [[file:./src/north/north.4th::93]]
+TODO error [[file:./src/north/north.4th::97]]
 TODO error handling? supervision that'll restart? [[file:./src/lib/threading/worker.4th::9]]
 TODO error if argument is not a struct [[file:./src/lib/structs/struct-field.4th::56]]
 TODO error or big math [[file:./src/runner/math.4th::61]] 0 2 return1-n THEN
 TODO escaping [[file:./src/interp/decompiler.4th::15]] dquote write-byte
-TODO exported symbols from dictionary [[file:./src/lib/elf/stub32-dynamic.4th::460]]
-TODO find any prior import entry. single symbol w/ multiple relocs [[file:./src/cross/dynlibs.4th::43]]
+TODO exported symbols from dictionary [[file:./src/lib/elf/stub32-dynamic.4th::585]]
 TODO forked threads need a return that calls switch thread instead ofmplacing the thread in the return address slot ; top-frame in forked threads needs to work too; getting towards a scheduler's routine. setjmp? [[file:./src/lib/callcc.4th::9]]
 TODO fpscr not setting [[file:./src/runner/thumb/vfp.4th::50]]
 TODO fractional exponents, exp can use fractional exponents: x^y = e^[ln[x]*y];  x^[1/n] = e^[ln[x]/n] [[file:./src/lib/math/float32.4th::236]]
+TODO fractional x,y for raycaster: pass line state to callback [[file:./src/lib/geometry/lines.4th::2]]
 TODO freeing the catcher [[file:./src/lib/catch.4th::57]]
 TODO full continuations would need to setup / copy the return stack. Mainly due to functions that expect full control of their local stack and/or drop their locals [on return]. [[file:./src/lib/callcc.4th::5]]
+TODO functions need a C ABI wrapper [[file:./src/cross/exports.4th::1]]
 TODO get real size [[file:./src/lib/linux/threads.4th::101]]
 TODO get rid of the terminator [[file:./src/cross/defining/colon/interp.4th::26]]
 TODO handle overflow; base prefixes: 0x, 2#101; negatives [[file:./src/interp/numbers.4th::19]]
+TODO have set-cell return clipping status to pass along for more? [[file:./src/lib/tty/buffer.4th::153]]
 TODO highlight words; seqs with sizes, typed structs, color coding, unreachable/reachable. [[file:./src/interp/boot/debug/fancy-stack.4th::3]]
+TODO how to set both the code and data fields? [[file:./src/cross/dynlibs.4th::118]]
 TODO howto keep Thread's SP in sync with the running thread? [[file:./src/lib/linux/threads.4th::6]]
 TODO html css cmd line arguments [[file:./src/bin/scantool.4th::8]]
 TODO immediates get shifted? [[file:./src/lib/asm/thumb/arm-translated.4th::53]]
 TODO immediates get shifted? [[file:./src/lib/asm/thumb/v1.4th::60]]
 TODO import-var> or extern> [[file:./src/runner/libc.4th::9]]
-TODO in-range? should drop args; and to ignore arg order [[file:./src/north/north.4th::79]]
+TODO imports.4th interfers with C interop. [[file:./src/include/interp.4th::48]]
+TODO imports.4th interfers with C interop. [[file:./src/include/runner.4th::102]]
+TODO in-range? should drop args; and to ignore arg order [[file:./src/north/north.4th::81]]
 TODO include zero? [[file:./src/lib/math/float32.4th::104]]
 TODO inherited fields [[file:./src/lib/structs/writer.4th::76]]
 TODO init builder-target-bits and endian by target and option [[file:./src/bin/builder.4th::69]]
 TODO initializers for structs and each field [[file:./src/lib/structs/defining.4th::77]]
 TODO inplace qsort [[file:./src/lib/sort/merge-sort.4th::110]]
-TODO interp gets a reader argument, load uses a new reader and interp loop [[file:./src/interp/interp.4th::95]]
+TODO interp gets a reader argument, load uses a new reader and interp loop [[file:./src/interp/interp.4th::90]]
 TODO interp powered [[file:./src/bin/scantool.4th::11]]
 TODO less work doing nothing or calculating this log? [[file:./src/lib/math/32/int32.4th::39]]
 TODO let timeout expire? [[file:./src/tests/lib/threading/barriers/bit-mask.4th::38]]
@@ -1024,7 +1043,8 @@ TODO lost the ability to have aarch32 ops w/ the size changes [[file:./src/cross
 TODO make this the cs word w/o register? [[file:./src/runner/x86/init.4th::9]]
 TODO map-fn w/ stepper [[file:./src/lib/math/float32.4th::378]]
 TODO map-range [[file:./src/demos/tty/raycast.4th::366]]
-TODO may not be needed on all platforms. It's half the data. [[file:./src/lib/linux/epoll.4th::24]]
+TODO map-seq; loading and storing from files; illusion of interpretation [[file:./src/runner/indexed_transpiler.4th::1]]
+TODO may not be needed on all platforms [[file:./src/lib/linux/epoll.4th::24]]
 TODO mem width & height & explicit pitch [[file:./src/lib/tty/buffer.4th::18]]
 TODO merge with bash.4th. shares a lot of code with a few interop aliases. [[file:./src/cross/output/data-vars/interp.4th::1]]
 TODO merge-sort sequences [[file:./src/lib/sort/merge-sort.4th::3]]
@@ -1035,18 +1055,21 @@ TODO more? [[file:./src/lib/linux/termios.4th::17]]
 TODO move eip, frame, rstack, .data section into continuation [[file:./src/lib/catch.4th::8]]
 TODO move the following definitions some place better [[file:./src/cross/output/data-vars/bash.4th::1]]
 TODO multipliers / shifts [[file:./src/lib/asm/bit-op.4th::3]]
+TODO names could use mangling of '-' [[file:./src/cross/exports.4th::2]]
 TODO necessary? bash loadable... [[file:./src/interp/boot/core.4th::20]]
 TODO need a way to xfer vectors tofrom banks, bank 0 is scalar [[file:./src/runner/thumb/vfp.4th::46]]
 TODO need ffi-callback with number of returns [[file:./src/runner/tests/ffi/callbacks.4th::26]]
-TODO needs ,uint32 after op codes. [[file:./src/interp/decompiler.4th::116]]
+TODO needs ,uint32 after op codes. [[file:./src/interp/decompiler.4th::138]]
 TODO needs a destination and dictionary args to be useful when building [[file:./src/interp/boot/vars.4th::57]]
+TODO needs imports for words, variables, and functions that follow our op abi [[file:./src/tests/elf/export-importing.4th::4]]
+TODO needs libc to init [[file:./src/interp/imports/android.4th::8]]
 TODO needs shifting of offset? [[file:./src/lib/asm/thumb/v1.4th::194]]
 TODO needs to be adapted for interp [[file:./src/cross/defining/frames/bash.4th::8]]
 TODO needs to be adapted for interp [[file:./src/cross/defining/frames/interp.4th::12]]
 TODO needs to make the context [[file:./src/demos/tty/clock/buffer.4th::47]]
 TODO needs to reindex [[file:./src/lib/callcc.4th::216]]
 TODO needs to return to endtry [[file:./src/lib/catch-bash.4th::61]]
-TODO nested comments [[file:./src/interp/interp.4th::164]]
+TODO nested comments [[file:./src/interp/interp.4th::159]]
 TODO null terminate in function? [[file:./src/interp/tests/int-to-string.4th::14]]
 TODO optimize by counting down? divide & conquer? [[file:./src/runner/math.4th::25]]
 TODO optimize by recursively apply exponent/2 [[file:./src/runner/math.4th::46]]
@@ -1059,13 +1082,14 @@ TODO partial and map [[file:./src/lib/asm/bit-op.4th::55]]
 TODO pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. [[file:./src/runner/thumb/init.4th::36]]
 TODO patch in lengths and offsets [[file:./src/tests/elf/bones/with-data.4th::337]]
 TODO pick printer based on field type [[file:./src/lib/structs/writer.4th::50]]
+TODO place in separate file for small builds [[file:./src/runner/thumb/ops.4th::497]]
 TODO pop and push could be done in code word for each vector length [[file:./src/runner/thumb/vfp.4th::47]]
 TODO power from 1? [[file:./src/lib/math/float32.4th::134]]
 TODO preallocate results and requests? the enqueing thread could drop the stack before the worker gets to it, or vice versa with the results. Though zero copy [there is one to the thread stack] is nice. [[file:./src/lib/threading/worker.4th::7]]
 TODO print field name; assoc list? [[file:./src/interp/boot/debug/program-args.4th::28]]
 TODO prioritize threads and check the run order [[file:./src/tests/lib/threading/priority-lock.4th::13]]
-TODO proper call trace [[file:./src/interp/signals.4th::91]]
-TODO push the ABI's locals in cs-reg and dict-reg, but before the callback's args. [[file:./src/runner/thumb/ffi.4th::106]]
+TODO proper call trace [[file:./src/interp/signals.4th::98]]
+TODO push the ABI's locals in cs-reg and dict-reg, but before the callback's args. [[file:./src/runner/thumb/ffi.4th::107]]
 TODO quit that resets stack, dict, fp; or interp w/ debug prompt [[file:./src/lib/catch.4th::67]]
 TODO raise an error [[file:./src/lib/linux/epoll.4th::32]]
 TODO raise an error [[file:./src/tests/lib/strings.4th::133]]
@@ -1093,22 +1117,25 @@ TODO raise an error [[file:./src/tests/lib/strings.4th::40]]
 TODO raise an error [[file:./src/tests/lib/strings.4th::45]]
 TODO raise an error [[file:./src/tests/lib/strings.4th::52]]
 TODO raise an error [[file:./src/tests/lib/strings.4th::55]]
-TODO raise error [[file:./src/lib/byte-data.4th::13]]
+TODO raise error [[file:./src/lib/byte-data/stage1.4th::42]]
 TODO raise error [[file:./src/north/words.4th::33]]
-TODO raise errors from next-token; pop reader first [[file:./src/interp/interp.4th::109]]
+TODO raise errors from next-token; pop reader first [[file:./src/interp/interp.4th::104]]
 TODO read return 0 on EOF, not -1; could use 0 for length on eof but need a flag for the first read. [[file:./src/interp/reader.4th::56]]
 TODO reader stack: pop off when EOF reached [[file:./src/interp/reader.4th::57]]
-TODO refactor [[file:./src/lib/time.4th::225]]
+TODO refactor [[file:./src/lib/time.4th::217]]
 TODO relative data stack? [[file:./src/interp/data-stack.4th::1]]
-TODO remove the condition once rebuilt [[file:./src/interp/boot/core.4th::212]]
+TODO remove the condition once rebuilt [[file:./src/interp/boot/core.4th::208]]
+TODO remove this file? [[file:./src/north/north.4th::1]]
 TODO remove unused format fun fields [[file:./src/tests/lib/cpio.4th::139]]
 TODO rename to scantool [[file:./src/bin/scantool.4th::4]]
 TODO reorder args to match actual asm [[file:./src/lib/asm/thumb/v2.4th::211]]
-TODO reset stack & state [[file:./src/runner/thumb/ops.4th::214]]
+TODO reordering start and end breaks the raycaster, why bresenham was used explicitly and why axis rays fail w/ vline and hline [[file:./src/lib/geometry/lines.4th::3]]
+TODO reset stack & state [[file:./src/runner/thumb/ops.4th::215]]
 TODO reset token list more often? [[file:./src/lib/scantool/scantool.4th::194]]
 TODO return nothing [[file:./src/runner/tests/ffi/calls.4th::37]]
 TODO return with output adjusted to first digit and a length [[file:./src/interp/output/dec.4th::6]]
 TODO returns need to pop the catcher. Have try start a frame that returns here? Still needs to return from parent frame. Flag frame pointers as being nested? [[file:./src/lib/catch.4th::56]]
+TODO save ds [[file:./src/runner/thumb/state.4th::1]]
 TODO save fp and eval-ip too? [[file:./src/runner/x86/linux.4th::1]]
 TODO save lr, mark data [[file:./src/runner/thumb/init.4th::2]]
 TODO save state before calling? r4-7 saved by called per ABI. r8-15? [[file:./src/runner/thumb/ffi.4th::3]]
@@ -1116,11 +1143,11 @@ TODO scr modes: rounding, vector, stride, traps; set on every op? [[file:./src/r
 TODO scroll buffer? [[file:./src/lib/tty/context.4th::50]]
 TODO separate bright and bold? [[file:./src/lib/tty/constants.4th::7]]
 TODO set dict in colon def from const [[file:./src/runner/thumb/init.4th::37]]
-TODO should be in the prompt reader [[file:./src/interp/interp.4th::50]]
+TODO should be in the prompt reader [[file:./src/interp/interp.4th::45]]
 TODO should be up-stack-bytes [[file:./src/lib/strings.4th::32]]
 TODO should be up-stack-bytes [[file:./src/lib/strings.4th::57]]
-TODO sigchld handler [[file:./src/tests/lib/process.4th::9]]
-TODO simplify compiling-read & merge with compiler.4th's [[file:./src/interp/interp.4th::110]]
+TODO sigchld handler [[file:./src/tests/lib/process.4th::11]]
+TODO simplify compiling-read & merge with compiler.4th's [[file:./src/interp/interp.4th::105]]
 TODO sorting of stats, getopt options for outputs  [[file:./src/bin/scantool.4th::5]]
 TODO split like interp for android and linux [[file:./src/bin/runner.4th::1]]
 TODO sqrt, exponent, fraction [[file:./src/runner/thumb/vfp.4th::48]]
@@ -1128,10 +1155,11 @@ TODO start with software division and detect Thumb2 from HWCAPS or /proc/cpuinfo
 TODO stats assoc on structs [[file:./src/bin/scantool.4th::10]]
 TODO stats formatting: column sizes, html? [[file:./src/bin/scantool.4th::7]]
 TODO store eip and sp for retry [[file:./src/lib/catch.4th::33]]
-TODO store file name and count lines in readers [[file:./src/interp/interp.4th::96]]
+TODO store file name and count lines in readers [[file:./src/interp/interp.4th::91]]
 TODO suffix with -offset [[file:./src/lib/asm/thumb/v1.4th::193]]
 TODO suffix with reg? [[file:./src/runner/thumb/ops.4th::6]]
-TODO supply input and output fds [[file:./src/interp/interp.4th::63]]
+TODO supply input and output fds [[file:./src/interp/interp.4th::58]]
+TODO swap place and n so it reads as an op on place? [[file:./src/lib/math/int32.4th::102]]
 TODO swap seq and list order? [[file:./src/lib/sort/merge-sort.4th::81]]
 TODO swap the word order to watch native byte order? [[file:./src/lib/byte-data/32.4th::1]]
 TODO switch to defs gets these included when cross compiling. [[file:./src/interp/list.4th::17]]
@@ -1146,7 +1174,7 @@ TODO the other digests could reuse this block partitioning [[file:./src/lib/dige
 TODO thread-kill & thread-join: muscl uses TLS, wait4 doesn't consider the thread's pid a child. [[file:./src/lib/linux/threads.4th::4]]
 TODO throw error [[file:./src/lib/linux/threads.4th::126]]
 TODO throw error [[file:./src/lib/stack/mmap.4th::7]]
-TODO top level IF nesting, reuse bash version? [[file:./src/interp/interp.4th::250]]
+TODO top level IF nesting, reuse bash version? [[file:./src/interp/interp.4th::269]]
 TODO try other types of strings [[file:./src/tests/lib/strings.4th::69]]
 TODO try/rescue/end-try where rescue provides the handler. [[file:./src/lib/catch.4th::7]]
 TODO turn black or sky color when way too far [[file:./src/demos/tty/raycast.4th::672]]
@@ -1155,8 +1183,10 @@ TODO update callers that don't expect returns [[file:./src/interp/dictionary.4th
 TODO update when mapping the stack? [[file:./src/cross/iwords.4th::24]]
 TODO update when mapping the stack? [[file:./src/cross/iwords.4th::35]]
 TODO usage in [cross] compiling out [[file:./src/lib/structs/defining.4th::4]]
-TODO use a list to store the reader stack. no need for readers to know. [[file:./src/interp/interp.4th::94]]
-TODO use a reduce function [[file:./src/lib/elf/stub32-dynamic.4th::336]]
+TODO use ' copy [[file:./src/lib/tty/buffer.4th::212]]
+TODO use a list to store the reader stack. no need for readers to know. [[file:./src/interp/interp.4th::89]]
+TODO use a reduce function [[file:./src/lib/elf/stub32-dynamic.4th::429]]
+TODO use copy [[file:./src/lib/byte-data.4th::41]]
 TODO use f* or v*.type mneumonics? [[file:./src/lib/asm/thumb/vfp.4th::195]]
 TODO use fun-reduce [[file:./src/lib/math/float32.4th::116]]
 TODO use map-seq [[file:./src/interp/boot/debug/fancy-stack.4th::105]]
@@ -1169,7 +1199,6 @@ TODO wait for set, clear, change [[file:./src/tests/lib/threading/barriers/bit-m
 TODO what about streamed archives? can only be read once. list and done, extract and done. [[file:./src/lib/cpio.4th::18]]
 TODO what pid does wait and kill need? [[file:./src/lib/linux/threads.4th::266]]
 TODO what's the standard's way of doing rounds with partial blocks? [[file:./src/lib/digest/sha256.4th::326]]
-TODO when integer rise/run is zero, use run/rise [[file:./src/lib/geometry/lines.4th::116]]
 TODO when the sides are both on, but the center is off, fill in the middle hole. [[file:./src/demos/tty/clock/tty.4th::9]]
 TODO when the sides are on, but the horizontal is off, fill in the respective corner. [[file:./src/demos/tty/clock/tty.4th::8]]
 TODO whitespace? is missing a THEN and is getting an extra 0x40 [[file:./src/interp/boot/cross/iwords.4th::4]]
@@ -1180,5 +1209,5 @@ TODO write to string and compare [[file:./src/tests/lib/time.4th::10]]
 TODO zero unused memory? [[file:./src/interp/boot/cross.4th::46]]
 TODO ░▒▓█▄▌▐▀ needs more than a byte and unicode encoder, or a remapping. could use for real shading in 16, 256, millions of colors. [[file:./src/demos/tty/raycast.4th::220]]
 TODO? inits with: aux env argv argc fp cs dict ds _start [[file:./src/runner/thumb/init.4th::19]]
-341
+364
 #+end_src
