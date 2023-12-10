@@ -1,5 +1,6 @@
 ( todo relative data stack? )
 
+cell-size defconst> data-cell-size
 0 defvar> data-stack-base
 0 defvar> data-stack-size
 0 defvar> data-stack-here
