@@ -44,16 +44,16 @@ here type cons const> null-type
 )
 
 def as-code-pointer ( offset-or-ptr -- ptr )
-  arg0 dup code-offset? IF dup IF cs + THEN THEN set-arg0
+  arg0 dup IF dup code-offset? IF cs + set-arg0 THEN THEN
 end
 
 ( Returns the value of a structure reference. )
 def value-of
-  arg0 cdr set-arg0
+  arg0 as-code-pointer cdr set-arg0
 end  
 
 def value-ptr
-  arg0 value-of dup code-offset? IF cs + THEN set-arg0
+  arg0 value-of dup as-code-pointer set-arg0
 end  
 
 def type-name arg0 cell-size 0 * + set-arg0 end
@@ -92,13 +92,13 @@ null cell-size type: null-type
 
 ( Returns the type of a structure reference. )
 def type-of
-  arg0 IF arg0 car dup code-offset? IF cs + THEN ELSE null-type THEN set-arg0
+  arg0 IF arg0 car as-code-pointer ELSE null-type THEN set-arg0
 end
 
 def type-super-of?
   arg1 arg0 equals? IF true 2 return1-n THEN
   arg1 UNLESS arg0 null-type equals? 2 return1-n THEN
-  arg1 value-ptr type-super peek set-arg1 repeat-frame
+  arg1 value-ptr type-super peek as-code-pointer set-arg1 repeat-frame
 end
 
 def kind-of?
