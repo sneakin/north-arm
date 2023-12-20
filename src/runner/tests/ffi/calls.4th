@@ -1,4 +1,4 @@
-load-core
+' alias defined? [UNLESS] load-core [THEN]
 " src/lib/case.4th" load
 " src/runner/ffi.4th" load
 " src/lib/assert.4th" load
@@ -52,8 +52,8 @@ def test-ffi-call-libc
   ( 2 args )
   22
   " 123" " 123" strcmp 0 assert-equals
-  " 123" " 12" strcmp -51 assert-equals ( todo bionic and glibc have different return values. )
-  " 12" " 123" strcmp 51 assert-equals
+  " 123" " 12" strcmp 0 int< assert
+  " 12" " 123" strcmp 0 int> assert
   22 assert-equals
 
   ( 3 args )
