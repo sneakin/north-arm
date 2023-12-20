@@ -6,6 +6,7 @@ FFBASE0="${FFBASE/.*/}"
 
 source "$FFROOT"/../src/bash/forth.sh
 source "$FFROOT"/"$FFBASE0".dict
+source "$FFROOT"/../src/bash/data.sh
 
 feval boot
 finterp

@@ -164,6 +164,6 @@ def fun-factorial-int32
   1 arg0 1 + uint32-stepper ' int-mul 1 fun-reduce/3 set-arg0
 end
 
-NORTH-BITS 32 equals? [IF]
+builder-target-bits 32 equals? [IF]
   s[ src/lib/math/32/int32.4th ] load-list
 [THEN]

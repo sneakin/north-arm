@@ -26,7 +26,7 @@ TRIPLE_gnueabi=$(TARGET_ARCH)-$(TARGET_OS)-gnueabi
 #OUT_TARGETS?=static android gnueabi
 OUT_TARGETS?=$(TARGET_ABI)
 
-OUTPUTS=lib/ffi-test-lib$(SOEXT)
+OUTPUTS=version.4th
 
 $(foreach stage,1 2 3 4, \
   $(foreach target,$(OUT_TARGETS), \
@@ -56,7 +56,7 @@ ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 	bin/tests/elf/bones/thumb$(EXECEXT)
 
 all: $(OUTPUTS)
-tests: bin/interp-tests$(EXECEXT)
+tests: lib/ffi-test-lib$(SOEXT) bin/interp-tests$(EXECEXT)
 north: bin/north$(EXECEXT)
 
 .PHONY: clean doc all quick git-info
@@ -346,8 +346,8 @@ endef
 define define_stage_targets # target, stage
 bin/%.$(1).$(2)$$(EXECEXT):
 	$$(STAGE$(2)_BUILDER) -t $$(TRIPLE_$(1)) -o $$@ $$^
-bin/builder.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
-	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ $$^
+bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
 bin/interp.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e interp-boot -o $$@ $$^
 bin/runner.$(1).$(2)$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
@@ -366,7 +366,10 @@ $(foreach stage,1 2 3 4, \
 STAGE0_FORTH=$(RUNNER) ./bin/interp$(EXECEXT)
 STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
 #STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
-STAGE1_BUILDER=$(RUNNER) ./bin/builder.$(RUN_OS).1$(EXECEXT)
+STAGE1_BUILDER=$(RUNNER) ./bin/builder.static.1$(EXECEXT)
+
+./src/include/interp.4th: version.4th
+./src/runner/main.4th: version.4th
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
 bin/builder$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
