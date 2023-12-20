@@ -1,9 +1,10 @@
 ' alias defined? [UNLESS] load-core [THEN]
 s[ src/lib/assert.4th ] load-list
 
-( todo needs imports for words, variables, and functions that follow our op abi )
+( todo needs imports for functions that follow our op abi )
 
-library> ./bin/interp.android.4.elf
+0 get-argv dup string-length library/2
+dup [IF]
 import> n-init 1 init 3 ( an op )
 import-value> n-exec-addr exec-abs
 import-value> n-op-size-val op-size
@@ -25,14 +26,19 @@ n-ret return-stack assert-equals
 
 ' n-exec dict-entry-code @ ' exec-abs dict-entry-code @ assert-equals
 ' n-exec dict-entry-data @ ' exec-abs dict-entry-data @ assert-equals
+[ELSE]
+  s" Failed to open the executable." error-line/2
+[THEN]
 
-(
 library> ./lib/ffi-test-lib.so
+dup [IF]
 import-var> n-test-var n_test_var
 import-const> n-test-const n_test_var
 import-value> n-test-val n_test_var
-)
 
 n-test-var @ 0x1234 assert-equals
 n-test-const 0x1234 assert-equals
 n-test-value ' n-test-const dict-entry-data @ assert-equals
+[ELSE]
+s" Skipping ffi-test-lib linking" error-line/2
+[THEN]

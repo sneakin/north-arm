@@ -29,16 +29,20 @@ end
 
 0 var> *libraries*
 
-def library> ( : path ++ handle )
-  next-token negative? IF 0 return1 THEN
-  2dup *libraries* peek assoc-string-2
-  dup IF cdr return1
+def library/2 ( path len ++ handle )
+  arg0 negative? IF 0 2 return1-n THEN
+  arg1 arg0 *libraries* peek assoc-string-2
+  dup IF cdr 2 return1-n
   ELSE
-    drop allot-byte-string/2 drop
-    RTLD-NOW over dlopen dup UNLESS not-found 0 return1 THEN
+    drop arg1 arg0 allot-byte-string/2 drop
+    RTLD-NOW over dlopen dup UNLESS not-found 0 2 return1-n THEN
     swap cons *libraries* push-onto
-    *libraries* peek car cdr current-frame drop exit-frame
+    *libraries* peek car cdr exit-frame
   THEN
+end
+
+def library> ( : path ++ handle )
+  next-token library/2 dup IF exit-frame ELSE return1 THEN
 end
 
 def does-import ( word returns fn arity ++ )

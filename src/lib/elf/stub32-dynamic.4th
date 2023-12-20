@@ -265,7 +265,7 @@ end
 def elf32-add-dynamic-import-func/2 ( name length ++ index )
   *out-dynamic-num-symbols* peek
   arg1 arg0 elf32-add-dynamic-symbol/2
-  ELF32-STB-LOCAL ELF32-STT-FUNC logior swap elf32-symbol-info poke
+  ELF32-STB-GLOBAL ELF32-STT-FUNC logior over elf32-symbol-info poke
   local0 exit-frame
 end
 
