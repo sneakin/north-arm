@@ -106,4 +106,4 @@ defop uint-sub3 ( carry a b -- lo hi )
   emit-next
 endop
 
-alias> int-sub3 uint-sub3
+defalias> int-sub3 uint-sub3
