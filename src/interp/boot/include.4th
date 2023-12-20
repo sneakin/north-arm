@@ -16,12 +16,15 @@ s[ src/interp/boot/core.4th
 ] load-list
 
 ' NORTH-COMPILE-TIME defined? [UNLESS]
-  s[ src/lib/structs.4th
+  s[ src/lib/pointers.4th
+     src/lib/structs.4th
      src/lib/linux/clock.4th
      src/lib/linux/stat.4th
      src/lib/io.4th
   ] load-list
 [THEN]
+
+def load-core true return1 end
 
 def core-init
   signals-init

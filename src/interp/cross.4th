@@ -1,4 +1,5 @@
-( Aliases and definitions to make it possible to load Bash style definitions into the compiled output. )
+( Aliases and definitions to make it possible to load North-Bash and interpreter
+  vocabularies into the compiled output. )
 
 : load-stage0-fun
   NORTH-STAGE UNLESS
@@ -13,7 +14,7 @@ s[ src/cross/defining/proper.4th ] load-list
 ( [THEN] )
 
 ( Track that this is loaded: )
-true const> NORTH-COMPILE-TIME
+true const> NORTH-CROSSED
 
 ( Words used in definitions: )
 

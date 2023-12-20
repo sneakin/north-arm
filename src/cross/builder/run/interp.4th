@@ -1,3 +1,5 @@
+false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. Defined here instead of globals.4th so it remains undefined until this file is loaded. )
+
 tmp" open-output-file/2" defined?/2 [UNLESS]
   def open-output-file/2 ( mode path -- fid )
     arg1 O_TRUNC O_CREAT logior O_WRONLY logior arg0 open 2 return1-n
@@ -18,6 +20,7 @@ tmp" fill" defined?/2 [UNLESS]
    
 s[ src/cross/output/data-vars.4th
    src/lib/digest/sha256.4th
+   src/cross/output/structs.4th
 ] load-list
 
 def builder-compute-output-hash ( origin size out-ptr out-size -- out-ptr out-size )
@@ -64,11 +67,13 @@ def builder-run ( entry len src-cons )
   s" _start" create
 
   ( The main stage: )
+  true NORTH-COMPILE-TIME poke
   builder-with-runner peek IF " src/include/runner.4th" load THEN
   ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" load THEN THEN
   ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" load THEN THEN
   arg0 load-list
 
+  out-dict update-structs
   s" copyright" cross-lookup IF code-origin peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
   s" _start" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
   s" *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN

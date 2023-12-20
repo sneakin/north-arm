@@ -39,7 +39,7 @@ def live-code-pointer?
   arg0 stack-pointer? arg0 code-pointer? or 1 return1-n
 end
 
-def print-stack-frame
+def print-stack-frame ( dict frame -- )
   arg0 error-hex-uint s" : " error-string/2
   arg1 arg0 return-address peek
   dup live-code-pointer? IF op-size - peek print-op-name THEN

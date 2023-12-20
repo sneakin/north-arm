@@ -18,6 +18,11 @@ def in-range? ( n max min )
   arg2 arg0 int>= and return1
 end
 
+def uint-in-range? ( n max min )
+  arg2 arg1 uint<=
+  arg2 arg0 uint>= and return1
+end
+
 def bit-mask
   1 arg0 bsl 1 int-sub set-arg0
 end

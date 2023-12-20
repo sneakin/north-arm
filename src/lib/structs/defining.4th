@@ -2,6 +2,10 @@
 
 ( todo binary output structures )
 ( todo usage in [cross] compiling out )
+( todo defconst-offset: best name? better to take string? )    
+( todo initializers for structs and each field )
+( todo have a list of inherited structs and the offset of the field's storage space )
+( todomrename this inherits as include. also store the offset to thebfields for . and -> to lookup. )
 
 ( struct: point2d
     inherits: numeric
@@ -33,10 +37,21 @@ end
 ( Structure defining words: )
 
 ( The last struct that was defined: )
-null var> *this-struct*
+' NORTH-COMPILE-TIME defined? [UNLESS]
+  null var> *this-struct*
+[ELSE]
+  null defvar> *this-struct*
+[THEN]
+
+' NORTH-COMPILE-TIME [IF]
+  def does-const
+    ' do-const dict-entry-code @ arg0 dict-entry-code !
+    1 return0-n
+  end
+[THEN]
 
 ( Creates a new dictionary entry with a struct as a value. )
-def create-struct
+def create-struct ( name name-len ++ )
   arg1 arg0 error-line/2
   arg1 arg0 create does-const
   arg1 new-struct dup dict dict-entry-data poke
@@ -50,11 +65,16 @@ def struct: ( : name )
   next-token allot-byte-string/2 create-struct exit-frame
 end
 
+' NORTH-COMPILE-TIME defined? [IF]
+  alias> sys-struct: struct:
+  : struct: sys-struct: dict exec-abs create-out-type-entry ;
+[THEN]
+
 ( Structure field definitions: )
 
 def does-field-accessor
   arg1 pointer field-accessor does
-  arg0 value-of arg1 dict-entry-data poke
+  arg0 value-ptr arg1 dict-entry-data poke
 end
 
 def generate-struct-accessor-name
@@ -74,31 +94,28 @@ def generate-struct-accessor
   exit-frame
 end
 
-( todo initializers for structs and each field )
-
 ( Add a new field to the current structure. )
 def field: ( type : name )
   next-token allot-byte-string/2
   arg0
-  *this-struct* peek value-of
+  *this-struct* peek value-ptr
   struct-create-field
   ( generate accessor )
   *this-struct* peek generate-struct-accessor
   exit-frame
 end
 
-
 def inherits: ( : type )
   0
   ( read type )
   next-type dup UNLESS s" Warning: Unknown type " error-line/2 return0 THEN
   set-local0
-  local0 *this-struct* peek value-of type-super poke
+  local0 *this-struct* peek value-ptr type-super poke
   ( add field )
-  local0 value-of type-name peek
+  local0 value-ptr type-name peek
   dup string-length
   local0
-  *this-struct* peek value-of struct-create-field
+  *this-struct* peek value-ptr struct-create-field
   ( generate accessor )
   *this-struct* peek generate-struct-accessor
   ( todo add multiple inheritance to struct: type, offset )

@@ -192,7 +192,7 @@ address and relative offset. )
 ; immediate-as out'
 
 : out-off'
-  ( Returns the offset of the outuut word named by the next token. Doubles as POSTPONE when cross compiling. )
+  ( Returns the offset of the output word named by the next token. Doubles as POSTPONE when cross compiling. )
   next-token cross-lookup-offset-or-break
 ; immediate-as [out-off'] cross-immediate-as POSTPONE
 

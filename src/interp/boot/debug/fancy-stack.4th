@@ -15,37 +15,6 @@ alias> white nop
 
 40 var> fancy-stack-cols
 
-def potential-pointer? ( ptr -- yes? )
-  arg0 0x2 logand 0 equals? set-arg0
-end
-
-def thumb-pointer? ( ptr -- yes? )
-  arg0 1 logand 1 equals? set-arg0
-end
-
-def stack-pointer? ( ptr -- yes? )
-  arg0 top-frame here in-range? set-arg0
-end
-
-def data-pointer? ( ptr -- yes? )
-  arg0 dhere data-stack-base @ in-range? set-arg0
-end  
-
-def code-pointer? ( ptr -- yes? )
-  arg0 cs *code-size* + cs in-range? set-arg0
-end
-
-def code-offset? ( ptr -- yes? )
-  arg0 *code-size* 0 in-range? set-arg0
-end
-  
-def pointer? ( ptr -- yes? )
-  arg0 stack-pointer?
-  IF true
-  ELSE arg0 code-pointer?
-  THEN set-arg0
-end
-
 def fancy-stack-link ( ptr top-frame -- ptr )
   arg1 arg0 uint<= IF
     s" |" write-string/2
