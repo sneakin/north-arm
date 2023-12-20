@@ -29,6 +29,29 @@ used to rebuild.
 
 
 * Tasks
+** December 24
+*** null? that leaves argument
+*** Add bracketed word lists to be used by defcol and def.
+    def fn
+      s[ hello world ] [ swap write-line ] map-seqn
+    end
+
+*** NORTH-COMPILE-TIME -> cross-compiling?
+    Using defined? allows undefined symbols to be safely used.
+    
+*** Structures
+**** Compile into binary
+**** Usage when using builder / cross compiler
+***** Accessible while building
+***** Copied and accessible in built code
+      Actually copying fields at the end of the build is sounding best while keeping byte size up to date.
+      ~struct:~ creates system structband an empty struct with associated word.
+      ~field:~, ~inherits:~ and create-field functions add to system.
+      End of build: Structs get updated, fields copied,
+      Startup: traverse all instances and add ~cs~ to pointers?
+**** Usage when compiled:
+***** Builtin structs need pointer offseting
+***** Interpreter defined structs use pointers
 
 ** November
 *** Rename ~offset32~ to something like ~literal+cs~ or ~cs+int32~? Then ~offset~ is free for relative pointer literals: ~eip + literal~. ~eip+int32~?
@@ -91,6 +114,7 @@ used to rebuild.
     No debugging aids.
     Barely able to load-core.
     A build option to strip unused words?
+    Same words as SectorForth?
 
 *** TTY
 **** input layered on top of a reader's buffering and function pointers
@@ -135,6 +159,7 @@ used to rebuild.
 *** self contained binaries
 **** boot/core and friends
 ***** DONE immediates
+***** TODO structs
 ***** better dictionary separation by switching modes & dictionaries
 **** clock, raycaster
 **** eliminate aliases
