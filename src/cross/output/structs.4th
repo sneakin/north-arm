@@ -15,15 +15,15 @@
 def copy-type-to-data ( type-ptr -- data-ptr )
   dhere
   ( copy name to data )
-  arg0 value-ptr type-name @ ,byte-string
+  arg0 value-of type-name @ ,byte-string
   ( copy type struct )
   dhere
   local0 to-out-addr ,uint32 ( name )
-  arg0 value-ptr type-byte-size @ ,uint32
-  arg0 value-ptr type-super @ dup IF value-ptr map-sys-type-to-out IF to-out-addr ELSE 0 THEN THEN ,uint32
-  arg0 value-ptr type-data @ ,uint32
+  arg0 value-of type-byte-size @ ,uint32
+  arg0 value-of type-super @ dup IF value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN THEN ,uint32
+  arg0 value-of type-data @ ,uint32
   local1 to-out-addr
-  arg0 type-of value-ptr map-sys-type-to-out UNLESS type THEN to-out-addr
+  arg0 type-of value-of map-sys-type-to-out UNLESS type THEN to-out-addr
   dcons 1 return1-n
 end
 
@@ -33,17 +33,17 @@ def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
   arg0 struct-field -> name @ ,byte-string
   dhere
   over to-out-addr ,uint32
-  arg0 struct-field -> type @ value-ptr map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,uint32
+  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,uint32
   arg0 struct-field -> offset @ ,uint32
   arg0 struct-field -> byte-size @ ,uint32
   local1 to-out-addr
-  struct-field value-ptr map-sys-type-to-out IF to-out-addr ELSE 0 THEN
+  struct-field value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
   dcons to-out-addr ,h enl
   arg1 swap dcons to-out-addr 1 return1-n
 end
 
 def copy-struct-fields-to-data ( sys-struct out-struct -- )
-  arg1 value-ptr struct-fields @ ' copy-struct-field-to-data map-car
+  arg1 value-of struct-fields @ ' copy-struct-field-to-data map-car
   arg0 cdr from-out-addr struct-fields !
   2 return0-n
 end

@@ -74,7 +74,7 @@ end
 
 def does-field-accessor
   arg1 pointer field-accessor does
-  arg0 value-ptr arg1 dict-entry-data poke
+  arg0 value-of arg1 dict-entry-data poke
 end
 
 def generate-struct-accessor-name
@@ -98,7 +98,7 @@ end
 def field: ( type : name )
   next-token allot-byte-string/2
   arg0
-  *this-struct* peek value-ptr
+  *this-struct* peek value-of
   struct-create-field
   ( generate accessor )
   *this-struct* peek generate-struct-accessor
@@ -110,12 +110,12 @@ def inherits: ( : type )
   ( read type )
   next-type dup UNLESS s" Warning: Unknown type " error-line/2 return0 THEN
   set-local0
-  local0 *this-struct* peek value-ptr type-super poke
+  local0 *this-struct* peek value-of type-super poke
   ( add field )
-  local0 value-ptr type-name peek
+  local0 value-of type-name peek
   dup string-length
   local0
-  *this-struct* peek value-ptr struct-create-field
+  *this-struct* peek value-of struct-create-field
   ( generate accessor )
   *this-struct* peek generate-struct-accessor
   ( todo add multiple inheritance to struct: type, offset )

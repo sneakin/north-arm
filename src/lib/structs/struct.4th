@@ -36,7 +36,7 @@ end
   Structures are passed by pointers to a cons cell of a type structure and data.
   This necessitates the use of value-of before accessors. )
 def allot-struct
-  arg0 value-ptr struct-byte-size peek stack-allot-zero exit-frame
+  arg0 value-of struct-byte-size peek stack-allot-zero exit-frame
 end
 
 def make-instance ( type ++ ... instance )
@@ -47,6 +47,6 @@ end
 ( Creating instances of structs: )
 def new-struct ( name ++ struct )
   struct make-instance
-  arg0 over value-ptr struct-name poke
+  arg0 over value-of struct-name poke
   exit-frame
 end
