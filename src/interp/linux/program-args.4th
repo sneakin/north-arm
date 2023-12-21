@@ -23,8 +23,11 @@ def argv
 end
 
 def get-argv ( index -- value )
-  argv cell-size arg0 * +
-  dup IF peek ELSE 0 THEN set-arg0
+  arg0 argc int< IF
+    argv cell-size arg0 * +
+    dup IF peek ELSE 0 THEN
+  ELSE 0
+  THEN set-arg0
 end
 
 def env-addr ( ++ pointer )
