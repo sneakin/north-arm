@@ -28,7 +28,7 @@ def copy-type-to-data ( type-ptr -- data-ptr )
 end
 
 def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
-  espace espace arg0 struct-field -> name @ error-string espace
+  espace espace arg0 ,h espace struct-field -> name @ error-string espace
   dhere
   arg0 struct-field -> name @ ,byte-string
   dhere
@@ -43,17 +43,20 @@ def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
 end
 
 def copy-struct-fields-to-data ( sys-struct out-struct -- )
-  arg1 value-of struct-fields @ ' copy-struct-field-to-data map-car
-  arg0 cdr from-out-addr struct-fields !
+  arg1 value-of struct-fields @
+  dup IF
+    ' copy-struct-field-to-data map-car
+  ELSE 0
+  THEN arg0 ,h espace cdr ,h enl from-out-addr struct-fields !
   2 return0-n
 end
 
 def update-out-struct ( state word -- state )
-  arg0 dict-entry-name @ from-out-addr error-line
-  arg0 dict-entry-data @
+  arg0 dict-entry-name @ from-out-addr error-string espace
+  arg0 dict-entry-data @ dup ,h enl
   dup copy-type-to-data
   dup to-out-addr arg0 dict-entry-data !
-  over struct kind-of? IF ( todo LUT of types? )
+  over struct kind-of? local0 type equals? or IF ( todo LUT of types? iterate fields for pointers? )
     copy-struct-fields-to-data
   THEN
   arg1 2 return1-n

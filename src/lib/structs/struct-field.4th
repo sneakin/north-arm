@@ -25,16 +25,16 @@ end
 
 def struct-get-field-loop ( name len fields -- field )
   arg0 null? IF 0 return1 THEN
-  arg2 arg0 car value-of struct-field-name peek arg1 1 + byte-string-equals?/3 IF
-    arg0 car return1
+  arg2 arg0 car value-of struct-field-name peek as-code-pointer arg1 1 + byte-string-equals?/3 IF
+    arg0 car as-code-pointer return1
   THEN
-  arg0 cdr set-arg0 repeat-frame
+  arg0 cdr as-code-pointer set-arg0 repeat-frame
 end
 
 def struct-get-field ( name len struct -- field )
   arg0 null? IF null 3 return1-n THEN
-  arg2 arg1 arg0 struct-fields peek struct-get-field-loop
-  dup null? IF drop arg0 type-super peek value-of set-arg0 repeat-frame
+  arg2 arg1 arg0 struct-fields as-code-pointer peek as-code-pointer struct-get-field-loop
+  dup null? IF drop arg0 type-super as-code-pointer peek value-of set-arg0 repeat-frame
 	    ELSE 3 return1-n
 	    THEN
 end
@@ -153,6 +153,7 @@ value swap
 here struct-field cons struct-field value-of struct-add-field
 
 ( Type fields: )
+' NORTH-COMPILE-TIME defined? [UNLESS] ( not needed with an pointer to the system's type )
 " name"
 cell-size swap
 cell-size 0 * swap
@@ -176,7 +177,7 @@ cell-size swap
 cell-size 3 * swap
 pointer<any> swap
 here struct-field cons type value-of struct-add-field
-( [THEN] )
+[THEN]
 
 ( Creating struct fields: )
 
