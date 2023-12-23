@@ -1,4 +1,5 @@
-s[ src/lib/case.4th src/lib/assert.4th ] load-list
+' CASE defined? [UNLESS] " src/lib/case.4th" load [THEN]
+' assert-equals defined? [UNLESS] " src/lib/assert.4th" load [THEN]
 
 def test-case-printed
   arg0 CASE

@@ -194,7 +194,7 @@ address and relative offset. )
 : out-off'
   ( Returns the offset of the output word named by the next token. Doubles as POSTPONE when cross compiling. )
   next-token cross-lookup-offset-or-break
-; immediate-as [out-off'] cross-immediate-as POSTPONE
+; immediate-as [out-off']
 
 ( fixme POSTPONE needs immediate lookup, but immediate support in the output is needed. )
 
@@ -210,6 +210,14 @@ address and relative offset. )
   out-off' pointer
   POSTPONE [out-off']
 ; cross-immediate-as '
+
+: out-POSTPONE
+  next-token
+  output-immediates @ out-origin @ dict-lookup/4 IF
+    to-out-addr rot 2 dropn
+  ELSE drop cross-lookup-offset-or-break
+  THEN
+; cross-immediate-as POSTPONE
 
 ( String readers: )
 
