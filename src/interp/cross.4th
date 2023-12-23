@@ -38,11 +38,11 @@ alias> const> defconst>
 alias> const-offset> defconst-offset>
 alias> symbol> defsymbol>
 
-alias> immediate out-immediate
-alias> immediate-as out-immediate-as
-
 alias> sys' ' immediate
 alias> ' out' immediate
+
+alias> immediate out-immediate
+alias> immediate-as out-immediate-as
 
 ( And finally switch alias> over: )
 alias> alias> defalias>
