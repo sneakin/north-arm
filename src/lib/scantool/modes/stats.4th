@@ -127,12 +127,24 @@ def write-stats-per-file
   arg0 car arg0 cdr set-arg0 ' write-stats-per-file/2 tail+1
 end
 
+def car-byte-string>
+  arg1 car arg0 car byte-string>
+  2 return1-n
+end
+
+def cmp-per-def-caller-count
+  arg1 cdr stats-per-def-caller-count @
+  arg0 cdr stats-per-def-caller-count @
+  int> 2 return1-n
+end
+
 def stats-scantool-footing
   nl
   s" Definitions" write-line/2
   nl
   s" Word	# words	# callers" write-line/2
-  arg0 scantool-output-data @ stats-collector-per-def @ ' write-stats-per-def map-car
+  ' car-byte-string> arg0 scantool-output-data @ stats-collector-per-def @ dup cons-count 0 merge-sort-list
+  ' write-stats-per-def map-car
   nl
   nl
   s" Summary" write-line/2

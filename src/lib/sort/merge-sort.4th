@@ -70,7 +70,7 @@ def merge-sort-list ( cmp-fn list length depth ++ sorted-list )
     ELSE
       arg1 0 uint> IF
 	0 arg2 car cons exit-frame
-      ELSE 0 3 return1-n
+      ELSE 0 4 return1-n
       THEN
     THEN
   THEN

@@ -255,6 +255,7 @@ tmp" BUILDER-TARGET" defined?/2 [UNLESS]
 [THEN]
   
 s[ src/lib/linux/errno.4th
+   src/lib/sort/merge-sort.4th
    src/lib/scantool/modes/common.4th
    src/lib/scantool/modes/enriched.4th
    src/lib/scantool/modes/html.4th
