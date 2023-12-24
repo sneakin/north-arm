@@ -175,34 +175,57 @@ alias> :: :
 
 symbol> if-placeholder
 
-: IF
+: comp-IF
   literal literal
   literal if-placeholder
   literal unless-jump
-; immediate
+; immediate-as IF
 
-: UNLESS
+: comp-UNLESS
   literal literal
   literal if-placeholder
   literal if-jump
-; immediate
+; immediate-as UNLESS
 
-: ELSE
+: comp-ELSE
   literal literal
   literal if-placeholder stack-find
   literal if-placeholder literal jump-rel
   roll
   dup here stack-delta 3 -
   swap spoke
-; immediate
+; immediate-as ELSE
 
-: THEN
+: comp-THEN
   literal if-placeholder stack-find
   dup here stack-delta 3 -
   swap spoke
-; immediate
+; immediate-as THEN
 
 ( Compile time conditions: )
+
+: IF-loop ( new-block-fn then else depth-counter -- )
+  next-token
+  dup 6 overn exec IF drop 1 +
+  ELSE
+    dup 5 overn equals IF
+      drop dup IF 1 - ELSE 4 dropn return THEN
+    ELSE
+      dup 4 overn equals IF
+	over 0 equals IF 5 dropn return THEN
+      THEN drop
+    THEN
+  THEN loop
+;
+
+: ELSE-loop ( new-block-fn then depth-counter -- )
+  next-token
+  dup 4 overn equals IF
+    over 0 equals IF 4 dropn return ELSE drop 1 - THEN
+  ELSE
+    dup 5 overn exec IF drop 1 + ELSE drop THEN
+  THEN loop
+;
 
 : [if-or-unless?]
   dup " [IF]" equals
@@ -210,33 +233,21 @@ symbol> if-placeholder
   logior
 ;
 
-: [IF-loop] ( depth-counter -- )
-  next-token
-  dup [if-or-unless?] IF drop 1 +
-  ELSE
-    dup " [THEN]" equals IF
-      drop dup IF 1 - ELSE drop return THEN
-    ELSE
-      dup " [ELSE]" equals IF
-	over 0 equals IF 2 dropn return THEN
-      THEN drop
-    THEN
-  THEN loop
-;
-
-: [ELSE-loop] ( depth-counter -- )
-  next-token
-  dup " [THEN]" equals IF
-    over 0 equals IF 2 dropn return ELSE drop 1 - THEN
-  ELSE
-    dup [if-or-unless?] IF drop 1 + ELSE drop THEN
-  THEN loop
-;
-
-: [IF] UNLESS 0 [IF-loop] THEN ; immediate
-: [UNLESS] IF 0 [IF-loop] THEN ; immediate
+: [IF] UNLESS ' [if-or-unless?] " [THEN]" " [ELSE]" 0 IF-loop THEN ; immediate
+: [UNLESS] IF ' [if-or-unless?] " [THEN]" " [ELSE]" 0 IF-loop THEN ; immediate
 : [THEN] ( nop ) ; immediate
-: [ELSE] 0 [ELSE-loop] ; immediate
+: [ELSE] ' [if-or-unless?] " [THEN]" 0 ELSE-loop ; immediate
+
+: if-or-unless?
+  dup " IF" equals
+  swap " UNLESS" equals
+  logior
+;
+
+: IF UNLESS ' if-or-unless? " THEN" " ELSE" 0 IF-loop THEN ;
+: UNLESS IF ' if-or-unless? " THEN" " ELSE" 0 IF-loop THEN ;
+: THEN ( nop ) ;
+: ELSE ' if-or-unless? " THEN" 0 ELSE-loop ;
 
 ( Numerics: )
 
