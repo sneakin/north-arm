@@ -61,10 +61,10 @@ def file-size32
 end
 
 ( todo better 32 and 64 bit detection at compile time )
-cell-size 8 equals? [IF]
+cell-size 8 equals? IF
   alias> fd-size fd-size64
   alias> file-size file-size64
-[ELSE]
+ELSE
   alias> fd-size fd-size32
   alias> file-size file-size32
-[THEN]
+THEN

@@ -1,8 +1,8 @@
 ( " src/lib/math/32/int32.4th" load
 " src/lib/math/32/int64.4th" load )
-tmp" assert" defined?/2 [UNLESS]
+tmp" assert" defined?/2 UNLESS
   s[ src/lib/assert.4th src/lib/assertions/int.4th ] load-list
-[THEN]
+THEN
 
 def test-int64<
   0LL 1LL int64< assert

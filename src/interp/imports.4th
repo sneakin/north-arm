@@ -1,7 +1,7 @@
-target-android? [IF]
+target-android? IF
   s[ src/interp/imports/android.4th ] load-list
-[THEN]
+THEN
 
-target-gnueabi? [IF]
+target-gnueabi? IF
   s[ src/interp/imports/linux.4th ] load-list
-[THEN]
+THEN

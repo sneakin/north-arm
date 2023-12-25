@@ -7,7 +7,7 @@ x86 instructions follow the form:
 
 16 var> x86-bits
 
-NORTH-STAGE 0 equals? [IF]
+NORTH-STAGE 0 equals? IF
   : x86-bytes x86-bits 8 int-div ;
 
   : 16bit? x86-bits 16 equals? ;
@@ -15,7 +15,7 @@ NORTH-STAGE 0 equals? [IF]
   : 64bit? x86-bits 64 equals? ;
 
   : x86-bits! set-x86-bits ;
-[ELSE]
+ELSE
   : x86-bytes x86-bits peek 8 int-div ;
 
   : 16bit? x86-bits peek 16 equals? ;
@@ -23,7 +23,7 @@ NORTH-STAGE 0 equals? [IF]
   : 64bit? x86-bits peek 64 equals? ;
 
   : x86-bits! x86-bits poke ;
-[THEN]
+THEN
 
 : signed-byte? abs-int 0x7F uint<= ;
 

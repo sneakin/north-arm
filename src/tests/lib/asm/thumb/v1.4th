@@ -1,6 +1,6 @@
-' alias defined? [UNLESS] load-core [THEN]
-' assert-equals defined? [UNLESS] " src/lib/assert.4th" load [THEN]
-' patch-ldr-pc! defined? [UNLESS] load-thumb-asm [THEN]
+' alias defined? UNLESS load-core THEN
+' assert-equals defined? UNLESS " src/lib/assert.4th" load THEN
+' patch-ldr-pc! defined? UNLESS load-thumb-asm THEN
 
 def test-patch-ldr-pc-2
   dhere 0 dpush

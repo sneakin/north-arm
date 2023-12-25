@@ -1,6 +1,6 @@
-' time-on-under? defined? [UNLESS]
+' time-on-under? defined? UNLESS
   s" src/lib/time.4th" load/2
-[THEN]
+THEN
 
 def assert-time-on-under ( time seconds -- )
   arg1 arg0 time-on-under? assert

@@ -1,6 +1,6 @@
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   s[ src/cross/defining/proper.4th ] load-list
-[THEN]
+THEN
 
 s[
   src/lib/structs/typing.4th

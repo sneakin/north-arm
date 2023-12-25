@@ -42,7 +42,7 @@ def uint64<=
   THEN 4 return1-n
 end
 
-0 [IF]
+0 IF
 def uint64-addc ( alo ahi blo bhi -- lo hi carry )
   arg3 arg1 uint-addc
   arg2 arg0 uint-add3
@@ -54,7 +54,7 @@ def int64-addc ( alo ahi blo bhi -- lo hi carry )
   arg2 arg0 int-add3
   set-arg1 set-arg2 set-arg3 1 return0-n
 end
-[THEN]  
+THEN  
 
 def uint64-add
   arg3 arg2 arg1 arg0 uint64-addc drop 4 return2-n

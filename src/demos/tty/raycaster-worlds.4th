@@ -89,20 +89,20 @@ D              *
 *              BW          X
 ************   *************" 10 29 make-static-world const> world5
 
-' world6 [UNLESS]
+' world6 UNLESS
 tmp" src/demos/tty/raycaster-00.map" drop allot-read-file drop
 44 81 make-static-world const> world6
-[THEN]
+THEN
 
-' world7 [UNLESS]
+' world7 UNLESS
 tmp" src/demos/tty/raycaster-01.map" drop allot-read-file drop
 44 81 make-static-world const> world7
-[THEN]
+THEN
 
-' world8 [UNLESS]
+' world8 UNLESS
 tmp" src/demos/tty/raycaster-08.map" drop allot-read-file drop
 64 65 make-static-world const> world8
-[THEN]
+THEN
 
 def world9-fn ( y x world -- cell )
   arg2 arg1 arg0 world-contains? IF

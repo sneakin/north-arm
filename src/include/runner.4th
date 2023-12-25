@@ -1,15 +1,15 @@
-target-thumb? [IF]
+target-thumb? IF
 ( Core ops )
 s[ src/runner/thumb/ops.4th
    src/runner/thumb/cpu.4th
    src/runner/thumb/vfp.4th
  ] load-list
 
-NORTH-STAGE 0 int> [IF]
+NORTH-STAGE 0 int> IF
   s[ src/cross/dynlibs.4th
      src/cross/exports.4th
   ] load-list
-[THEN]
+THEN
 
 ( Cross compiler )
 s[
@@ -59,9 +59,9 @@ s[ src/runner/thumb/frames.4th
    version.4th
    src/runner/thumb/init.4th
 ] load-list
-[THEN]
+THEN
 
-target-x86? [IF]
+target-x86? IF
 s[
    src/runner/x86/ops.4th
 
@@ -95,10 +95,10 @@ s[
    version.4th
    src/runner/x86/init.4th
 ] load-list
-[THEN]
+THEN
 
-NORTH-STAGE 1 int> [IF]
+NORTH-STAGE 1 int> IF
   ( todo imports.4th interfers with C interop. )
   s[ src/runner/imports.4th ] load-list
-  NORTH-STAGE 3 int> [IF] s[ src/runner/exports.4th ] load-list [THEN]
-[THEN]
+  NORTH-STAGE 3 int> IF s[ src/runner/exports.4th ] load-list THEN
+THEN

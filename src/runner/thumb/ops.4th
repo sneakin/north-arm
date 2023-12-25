@@ -7,13 +7,13 @@ r7 const> eip ( todo suffix with reg? )
 r8 const> data-reg
 
 ( target-thumb2? )
-BUILDER-TARGET tmp" thumb2" drop contains? [IF]
+BUILDER-TARGET tmp" thumb2" drop contains? IF
   tmp" Compiling for thumb2" error-line/2
   : thumb2? 1 ;
-[ELSE]
+ELSE
   tmp" Compiling for thumb" error-line/2
   : thumb2? 0 ;
-[THEN]
+THEN
 
 ( Branch helpers: )
 

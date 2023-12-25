@@ -1,12 +1,12 @@
-' alias [UNLESS] load-core [THEN]
+' alias UNLESS load-core THEN
 
-' TtyScreen [UNLESS]
+' TtyScreen UNLESS
   s[ src/lib/time.4th
      src/lib/linux.4th
      src/lib/geometry/angles.4th
      src/lib/tty.4th
   ] load-list
-[THEN]
+THEN
 
 s[ src/demos/tty/clock/segments.4th
    src/demos/tty/clock/stdio.4th

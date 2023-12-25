@@ -9,11 +9,11 @@
 
 load-stage0-fun
 
-' NORTH-COMPILE-TIME defined? [IF]
-  ' redefproper defined? [UNLESS]
+' NORTH-COMPILE-TIME defined? IF
+  ' redefproper defined? UNLESS
     s[ src/cross/defining/proper.4th ] load-list
-  [THEN]
-[THEN]
+  THEN
+THEN
 
 ( Track that this is loaded: )
 true const> NORTH-CROSSED

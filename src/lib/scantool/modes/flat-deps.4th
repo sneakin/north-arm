@@ -35,11 +35,11 @@ def flat-deps-scantool-load-list
 end
 
 
-tmp" BUILDER-TARGET" defined?/2 [IF]
+tmp" BUILDER-TARGET" defined?/2 IF
   ' scantool-deps-dict dict-entry-data @ from-out-addr
-[ELSE]
+ELSE
   scantool-deps-dict
-[THEN]
+THEN
 ' flat-deps-scantool-load copies-entry-as> load
 ' flat-deps-scantool-load copies-entry-as> load/2
 ' flat-deps-scantool-load-list copies-entry-as> load-list

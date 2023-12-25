@@ -37,18 +37,18 @@ end
 ( Structure defining words: )
 
 ( The last struct that was defined: )
-' NORTH-COMPILE-TIME defined? [UNLESS]
+' NORTH-COMPILE-TIME defined? UNLESS
   null var> *this-struct*
-[ELSE]
+ELSE
   null defvar> *this-struct*
-[THEN]
+THEN
 
-' NORTH-COMPILE-TIME [IF]
+' NORTH-COMPILE-TIME IF
   def does-const
     ' do-const dict-entry-code @ arg0 dict-entry-code !
     1 return0-n
   end
-[THEN]
+THEN
 
 ( Creates a new dictionary entry with a struct as a value. )
 def create-struct ( name name-len ++ )
@@ -65,10 +65,10 @@ def struct: ( : name )
   next-token allot-byte-string/2 create-struct exit-frame
 end
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   alias> sys-struct: struct:
   : struct: sys-struct: dict exec-abs create-out-type-entry ;
-[THEN]
+THEN
 
 ( Structure field definitions: )
 

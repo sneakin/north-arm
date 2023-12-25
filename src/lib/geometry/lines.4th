@@ -4,11 +4,11 @@
  
 ( Horizontal lines: )
 
-' maxmin [UNLESS]
+' maxmin UNLESS
 def maxmin
   arg1 arg0 minmax set-arg1 set-arg0
 end
-[THEN]
+THEN
 
 def hline-fn-loop ( fn[accum y x ++ accum more?] accum y x2 x1 ++ accum )
   arg3 arg2 arg0 4 argn exec-abs UNLESS exit-frame THEN set-arg3

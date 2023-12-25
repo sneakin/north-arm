@@ -9,9 +9,9 @@
 ' ffi-callback-1-0
 ' ffi-callback-0-0
 here
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
 6 ,seq-pointer to-out-addr
-[THEN] const> ffi-callbacks-0
+THEN const> ffi-callbacks-0
 
 0
 ' ffi-callback-4-1
@@ -20,24 +20,24 @@ here
 ' ffi-callback-1-1
 ' ffi-callback-0-1
 here
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
 6 ,seq-pointer to-out-addr
-[THEN] const> ffi-callbacks-1
+THEN const> ffi-callbacks-1
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   def ffi-callback-for ( returns num-args -- calling-word )
     arg1 IF ffi-callbacks-1 ELSE ffi-callbacks-0 THEN
     cs +
     arg0 4 min cell-size * + peek cs + return1
   end
-[ELSE]
+ELSE
   def ffi-callback-for ( returns num-args -- calling-word )
     arg1 IF ffi-callbacks-1 ELSE ffi-callbacks-0 THEN
     arg0 4 min cell-size * + peek return1
   end
-[THEN]
+THEN
 
-NORTH-BUILD-TIME 1659768556 int< [IF]
+NORTH-BUILD-TIME 1659768556 int< IF
 
 def ffi-callback-with ( word code-word -- ...assembly ptr )
   ( returns a call to an op that'll push args & jump to the next word. )
@@ -54,7 +54,7 @@ def ffi-callback-with ( word code-word -- ...assembly ptr )
   local0 1 + exit-frame ( todo as a seqn )
 end
 
-[ELSE]
+ELSE
 
   def interp-save-state ( ptr -- )
     ds arg0 2 seq-poke
@@ -78,7 +78,7 @@ def ffi-callback-with ( word code-word -- ...assembly ptr )
   local0 1 + exit-frame ( todo as a seqn )
 end
 
-[THEN]
+THEN
 
 defcol ffi-callback ( word arity returns -- ...assembly ptr )
   rot ffi-callback-for rot 2 dropn

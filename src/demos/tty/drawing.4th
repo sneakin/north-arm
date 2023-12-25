@@ -1,13 +1,13 @@
-' alias [UNLESS] load-core [THEN]
+' alias UNLESS load-core THEN
 
-' TtyScreen [UNLESS]
+' TtyScreen UNLESS
   s[ src/lib/time.4th
      src/lib/linux.4th
      src/lib/io.4th
      src/lib/tty.4th
      src/demos/tty/sprites/sprites.nth
   ] load-list
-[THEN]
+THEN
 
 def demo-tty-drawing-draw-loop ( fn h w n context -- )
   arg3 rand-n arg2 rand-n arg0 tty-context-move-to

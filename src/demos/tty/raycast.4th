@@ -1,15 +1,15 @@
 ( todo Infinite ray is caused by hline and vline. They need to traverse from x0 -> x1 and not min to max )
 
-' alias> [UNLESS] load-core [THEN]
+' alias> UNLESS load-core THEN
 
-' TtyBuffer [UNLESS]
+' TtyBuffer UNLESS
   s[ src/lib/linux.4th
      src/lib/io.4th
      src/lib/threading/lock.4th
      src/lib/tty.4th
      src/lib/geometry/angles.4th
   ] load-list
-[THEN]
+THEN
 
 ( Functions that belong else where: )
 

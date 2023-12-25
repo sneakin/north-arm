@@ -1,4 +1,4 @@
-' alias [UNLESS] load-core [THEN]
+' alias UNLESS load-core THEN
 
 s[ src/north/words.4th
    vendor/north/src/01/tty.4th
@@ -16,4 +16,4 @@ def color-init
   ' color-prompt prompt-fn !
 end
 
-tty-getsize 0 int> swap 0 int> and [IF] color-init [THEN]
+tty-getsize 0 int> swap 0 int> and IF color-init THEN

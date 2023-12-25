@@ -2,7 +2,7 @@ s[ src/lib/platform-target.4th ] load-list
 
 def target-thumb? false return1 end
 
-NORTH-PLATFORM platform-target-bash? [IF]
+NORTH-PLATFORM platform-target-bash? IF
 4 const> -op-size
 
 : error-int error-string ;
@@ -15,14 +15,14 @@ s[
 ] load-list
 
 dhere set-out-origin
-[ELSE]
+ELSE
 s[ src/interp/boot/cross.4th
 ] load-list
 
 alias> seq<uint32>-peek seq-peek
 
 dhere out-origin !
-[THEN]
+THEN
 
 s[ src/cross/defining/op.4th ] load-list
 

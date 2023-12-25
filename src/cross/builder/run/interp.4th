@@ -1,22 +1,22 @@
 false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. Defined here instead of globals.4th so it remains undefined until this file is loaded. )
 
-tmp" open-output-file/2" defined?/2 [UNLESS]
+tmp" open-output-file/2" defined?/2 UNLESS
   def open-output-file/2 ( mode path -- fid )
     arg1 O_TRUNC O_CREAT logior O_WRONLY logior arg0 open 2 return1-n
   end
-[THEN]
+THEN
 
-tmp" S_IRWXU" defined?/2 [UNLESS]
+tmp" S_IRWXU" defined?/2 UNLESS
 00700 const> S_IRWXU
 00040 const> S_IRGRP
 00010 const> S_IXGRP
 00004 const> S_IROTH
 00001 const> S_IXOTH
-[THEN]
+THEN
    
-tmp" fill" defined?/2 [UNLESS]
+tmp" fill" defined?/2 UNLESS
    s[ src/lib/seq.4th ] load-list
-[THEN]
+THEN
    
 s[ src/cross/output/data-vars.4th
    src/lib/digest/sha256.4th

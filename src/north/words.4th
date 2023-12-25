@@ -253,7 +253,7 @@ defcol return-locals
   drop here current-frame swap int-sub cell-size int-div returnN
 endcol
 
-0 [IF]
+0 IF
 defcol return2-n
   drop
   1 - current-frame fargn ( pointer to top most arg )
@@ -265,7 +265,7 @@ defcol return2-n
   down-stack over over poke ( return address )
   move
 end
-[THEN]
+THEN
 
 alias> logi badlog2-int
 alias> < int<

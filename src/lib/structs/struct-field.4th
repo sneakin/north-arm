@@ -83,11 +83,11 @@ defproper -> ( typed-ptr struct : field -- slot-addr )
   swap value-of swap POSTPONE .
 ;
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   alias> maybe-immediate-as out-immediate-as
-[ELSE]
+ELSE
   alias> maybe-immediate-as immediate-as
-[THEN]
+THEN
 
 defproper [.] ( struct-entry : field -- code... )
   exec next-struct-field IF
@@ -103,7 +103,7 @@ defproper [->] ( struct-entry : field -- code... )
 
 ( todo lookup fields after mapping output struct addr to runtime struct )
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   : map-out-struct-to-sys ( struct-entry -- sys-struct ok? )
     from-out-addr dict-entry-data @ true
   ;
@@ -123,11 +123,11 @@ defproper [->] ( struct-entry : field -- code... )
   : [->] ( struct-entry : field -- code... )
     out-off' value-of swap [.]
   ; cross-immediate-as ->
-[THEN]
+THEN
 
 ( Struct field definitions: )
 
-( ' NORTH-COMPILE-TIME defined? [UNLESS] )
+( ' NORTH-COMPILE-TIME defined? UNLESS )
 " name"
 cell-size swap
 cell-size 0 * swap
@@ -153,7 +153,7 @@ value swap
 here struct-field cons struct-field value-of struct-add-field
 
 ( Type fields: )
-' NORTH-COMPILE-TIME defined? [UNLESS] ( not needed with an pointer to the system's type )
+' NORTH-COMPILE-TIME defined? UNLESS ( not needed with an pointer to the system's type )
 " name"
 cell-size swap
 cell-size 0 * swap
@@ -177,7 +177,7 @@ cell-size swap
 cell-size 3 * swap
 pointer<any> swap
 here struct-field cons type value-of struct-add-field
-[THEN]
+THEN
 
 ( Creating struct fields: )
 

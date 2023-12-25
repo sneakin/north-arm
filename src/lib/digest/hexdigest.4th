@@ -1,6 +1,6 @@
 ( Hex digest output: )
 
-0 [IF]
+0 IF
 def ohexdigest/5 ( max-length ptr size hash-value n -- ptr length )
   ( convert each 32 bit cell in ~hash-value~ into an 8 byte string and concatenate it in ~ptr~ to make one big 64 or ~max-length*8~, byte string )
   arg0 4 argn uint>=
@@ -13,7 +13,7 @@ def ohexdigest/5 ( max-length ptr size hash-value n -- ptr length )
   arg3 arg0 8 * + 0 true uint->hex-string/4 4 dropn
   arg0 1 + set-arg0 repeat-frame
 end
-[THEN]
+THEN
 
 ( Or in a map friendly style? )
 

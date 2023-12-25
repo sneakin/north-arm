@@ -2,11 +2,11 @@
 
 ( some ops will need to be defined before this. )
 
-NORTH-STAGE 0 equals? [IF]
+NORTH-STAGE 0 equals? IF
   " src/cross/defining/colon/bash.4th" load
-[ELSE]
+ELSE
   " src/cross/defining/colon/interp.4th" load
-[THEN]
+THEN
 
 : defcol
   create> does-col

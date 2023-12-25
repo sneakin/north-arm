@@ -1,6 +1,6 @@
-' lock-acquire/2 defined? [UNLESS]
+' lock-acquire/2 defined? UNLESS
   s[ src/lib/threading/lock.4th ] load-list
-[THEN]
+THEN
 
 struct: TtyDoubleBuffer
 pointer<any> field: front

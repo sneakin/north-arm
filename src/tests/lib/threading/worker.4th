@@ -1,4 +1,4 @@
-' alias> defined? [UNLESS] load-core [THEN]
+' alias> defined? UNLESS load-core THEN
 
 s[ src/lib/linux.4th ] load-list
 

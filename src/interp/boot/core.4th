@@ -19,7 +19,7 @@ end
 
 ( todo necessary? bash loadable... )
 ' return0 [UNLESS]
-alias> return0 return
+  alias> return0 return
 [THEN]
 alias> return proper-exit
 alias> equals equals?
@@ -297,10 +297,14 @@ endcol
   3 dropn
 ;
 
-NORTH-BUILD-TIME 1659768556 uint< [IF]
+' IF defined? [UNLESS]
+  tmp" src/interp/toplevel-if.4th" load/2
+[THEN]
+
+NORTH-BUILD-TIME 1659768556 uint< IF
 def defined?/2
   arg1 arg0 dict dict-lookup 2 return1-n
 end
-[THEN]
+THEN
 
-s" stack-allot-zero" defined?/2 [UNLESS] " src/lib/seq.4th" load [THEN]
+s" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN

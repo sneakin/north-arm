@@ -1,13 +1,13 @@
-token-buffer-max <%= rich.bytes.size %> int>= [IF]
+token-buffer-max <%= rich.bytes.size %> int>= IF
 " <%= rich %>"
-[ELSE]
-token-buffer-max <%= txt.bytes.size %> int>= [IF]
+ELSE
+token-buffer-max <%= txt.bytes.size %> int>= IF
 " <%= txt %>"
-[ELSE]
+ELSE
 " Copyright (C) 2020-2024 Nolan Eakins, SemanticGap. All rights reserved.
 https://github.com/sneakin/north-arm.git"
-[THEN]
-[THEN]
+THEN
+THEN
 
-NORTH-STAGE 0 int> [IF] BUILD-COPYRIGHT poke [ELSE] set-BUILD-COPYRIGHT [THEN]
+NORTH-STAGE 0 int> IF BUILD-COPYRIGHT poke ELSE set-BUILD-COPYRIGHT THEN
 

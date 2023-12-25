@@ -4,7 +4,7 @@
 
 ( Toggle between baked into binary or loaded during run: )
 
-true [IF] ( Read now to bake in: )
+true IF ( Read now to bake in: )
 
 sys:: html-highlight-read-style ( path ++ style-data )
   allot-read-file
@@ -26,7 +26,7 @@ def html-highlight-print-style
   HTML-HIGHLIGHT-PRINT-STYLE return1
 end
 
-[ELSE] ( Read when used: )
+ELSE ( Read when used: )
 
 s[ src/lib/io.4th ] load-list
 
@@ -49,7 +49,7 @@ def html-highlight-print-style
   " doc/white.css" html-highlight-read-style exit-frame
 end
 
-[THEN]
+THEN
 
 ( Special character escaping: )
 

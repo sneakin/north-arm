@@ -2,11 +2,11 @@ alias> ,uint8 dpush-byte
 alias> uint8! dpoke-byte
 alias> uint8@ dpeek-byte
 
-NORTH-STAGE 0 equals? [IF]
+NORTH-STAGE 0 equals? IF
   " src/lib/byte-data/stage0.4th" load
-[ELSE]
+ELSE
   " src/lib/byte-data/stage1.4th" load
-[THEN]
+THEN
 
 alias> ,int8 ,uint8
 alias> int8@ uint8@

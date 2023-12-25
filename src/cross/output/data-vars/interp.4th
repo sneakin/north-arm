@@ -1,10 +1,10 @@
 ( todo merge with bash.4th. shares a lot of code with a few interop aliases. )
 
-NORTH-BUILD-TIME 0x6315D6AA int< [IF]
+NORTH-BUILD-TIME 0x6315D6AA int< IF
 def inc!
   arg0 peek 1 + dup arg0 poke set-arg0
 end
-[THEN]
+THEN
 
 def out-does-data-var?
   out' do-data-var dup arg0 equals?

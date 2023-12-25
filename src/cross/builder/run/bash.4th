@@ -1,9 +1,9 @@
 false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. Defined here instead of globals.4th so it remains undefined until this file is loaded. )
 
 ( stub.4th is not loaded to provide a value for *ds-offset* in constants.4th, so we make an alias and patch the value before writing. )
-' elf-data-segment-offset defined? [UNLESS]
+' elf-data-segment-offset defined? UNLESS
   alias> elf-data-segment-offset elf32-data-segment-offset
-[THEN]
+THEN
 
 def builder-run ( entry-fn fn-length files-cons ++ )
   " Building..." error-line

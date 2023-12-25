@@ -17,7 +17,7 @@ alias> elf-data-segment-size elf32-data-segment-size
   ' elf64-data-segment-size ' elf-data-segment-size dict-entry-clone-fields
 ;
 
-NORTH-STAGE 0 equals [UNLESS]
+NORTH-STAGE 0 equals UNLESS
   : elf32-dynamic-stub
     ' write-elf32-dynamic-header ' write-elf-header dict-entry-clone-fields
     ' write-elf32-dynamic-ending ' write-elf-ending dict-entry-clone-fields
@@ -30,4 +30,4 @@ NORTH-STAGE 0 equals [UNLESS]
   ;
 )
 
-[THEN]
+THEN

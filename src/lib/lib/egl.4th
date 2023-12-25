@@ -28,29 +28,29 @@ import> eglWaitGL 1 eglWaitGL 0 ( void )
 import> eglWaitNative 1 eglWaitNative 1 ( EGLint engine )
 
 ( EGL 1.1 )
-EGL-VERSION 11 uint>= [IF]
+EGL-VERSION 11 uint>= IF
 import> eglBindTexImage 1 eglBindTexImage 3 ( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
 import> eglReleaseTexImage 1 eglReleaseTexImage 3 ( EGLDisplay dpy, EGLSurface surface, EGLint buffer )
 import> eglSurfaceAttrib 1 eglSurfaceAttrib 4 ( EGLDisplay dpy, EGLSurface surface, EGLint attribute, EGLint value )
 import> eglSwapInterval 1 eglSwapInterval 2 ( EGLDisplay dpy, EGLint interval )
-[THEN]
+THEN
 
 ( EGL 1.2 )
-EGL-VERSION 12 uint>= [IF]
+EGL-VERSION 12 uint>= IF
 import> eglBindAPI 1 eglBindAPI 1 ( EGLenum api )
 import> eglQueryAPI 1 eglQueryAPI 0 ( void )
 import> eglReleaseThread 1 eglReleaseThread 0 ( void )
 import> eglWaitClient 1 eglWaitClient 0 ( void )
 import> eglCreatePbufferFromClientBuffer 1 eglCreatePbufferFromClientBuffer 5 ( EGLDisplay dpy, EGLenum buftype, EGLClientBuffer buffer, EGLConfig config, const EGLint *attrib_list )
-[THEN]
+THEN
 
 ( EGL 1.4 )
-EGL-VERSION 14 uint>= [IF]
+EGL-VERSION 14 uint>= IF
 import> eglGetCurrentContext 1 eglGetCurrentContext 0 ( void )
-[THEN]
+THEN
 
 ( EGL 1.5 )
-EGL-VERSION 15 uint>= [IF]
+EGL-VERSION 15 uint>= IF
 import> eglCreateSync 1 eglCreateSync 3 ( EGLDisplay dpy, EGLenum type, const EGLAttrib *attrib_list )
 import> eglDestroySync 1 eglDestroySync 2 ( EGLDisplay dpy, EGLSync sync )
 import> eglClientWaitSync 1 eglClientWaitSync 4 ( EGLDisplay dpy, EGLSync sync, EGLint flags, EGLTime timeout )
@@ -61,7 +61,7 @@ import> eglGetPlatformDisplay 1 eglGetPlatformDisplay 3 ( EGLenum platform, void
 import> eglCreatePlatformWindowSurface 1 eglCreatePlatformWindowSurface 4 ( EGLDisplay dpy, EGLConfig config, void *native_window, const EGLAttrib *attrib_list )
 import> eglCreatePlatformPixmapSurface 1 eglCreatePlatformPixmapSurface 4 ( EGLDisplay dpy, EGLConfig config, void *native_pixmap, const EGLAttrib *attrib_list )
 import> eglWaitSync 1 eglWaitSync 3 ( EGLDisplay dpy, EGLSync sync, EGLint flags )
-[THEN]
+THEN
 
 0 var> EGL-REAL-MAJOR
 0 var> EGL-REAL-MINOR

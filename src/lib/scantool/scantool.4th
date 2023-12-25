@@ -249,10 +249,10 @@ end
 
 ( Output formatters: )
 
-tmp" BUILDER-TARGET" defined?/2 [UNLESS]
+tmp" BUILDER-TARGET" defined?/2 UNLESS
   alias> copies-entry-as> copy-as>
   sys:: to-out-addr cs - ;
-[THEN]
+THEN
   
 s[ src/lib/linux/errno.4th
    src/lib/sort/merge-sort.4th

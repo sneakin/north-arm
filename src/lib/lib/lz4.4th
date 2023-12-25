@@ -1,10 +1,10 @@
 ( Basic interface to liblz4 that provides lz4-compress and lz4-decompress. )
 
-NORTH-PLATFORM tmp" android" drop contains? [IF]
+NORTH-PLATFORM tmp" android" drop contains? IF
   library> liblz4.so
-[ELSE]
+ELSE
   library> liblz4.so.1
-[THEN]
+THEN
 ( fixme top level IF gets shadowed by core.4th's IF )
 ( dup UNLESS library> liblz4.so.1 THEN )
 import> LZ4_compress_default 1 LZ4_compress_default 4

@@ -15,7 +15,7 @@
 
 0 var> *next-def-data-var-slot* 
 
-NORTH-STAGE 0 equals? [IF]
+NORTH-STAGE 0 equals? IF
 : next-def-data-var-slot
   *next-def-data-var-slot* 1 + dup set-*next-def-data-var-slot*
 ;
@@ -25,7 +25,7 @@ NORTH-STAGE 0 equals? [IF]
 
 : data-var-slot ;
 : data-var-init-value cell-size + ;
-[ELSE]
+ELSE
 : next-def-data-var-slot
   *next-def-data-var-slot* inc!
 ;
@@ -33,7 +33,7 @@ NORTH-STAGE 0 equals? [IF]
 : peek-next-def-data-var-slot
   *next-def-data-var-slot* @
 ;
-[THEN]
+THEN
 
 : does-def-data-var ( init-value word -- )
   dup out' do-data-var does

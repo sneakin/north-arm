@@ -1,8 +1,8 @@
-' TtyBuffer [UNLESS]
+' TtyBuffer UNLESS
 s[ src/lib/tty.4th
    src/lib/time.4th
 ] load-list
-[THEN]
+THEN
 
 def test-tty-buffer
   0

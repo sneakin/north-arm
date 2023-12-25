@@ -1,10 +1,10 @@
 ( Atomic types: )
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   alias> type-alias> defalias>
-[ELSE]
+ELSE
   alias> type-alias> alias>
-[THEN]
+THEN
 
 ( Atomic values: )
 type cell-size type: value

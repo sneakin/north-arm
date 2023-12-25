@@ -3,11 +3,11 @@
 ( fixme review value-of calls. may need to be value-ptr )
 ( todo a @cs that adds cs when the pointer is in the code segment )
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
 0 defconst> null
-[ELSE]
+ELSE
 0 const> null
-[THEN]
+THEN
 
 ( fixme does type-data need storage? only used by struct as the first offset. )
 
@@ -19,16 +19,16 @@ type field: super
 value field: data
 )
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   type defconst-offset> type
-[ELSE]
+ELSE
   " type"
   null swap
   null swap
   4 cell-size * swap
   here 0 here swap drop dup
   const> type
-[THEN]
+THEN
 
 ( The type returned for null values: )
 ( struct: null-type
@@ -67,14 +67,14 @@ def make-type ( base-type byte-size ++ type )
 end
 
 ( Makes a new type, names it, and creates a constant in the dictionary: )
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   def const> ( value : name ++ word )
     create>
     dup ' do-const does
     arg0 over dict-entry-data !
     exit-frame
   end
-[THEN]
+THEN
 
 def type: ( base-type byte-size : name ++ ... )
   arg1 arg0 make-type const>
@@ -83,7 +83,7 @@ def type: ( base-type byte-size : name ++ ... )
   exit-frame
 end
 
-' NORTH-COMPILE-TIME defined? [IF]
+' NORTH-COMPILE-TIME defined? IF
   ( type: that also outputs to the data stack )
   alias> sys-type: type:
 
@@ -96,7 +96,7 @@ end
   : type: ( base-type byte-size : name ++ ... )
     sys-type: dict exec-abs create-out-type-entry
   ;
-[THEN]
+THEN
 
 null cell-size type: null-type
 

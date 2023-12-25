@@ -1,14 +1,14 @@
-' defvar> [IF]
+' defvar> IF
   10 defvar> int32-precision
   0x7FFFFFFF defconst> INT32-MAX
   -0x7FFFFFFF defconst> INT32-MIN
   0xFFFFFFFF defconst> UINT32-MAX
-[ELSE]
+ELSE
   10 var> int32-precision
   0x7FFFFFFF const> INT32-MAX
   -0x7FFFFFFF const> INT32-MIN
   0xFFFFFFFF const> UINT32-MAX
-[THEN]
+THEN
 
 def sign-extend-from
   arg1 1 arg0 bsl logand
@@ -164,6 +164,6 @@ def fun-factorial-int32
   1 arg0 1 + uint32-stepper ' int-mul 1 fun-reduce/3 set-arg0
 end
 
-builder-target-bits 32 equals? [IF]
+builder-target-bits 32 equals? IF
   s[ src/lib/math/32/int32.4th ] load-list
-[THEN]
+THEN

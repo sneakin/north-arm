@@ -1,10 +1,10 @@
-' ds defined? [UNLESS]
+' ds defined? UNLESS
   create> *ds* dict does> do-var
   128 stack-allot-zero dict dict-entry-data !
   *ds* cs - const> *ds-offset*
   def ds *ds* @ return1 end
   def set-ds arg0 *ds* ! 1 return0-n end
-[THEN]
+THEN
 
 def data-segment-size
   ds @ return1
