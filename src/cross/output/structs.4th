@@ -23,7 +23,8 @@ def copy-type-to-data ( type-ptr -- data-ptr )
   arg0 value-of type-super @ dup IF value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN THEN ,uint32
   arg0 value-of type-data @ ,uint32
   local1 to-out-addr
-  arg0 type-of value-of map-sys-type-to-out UNLESS type THEN to-out-addr
+  arg0 type-of
+  dup type equals? IF drop dhere ELSE value-of map-sys-type-to-out UNLESS type THEN THEN to-out-addr
   dcons 1 return1-n
 end
 
@@ -39,27 +40,30 @@ def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
   local1 to-out-addr
   struct-field value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
   dcons to-out-addr ,h enl
-  arg1 swap dcons to-out-addr 1 return1-n
+  arg1 swap dcons to-out-addr 2 return1-n
 end
 
-def copy-struct-fields-to-data ( sys-struct out-struct -- )
-  arg1 value-of struct-fields @
-  dup IF
-    ' copy-struct-field-to-data map-car
-  ELSE 0
-  THEN arg0 ,h espace cdr ,h enl from-out-addr struct-fields !
-  2 return0-n
+( todo above needs to build a list, no initial null )
+
+def copy-struct-fields-to-data ( out-struct -- )
+  arg0 cdr from-out-addr struct-fields @
+  dup IF 0 ' copy-struct-field-to-data map-car/3 ELSE 0 THEN
+  arg0 cdr from-out-addr struct-fields !
+  1 return0-n
 end
 
-def update-out-struct ( state word -- state )
+def update-out-struct ( word -- )
   arg0 dict-entry-name @ from-out-addr error-string espace
-  arg0 dict-entry-data @ dup ,h enl
-  dup copy-type-to-data
-  dup to-out-addr arg0 dict-entry-data !
-  over struct kind-of? local0 type equals? or IF ( todo LUT of types? iterate fields for pointers? )
-    copy-struct-fields-to-data
-  THEN
-  arg1 2 return1-n
+  arg0 dict-entry-data @ ,h enl
+  copy-type-to-data to-out-addr arg0 dict-entry-data !
+  1 return0-n
+end
+
+def update-out-struct-fields ( word -- )
+  arg0 dict-entry-name @ from-out-addr error-string espace
+  arg0 dict-entry-data @ ,h enl
+  from-out-addr copy-struct-fields-to-data
+  1 return0-n
 end
 
 def select-out-type ( [ const-fn count data-cons-accum ] word ++ state )
@@ -77,11 +81,13 @@ end
 
 def update-structs ( out-dict -- )
   s" Selecting structs:" error-line/2
+  0
   out' do-const-offset dict-entry-code @
-  0 0 here
-  arg0 out-origin @ roll ' select-out-type dict-map/4
+  0 0 here arg0 out-origin @ roll ' select-out-type dict-map/4 set-local0
   s" Updating structs:" error-line/2
-  0 seq-peek ' update-out-struct map-car
+  local0 0 seq-peek ' update-out-struct map-car
+  s" Updating fields:" error-line/2
+  local0 0 seq-peek ' update-out-struct-fields map-car
   1 return0-n
 end
 

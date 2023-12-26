@@ -102,7 +102,7 @@ null cell-size type: null-type
 
 ( Returns the type of a structure reference. )
 def type-of
-  arg0 IF arg0 car as-code-pointer ELSE null-type THEN set-arg0
+  arg0 IF arg0 as-code-pointer car as-code-pointer ELSE null-type THEN set-arg0
 end
 
 def type-super-of?

@@ -21,8 +21,9 @@ end
 ( Pointer dereferencing printers: )
 
 def print-pointer-type
-  arg0 type-of value-of type-name peek write-string space
-  arg0 type-of value-of type-super peek dup IF value-of type-name peek write-string ELSE drop THEN
+  arg0 type-of write-hex-uint space
+  arg0 type-of value-of type-name peek as-code-pointer write-string space
+  arg0 type-of value-of type-super peek dup IF value-of type-name peek as-code-pointer write-string ELSE drop THEN space
   arg0 write-hex-uint s" :" write-string/2
   arg0 type-of value-of type-byte-size peek write-uint nl
 end
@@ -47,29 +48,29 @@ end
 ( Structure instance, generalized printer: )
 
 def print-instance-field ( field instance )
-  ( todo pick printer based on field type )
+( todo pick printer based on field type )
   s"   " write-string/2
   arg1 struct-field-offset peek
   dup write-uint s" :" write-string/2
-  arg1 struct-field-byte-size peek dup write-uint space swap
-  arg1 struct-field-type peek value-of type-name peek write-string space
-  arg1 struct-field-name peek write-string space
-  arg0 + dup peek write-uint space
-  swap cmemdump
+  arg1 struct-field-byte-size peek write-uint space
+  arg1 struct-field-type peek value-of type-name dup IF peek as-code-pointer write-string space ELSE drop s" - " write-string/2 THEN
+  arg1 struct-field-name peek as-code-pointer write-string space
+  arg0 + peek dup write-uint space write-hex-uint enl
 end
 
 def print-instance-fields-loop ( struct-fields instance-value )
   arg1 IF
     arg1 car value-of arg0 print-instance-field
-    arg1 cdr set-arg1 repeat-frame
-  THEN
+    arg1 cdr as-code-pointer set-arg1 repeat-frame
+  THEN 2 return0-n
 end
 
 def print-instance-fields ( instance type )
   arg0 IF
-    arg0 value-of struct-fields peek arg1 value-of print-instance-fields-loop
-    arg0 value-of type-super peek set-arg0 repeat-frame
-  THEN
+    arg0 value-of
+    dup struct-fields peek as-code-pointer arg1 value-of print-instance-fields-loop
+    type-super peek set-arg0 repeat-frame
+  THEN 2 return0-n
 end
 
 ( todo atomic types )
@@ -77,6 +78,7 @@ end
 
 def print-instance/2
   arg1 print-pointer-type
+  arg0 value-of arg0 sizeof cmemdump
   arg0 print-instance-fields
 end
 
