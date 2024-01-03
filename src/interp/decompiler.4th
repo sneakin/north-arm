@@ -32,26 +32,28 @@ end
 def decompile-colon-data
   arg0 peek int32 0 equals? IF return0 THEN
   arg0 peek cs +
-  dup dict-contains? UNLESS return0 THEN
-  dup literalizes? IF
-    arg0 op-size + dup set-arg0 peek
-    swap dup CASE
-      ' cstring OF drop cs + write-quoted-string space ENDOF
-      ' string OF drop write-quoted-string space ENDOF
-      ' int32 OF drop write-int space ENDOF
-      ' int64 OF
-         write-dict-entry-name space
-	 arg0 op-size + dup set-arg0 peek write-int64 space
-      ENDOF
-      ' uint64 OF
-         write-dict-entry-name space
-	 arg0 op-size + dup set-arg0 peek write-uint64 space
-      ENDOF
-      ' pointer OF cs decompile-literal-word ENDOF
-      ' literal OF cs decompile-literal-word ENDOF
-      drop write-dict-entry-name space write-hex-uint space
-    ENDCASE
-  ELSE write-dict-entry-name space
+  dup dict-contains? IF
+    dup literalizes? IF
+      arg0 op-size + dup set-arg0 peek
+      swap dup CASE
+	' cstring OF drop cs + write-quoted-string space ENDOF
+	' string OF drop write-quoted-string space ENDOF
+	' int32 OF drop write-int space ENDOF
+	' int64 OF
+          write-dict-entry-name space
+	  arg0 op-size + dup set-arg0 peek write-int64 space
+	ENDOF
+	' uint64 OF
+          write-dict-entry-name space
+	  arg0 op-size + dup set-arg0 peek write-uint64 space
+	ENDOF
+	' pointer OF cs decompile-literal-word ENDOF
+	' literal OF cs decompile-literal-word ENDOF
+	drop write-dict-entry-name space write-hex-uint space
+      ENDCASE
+    ELSE write-dict-entry-name space
+    THEN
+  ELSE s" !!ERROR!!" write-string/2 space
   THEN
   arg0 op-size + set-arg0
   repeat-frame

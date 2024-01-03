@@ -79,6 +79,32 @@ def list->seqn ( list ++ seqn )
   arg0 0 cons 0 ' list->seq-fn map-car/3 here exit-frame
 end
 
+def rev-list-into-seq/4 ( list seq length n -- seq length )
+  arg3 arg0 0 int> and IF
+    arg0 1 - set-arg0
+    arg3 car arg2 arg0 seq-poke
+    arg3 cdr set-arg3 repeat-frame
+  ELSE
+    arg2 arg1 4 return2-n
+  THEN
+end
+
+def rev-list-into-seq ( list seq n -- seq length )
+  arg2 cons-count arg0 min dup set-arg0 ' rev-list-into-seq/4 tail+1
+end
+
+def list-into-seq/4 ( list seq length n -- seq length )
+  arg3 arg0 arg1 uint< and IF
+    arg3 car arg2 arg0 seq-poke
+    arg0 1 + set-arg0
+    arg3 cdr set-arg3 repeat-frame
+  ELSE
+    arg2 arg0 4 return2-n
+  THEN
+end
+
+def list-into-seq ( list seq n -- seq n ) 0 ' list-into-seq/4 tail+1 end
+
 ( Lists as stacks: )
 
 def push-onto ( value pointer ++ cons... new-list )

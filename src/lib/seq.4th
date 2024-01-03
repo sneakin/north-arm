@@ -41,7 +41,7 @@ end
 
 ( Iteration: )
 
-def map-seq-n/4 ( ptr n state fn )
+def map-seq-n/4 ( ptr n state fn ++ state )
   arg2 0 int> IF
     arg1 arg3 peek arg0 exec-abs set-arg1
     arg3 rest set-arg3
@@ -84,4 +84,31 @@ end
 def copy-seq-n ( src dest -- )
   arg1 arg0 arg1 seqn-byte-size copy
   2 return0-n
+end
+
+( Basic search: )
+
+def seq-index-of/4 ( seq n element i -- idx true | false )
+  arg0 arg2 uint< UNLESS false 4 return1-n THEN
+  arg3 arg0 seq-peek arg1 equals? IF arg0 true 4 return2-n THEN
+  arg0 1 + set-arg0 repeat-frame
+end
+
+def seq-index-of ( seq n element -- idx true | false )
+  0 ' seq-index-of/4 tail+1
+end
+
+def seq-include? ( seq n element -- yes? )
+  arg2 arg1 arg0 seq-index-of 3 return1-n
+end
+
+( Uniqueness: )
+
+def uniq-seq ( seq n ++ uniques num-uniqs )
+  arg0 0 uint> UNLESS here locals cell-size + over - cell/ exit-frame THEN
+  arg0 1 - set-arg0
+  here
+  arg1 arg0 seq-peek
+  swap locals cell-size + over - cell/ 3 overn seq-include? IF drop THEN
+  repeat-frame
 end

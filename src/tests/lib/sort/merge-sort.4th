@@ -1,4 +1,8 @@
-s[ src/lib/sort/merge-sort.4th
+' alias defined? [UNLESS] load-core [THEN]
+
+s[ src/lib/list.4th
+   src/lib/seq.4th
+   src/lib/sort/merge-sort.4th
    src/lib/assert.4th
 ] load-list
 
@@ -186,14 +190,14 @@ def test-merge-sort-seq
   0 0 0
   ( single )
   0 11 here set-local0
-  ' int< local0 1 merge-sort-seq set-local1
+  ' int< local0 1 merge-sort-seq 1 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 1 0 ' write-int-sp map-seq-n/4 nl
   local0 0 seq-peek 11 assert-equals
   
   ( sorted pair )
   0 11 4 here set-local0
-  ' int< local0 2 merge-sort-seq set-local1
+  ' int< local0 2 merge-sort-seq 2 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 2 0 ' write-int-sp map-seq-n/4 nl
   local1 0 seq-peek 4 assert-equals
@@ -201,7 +205,7 @@ def test-merge-sort-seq
 
   ( unsorted pair )
   0 4 44 here set-local0
-  ' int< local0 2 merge-sort-seq set-local1
+  ' int< local0 2 merge-sort-seq 2 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 2 0 ' write-int-sp map-seq-n/4 nl
   local1 0 seq-peek 4 assert-equals
@@ -209,27 +213,27 @@ def test-merge-sort-seq
 
   ( triple )
   0 -10 4 44 here set-local0
-  ' int< local0 3 merge-sort-seq set-local1
+  ' int< local0 3 merge-sort-seq 3 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 3 0 ' write-int-sp map-seq-n/4 nl
   local1 0 seq-peek -10 assert-equals
   local1 1 seq-peek 4 assert-equals
   local1 2 seq-peek 44 assert-equals
 
-  ' sq-int< local0 3 merge-sort-seq set-local1
+  ' sq-int< local0 3 merge-sort-seq 3 assert-equals set-local1
   s" Sorted^2: " write-string/2
   local1 3 0 ' write-int-sp map-seq-n/4 nl
 
   0 50 20 20 -10 4 44 100 -30 34 here set-local0
-  ' int< local0 9 merge-sort-seq set-local1
+  ' int< local0 9 merge-sort-seq 9 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 9 0 ' write-int-sp map-seq-n/4 nl
   local1 0 seq-peek -30 assert-equals
   local1 1 seq-peek -10 assert-equals
   local1 2 seq-peek 4 assert-equals
 
-  ' sq-int< local0 9 merge-sort-seq set-local1
-  s" Sorted^2: " write-string/2
+  ' sq-int< local0 9 merge-sort-seq 9 assert-equals set-local1
+  s" Sorted: " write-string/2
   local1 9 0 ' write-int-sp map-seq-n/4 nl
   local1 0 seq-peek 4 assert-equals
   local1 1 seq-peek -10 assert-equals
@@ -237,14 +241,14 @@ def test-merge-sort-seq
 
   ( Sequence of strings )
   s[ oh, hello world. how are you? hello? ] set-local0
-  7 cell-size * stack-allot local0 list->seq set-local0
+  7 cell-size * stack-allot local0 swap 7 list-into-seq 7 assert-equals set-local0
   s" Unsorted: " write-string/2
   local0 7 0 ' write-line map-seq-n/4 nl
-  ' byte-string< local0 7 merge-sort-seq set-local1
+  ' byte-string< local0 7 merge-sort-seq 7 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 7 0 ' write-line map-seq-n/4 nl
 
-  ' byte-string> local0 7 merge-sort-seq set-local1
+  ' byte-string> local0 7 merge-sort-seq 7 assert-equals set-local1
   s" Sorted: " write-string/2
   local1 7 0 ' write-line map-seq-n/4 nl
 end

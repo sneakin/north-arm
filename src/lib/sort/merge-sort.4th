@@ -78,35 +78,7 @@ end
 
 ( Sequences: )
 
-( todo swap seq and list order? )
-
-def rev-list->seq/3 ( seq list length -- seq )
-  arg0 0 int> IF
-    arg0 1 - set-arg0
-    arg1 car arg2 arg0 seq-poke
-    arg1 cdr set-arg1 repeat-frame
-  ELSE
-    arg2 3 return1-n
-  THEN
-end
-
-def rev-list->seq ( seq list -- seq )
-  arg1 arg0 dup cons-count rev-list->seq/3 2 return1-n
-end
-
-def list->seq/3 ( seq list n -- seq )
-  arg1 IF
-    arg1 car arg2 arg0 seq-poke
-    arg0 1 + set-arg0
-    arg1 cdr set-arg1 repeat-frame
-  ELSE
-    arg2 3 return1-n
-  THEN
-end
-
-def list->seq ( seq list -- seq )  arg1 arg0 0 list->seq/3 2 return1-n end
-
-( todo Sort two element seqs into pairs that use merge-lists for list->seq input? Do away with merge-seqs. )
+( todo Sort two element seqs into pairs that use merge-lists for list-into-seq input? Do away with merge-seqs. )
 ( todo inplace qsort )
 
 def merge-sort-seq->list ( depth cmp-fn seq length ++ sorted-list )
@@ -138,10 +110,9 @@ def merge-sort-seq->list ( depth cmp-fn seq length ++ sorted-list )
   local0 local1 arg2 0 arg0 arg3 int32-odd? merge-lists exit-frame
 end
 
-def merge-sort-seq ( cmp-fn seq length -- seq )
-  1 arg2 arg1 arg0 merge-sort-seq->list arg1 swap
-  arg0 1 int< IF
-    list->seq
-  ELSE arg0 rev-list->seq/3
-  THEN 3 return1-n
+( todo add seq length to return )
+( todo rewrite. already writes into seq )
+def merge-sort-seq ( cmp-fn seq length -- seq n )
+  1 arg2 arg1 arg0 merge-sort-seq->list
+  arg1 arg0 rev-list-into-seq 3 return2-n
 end
