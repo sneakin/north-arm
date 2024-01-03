@@ -113,7 +113,7 @@ version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 	@echo "$$(date -u +%s) defconst> NORTH-BUILD-TIME" >> $@
 	@echo "\" $$($(GIT) config --get user.name) <$$($(GIT) config --get user.email)>\" string-const> NORTH-BUILDER" >> $@
 
-src/copyright.4th: src/copyright.4th.erb src/copyright.txt
+src/copyright.4th: src/copyright.4th.tmpl src/copyright.txt
 	./scripts/copyright-gen.sh $< > $@
 
 #
