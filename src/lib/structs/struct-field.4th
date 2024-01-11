@@ -24,9 +24,9 @@ def struct-field-byte-size
 end
 
 def struct-get-field-loop ( name len fields -- field )
-  arg0 null? IF 0 return1 THEN
+  arg0 null? IF 0 3 return1-n THEN
   arg2 arg0 car value-of struct-field-name peek as-code-pointer arg1 1 + byte-string-equals?/3 IF
-    arg0 car as-code-pointer return1
+    arg0 car as-code-pointer 3 return1-n
   THEN
   arg0 cdr as-code-pointer set-arg0 repeat-frame
 end
