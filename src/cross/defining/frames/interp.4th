@@ -4,7 +4,7 @@
   out-off' int32
   ( todo usings locals is a hack. should have begin-frame on the stack before compiling-read, but def vs colon. )
   out-off' begin-frame stack-find locals min
-  here - -op-size 2 * + negate
+  here - -op-size / 2 + negate
   out-off' jump-rel
 ; cross-immediate
 

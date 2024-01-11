@@ -503,7 +503,7 @@ load needs file opening and reading with a reader stack.
 *** DONE ELF symbol table of imports
 *** DONE proper DT_HASH
 *** TODO DT_GNU_HASH
-** Runner's jumps op offset or byte offset?
+** DONE Runner's jumps by op offsets
 ** Compile list of words into list of assembly calls.
 ** North
 *** TODO Missing/stubbed words
@@ -583,7 +583,7 @@ Zero needed at end of definitions for decompile.
 ** TODO DRY cross compiling code
 *** TODO out-off' should be ' but using the compiling-dict; likewise with [']
 dry up with comp' immediated as ' to use compiling-dict.
-*** TODO op sized jumps instead of bytes
+*** DONE op sized jumps instead of bytes
 ** TODO move defining/*-boot files to interp/boot/defining, or put arch specific files under a cross/${arch}/
 ** TODO Towards Lisp
 *** Dictionary as argument

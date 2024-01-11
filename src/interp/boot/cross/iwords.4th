@@ -20,12 +20,12 @@
   if-placeholder stack-find
   if-placeholder out-off' jump-rel
   roll
-  dup here stack-delta int32 3 - op-size *
+  dup here stack-delta int32 3 -
   swap spoke
 ; cross-immediate-as ELSE
 
 : out-THEN
   if-placeholder stack-find
-  dup here stack-delta int32 3 - op-size *
+  dup here stack-delta int32 3 -
   swap spoke
 ; cross-immediate-as THEN

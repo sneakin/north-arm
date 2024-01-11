@@ -4,22 +4,34 @@ Using only a shell (and Emacs and Qemu 🤫), statically and dynamically linked 
 built that can load an assembler and cross compiler to rebuild
 themselves.
 
-Copyright (C) 2020-2022 Nolan Eakins. All rights reserved.
+Copyright (C) 2020-2024 Nolan Eakins, SemanticGap(TM). All rights reserved.
+
+SemanticGap is a trademark of Nolan Eakins. All rights reserved.
+
+Arm(R) is a registered trademark of Arm Limited (or its subsidaries) in the
+  US and/or elsewhere. This program's only association to Arm is that it executes
+  on Arm processors.
 
 - [[https://github.com/sneakin/north-arm][Git Repository]]
 - [[mailto:sneakin+at+semanticgap.com][Inquiries]]
+- [[https://semanticgap.com/][SemanticGap]]
 
 * Dependencies
+
 ** Runtime
+
 - One of:
   - Termux on Android
   - GNU/Linux
 - Thumb capable ARM, with Thumb 2 preferred
   - Or qemu-arm.
+
 ** Build
-- Bash
+
+- Bash but not 5.1.4 which has a memory leak.
 - Make
 - Git
+
 
 * Quick Start
 
@@ -31,6 +43,7 @@ The prebuilt binaries under ~./bootstrap/~ can be used to skip steps.
 - ~./bootstrap/interp.gnueabi.elf~ :: Is built to use the GNU dynamic linker found on desktops.
 
 Termux may set ~$LD_PRELOAD~ which requires unsetting it: ~LD_PRELOAD='' ./bin/interp.elf~
+
 
 * Building
 
@@ -73,6 +86,7 @@ any value of 1, 2, and 3.
 ~make boot~ will rebuild ~./bootstrap/~ from a clean clone of the
 repository.
 
+
 * Running
 
 All executables built can be found in ~./bin/~.
@@ -96,6 +110,7 @@ This describes any of the ~./bin/interp*~ executables.
 These will need Qemu if compiled for a different platform.
 
 A list of words can be printed with ~words~. Compiling words with ~iwords~.
+
 
 * Using
 
@@ -136,6 +151,7 @@ following demos can be loaded:
   ~world9~ are defined. ~raycaster-turn~ will render and interact one
   screen and input line at a time. ~raycaster-real~ uses epoll and
   threads for a bore interactive experience.
+
 
 * Programming
 

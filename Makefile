@@ -1,4 +1,5 @@
-FORTH?=bash ./src/bash/forth.sh
+BASH?=bash
+FORTH?=$(BASH) ./src/bash/forth.sh
 HTMLER?=./scripts/htmler.sh
 GIT?=git
 

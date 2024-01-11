@@ -172,6 +172,7 @@ endop
 
 defop jump-rel
   ( Set eip from a relative offset. )
+  2 r0 r0 mov-lsl ,ins
   r0 eip eip add ,ins
   0 r0 bit-set popr ,ins
   emit-next
@@ -757,8 +758,8 @@ endop
 defop if-jump
   0 r1 bit-set popr ,ins
   0 r1 cmp# ,ins
-  1 beq ,ins
-  ( 2 r0 r0 mov-lsl ,ins )
+  2 beq ,ins
+  2 r0 r0 mov-lsl ,ins
   r0 eip eip add ,ins
   0 r0 bit-set popr ,ins
   emit-next
@@ -767,8 +768,8 @@ endop
 defop unless-jump
   0 r1 bit-set popr ,ins
   0 r1 cmp# ,ins
-  1 bne ,ins
-  ( 2 r0 r0 mov-lsl ,ins )
+  2 bne ,ins
+  2 r0 r0 mov-lsl ,ins
   r0 eip eip add ,ins
   0 r0 bit-set popr ,ins
   emit-next

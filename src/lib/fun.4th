@@ -44,7 +44,7 @@ def compose-if ( test a ++ proper[ test IF a THEN ] )
   literal proper-exit
   arg0 cs -
   literal unless-jump
-  cell-size 1 *
+  jump-op-size 1 *
   literal int32
   arg1 cs -
   literal dup

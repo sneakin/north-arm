@@ -6,6 +6,22 @@ def dict-drop
   set-dict
 end
 
+def does-const
+  arg0 pointer do-const does
+end
+
+def const>
+  create> does-const
+  arg0 over dict-entry-data poke
+  exit-frame
+end
+
+NORTH-BUILD-TIME 1704925780 uint<= [IF]
+  op-size
+[ELSE]
+  1
+[THEN] const> jump-op-size
+
 def alias
   arg1 dict-entry-code peek arg0 dict-entry-code poke
   arg1 dict-entry-data peek arg0 dict-entry-data poke
@@ -13,7 +29,7 @@ end
 
 def alias>
   create>
-  ['] dup 12 unless-jump swap alias exit-frame
+  ['] dup 3 jump-op-size * unless-jump swap alias exit-frame
   not-found enl dict-drop
 end
 
@@ -27,16 +43,6 @@ alias> speek peek
 alias> spoke poke
 alias> mult int-mul
 alias> sys' '
-
-def does-const
-  arg0 pointer do-const does
-end
-
-def const>
-  create> does-const
-  arg0 over dict-entry-data poke
-  exit-frame
-end
 
 alias> string-const> const>
 
@@ -80,7 +86,7 @@ end
 ; immediate
 
 : stack-find/2
-  2dup speek equals int32 3 op-size * unless-jump swap drop proper-exit
+  2dup speek equals int32 3 jump-op-size * unless-jump swap drop proper-exit
   up-stack loop
 ;
 
@@ -90,7 +96,7 @@ end
 
 def immediate-as/1
   next-token allot-byte-string/2
-  4 if-jump return0
+  jump-op-size if-jump return0
   arg0 immediate/2
   exit-frame
 end
@@ -117,13 +123,13 @@ symbol> if-placeholder
   if-placeholder stack-find
   if-placeholder literal jump-rel
   roll
-  dup here stack-delta int32 3 - op-size *
+  dup here stack-delta int32 3 - jump-op-size *
   swap spoke
 ; immediate-as ELSE
 
 : interp-THEN
   if-placeholder stack-find
-  dup here stack-delta int32 3 - op-size *
+  dup here stack-delta int32 3 - jump-op-size *
   swap spoke
 ; immediate-as THEN
 
@@ -166,7 +172,7 @@ endcol
   ( fixme may not have a begin-frame to find. )
   literal begin-frame stack-find
   current-frame min
-  here stack-delta 1 + op-size * negate
+  here stack-delta 1 + jump-op-size * negate
   literal jump-rel
 ; immediate
 

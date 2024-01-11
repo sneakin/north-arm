@@ -55,13 +55,13 @@
   literal if-placeholder stack-find
   literal if-placeholder literal jump-rel
   roll
-  dup here stack-delta 3 - -op-size mult
+  dup here stack-delta 3 - -jump-op-size mult
   swap spoke
 ; cross-immediate-as ELSE
 
 : out-THEN
   literal if-placeholder stack-find
-  dup here stack-delta 3 - -op-size mult
+  dup here stack-delta 3 - -jump-op-size mult
   swap spoke
 ; cross-immediate-as THEN
 
