@@ -16,11 +16,11 @@ def const>
   exit-frame
 end
 
-NORTH-BUILD-TIME 1704925780 uint<= IF
+NORTH-BUILD-TIME 1704925780 uint<= [IF]
   op-size
-ELSE
+[ELSE]
   1
-THEN const> jump-op-size
+[THEN] const> jump-op-size
 
 def alias
   arg1 dict-entry-code peek arg0 dict-entry-code poke
