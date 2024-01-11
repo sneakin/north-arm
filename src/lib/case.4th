@@ -63,7 +63,7 @@ symbol> case-marker
     2 dropn
   ELSE
     dup speek case-marker equals IF
-      2dup swap stack-delta 1 - op-size * over spoke
+      2dup swap stack-delta 1 - jump-op-size * over spoke
     THEN
     up-stack loop
   THEN

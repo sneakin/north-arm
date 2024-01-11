@@ -1,6 +1,6 @@
 : repeat-frame
   literal int32
-  literal begin-frame stack-find here - 1 - -op-size mult
+  literal begin-frame stack-find here - 1 -
   literal jump-rel
 ; cross-immediate
 

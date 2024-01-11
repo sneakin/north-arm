@@ -369,7 +369,7 @@ def ]DOTIMES
     ( calculate jump offset )
     literal int32
     frame-byte-size 5 cell+n rotdrop2
-    here bytes-to-terminator int-sub
+    here bytes-to-terminator int-sub op-size int-div
     ( loop )
     literal jump-rel
     ( patch the terminator to here less call frame )

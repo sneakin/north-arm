@@ -279,6 +279,7 @@ alias> or logior
 
 320 var> token-buffer-max ( used to condition the about message )
 1 const> op-size
+1 const> jump-op-size
 4 var> cell-size
 
 alias> ! dpoke

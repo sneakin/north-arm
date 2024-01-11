@@ -12,6 +12,7 @@ DEFAULT-OUTPUT-FORMAT var> builder-output-format
 
 4 const> cell-size
 4 const> -op-size
+1 const> -jump-op-size
 
 ( Needs defconst sooner. )
 0xFFFFFFFF const> -op-mask

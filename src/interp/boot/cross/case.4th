@@ -48,7 +48,7 @@ symbol> case-marker
     2 dropn
   ELSE
     dup speek case-marker equals IF
-      2dup swap stack-delta 1 - cell-size mult over spoke
+      2dup swap stack-delta 1 - over spoke
     THEN
     up-stack loop
   THEN
