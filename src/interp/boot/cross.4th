@@ -74,7 +74,7 @@ dhere var> out-origin
 
 defcol out-dict out-dictionary peek swap endcol
 
-def out-dict-lookup  ( ptr length dict-entry -- dict-entry found? )
+def out-dict-lookup  ( ptr length -- dict-entry found? )
   arg1 arg0 out-dictionary peek out-origin peek dict-lookup/4
   set-arg0 set-arg1
 end
@@ -165,7 +165,7 @@ end
 def dallot-next-token
   next-token dup 0 int> IF
     over dhere 3 overn copy-byte-string/3 3 dropn
-    dhere dup 3 overn + cell-size pad-addr dmove
+    dhere dup 3 overn + 1 + cell-size pad-addr dmove
     swap
   ELSE 0 0
   THEN return2
