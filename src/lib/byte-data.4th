@@ -84,5 +84,5 @@ end
 ;
 
 : align-data
-  dhere over mod IF pad-data ELSE drop THEN
+  dhere over uint-mod IF pad-data ELSE drop THEN
 ;
