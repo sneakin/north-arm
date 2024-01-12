@@ -420,16 +420,13 @@ alias> ins2! uint32!
 ;
 
 : patch-ldr-pc!/2 ( where reg -- )
+  ( replaces the instruction at ~where~ with a ~ldr-pc~ for ~dhere~. )
   swap dhere over - 2 - roll ldr-pc swap ins!
 ;
 
 : patch-ldr-pc! ( where offset reg -- )
-  ( make a ldr-pc that loads from offset + delta_where )
-  dhere 4 overn -
-  ( odd ops are aligned with the next op. better if to-out-addr
-    was used, but not a real problem if the out-orign starts
-    word aligned. )
-  dup 2 int< IF 0 ELSE 2 - THEN
+  ( replaces the instruction at ~where~ with a ~ldr-pc~ that loads from ~dhere + offset~ )
+  dhere 4 overn - 2 -
   ( add the delta to the offset and poke with a new ldr-pc )
   roll + swap ldr-pc swap ins!
 ;

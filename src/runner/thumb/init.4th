@@ -30,7 +30,8 @@ defop init
   ( without main calling bye, exit restores eip to the initial value above. LR gets lost in ~next~ so this does not get reached: )
   out' bye emit-op-jump
   4 pad-data
-  0 r0 patch-ldr-pc! out' runner-thumb-init to-out-addr ,uint32
+  0 r0 patch-ldr-pc!
+  out' runner-thumb-init to-out-addr ,uint32
 endop
 
 ( todo pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. )
