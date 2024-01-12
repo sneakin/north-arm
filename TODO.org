@@ -29,7 +29,13 @@ used to rebuild.
 
 
 * Tasks
-** December 24
+** Jan 24
+*** TODO qemu-arm on my desktop crashes when handling a signal. ffi-callback's
+seem to be doing misaligend ldr-pc. patch-ldr-pc! might be doing the
+calculation wrong.
+*** TODO Building from Bash is having problems with compiling parent-frame.
+
+** December 23
 *** null? that leaves argument
 *** Add bracketed word lists to be used by defcol and def.
     def fn
