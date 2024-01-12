@@ -16,7 +16,7 @@ def const>
   exit-frame
 end
 
-NORTH-BUILD-TIME 1704950389 uint<= [IF]
+NORTH-BUILD-TIME 1704950389 int<= [IF]
   op-size
 [ELSE]
   1
@@ -307,7 +307,7 @@ endcol
   tmp" src/interp/toplevel-if.4th" load/2
 [THEN]
 
-NORTH-BUILD-TIME 1659768556 uint< IF
+NORTH-BUILD-TIME 1659768556 int< IF
 def defined?/2
   arg1 arg0 dict dict-lookup 2 return1-n
 end
