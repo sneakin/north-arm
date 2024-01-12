@@ -262,6 +262,9 @@ alias> mult *
 alias> int-mul *
 alias> int-div /
 alias> int-mod mod
+alias> uint-mul *
+alias> uint-div /
+alias> uint-mod mod
 
 ( Comparisons: )
 

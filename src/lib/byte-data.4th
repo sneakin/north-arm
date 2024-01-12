@@ -75,7 +75,7 @@ end
 ( Data stack alignment & padding: )
 
 : pad-addr ( addr alignment )
-  2dup 1 - + over / over mult
+  2dup 1 - + over uint-div over mult
   rot 2 dropn
 ;
 

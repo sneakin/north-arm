@@ -116,7 +116,7 @@ endcol
   dhere 0 ,ins ( cs-reg )
   cs-reg eip eip add ,ins
   0 emit-exec-pc
-  4 pad-data ( pad to get the size aligned for ldr-pc )
+  4 align-data ( pad to get the size aligned for ldr-pc )
   ( a word, dict, cs, and ds will be appended here when copied by ~ffi-callback-with~, so patch in PC relative loading. )
   cell-size 2 * cs-reg patch-ldr-pc!
   cell-size 3 * cs-reg patch-ldr-pc!
