@@ -171,7 +171,7 @@ bin/fforth.dict: $(FORTH_SRC)
 bin/assembler-thumb.sh: bin/fforth bin/assembler-thumb.dict
 	ln -sf fforth $@
 bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
-	echo -e "$< load $@ save-dict\n" | $(FORTH)
+	echo -e "load-core \" src/cross/arch/thumb.4th\" load \" $<\" load \" $@\" save-dict\n" | $(FORTH)
 
 RUNNER_THUMB_SRC=\
 	./src/include/runner.4th \
