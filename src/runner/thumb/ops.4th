@@ -39,6 +39,7 @@ THEN
   THEN
 ;
 
+(
 : print-branch-info
   s" Branch at " error-string/2
   dhere to-out-addr error-hex-uint
@@ -46,9 +47,10 @@ THEN
   dup error-hex-int espace
   dhere to-out-addr + error-hex-uint enl
 ;
+)
 
 : emit-branch
-  dup print-branch-info
+  ( dup print-branch-info )
   dup abs-int 0x800 int< IF
     branch ,ins
   ELSE
@@ -64,7 +66,7 @@ THEN
       0 r0 bit-set pushr ,ins
       ( ldr-pc is 4 byte aligned. Determine if the offset will be padded: )
       dhere to-out-addr 2 logand
-      s" Branch aligned: " error-string/2 espace dhere to-out-addr error-hex-uint espace dup error-int espace enl
+      ( s" Branch aligned: " error-string/2 espace dhere to-out-addr error-hex-uint espace dup error-int espace enl )
       dup 6 + r0 ldr-pc ,ins
       ( stash the offset in IP and restore R0 )
       r0 ip movrr ,ins
