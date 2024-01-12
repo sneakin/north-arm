@@ -15,6 +15,14 @@
 
 ( fixme empty else clause [?] generates a ~0 jump-rel~ that can be eliminated )
 
+NORTH-STAGE 0 equals? IF
+  alias> case-IF comp-IF
+  alias> case-THEN comp-THEN
+ELSE
+  alias> case-IF IF
+  alias> case-THEN THEN
+THEN immediate
+
 symbol> case-start-marker
 symbol> case-marker
 
@@ -30,7 +38,7 @@ symbol> case-marker
   ( compare values )
   literal equals
   ( start IF )
-  POSTPONE IF
+  POSTPONE case-IF
   literal drop
 ; immediate
 
@@ -44,7 +52,7 @@ symbol> case-marker
   literal int32 int32 3 literal set-overn
   literal int32 int32 2 literal dropn
   ( start IF )
-  POSTPONE IF
+  POSTPONE case-IF
   literal drop
 ; immediate
 
@@ -54,7 +62,7 @@ symbol> case-marker
   case-marker
   literal jump-rel
   ( finish IF with THEN )
-  POSTPONE THEN
+  POSTPONE case-THEN
 ; immediate
 
 : esac-patcher ( start-ptr stack-ptr )
