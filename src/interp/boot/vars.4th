@@ -48,10 +48,11 @@ end
 def init-data-var ( word )
   ( sets the data segment slot to the initial value )
   arg0 data-var-init-values ds swap seq-poke
+  1 return0-n
 end
 
 def maybe-init-data-var
-  arg0 does-data-var? IF arg0 init-data-var THEN
+  arg0 does-data-var? IF arg0 init-data-var THEN 1 return0-n
 end
 
 ( todo needs a destination and dictionary args to be useful when building )
@@ -60,29 +61,26 @@ def reinit-data-vars!
 end
 
 ( A data-var with slot 0: the current size. )
+create> *next-data-var-slot*
 ' NORTH-COMPILE-TIME defined? IF
-  0 var> *next-data-var-slot*
+  dup out' do-data-var does
+  dhere to-out-addr swap dict-entry-data uint32!
+  0 ,uint32 0 ,uint32
 ELSE
-  create> *next-data-var-slot*
   does> do-data-var
-  sys' data-var> defined? IF
-    dhere to-out-addr out-dict dict-entry-data uint32!
-    0 ,uint32 0 ,uint32
-  ELSE
-    data-segment-size 0 here cs - dict dict-entry-data !
-  THEN
+  0 0 here cs - dict dict-entry-data !
 THEN
 
 def next-data-var-slot
   *next-data-var-slot* inc! return1
 end
 
-def does-data-var ( init-value word -- [init-value slot] )
+def does-data-var ( init-value word ++ )
   arg0 pointer do-data-var does
   arg0
   next-data-var-slot set-arg0
   args cs - over dict-entry-data poke
-  init-data-var return1
+  init-data-var return0
 end
 
 def data-var>
