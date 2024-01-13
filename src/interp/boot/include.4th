@@ -27,6 +27,7 @@ THEN
 def load-core true return1 end
 
 def core-init
+  *next-data-var-slot* @ 0 equals? IF data-segment-size *next-data-var-slot* ! THEN
   signals-init
   tty-init
   exit-frame

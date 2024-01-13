@@ -60,8 +60,8 @@ def reinit-data-vars!
 end
 
 ( A data-var with slot 0: the current size. )
-' NOTTH-COMPILE-TIME defined? IF
-  data-segment-size var> *next-data-var-slot*
+' NORTH-COMPILE-TIME defined? IF
+  0 var> *next-data-var-slot*
 ELSE
   create> *next-data-var-slot*
   does> do-data-var
