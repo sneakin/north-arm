@@ -335,7 +335,6 @@ def sha256-hash ( state -- hash-values )
   arg0 sha256-state-hash 1 return1-n
 end
 
-
 ( String conversion and IO: )
 
 def sha256->string/3 ( ptr size sha256-state -- ptr real-size )
@@ -347,3 +346,19 @@ def write-sha256
   local0 64 arg0 sha256->string/3 write-string/2
   1 return0-n
 end
+
+def sha256-hash-string/3 ( out-str str len -- out-str n )
+  0 0
+  make-sha256-state set-local0
+  local0 sha256-begin
+  arg1 arg0 local0 sha256-update
+  local0 sha256-end
+  arg2 128 local0 sha256->string/3 set-local1
+  arg2 128 3 return2-n
+end
+
+def sha256-hash-string ( str len ++ out-str n )
+  128 stack-allot-zero arg1 arg0 sha256-hash-string/3
+  over cell-size 2 * - move exit-frame
+end
+
