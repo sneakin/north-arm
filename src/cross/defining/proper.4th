@@ -30,9 +30,8 @@
 ;
 
 : out-loop
-  ( north-bash needs the token on the stack and not the offset, but stage1+ needs the output word's offset. )
-  ( fixme literal work in both? )
-  literal pointer
-  out-dict dict-entry-data uint32@
-  literal jump
+  ( todo? north-bash needs the token on the stack and not the offset, but stage1+ needs the output word's offset. )
+  out-off' pointer
+  out-dict to-out-addr
+  out-off' jump-data
 ; cross-immediate-as loop

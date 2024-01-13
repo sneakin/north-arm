@@ -1,11 +1,13 @@
-( CASE expression to have a series of conditional expressions. Uses a syntax similiar to Bash.
-  Example:
+( CASE expression to have a series of conditional expressions.
+
+  Using a syntax similiar to Bash:
     value CASE
       1 WHEN " one" ;;
       2 WHEN " two" ;;
       drop " not 1 or 2"
     ESAC
 
+  Or with more standard Forth words:
     value CASE
       1 OF " one" ENDOF
       2 OF " two" ENDOF
@@ -16,12 +18,13 @@
 ( fixme empty else clause [?] generates a ~0 jump-rel~ that can be eliminated )
 
 NORTH-STAGE 0 equals? IF
+  ( POSTPONE is unable to reference immediates in stage0. )
   alias> case-IF comp-IF
   alias> case-THEN comp-THEN
 ELSE
-  alias> case-IF IF
-  alias> case-THEN THEN
-THEN immediate
+  alias> case-IF interp-IF
+  alias> case-THEN interp-THEN
+THEN
 
 symbol> case-start-marker
 symbol> case-marker

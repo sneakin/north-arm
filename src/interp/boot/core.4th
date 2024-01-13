@@ -75,6 +75,7 @@ def immediate
   exit-frame
 end
 
+( fixme necessary? )
 defcol jump-data
   drop
   dict-entry-data peek jump-cs
