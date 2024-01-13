@@ -60,13 +60,17 @@ def reinit-data-vars!
 end
 
 ( A data-var with slot 0: the current size. )
-create> *next-data-var-slot*
-does> do-data-var
-sys' data-var> defined? IF
-  dhere to-out-addr out-dict dict-entry-data uint32!
-  0 ,uint32 0 ,uint32
+' NOTTH-COMPILE-TIME defined? IF
+  data-segment-size var> *next-data-var-slot*
 ELSE
-  data-segment-size 0 here cs - dict dict-entry-data !
+  create> *next-data-var-slot*
+  does> do-data-var
+  sys' data-var> defined? IF
+    dhere to-out-addr out-dict dict-entry-data uint32!
+    0 ,uint32 0 ,uint32
+  ELSE
+    data-segment-size 0 here cs - dict dict-entry-data !
+  THEN
 THEN
 
 def next-data-var-slot
