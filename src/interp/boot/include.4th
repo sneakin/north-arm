@@ -27,6 +27,7 @@ THEN
 def load-core true return1 end
 
 def core-init
+  math-init
   signals-init
   tty-init
   exit-frame

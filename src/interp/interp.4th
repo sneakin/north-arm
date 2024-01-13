@@ -409,6 +409,7 @@ def interp-init
   ( stdin reader )
   token-buffer-max stack-allot token-buffer-max make-prompt-reader the-reader poke
   ' default-prompt prompt poke
+  s" core-init" dict dict-lookup IF exec-abs THEN
   exit-frame
 end
 
