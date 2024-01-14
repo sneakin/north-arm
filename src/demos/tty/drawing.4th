@@ -51,6 +51,7 @@ def demo-tty-drawing/2
   dup tty-screen-draw-copy
   get-time-secs 0 arg1 arg0 5 overn demo-tty-drawing-loop
   IF drop-locals repeat-frame THEN
+  tty-show-cursor tty-erase-below
 end
 
 8 var> tty-demo-loops
