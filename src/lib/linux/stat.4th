@@ -23,7 +23,7 @@ int<64> field: _padding2
 off_t field: size
 blksize_t field: blksize
 blkcnt_t field: blocks
-timespec field: atime
+timespec field: atime ( fixme timespec64? )
 timespec field: mtime
 timespec field: ctime
 ino_t field: inode
@@ -68,3 +68,8 @@ ELSE
   alias> fd-size fd-size32
   alias> file-size file-size32
 THEN
+
+( Check if a file exists. )
+def file-exists? ( path -- yes? )
+  arg0 stat-path IF true ELSE false THEN 1 return1-n
+end

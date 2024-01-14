@@ -1,10 +1,10 @@
 ( Tests of cpio reading: uses cpio files created by `make test-cpio` which archives the source into archives under "misc/cpio/". )
 
-s[ src/lib/cpio.4th
-src/lib/linux/types.4th
-src/lib/linux/io.4th
-src/lib/assert.4th
-src/lib/assertions/io.4th
+s[ src/lib/linux/clock.4th
+   src/lib/linux/stat.4th
+   src/lib/cpio.4th
+   src/lib/assert.4th
+   src/lib/assertions/io.4th
 ] load-list
 
 ( CPIO Reading: )
