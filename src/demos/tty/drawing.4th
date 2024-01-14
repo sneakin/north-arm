@@ -72,3 +72,14 @@ def demo-tty-blit
   ' tty-context-blit/2 guy 1 partial-after
   tty-demo-loops @ over demo-tty-drawing/2
 end
+
+def demo-tty-scaled-blit-fn ( y x context img -- )
+  arg0 0 0 arg0 TtyBuffer -> height @ arg0 TtyBuffer -> width @ 
+  arg3 arg2 arg1 tty-context-scaled-blit/8
+  4 return0-n
+end
+
+def demo-tty-scaled-blit
+  ' demo-tty-scaled-blit-fn guy partial-first
+  tty-demo-loops @ over demo-tty-drawing/2
+end
