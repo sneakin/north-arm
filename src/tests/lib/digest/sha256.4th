@@ -1,6 +1,10 @@
-s[ src/lib/digest/sha256.4th
-   src/lib/assert.4th
-] load-list
+' make-sha256-state defined? UNLESS
+  " src/lib/digest/sha256.4th" load
+THEN
+
+' assert defined? UNLESS
+  " src/lib/assert.4th" load
+THEN
 
 def assert-sha256 ( sha256-state str len -- )
   128 stack-allot-zero
@@ -136,6 +140,22 @@ def test-sha256-buffer-too-large-by-uint32+byte
   s" 000000000000000000000000000000000000000000000000000000" local0 sha256-update
   local0 sha256-end
   local0 s" 5E348A8A500ECF192338852A7252EC59B575F5688D8D18E93BA5BB581A980D32" assert-sha256
+end
+
+def test-sha256-code-hashes/4 ( mem-ptr mem-size block-size n -- )
+  arg1 arg0 *
+  dup arg2 uint< IF
+    dup write-hex-uint space
+    arg3 + arg1 sha256-hash-string write-line/2
+    arg0 1 + set-arg0 drop-locals repeat-frame
+  ELSE 4 return0-n
+  THEN
+end
+
+def test-sha256-code-hashes ( block-size -- )
+  ( A manual test that's paired with ~scripts/test/code-hashes.sh~. )
+  cs *program-size* arg0 0 test-sha256-code-hashes/4
+  1 return0-n
 end
 
 def test-sha256

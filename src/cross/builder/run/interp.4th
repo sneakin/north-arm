@@ -1,3 +1,9 @@
+tmp" fill" defined?/2 UNLESS
+   s[ src/lib/seq.4th ] load-list
+THEN
+   
+s[ src/lib/digest/sha256.4th ] load-list
+
 false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. Defined here instead of globals.4th so it remains undefined until this file is loaded. )
 
 tmp" open-output-file/2" defined?/2 UNLESS
@@ -14,12 +20,7 @@ tmp" S_IRWXU" defined?/2 UNLESS
 00001 const> S_IXOTH
 THEN
    
-tmp" fill" defined?/2 UNLESS
-   s[ src/lib/seq.4th ] load-list
-THEN
-   
 s[ src/cross/output/data-vars.4th
-   src/lib/digest/sha256.4th
    src/cross/output/structs.4th
 ] load-list
 

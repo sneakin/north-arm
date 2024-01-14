@@ -35,11 +35,27 @@ end
 0x550c7dc3 0x243185be 0x12835b01 0xd807aa98
 0xab1c5ed5 0x923f82a4 0x59f111f1 0x3956c25b
 0xe9b5dba5 0xb5c0fbcf 0x71374491 0x428a2f98
-64 here const> SHA256-K-VALUES
+64 here
+' NORTH-COMPILE-TIME defined? IF
+  dhere to-out-addr
+  swap 65 ,seq
+  65 set-overn 64 dropn
+  const-offset> SHA256-K-VALUES
+ELSE
+  const> SHA256-K-VALUES
+THEN
 
 0x5be0cd19 0x1f83d9ab 0x9b05688c 0x510e527f
 0xa54ff53a 0x3c6ef372 0xbb67ae85 0x6a09e667
-8 here const> SHA256-INIT-VALUES
+8 here
+' NORTH-COMPILE-TIME defined? IF
+  dhere to-out-addr
+  swap 9 ,seq
+  9 set-overn 8 dropn
+  const-offset> SHA256-INIT-VALUES
+ELSE
+  const> SHA256-INIT-VALUES
+THEN
 
 ( SHA's basic operations: )
 
@@ -348,17 +364,16 @@ def write-sha256
 end
 
 def sha256-hash-string/3 ( out-str str len -- out-str n )
-  0 0
+  0
   make-sha256-state set-local0
   local0 sha256-begin
   arg1 arg0 local0 sha256-update
   local0 sha256-end
-  arg2 128 local0 sha256->string/3 set-local1
-  arg2 128 3 return2-n
+  arg2 64 local0 sha256->string/3 set-local1
+  arg2 64 3 return2-n
 end
 
 def sha256-hash-string ( str len ++ out-str n )
-  128 stack-allot-zero arg1 arg0 sha256-hash-string/3
+  65 stack-allot-zero arg1 arg0 sha256-hash-string/3
   over cell-size 2 * - move exit-frame
 end
-
