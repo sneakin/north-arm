@@ -16,11 +16,9 @@ def const>
   exit-frame
 end
 
-NORTH-BUILD-TIME 1704950389 int<= [IF]
-  op-size
-[ELSE]
-  1
-[THEN] const> jump-op-size
+NORTH-BUILD-TIME 1704950389 int>
+' NORTH-COMPILE-TIME defined?
+or [IF] 1 [ELSE] op-size [THEN] const> jump-op-size
 
 def alias
   arg1 dict-entry-code peek arg0 dict-entry-code poke
