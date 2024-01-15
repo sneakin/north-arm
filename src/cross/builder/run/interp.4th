@@ -67,6 +67,7 @@ def builder-run ( entry len src-cons )
   ( Words to later patch: )
   s" _start" create
 
+  ( todo options to load a file before and after the runner )
   ( The main stage: )
   true NORTH-COMPILE-TIME poke
   builder-with-runner peek IF " src/include/runner.4th" load THEN
