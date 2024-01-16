@@ -30,6 +30,8 @@ used to rebuild.
 
 * Tasks
 ** Jan 24
+*** Review ~src/lib/linux~ types to ensure they're right. file-stat64 and timespec may have more padding.
+*** TODO qemu-arm on my desktop crashes when handling a signal. ffi-callback's
 *** DONE qemu-arm on my desktop crashes when handling a signal. ffi-callback's
 seem to be doing misaligend ldr-pc. patch-ldr-pc! might be doing the
 calculation wrong.
@@ -163,6 +165,7 @@ Include into the builder
 ****** TODO sha-224, 512, etc.
 ****** DONE SHA-256
 ***** TODO Internally: FFI imports need relocs out of the code segment
+***** TODO Calling math-init patches arithmetic words.
 **** Signature
 ***** ECC or RSA?
 ***** Big integers
