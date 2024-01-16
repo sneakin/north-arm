@@ -71,7 +71,7 @@ here const> DISASM-HI-REGS
   ESAC swap
   dup 8 bsr disasm-low-register swap
   dup 0xFF logand swap literal int32 swap
-  drop 3
+  drop 4
 ;
 
 
