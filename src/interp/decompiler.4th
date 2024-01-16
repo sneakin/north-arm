@@ -29,6 +29,40 @@ def decompile-literal-word ( value word offset -- )
   3 return0-n
 end
 
+def decompile-op-codes ( word -- )
+  arg0 dict-entry-code peek cs + 0xFFFFFFFE logand
+  dup peek cell-size + cmemdump ( todo needs ,uint32 after op codes. )
+  1 return0-n
+end
+
+' NORTH-COMPILE-TIME defined? IF
+  0 defvar> decompile-op-fn
+ELSE
+  0 var> decompile-op-fn
+THEN
+
+def decompile-op
+  s" defop " write-string/2 arg0 write-dict-entry-name nl space space
+  decompile-op-fn @ IF
+    s" ( " write-string/2
+    arg0 decompile-op-codes
+    s" )" write-string/2 nl
+    arg0 decompile-op-fn @ dup IF
+      dup *code-size* uint< IF cs + THEN
+      exec-abs
+    ELSE drop
+    THEN
+  ELSE
+    arg0 decompile-op-codes
+  THEN
+  s" endop" write-string/2 nl
+  arg0 dict-entry-data peek dup IF
+    s" data[ " write-string/2
+    cs + dup string-length cmemdump
+    s" ]" write-string/2 nl
+  THEN
+end
+
 def decompile-colon-data
   arg0 peek int32 0 equals? IF return0 THEN
   arg0 peek cs +
@@ -83,16 +117,20 @@ def framed-definition?
 end
 
 def decompile-colon
-  arg0 framed-definition? dup IF
-    s" def " write-string/2 arg0 write-dict-entry-name nl space space
-    op-size
+  arg0 dict-entry-data @ 0 equals? IF
+    arg0 decompile-op
   ELSE
-    s" defcol " write-string/2 arg0 write-dict-entry-name nl space space
-    0
+    arg0 framed-definition? dup IF
+      s" def " write-string/2 arg0 write-dict-entry-name nl space space
+      op-size
+    ELSE
+      s" defcol " write-string/2 arg0 write-dict-entry-name nl space space
+      0
+    THEN
+    arg0 dict-entry-data peek dup IF cs + + decompile-colon-data THEN
+    nl
+    local0 IF s" end" ELSE s" endcol" THEN write-string/2 nl
   THEN
-  arg0 dict-entry-data peek dup IF cs + + decompile-colon-data THEN
-  nl
-  local0 IF s" end" ELSE s" endcol" THEN write-string/2 nl
 end
 
 def decompile-proper
@@ -131,19 +169,6 @@ def decompile-data-var
   arg2 dict-entry-data peek cs + 1 seq-peek write-uint space
   arg1 arg0 write-string/2 space
   arg2 write-dict-entry-name
-  nl
-end
-
-def decompile-op
-  s" defop " write-string/2 arg0 write-dict-entry-name nl space space
-  arg0 dict-entry-code peek cs + 0xFFFFFFFE logand
-  dup peek cell-size + cmemdump ( todo needs ,uint32 after op codes. )
-  s" endop" write-string/2
-  arg0 dict-entry-data peek dup IF
-    s" data[ " write-string/2
-    cs + dup string-length cmemdump
-    s" ]" write-string/2
-  THEN
   nl
 end
 

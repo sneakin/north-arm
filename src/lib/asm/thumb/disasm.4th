@@ -1,34 +1,74 @@
 ( Register value to symbolic decoding: )
 
-0
-' r7
-' r6
-' r5
-' r4
-' r3
-' r2
-' r1
-' r0
-here const> DISASM-LOW-REGS
+' NORTH-COMPILE-TIME defined? IF
+  0
+  out-off' r7
+  out-off' r6
+  out-off' r5
+  out-off' r4
+  out-off' r3
+  out-off' r2
+  out-off' r1
+  out-off' r0
+  here
+  dhere to-out-addr swap 9 ,seq
+  const-offset> DISASM-LOW-REGS
 
-: disasm-low-register
-  7 logand DISASM-LOW-REGS swap seq-peek cs -
-;
+  : disasm-low-register
+    7 logand DISASM-LOW-REGS swap seq-peek
+  ;
+ELSE
+  0
+  ' r7
+  ' r6
+  ' r5
+  ' r4
+  ' r3
+  ' r2
+  ' r1
+  ' r0
+  here
+  const> DISASM-LOW-REGS
 
-0
-' pc
-' lr
-' sp
-' ip
-' fp
-' sl
-' r9
-' r8
-here const> DISASM-HI-REGS
+  : disasm-low-register
+    7 logand DISASM-LOW-REGS swap seq-peek cs -
+  ;
+THEN
 
-: disasm-hi-register
-  7 logand DISASM-HI-REGS swap seq-peek cs -
-;
+' NORTH-COMPILE-TIME defined? IF
+  0
+  out-off' pc
+  out-off' lr
+  out-off' sp
+  out-off' ip
+  out-off' fp
+  out-off' sl
+  out-off' r9
+  out-off' r8
+  here
+  dhere to-out-addr swap 9 ,seq
+  const-offset> DISASM-HI-REGS
+
+  : disasm-hi-register
+    7 logand DISASM-HI-REGS swap seq-peek
+  ;
+ELSE
+  0
+  ' pc
+  ' lr
+  ' sp
+  ' ip
+  ' fp
+  ' sl
+  ' r9
+  ' r8
+  here
+  const> DISASM-HI-REGS
+
+  : disasm-hi-register
+    7 logand DISASM-HI-REGS swap seq-peek cs -
+  ;
+THEN
 
 : disasm-register
   0xF logand dup 8 int< IF disasm-low-register ELSE disasm-hi-register THEN
@@ -478,7 +518,7 @@ def disasm-word
 end
 
 def write-disasm ( ptr num-cells -- )
-  arg0 0 int<= IF nl 2 return0-n THEN
+  arg0 0 int<= IF 2 return0-n THEN
   arg1 @ cs +
   dup literalizes? IF
     arg1 cell-size + set-arg1
@@ -489,7 +529,7 @@ def write-disasm ( ptr num-cells -- )
       2 dropn dup dict-entry-name @ cs + write-string space
       dup ' ,ins equals? IF nl THEN
     ELSE
-      s" Unknown word" error-line/2
+      s" Unknown-Word: " write-string/2 space
       2 dropn dup write-hex-uint space
     THEN
   THEN
@@ -504,3 +544,10 @@ def write-word-disasm ( word -- )
   dup IF write-disasm ELSE s" Not a thumb op." write-line/2 THEN
   1 return0-n
 end
+
+' decompile-op-fn defined? IF
+  ' NORTH-COMPILE-TIME defined? IF
+    out-off' write-word-disasm out' decompile-op-fn dict-entry-data @ from-out-addr data-var-init-value !
+  ELSE ' write-word-disasm decompile-op-fn !
+  THEN
+THEN
