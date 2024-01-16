@@ -185,6 +185,35 @@ def is-op? ( word -- yes? )
   arg0 dict-entry-code-word arg0 equals? set-arg0
 end
 
+def dict-contains-values? ( word dict ++ yes? )
+  arg0 UNLESS false return1 THEN
+  arg1 arg0 dict-entry-equiv? IF true return1 THEN
+  arg0 dict-entry-link @ dup IF cs + THEN set-arg0
+  repeat-frame
+end
+
+def dict-entry-name-equals? ( word-a word-b -- yes? )
+  arg0 dict-entry-name @ cs +
+  arg1 dict-entry-name @ cs +
+  string-equals? 2 return1-n
+end
+
+def maybe-decompile-immediate
+  ( If immediate-only is every implemented, uncomment the lines. )
+  ( arg0 dict dict-contains-values? rot 2 dropn )
+  arg0 immediates @ cs + dict-contains-values? IF
+    2dup dict-entry-name-equals? IF
+      ( local0 IF s" immediate" ELSE s" immediate-only" THEN write-string/2 )
+      s" immediate" write-string/2
+    ELSE
+      ( local0 IF s" immediate-as " ELSE s" immediate-only-as" THEN write-string/2 )
+      s" immediate-as " write-string/2
+      dup dict-entry-name @ cs + write-string
+    THEN 2 dropn
+  THEN nl
+  1 return0-n
+end
+
 def decompile ( entry )
   arg0 IF
     arg0 dict-entry-code-word CASE
@@ -200,5 +229,6 @@ def decompile ( entry )
 	ELSE arg0 decompile-unknown-entry
 	THEN
     ESAC
+    arg0 maybe-decompile-immediate
   THEN
 end

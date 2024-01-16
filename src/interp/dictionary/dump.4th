@@ -1,6 +1,7 @@
 def decompile-immediate
+  arg0 dict dict-contains-values? IF 1 return0-n THEN
   nl arg0 decompile
-  s" immediate" write-line/2
+  1 return0-n
 end
 
 def dump-dict/1
