@@ -17,13 +17,13 @@ def clone-termios
   local0 exit-frame ( todo more? )
 end
 
-allot-termios *termios* poke
+( allot-termios *termios* poke )
 
 def tty-termios
-  ( *termios* @ null? UNLESS return1 THEN
+  *termios* @ null? UNLESS return1 THEN
   allot-termios dup *termios* !
-  exit-frame )
-  *termios* peek return1
+  exit-frame
+  ( *termios* peek return1 )
 end
 
 def termios-lflag

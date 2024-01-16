@@ -31,9 +31,10 @@ end
 : cross-immediate dict cross-immediate/1 ;
 : cross-immediate-as dict next-token cross-immediate/3 ;
 
-' end-compile tmp" ;" cross-immediate/3
-
-' ( cross-immediate/1
+' NORTH-COMPILE-TIME defined? UNLESS
+  ' end-compile tmp" ;" cross-immediate/3
+  ' ( cross-immediate/1
+THEN
 
 ( Output memory offseting: )
 
