@@ -168,10 +168,9 @@ endcol
 
 : repeat-frame
   literal int32
-  ( fixme may not have a begin-frame to find. )
-  literal begin-frame stack-find
-  current-frame min
-  here stack-delta 1 + jump-op-size * negate
+  ( compiling-read sets up a frame that holds the accumulated list of words.
+    This needs to calculate a jump to after the begin-frame. )
+  locals here stack-delta negate 2 - jump-op-size *
   literal jump-rel
 ; immediate
 
