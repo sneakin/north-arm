@@ -84,13 +84,18 @@ end
   literal jump-data
 ; immediate
 
-: stack-find/2
-  2dup speek equals int32 3 jump-op-size * unless-jump swap drop proper-exit
+: stack-find/3 ( value top current -- ptr )
+  2dup uint> int32 6 jump-op-size * if-jump int32 3 dropn int32 0 proper-exit
+  int32 3 overn over speek equals int32 5 jump-op-size * unless-jump rot int32 2 dropn proper-exit
   up-stack loop
 ;
 
-: stack-find
-  here int32 2 up-stack/2 stack-find/2
+: stack-find/2 ( value top -- ptr )
+  here int32 3 up-stack/2 stack-find/3
+;
+
+: stack-find ( value -- ptr )
+  top-frame here int32 3 up-stack/2 stack-find/3
 ;
 
 def immediate-as/1
@@ -167,6 +172,15 @@ defcol ?jump-data
 endcol
 
 : repeat-frame
+  literal int32
+  ( compiling-read sets up a frame that holds the accumulated list of words.
+    This needs to calculate a jump to after the nearest begin-frame. )
+  literal begin-frame locals stack-find/2 locals min
+  here stack-delta negate 2 - jump-op-size *
+  literal jump-rel
+; immediate
+
+: repeat-word
   literal int32
   ( compiling-read sets up a frame that holds the accumulated list of words.
     This needs to calculate a jump to after the begin-frame. )

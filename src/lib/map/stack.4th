@@ -20,7 +20,7 @@
 ;
 
 : revmap-stack-seq/4 ( ptr acc fn term )
-  4 overn stack-find/2
+  top-frame 5 overn stack-find/3
   dup 5 overn equals UNLESS
     down-stack revmap-stack-seq-loop
   THEN
