@@ -435,6 +435,7 @@ bin/interp-armasm.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/lib/structs.4th \
 	src/interp/cross.4th \
 	src/interp/boot/include.4th \
+	src/lib/math/int32.4th \
 	src/lib/asm/thumb/v1.4th \
 	src/lib/asm/thumb/v2.4th \
 	src/lib/asm/thumb/disasm.4th

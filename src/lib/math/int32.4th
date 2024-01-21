@@ -10,7 +10,7 @@ ELSE
   0xFFFFFFFF const> UINT32-MAX
 THEN
 
-def sign-extend-from
+def sign-extend-from ( value bit -- extended )
   arg1 1 arg0 bsl logand
   IF 1 arg0 1 + bsl 1 - ( bit-mask ) lognot arg1 logior
   ELSE arg1

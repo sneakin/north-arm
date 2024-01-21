@@ -1,5 +1,8 @@
 ( Register value to symbolic decoding: )
 
+( todo ldr-pc data should be output as a hex dump )
+( todo floating point ops )
+
 ' NORTH-COMPILE-TIME defined? IF
   0
   out-off' r7
@@ -297,14 +300,14 @@ THEN
 
 : disasm-branch ( op -- ...operands instruction count )
   literal branch swap
-  dup 0x7FF logand 1 bsl swap
+  dup 0x7FF logand 1 bsl 11 sign-extend-from swap
   literal int32 swap
   drop 3
 ;
 
 : disasm-branch-link ( op -- ...operands instruction count )
   dup 11 bit-set? IF literal bl-lo ELSE literal bl-hi THEN swap
-  0x7FF logand literal int32
+  0x7FF logand 11 sign-extend-from literal int32
   int32 3
 ;
 
@@ -341,7 +344,7 @@ THEN
 : disasm-branch-link2
   literal branch-link swap
   dup 0x7FF logand 12 bsl swap
-  16 bsr 0x7FF logand 1 bsl logior
+  16 bsr 0x7FF logand 1 bsl logior 22 sign-extend-from
   literal int32
   int32 3
 ;
@@ -470,13 +473,13 @@ THEN
   dup 0x0010FF10 logand 0x10EE00 equals? IF disasm-mcr proper-exit THEN
   dup 0x0010FF10 logand 0x10EE10 equals? IF disasm-mrc proper-exit THEN
   ( v1 branch )
-  dup 0x8000F800 logand 0x8000F000 equals? IF disasm-branch-link2 proper-exit THEN
+  dup 0xF800F000 logand 0xF800F000 equals? IF disasm-branch-link2 proper-exit THEN
   drop 0
 ;
 
 def two-shorts-op?
   arg0 0xF000 logand 0xF000 equals? IF true return1 THEN
-  arg0 0xF800 logand 0xE800 equals? return1
+  arg0 0xE800 logand 0xE800 equals? return1
 end
 
 def disasm/3 ( ptr num-bytes size ++ ptr size )
@@ -523,7 +526,11 @@ def write-disasm ( ptr num-cells -- )
   dup literalizes? IF
     arg1 cell-size + set-arg1
     arg0 1 - set-arg0
-    arg1 @ write-uint space
+    dup ' int32 equals? IF
+      arg1 @ write-int
+    ELSE
+      arg1 @ write-uint
+    THEN space
   ELSE
     dup dict dict-contains?/2 IF
       2 dropn dup dict-entry-name @ cs + write-string space
