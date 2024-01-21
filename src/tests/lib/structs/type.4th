@@ -1,6 +1,12 @@
-tmp" src/lib/assert.4th" load/2
-tmp" src/lib/structs.4th" load/2
-tmp" src/tests/lib/structs/assert.4th" load/2
+' assert defined? UNLESS
+  tmp" src/lib/assert.4th" load/2
+THEN
+' struct defined? UNLESS
+  tmp" src/lib/structs.4th" load/2
+THEN
+' assert-type defined? UNLESS
+  tmp" src/tests/lib/structs/assert.4th" load/2
+THEN
 
 def test-null-type
   null-type s" null-type" null cell-size 0 assert-type

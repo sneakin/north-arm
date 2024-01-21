@@ -3,29 +3,38 @@
 def print-struct-field
   arg0 value-of
   s"   Field: " write-string/2
-  local0 struct-field-name peek write-string space
-  local0 struct-field-type peek dup dup IF value-of struct-name peek write-string space THEN write-hex-uint space
+  local0 struct-field-name peek as-code-pointer write-string space
+  local0 struct-field-type peek dup dup IF value-of struct-name peek as-code-pointer write-string space THEN write-hex-uint space
   local0 struct-field-offset peek write-hex-uint space
   local0 struct-field-byte-size peek write-hex-uint nl
+end
+ 
+def print-struct-fields ( list -- )
+  arg0 UNLESS 1 return0-n THEN
+  arg0 car print-struct-field
+  arg0 cdr as-code-pointer set-arg0 repeat-frame
 end
 
 def print-struct
   s" Name: " write-string/2
-  arg0 struct-name peek write-line
+  arg0 struct-name peek as-code-pointer write-line
   s" Byte size: " write-string/2
   arg0 struct-byte-size peek write-hex-uint nl
   s" Fields: " write-string/2 nl
-  arg0 struct-fields peek ' print-struct-field map-car
+  arg0 struct-fields peek as-code-pointer ' print-struct-field map-car+cs
 end
 
 ( Pointer dereferencing printers: )
 
 def print-pointer-type
-  arg0 type-of write-hex-uint space
-  arg0 type-of value-of type-name peek as-code-pointer write-string space
-  arg0 type-of value-of type-super peek dup IF value-of type-name peek as-code-pointer write-string ELSE drop THEN space
   arg0 write-hex-uint s" :" write-string/2
-  arg0 type-of value-of type-byte-size peek write-uint nl
+  arg0 type-of value-of type-byte-size peek write-uint space
+  arg0 type-of value-of type-name peek as-code-pointer write-string space
+  s" (" write-string/2 arg0 type-of write-hex-uint s" )" write-string/2
+  arg0 type-of value-of type-super peek dup IF
+    s"  < " write-string/2
+    value-of type-name peek as-code-pointer write-string
+  ELSE drop THEN
 end
   
 def print-pointer<any>
@@ -73,15 +82,12 @@ def print-instance-fields ( instance type )
   THEN 2 return0-n
 end
 
-( todo atomic types )
+( todo atomic types w/o the cons with type )
 ( todo inherited fields )
 
-def print-instance/2
-  arg1 print-pointer-type
+def print-instance ( instance -- )
+  arg0 print-pointer-type nl
   arg0 value-of arg0 sizeof cmemdump
-  arg0 print-instance-fields
-end
-
-def print-instance
-  arg0 dup type-of print-instance/2
+  arg0 dup type-of print-instance-fields
+  1 return0-n
 end

@@ -417,5 +417,28 @@ test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpi
 # Scantool for stats and syntax highlighting.
 bin/scantool.$(TARGET_ABI).$(STAGE)$(EXECEXT): src/include/interp.4th src/interp/cross.4th src/bin/scantool.4th
 
+bin/interp+core.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e interp-boot -o $@ $^
+
+bin/interp-armasm.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	src/lib/asm/thumb/v1.4th \
+	src/lib/asm/thumb/v2.4th \
+	src/lib/asm/thumb/disasm.4th
+	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e interp-boot -o $@ $^
+
 %.html: %.org
 	emacs $< --batch -f org-html-export-to-html --kill

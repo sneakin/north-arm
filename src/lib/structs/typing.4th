@@ -30,23 +30,6 @@ ELSE
   const> type
 THEN
 
-( The type returned for null values: )
-( struct: null-type
-    value field: data
-)
-
-(
-" null-type"
-null swap
-null swap
-cell-size swap
-here type cons const> null-type
-)
-
-def as-code-pointer ( offset-or-ptr -- ptr )
-  arg0 dup IF dup code-offset? IF cs + set-arg0 THEN THEN
-end
-
 ( Returns the value of a structure reference. )
 def value-of-raw
   arg0 as-code-pointer cdr set-arg0
@@ -97,6 +80,18 @@ end
     sys-type: dict exec-abs create-out-type-entry
   ;
 THEN
+
+( The type returned for null values: )
+( struct: null-type
+    value field: data
+)
+(
+" null-type"
+null swap
+null swap
+cell-size swap
+here type cons const> null-type
+)
 
 null cell-size type: null-type
 

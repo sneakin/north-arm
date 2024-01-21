@@ -1,14 +1,20 @@
-tmp" src/lib/assert.4th" load/2
-tmp" src/lib/structs.4th" load/2
-tmp" src/tests/lib/structs/assert.4th" load/2
+' assert defined? UNLESS
+  tmp" src/lib/assert.4th" load/2
+THEN
+' struct defined? UNLESS
+  tmp" src/lib/structs.4th" load/2
+THEN
+' assert-type defined? UNLESS
+  tmp" src/tests/lib/structs/assert.4th" load/2
+THEN
 
 def test-struct-type
-  struct s" struct" type cell-size 4 * 4 assert-type
+  struct s" struct" type cell-size 4 * 0 assert-type
   ( fields )
   struct s" name" pointer<any> 0 cell-size assert-struct-field
   struct s" byte-size" uint<32> cell-size cell-size assert-struct-field
   struct s" super" pointer<any> cell-size 2 * cell-size assert-struct-field
-  struct s" fields" pointer<any> cell-size 3 * cell-size assert-struct-field
+  struct s" data" pointer<any> cell-size 3 * cell-size assert-struct-field
 end
 
 def test-allot-struct

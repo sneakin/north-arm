@@ -45,3 +45,6 @@ def pointer? ( ptr -- yes? )
   THEN set-arg0
 end
 
+def as-code-pointer ( offset-or-ptr -- ptr )
+  arg0 dup IF dup code-offset? IF cs + set-arg0 THEN THEN
+end

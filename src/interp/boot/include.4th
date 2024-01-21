@@ -17,6 +17,7 @@ s[ src/interp/boot/core.4th
 
 ' NORTH-COMPILE-TIME defined? UNLESS
   s[ src/lib/pointers.4th
+     src/lib/list-cs.4th
      src/lib/structs.4th
      src/lib/linux/clock.4th
      src/lib/linux/stat.4th
