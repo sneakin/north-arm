@@ -23,10 +23,11 @@ def copy-type-to-data ( type-ptr -- data-ptr )
   arg0 value-of type-super @ dup IF value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN THEN ,uint32
   arg0 value-of type-data @ ,uint32
   local1 to-out-addr
-  arg0 type-of
-  dup type equals? IF drop dhere ELSE value-of map-sys-type-to-out UNLESS type THEN THEN to-out-addr
+  arg0 type equals? IF dhere ELSE arg0 type-of value-of map-sys-type-to-out UNLESS type THEN THEN to-out-addr
   dcons 1 return1-n
 end
+
+( todo copy fields in second pass to get type pointers right, or dallot types to on declaration so pointer is always out-addr )
 
 def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
   espace espace arg0 ,h espace struct-field -> name @ error-string espace
@@ -62,6 +63,7 @@ end
 def update-out-struct-fields ( word -- )
   arg0 dict-entry-name @ from-out-addr error-string espace
   arg0 dict-entry-data @ ,h enl
+  ( todo structs only? general data values? )
   from-out-addr copy-struct-fields-to-data
   1 return0-n
 end
