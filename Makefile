@@ -424,7 +424,7 @@ bin/interp+core.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/lib/list-cs.4th \
 	src/lib/structs.4th \
 	src/interp/cross.4th \
-	src/interp/boot/include.4th \
+	src/interp/boot/include.4th
 	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e interp-boot -o $@ $^
 
 bin/interp-armasm.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
