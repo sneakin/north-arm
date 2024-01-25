@@ -365,6 +365,13 @@ THEN
   int32 4
 ;
 
+: disasm-ldr-pc.w ( op32 -- imm int32 reg ldr-pc.w 4 )
+  literal ldr-pc.w swap
+  dup 28 bsr disasm-register swap
+  16 bsr 0xFFF logand literal int32
+  int32 4
+;
+
 : disasm-mrs ( op32 -- reg mrs 2 )
   literal mrs swap
   24 bsr disasm-register
@@ -461,6 +468,7 @@ THEN
   ( v2 operations )
   dup 0xF0F0FFF0 logand 0xF0F0FB90 equals? IF disasm-sdiv proper-exit THEN
   dup 0xF0F0FFF0 logand 0xF0F0FBB0 equals? IF disasm-udiv proper-exit THEN
+  dup 0x0000FFEF logand 0xF8CF equals? IF disasm-ldr-pc.w proper-exit THEN
   ( v2 coprocessor )
   dup 0xF00EFFFF logand 0x8000F3EF equals? IF disasm-mrs proper-exit THEN
   dup 0xF00EFFF0 logand 0x8000F380 equals? IF disasm-msr proper-exit THEN
