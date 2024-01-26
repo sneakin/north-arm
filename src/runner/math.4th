@@ -18,6 +18,11 @@ def in-range? ( n max min )
   arg2 arg0 int>= and return1
 end
 
+defcol uminmax rot 2dup uint< IF swap THEN rot endcol
+defcol umaxmin rot 2dup uint> IF swap THEN rot endcol
+defcol umin rot uminmax drop swap endcol
+defcol umax rot umaxmin drop swap endcol
+
 def uint-in-range? ( n max min )
   arg2 arg1 uint<=
   arg2 arg0 uint>= and return1

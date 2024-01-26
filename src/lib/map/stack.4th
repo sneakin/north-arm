@@ -20,9 +20,10 @@
 ;
 
 : revmap-stack-seq/4 ( ptr acc fn term )
-  top-frame 5 overn stack-find/3
-  dup 5 overn equals UNLESS
-    down-stack revmap-stack-seq-loop
+  top-frame 5 overn stack-find/3 IF
+    dup 5 overn equals UNLESS
+      down-stack revmap-stack-seq-loop
+    THEN
   THEN
   2 dropn swap drop
 ;

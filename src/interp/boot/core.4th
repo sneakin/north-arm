@@ -80,21 +80,21 @@ defcol jump-data
 end
 
 : loop
-  literal int32 dict
+  literal literal dict
   literal jump-data
 ; immediate
 
-: stack-find/3 ( value top current -- ptr )
+: stack-find/3 ( value top current -- ptr true | false )
   2dup uint> int32 6 jump-op-size * if-jump int32 3 dropn int32 0 proper-exit
-  int32 3 overn over speek equals int32 5 jump-op-size * unless-jump rot int32 2 dropn proper-exit
+  int32 3 overn over speek equals? int32 7 jump-op-size * unless-jump rot int32 2 dropn int32 -1 proper-exit
   up-stack loop
 ;
 
-: stack-find/2 ( value top -- ptr )
+: stack-find/2 ( value top -- ptr true | false )
   here int32 3 up-stack/2 stack-find/3
 ;
 
-: stack-find ( value -- ptr )
+: stack-find ( value -- ptr true | false )
   top-frame here int32 3 up-stack/2 stack-find/3
 ;
 
@@ -124,7 +124,7 @@ symbol> if-placeholder
 
 : interp-ELSE
   literal int32
-  if-placeholder stack-find
+  if-placeholder stack-find int32 2 jump-op-size * if-jump int32 0
   if-placeholder literal jump-rel
   roll
   dup here stack-delta int32 3 - jump-op-size *
@@ -132,7 +132,7 @@ symbol> if-placeholder
 ; immediate-as ELSE
 
 : interp-THEN
-  if-placeholder stack-find
+  if-placeholder stack-find int32 2 jump-op-size * if-jump int32 0
   dup here stack-delta int32 3 - jump-op-size *
   swap spoke
 ; immediate-as THEN
@@ -171,11 +171,16 @@ defcol ?jump-data
   swap dup IF jump-data ELSE drop THEN
 endcol
 
+' umin defined? [UNLESS]
+  defcol uminmax rot 2dup uint< IF swap THEN rot endcol
+  defcol umin rot uminmax drop swap endcol
+[THEN]
+
 : repeat-frame
   literal int32
   ( compiling-read sets up a frame that holds the accumulated list of words.
     This needs to calculate a jump to after the nearest begin-frame. )
-  literal begin-frame locals stack-find/2 locals min
+  literal begin-frame locals stack-find/2 IF locals umin ELSE locals THEN
   here stack-delta negate 2 - jump-op-size *
   literal jump-rel
 ; immediate
@@ -290,9 +295,9 @@ alias> endcol end-compile
 op-size const> -op-size ( todo  needs to be variable )
 op-mask const> -op-mask
 
-def safe-stack-find/2 ( ptr value -- addr found )
-  arg1 top-frame uint< UNLESS 0 set-arg0 return0 THEN
-  arg1 peek arg0 equals? IF 1 set-arg0 return0 THEN
+def safe-stack-find/2 ( ptr value -- addr true | false )
+  arg1 top-frame uint< UNLESS 0 2 return1-n THEN
+  arg1 peek arg0 equals? IF arg1 -1 2 return2-n THEN
   arg1 up-stack set-arg1 repeat-frame
 end
 

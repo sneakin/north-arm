@@ -1,6 +1,6 @@
 ' ds defined? UNLESS
-  create> *ds* dict does> do-var
-  128 stack-allot-zero dict dict-entry-data !
+  create> *ds* does> do-var
+  128 cell-size * stack-allot-zero *ds* !
   *ds* cs - const> *ds-offset*
   def ds *ds* @ return1 end
   def set-ds arg0 *ds* ! 1 return0-n end

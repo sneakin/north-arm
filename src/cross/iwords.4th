@@ -52,7 +52,7 @@
 
 : out-ELSE
   literal int32
-  literal if-placeholder stack-find
+  literal if-placeholder stack-find UNLESS s" Warning: ELSE with no IF" error-line/2 0 THEN
   literal if-placeholder literal jump-rel
   roll
   dup here stack-delta 3 - -jump-op-size mult
@@ -60,7 +60,7 @@
 ; cross-immediate-as ELSE
 
 : out-THEN
-  literal if-placeholder stack-find
+  literal if-placeholder stack-find UNLESS s" Warning: THEN with no IF" error-line/2 0 THEN
   dup here stack-delta 3 - -jump-op-size mult
   swap spoke
 ; cross-immediate-as THEN

@@ -53,6 +53,11 @@
 
 : repeat-frame
   literal literal
-  read-terminator stack-find here stack-delta 1 + negate
+  read-terminator stack-find IF
+    here stack-delta 1 + negate
+  ELSE
+    " Warning: not in a frame" error-line
+    0
+  THEN
   literal jump-rel
 ; immediate
