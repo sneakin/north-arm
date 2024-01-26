@@ -99,18 +99,23 @@ alias> up-stack/2 -
 ;
 
 : stack-find-loop
-  2dup speek equals 3 unless-jump swap drop return
+  3 overn over speek equals 5 unless-jump rot 2 dropn 1 return
   up-stack
-  dup 0 equals 1 unless-jump return
+  2dup equals 4 unless-jump 3 dropn 0 return
+  dup 0 equals 4 unless-jump 3 dropn 0 return
   loop
 ;
 
-: stack-find/2
+: stack-find/3
   stack-find-loop
 ;
 
+: stack-find/2
+  here 3 up-stack/2 stack-find/3
+;
+
 : stack-find
-  here 2 up-stack/2 stack-find/2
+  0 stack-find/2
 ;
 
 : string-needs-escaping?
@@ -131,7 +136,7 @@ alias> up-stack/2 -
 ( Concatenates everything on the stack between here and a read-terminator into a string. )
 : concat-seq
   here down-stack literal 0 swap " " swap
-  read-terminator stack-find
+  read-terminator stack-find 1 if-jump 0
   dup 4 set-overn
   down-stack concat-seq-loop 2 dropn
   2dup swap spoke
@@ -189,7 +194,7 @@ symbol> if-placeholder
 
 : comp-ELSE
   literal literal
-  literal if-placeholder stack-find
+  literal if-placeholder stack-find 4 if-jump " Warning: ELSE with no IF" error-line 0
   literal if-placeholder literal jump-rel
   roll
   dup here stack-delta 3 -
@@ -197,7 +202,7 @@ symbol> if-placeholder
 ; immediate-as ELSE
 
 : comp-THEN
-  literal if-placeholder stack-find
+  literal if-placeholder stack-find 4 if-jump " Warning: THEN with no IF" error-line 0
   dup here stack-delta 3 -
   swap spoke
 ; immediate-as THEN

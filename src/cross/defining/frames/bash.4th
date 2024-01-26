@@ -1,6 +1,6 @@
 : repeat-frame
   literal int32
-  literal begin-frame stack-find here - 1 -
+  literal begin-frame stack-find IF here - 1 - ELSE 0 THEN
   literal jump-rel
 ; cross-immediate
 
