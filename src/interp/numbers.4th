@@ -29,6 +29,10 @@ def parse-uint-loop ( string length base offset n ++ valid? )
   repeat-frame
 end
 
+def parse-hex-uint ( str length -- n valid? )
+  arg1 arg0 16 0 0 parse-uint-loop 2 return2-n
+end
+
 ( fixme length one short in base 8 from parsing max int )
 
 def parse-int-base ( string index ++ base index ) ( fixme: drop args {

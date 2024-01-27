@@ -5,6 +5,7 @@ s[ src/interp/boot/core.4th
    src/lib/linux/errno.4th
    src/lib/byte-data.4th
    src/lib/case.4th
+   src/lib/escaped-strings.4th
    src/interp/data-stack-list.4th
    src/runner/ffi.4th
    src/interp/dynlibs.4th

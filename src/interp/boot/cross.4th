@@ -222,6 +222,7 @@ address and relative offset. )
 
 ( String readers: )
 
+' unescape-string/2 defined? UNLESS
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
@@ -238,6 +239,26 @@ address and relative offset. )
   out-off' int32 swap
   dhere to-out-addr out-dict dict-entry-data poke
 ; cross-immediate-as s"
+
+ELSE
+  
+: out-dq-string
+  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
+  POSTPONE e"
+  out-off' cstring
+  swap to-out-addr
+  dhere to-out-addr out-dict dict-entry-data poke
+; cross-immediate-as "
+
+: out-dq-stringn
+  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
+  POSTPONE es" swap to-out-addr
+  out-off' cstring rot
+  out-off' int32 swap
+  dhere to-out-addr out-dict dict-entry-data poke
+; cross-immediate-as s"
+
+THEN
 
 ( Output dictionary listings: )
 

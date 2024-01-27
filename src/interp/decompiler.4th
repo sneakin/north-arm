@@ -11,8 +11,19 @@ endcol
 
 34 defconst> dquote
 
+' NORTH-COMPILE-TIME defined? IF
+  0 defvar> decompile-string-fn
+ELSE
+  0 var> decompile-string-fn
+THEN
+
 def write-quoted-string
-  dquote write-byte space arg0 write-string ( todo escaping ) dquote write-byte
+  dquote write-byte space
+  arg0 dup string-length
+  decompile-string-fn @ dup IF
+    dup *code-size* uint< IF cs + THEN exec-abs
+  ELSE drop
+  THEN write-string/2 dquote write-byte
 end
 
 def write-dict-entry-name
@@ -48,8 +59,7 @@ def decompile-op
     arg0 decompile-op-codes
     s" )" write-string/2 nl
     arg0 decompile-op-fn @ dup IF
-      dup *code-size* uint< IF cs + THEN
-      exec-abs
+      dup *code-size* uint< IF cs + THEN exec-abs
     ELSE drop
     THEN
   ELSE

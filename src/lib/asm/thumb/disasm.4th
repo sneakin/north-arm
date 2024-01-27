@@ -560,9 +560,12 @@ def write-word-disasm ( word -- )
   1 return0-n
 end
 
-' decompile-op-fn defined? IF
-  ' NORTH-COMPILE-TIME defined? IF
+' NORTH-COMPILE-TIME defined? IF
+  out' decompile-op-fn IF
     out-off' write-word-disasm out' decompile-op-fn dict-entry-data @ from-out-addr data-var-init-value !
-  ELSE ' write-word-disasm decompile-op-fn !
+  THEN
+ELSE
+  ' decompile-op-fn defined? IF
+    ' write-word-disasm decompile-op-fn !
   THEN
 THEN
