@@ -1,4 +1,5 @@
 ( todo \" )
+( todo is stack and data space wasetd unescaping? )
 
 defcol return1-1 drop set-arg0 return0 endcol  
 
@@ -112,11 +113,6 @@ def [e"]
   literal cstring
   POSTPONE e" cs - return2
 end immediate-as "
-
-def char-code
-  ( reads a single character or an escape sequence, and returns the ASCII value. )
-  next-token dup IF unescape-string/2 over peek-byte ELSE 0 THEN return1
-end
 
 ' NORTH-COMPILE-TIME defined? IF
   defalias> [top-s"] [s"] out-immediate-as top-s"
@@ -262,3 +258,12 @@ ELSE
     ' escape-string/2 decompile-string-fn !
   THEN
 THEN
+
+def char-code
+  ( reads a single character or an escape sequence, and returns the ASCII value. )
+  next-token dup IF unescape-string/2 over peek-byte ELSE 0 THEN return1
+end
+
+def [char-code]
+  literal uint32 char-code return2
+end immediate-as char-code
