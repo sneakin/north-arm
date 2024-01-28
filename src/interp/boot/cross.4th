@@ -229,7 +229,7 @@ address and relative offset. )
   out-off' cstring
   swap to-out-addr
   dhere to-out-addr out-dict dict-entry-data poke
-; cross-immediate-as "
+; cross-immediate-as " cross-immediate-as top"
 
 : out-dq-stringn
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
@@ -238,7 +238,7 @@ address and relative offset. )
   swap dup to-out-addr swap cstring-length
   out-off' int32 swap
   dhere to-out-addr out-dict dict-entry-data poke
-; cross-immediate-as s"
+; cross-immediate-as s" cross-immediate-as top-s"
 
 ELSE
   
@@ -248,7 +248,7 @@ ELSE
   out-off' cstring
   swap to-out-addr
   dhere to-out-addr out-dict dict-entry-data poke
-; cross-immediate-as "
+; cross-immediate-as " cross-immediate-as top"
 
 : out-dq-stringn
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
@@ -256,7 +256,7 @@ ELSE
   out-off' cstring rot
   out-off' int32 swap
   dhere to-out-addr out-dict dict-entry-data poke
-; cross-immediate-as s"
+; cross-immediate-as s" cross-immediate-as top-s"
 
 THEN
 

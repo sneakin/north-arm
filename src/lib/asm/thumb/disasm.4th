@@ -562,7 +562,7 @@ end
 
 ' NORTH-COMPILE-TIME defined? IF
   out' decompile-op-fn IF
-    out-off' write-word-disasm out' decompile-op-fn dict-entry-data @ from-out-addr data-var-init-value !
+    out' write-word-disasm out' decompile-op-fn set-out-var!
   THEN
 ELSE
   ' decompile-op-fn defined? IF

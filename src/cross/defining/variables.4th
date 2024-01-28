@@ -47,3 +47,8 @@ THEN
 ;
 
 alias> defvar> def-data-var>
+
+: set-out-var! ( value var -- )
+  over out-origin uint>= IF swap to-out-addr swap THEN
+  dict-entry-data @ from-out-addr data-var-init-value uint32!
+;
