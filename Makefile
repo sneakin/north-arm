@@ -1,3 +1,5 @@
+STAGE?=3
+
 BASH?=bash
 FORTH?=$(BASH) ./src/bash/forth.sh
 HTMLER?=./scripts/htmler.sh
