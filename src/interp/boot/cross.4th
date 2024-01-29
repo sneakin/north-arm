@@ -222,7 +222,6 @@ address and relative offset. )
 
 ( String readers: )
 
-' unescape-string/2 defined? UNLESS
 : out-dq-string
   ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
   POSTPONE d"
@@ -240,24 +239,28 @@ address and relative offset. )
   dhere to-out-addr out-dict dict-entry-data poke
 ; cross-immediate-as s" cross-immediate-as top-s"
 
-ELSE
-  
-: out-dq-string
-  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
-  POSTPONE e"
-  out-off' cstring
-  swap to-out-addr
-  dhere to-out-addr out-dict dict-entry-data poke
-; cross-immediate-as " cross-immediate-as top"
+' unescape-string/2 defined? IF  
 
-: out-dq-stringn
-  ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
-  POSTPONE es" swap to-out-addr
-  out-off' cstring rot
-  out-off' int32 swap
-  dhere to-out-addr out-dict dict-entry-data poke
-; cross-immediate-as s" cross-immediate-as top-s"
+  : out-escaped-dq-string
+    ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
+    POSTPONE e"
+    out-off' cstring
+    swap to-out-addr
+    dhere to-out-addr out-dict dict-entry-data poke
+  ; cross-immediate-as "
 
+  : out-escaped-dq-stringn
+    ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
+    POSTPONE es" swap to-out-addr
+    out-off' cstring rot
+    out-off' int32 swap
+    dhere to-out-addr out-dict dict-entry-data poke
+  ; cross-immediate-as s"
+
+  : out-char-code
+    out-off' uint32
+    ' char-code exec-abs
+  ; cross-immediate-as char-code
 THEN
 
 ( Output dictionary listings: )

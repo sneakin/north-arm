@@ -201,7 +201,7 @@ end
 
 defalias> ["] "
 
-def c" ( ++ ...bytes length )
+def c" ( ++ ...bytes ptr length )
   POSTPONE tmp"
   swap drop 1 + stack-allot
   string-buffer peek over string-buffer-length peek 1 + copy-byte-string/3
@@ -210,7 +210,7 @@ def c" ( ++ ...bytes length )
   exit-frame
 end out-immediate
 
-def s" ( ++ ...bytes length )
+def s" ( ++ ...bytes ptr length )
   ["]
   string-buffer-length peek
   exit-frame
