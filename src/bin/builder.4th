@@ -53,7 +53,7 @@ def north-stacks-init!
   THEN
 
   dhere UNLESS
-    256 1024 * data-init-stack
+    512 1024 * data-init-stack
     verbosity @ IF s" Initialized data stack: " error-string/2
 		   data-stack-base @ error-hex-uint espace
 		   data-stack-size @ error-uint enl

@@ -4,7 +4,7 @@ return-stack peek [UNLESS]
 [THEN]
 
 dhere [UNLESS]
-  128 1024 * data-init-stack
+  512 1024 * data-init-stack
   tmp" Initialized data stack" error-line/2
 [THEN]
 
