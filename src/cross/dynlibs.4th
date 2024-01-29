@@ -74,7 +74,7 @@ end
 def import-var> ( library : new-word symbol ++ library )
   ( Import a C variable as a Forth variable. )
   0 create> set-local0
-  out' do-indirect-var dict-entry-code @ local0 dict-entry-code !
+  local0 out' do-indirect-var does
   next-token negative? UNLESS
     elf32-add-dynamic-import-object/2
     local0 dict-entry-data over R_ARM_GLOB_DAT elf32-add-dynamic-reloc
@@ -90,7 +90,7 @@ end
 def import-value> ( library : new-word symbol ++ library )
   ( Import a symbol's value directly as a constant. )
   0 create> set-local0
-  out' do-const dict-entry-code @ local0 dict-entry-code !
+  local0 out' do-const does
   next-token negative? UNLESS
     elf32-add-dynamic-import-object/2
     local0 dict-entry-data over R_ARM_GLOB_DAT elf32-add-dynamic-reloc
@@ -104,7 +104,7 @@ end
 def import-const> ( library : new-word symbol ++ library )
   ( Import a symbol's value as an address to a constant value. )
   0 create> set-local0
-  out' do-indirect-const dict-entry-code @ local0 dict-entry-code !
+  local0 out' do-indirect-const does
   next-token negative? UNLESS
     elf32-add-dynamic-import-object/2
     local0 dict-entry-data over R_ARM_GLOB_DAT elf32-add-dynamic-reloc

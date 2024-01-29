@@ -31,8 +31,7 @@
 ; cross-immediate
 
 : does-col
-  out' do-col dict-entry-code uint32@
-  over dict-entry-code uint32!
+  dup out' do-col does
   4 align-data
   dhere over dict-entry-data uint32!
   drop

@@ -1,8 +1,7 @@
 ( Constants: )
 
 : does-constant
-  out' do-const dict-entry-code uint32@
-  over dict-entry-code uint32!
+  dup out' do-const does
 ;
 
 : defconst does-constant dict-entry-data uint32! ;
@@ -12,8 +11,7 @@
 ( Constants whose data is a CS offset: )
 
 : does-const-offset
-  out' do-const-offset dict-entry-code uint32@
-  over dict-entry-code uint32!
+  dup out' do-const-offset does
 ;
 
 : defconst-offset does-const-offset dict-entry-data uint32! ;

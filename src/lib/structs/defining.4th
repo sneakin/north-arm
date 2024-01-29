@@ -45,7 +45,7 @@ THEN
 
 ' NORTH-COMPILE-TIME IF
   def does-const
-    ' do-const dict-entry-code @ arg0 dict-entry-code !
+    arg0 ' do-const does
     1 return0-n
   end
 THEN
