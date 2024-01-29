@@ -3,12 +3,12 @@
 ' TtyScreen UNLESS
   s[ src/lib/time.4th
      src/lib/linux.4th
-     src/lib/geometry/angles.4th
      src/lib/tty.4th
   ] load-list
 THEN
 
-s[ src/demos/tty/clock/segments.4th
+s[ src/lib/geometry/angles.4th
+   src/demos/tty/clock/segments.4th
    src/demos/tty/clock/stdio.4th
    src/demos/tty/clock/tty.4th
    src/demos/tty/clock/buffer.4th
@@ -163,4 +163,10 @@ def tty-analog-clock ( tz )
   local0 tty-screen-draw
   ( repeat this frame on resize )
   local0 arg0 tty-analog-clock-loop IF drop-locals repeat-frame ELSE tty-show-cursor THEN
+end
+
+def tty-clock-boot
+  interp-init
+  -5 hours->secs tty-analog-clock
+  interp exit-frame
 end

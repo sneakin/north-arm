@@ -1,13 +1,17 @@
 ' alias UNLESS load-core THEN
 
-' TtyScreen UNLESS
+' TtyScreen defined? UNLESS
   s[ src/lib/time.4th
      src/lib/linux.4th
      src/lib/io.4th
      src/lib/tty.4th
-     src/demos/tty/sprites/sprites.nth
   ] load-list
 THEN
+
+( fixme out' returns break when not found )
+( ' guy ' break equals? IF
+  s" src/demos/tty/sprites/sprites.nth" load/2
+THEN )
 
 def demo-tty-drawing-draw-loop ( fn h w n context -- )
   arg3 rand-n arg2 rand-n arg0 tty-context-move-to
@@ -82,4 +86,23 @@ end
 def demo-tty-scaled-blit
   ' demo-tty-scaled-blit-fn guy partial-first
   tty-demo-loops @ over demo-tty-drawing/2
+end
+
+def demo-tty-usage
+  s" Usage: " write-string/2
+  0 get-argv write-string
+  s"  line|circle|ellipse|blit" write-line/2
+end
+  
+def demo-tty-boot
+  interp-init
+  1 get-argv CASE
+    ( 0 OF demo-tty-usage ENDOF )
+    s" line" OF-STR demo-tty-line ENDOF
+    s" circle" OF-STR demo-tty-circle ENDOF
+    s" ellipse" OF-STR demo-tty-ellipse ENDOF
+    s" blit" OF-STR demo-tty-blit ENDOF
+    demo-tty-usage
+  ENDCASE
+  exit-frame
 end

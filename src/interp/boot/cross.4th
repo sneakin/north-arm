@@ -281,3 +281,7 @@ end
 def oiwords
   output-immediates @ out-origin peek 0 ' oword-printer dict-map/4
 end
+
+alias> doc( ( cross-immediate ( bad emacs )
+alias> args( ( cross-immediate ( bad emacs )
+	   

@@ -438,8 +438,37 @@ bin/interp-armasm.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/lib/math/int32.4th \
 	src/lib/asm/thumb/v1.4th \
 	src/lib/asm/thumb/v2.4th \
-	src/lib/asm/thumb/disasm.4th
+	src/lib/asm/thumb/disasm.4th \
+	src/lib/elf/stub32.4th \
+	src/lib/elf/stub32-dynamic.4th
 	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e interp-boot -o $@ $^
+
+bin/demo-tty-drawing.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+	src/lib/tty/constants.4th \
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	src/lib/tty.4th \
+	src/demos/tty/drawing.4th
+	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e demo-tty-boot -o $@ $^
+
+bin/demo-tty-clock.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+	src/lib/tty/constants.4th \
+	src/demos/tty/clock/segment-constants.4th \
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	src/lib/tty.4th \
+	src/demos/tty/clock.4th
+	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e tty-clock-boot -o $@ $^
 
 %.html: %.org
 	emacs $< --batch -f org-html-export-to-html --kill
