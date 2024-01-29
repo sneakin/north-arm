@@ -16,6 +16,9 @@ def byte-string-compare/3 ( a-str b-str length )
 end
 
 def byte-string-equals?/3 ( a-str b-str length )
+  arg2 0 equals? arg1 0 equals? or IF
+    arg2 arg1 equals? return1
+  THEN
   arg0 int32 0 uint> UNLESS int32 1 return1 THEN
   arg2 peek-byte
   arg1 peek-byte
@@ -36,6 +39,9 @@ def byte-string0-equals?/3 ( a-str b-str length )
 end
 
 def string-equals?/3 ( a-str b-str length )
+  arg2 0 equals? arg1 0 equals? or IF
+    arg2 arg1 equals? return1
+  THEN
   arg0 cell-size int< IF
     arg2 arg1 arg0 byte-string0-equals?/3 return1
   THEN
