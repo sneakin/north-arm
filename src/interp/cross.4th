@@ -1,13 +1,13 @@
 ( Aliases and definitions to make it possible to load North-Bash and interpreter
   vocabularies into the compiled output. )
 
-: load-stage0-fun
-  NORTH-STAGE UNLESS
+NORTH-STAGE UNLESS
+  : load-stage0-fun
     " ./src/interp/cross/bash.4th" load
-  THEN
-;
+  ;
 
-load-stage0-fun
+  load-stage0-fun
+THEN
 
 ' NORTH-COMPILE-TIME defined? IF
   ' redefproper defined? UNLESS
