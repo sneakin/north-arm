@@ -284,7 +284,7 @@ def dallot-byte-string/2
   dhere
   arg1 local0 arg0 copy
   local0 arg0 null-terminate
-  local0 arg0 + 1 + dmove cell-size align-data
+  local0 arg0 + 1 + cell-size pad-addr dmove
   local0 arg0 2 return2-n
 end
 
