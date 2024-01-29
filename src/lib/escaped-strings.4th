@@ -228,8 +228,9 @@ def char-code
   next-token dup IF unescape-string/2 over peek-byte ELSE 0 THEN return1
 end
 
+( fixme POSTPONE failed to work with char-code )
 def [char-code]
-  literal uint32 char-code return2
+  literal uint32 ' char-code exec-abs return2
 end immediate-as char-code
 
 def read-until-unescaped-char-fn ( char [ end-char esc-char escape? ] -- done? )
