@@ -1,6 +1,9 @@
 ( todo \" )
 ( todo is stack and data space wasetd unescaping? )
 
+0x5C const> char-back-slash
+0x22 const> char-dquote
+
 defcol return1-1 drop set-arg0 return0 endcol  
 
 def escape?
@@ -20,13 +23,13 @@ def decode-char-escape ( string length index -- new-index char )
   arg0 arg1 uint< UNLESS arg0 0 3 return2-n THEN
   arg2 arg0 int-add peek-byte
   CASE
-    0x5C ( \ ) WHEN 0x5C 1 ;;
+    char-back-slash ( \ ) WHEN char-back-slash 1 ;;
     101 ( e ) WHEN 0x1B 1 ;;
     110 ( n ) WHEN 0xA 1 ;;
     114 ( r ) WHEN 0xD 1 ;;
     116 ( t ) WHEN 9 1 ;;
     48 ( 0 ) WHEN 0 1 ;;
-    0x22 ( " ) WHEN 0x22 1 ;;
+    char-dquote ( " ) WHEN char-dquote 1 ;;
     120 ( x ) WHEN
       arg0 2 + arg1 uint< UNLESS arg1 0 3 return2-n THEN
       arg2 arg0 + 1 + 2 parse-hex-uint drop 3
@@ -56,7 +59,7 @@ def unescape-string/6 ( in-string in-length out-string out-length out-idx in-idx
     arg3 arg1 6 return2-n
   THEN
   5 argn arg0 int-add peek-byte
-  dup 0x5C equals? IF
+  dup char-back-slash equals? IF
     ( unescape char )
     arg0 1 + 4 argn uint< IF
       5 argn 4 argn arg0 1 + decode-char-escape
@@ -84,50 +87,6 @@ def unescape-string/2 ( string length -- string new-length )
   arg1 arg0 arg1 arg0 unescape-string/4 2 return2-n
 end
 
-( todo POSTPONE needs a like word that uses dict for the source. )
-' NORTH-COMPILE-TIME defined? IF
-  defalias> top-s" s"
-  defalias> top" " 
-ELSE
-  ' top-s" defined? UNLESS
-    alias> top-s" s"
-    alias> top" "
-  THEN
-THEN
-
-def es"
-  POSTPONE top-s" unescape-string/2 return2
-end
-
-defcol [es"]
-  literal cstring swap
-  POSTPONE es" swap cs - rot
-  literal int32 rot swap
-endcol immediate-as s"
-
-def e"
-  POSTPONE top-s" unescape-string/2 drop return1
-end
-
-def [e"]
-  literal cstring
-  POSTPONE e" cs - return2
-end immediate-as "
-
-' NORTH-COMPILE-TIME defined? IF
-  defalias> [top-s"] [s"] out-immediate-as top-s"
-  defalias> [top"] ["] out-immediate-as top"
-  defalias> s" es"
-  defalias> " e"
-ELSE
-  ' [top-s"] defined? UNLESS
-    alias> [top-s"] [s"] immediate-as top-s"
-    alias> [top"] ["] immediate-as top"
-    alias> s" es"
-    alias> " e"
-  THEN
-THEN
-
 
 ( Escaping: )
 
@@ -138,7 +97,7 @@ def escape-string/6 ( in-str length out-str out-length in-idx out-idx -- out-str
   ( < 32 )
   dup 32 uint< IF
     dup CASE
-      0x5C ( \ ) WHEN 0x5C ;;
+      char-back-slash ( \ ) WHEN char-back-slash ;;
       0x1B ( e ) WHEN 101 ;;
       0xA ( n ) WHEN 110 ;;
       0xD ( r ) WHEN 114 ;;
@@ -147,7 +106,7 @@ def escape-string/6 ( in-str length out-str out-length in-idx out-idx -- out-str
       -1
     ENDCASE
     dup -1 equals? UNLESS
-      0x5C arg3 arg0 poke-off-byte
+      char-back-slash arg3 arg0 poke-off-byte
       arg0 1 + arg2 uint< IF
 	arg3 arg0 1 + poke-off-byte
 	arg0 2 + set-arg0
@@ -162,10 +121,10 @@ def escape-string/6 ( in-str length out-str out-length in-idx out-idx -- out-str
   ( printable )
   dup 128 32 in-range? IF
     3 dropn
-    dup 0x5C ( \ ) equals?
-    over 0x22 ( " ) equals?
+    dup char-back-slash ( \ ) equals?
+    over char-dquote ( " ) equals?
     or IF
-      0x5C arg3 arg0 poke-off-byte
+      char-back-slash arg3 arg0 poke-off-byte
       arg0 1 + set-arg0
       arg0 arg2 uint< IF
 	arg3 arg0 poke-off-byte
@@ -179,7 +138,7 @@ def escape-string/6 ( in-str length out-str out-length in-idx out-idx -- out-str
   ELSE
     3 dropn
     arg0 4 + arg2 uint< IF
-      0x5C arg3 arg0 poke-off-byte
+      char-back-slash arg3 arg0 poke-off-byte
       0x78 arg3 arg0 1 + poke-off-byte
       dup 4 bsr 0xF logand ascii-digit arg3 arg0 2 + poke-off-byte
       0xF logand ascii-digit arg3 arg0 3 + poke-off-byte
@@ -202,7 +161,7 @@ def escape-string-space-needed/4 ( in-str length in-idx size -- size )
   ( < 32 )
   dup 32 uint< IF
     CASE
-      0x5C ( \ ) WHEN 0x5C ;;
+      char-back-slash ( \ ) WHEN char-back-slash ;;
       0x1B ( e ) WHEN 101 ;;
       0xA ( n ) WHEN 110 ;;
       0xD ( r ) WHEN 114 ;;
@@ -220,8 +179,8 @@ def escape-string-space-needed/4 ( in-str length in-idx size -- size )
   ( printable )
   dup 128 32 in-range? IF
     3 dropn
-    dup 0x5C ( \ ) equals?
-    swap 0x22 ( " ) equals?
+    dup char-back-slash ( \ ) equals?
+    swap char-dquote ( " ) equals?
     or IF 2 ELSE 1 THEN arg0 + set-arg0
   ELSE
     4 dropn
@@ -249,6 +208,8 @@ es" hello\n\x02\e[1mworld\e[0m\n" 2dup write-line/2
 2dup s @ 128 escape-string/4 2dup write-line/2
 )
 
+( Decompiler hook: )
+
 ' NORTH-COMPILE-TIME defined? IF
   out' decompile-string-fn IF
     out' escape-string/2 out' decompile-string-fn set-out-var!
@@ -259,6 +220,9 @@ ELSE
   THEN
 THEN
 
+
+( Readers: )
+
 def char-code
   ( reads a single character or an escape sequence, and returns the ASCII value. )
   next-token dup IF unescape-string/2 over peek-byte ELSE 0 THEN return1
@@ -267,3 +231,125 @@ end
 def [char-code]
   literal uint32 char-code return2
 end immediate-as char-code
+
+def read-until-unescaped-char-fn ( char [ end-char esc-char escape? ] -- done? )
+  arg1 CASE
+    ( escape )
+    arg0 1 seq-peek OF
+      ( is escaped? )
+      arg0 0 seq-peek UNLESS
+	1 arg0 0 seq-poke			 
+	false 2 return1-n
+      THEN
+    ENDOF
+    ( terminal )
+    arg0 2 seq-peek OF
+      ( is escaped? )
+      arg0 0 seq-peek UNLESS
+	true 2 return1-n
+      THEN
+    ENDOF
+  ENDCASE
+  ( is escaped? )
+  arg0 0 seq-peek IF 0 arg0 0 seq-poke THEN
+  false 2 return1-n
+end
+
+def read-until-unescaped-char ( str len char -- str len last-byte )
+  arg0 char-back-slash 0 here ' read-until-unescaped-char-fn swap partial-first
+  arg2 arg1 3 overn read-until
+  set-arg0 set-arg1
+end
+
+def read-escaped-string/2 ( str len -- str len )
+  arg1 arg0 char-dquote read-until-unescaped-char drop 2 return2-n
+end
+
+defcol etmp" ( ++ token-buffer-ptr bytes-read )
+  ( eat leading space )
+  the-reader peek reader-read-byte drop
+  ( read the string )
+  string-buffer peek token-buffer-max char-dquote read-until-unescaped-char
+  drop
+  unescape-string/2 2dup null-terminate
+  ( update the string-buffer )
+  dup string-buffer-length poke
+  swap rot
+  ( eat the terminal quote )
+  the-reader peek reader-read-byte drop
+endcol immediate
+
+def dallot-byte-string/2
+  dhere
+  arg1 local0 arg0 copy
+  local0 arg0 null-terminate
+  local0 arg0 + 1 + dmove cell-size align-data
+  local0 arg0 2 return2-n
+end
+
+def ec" ( ++ ...bytes len )
+  POSTPONE etmp" allot-byte-string/2 swap drop exit-frame
+end
+
+def ed" ( -- ptr len )
+  POSTPONE etmp" dallot-byte-string/2 return2
+end
+
+def es" ( -- ptr len )
+  POSTPONE etmp" dallot-byte-string/2 return2
+end
+
+def e" ( ++ ...bytes ptr )
+  POSTPONE etmp" allot-byte-string/2 drop exit-frame
+end
+
+defcol [es"]
+  literal cstring swap
+  POSTPONE es" swap cs - rot
+  literal int32 rot swap
+endcol immediate-as s"
+
+def [e"]
+  literal cstring
+  POSTPONE es" drop cs - return2
+end immediate-as "
+
+def .e"
+  POSTPONE etmp" write-string/2
+end
+
+: [.e"]
+  [es"] literal write-string/2
+;
+
+( todo POSTPONE needs a like word that uses dict for the source. )
+
+' NORTH-COMPILE-TIME defined? IF
+  defalias> top-s" s"
+  defalias> top" " 
+  defalias> [top-tmp"] tmp" out-immediate-as top-tmp"
+  defalias> [top-s"] [s"] out-immediate-as top-s"
+  defalias> [top"] ["] out-immediate-as top"
+  defalias> tmp" etmp" out-immediate
+  defalias> d" ed"
+  defalias> s" es"
+  defalias> " e"
+  defalias> ." .e"
+  defalias> [."] [.e"] out-immediate-as ."
+ELSE
+  ' top-s" defined? UNLESS
+    alias> top-s" s"
+    alias> top" "
+  THEN
+  ' [top-s"] defined? UNLESS
+    alias> [top-tmp"] tmp" immediate-as top-tmp"
+    alias> [top-s"] [s"] immediate-as top-s"
+    alias> [top"] ["] immediate-as top"
+    alias> tmp" etmp" immediate
+    alias> d" ed"
+    alias> s" es"
+    alias> " e"
+    alias> ." .e"
+    alias> [."] [.e"] immediate-as ."
+  THEN
+THEN

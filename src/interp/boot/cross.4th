@@ -235,7 +235,7 @@ address and relative offset. )
   POSTPONE d"
   out-off' cstring
   swap dup to-out-addr swap cstring-length
-  out-off' int32 swap
+  out-off' uint32 swap
   dhere to-out-addr out-dict dict-entry-data poke
 ; cross-immediate-as s" cross-immediate-as top-s"
 
@@ -243,7 +243,7 @@ address and relative offset. )
 
   : out-escaped-dq-string
     ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
-    POSTPONE e"
+    POSTPONE etmp" dallot-byte-string/2 drop
     out-off' cstring
     swap to-out-addr
     dhere to-out-addr out-dict dict-entry-data poke
@@ -251,11 +251,15 @@ address and relative offset. )
 
   : out-escaped-dq-stringn
     ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
-    POSTPONE es" swap to-out-addr
+    POSTPONE etmp" dallot-byte-string/2 swap to-out-addr
     out-off' cstring rot
-    out-off' int32 swap
+    out-off' uint32 swap
     dhere to-out-addr out-dict dict-entry-data poke
   ; cross-immediate-as s"
+
+  : out-write-escaped-string
+    out-escaped-dq-stringn literal write-string/2
+  ; cross-immediate-as ."
 
   : out-char-code
     out-off' uint32

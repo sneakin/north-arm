@@ -330,4 +330,4 @@ def defined?/2
 end
 THEN
 
-s" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN
+tmp" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN

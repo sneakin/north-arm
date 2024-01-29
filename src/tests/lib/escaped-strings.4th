@@ -61,6 +61,18 @@ you " assert-byte-string-equals/4
 )
 end
 
+def test-unescape-string/2
+  ( over writes the string )
+  0 0
+  256 stack-allot-zero set-local0
+  top-s" hello\nworld\n" set-local1
+  local0 local1 copy
+  local0 local1 unescape-string/2
+  12 assert-equals
+  local0 assert-equals
+  local0 s" hello\nworld\n" assert-byte-string-equals/3
+end
+
 def test-escape-string/4
   0 256 stack-allot-zero set-local0
   ( short value )
@@ -92,8 +104,19 @@ def test-escape-string/4
   s" hey \\\x22you\\\x22\\n" assert-byte-string-equals/4
 end
 
+def test-escape-string/2
+  ( allots a new string and writes into that )
+  0
+  s" hello\nworld\n" over set-local0 escape-string/2
+  14 assert-equals
+  dup local0 assert-not-equals
+  s" hello\\nworld\\n" assert-byte-string-equals/3
+end
+
 def test-escaped-strings
   test-escape-string-immeds
   test-escape-string/4
+  test-escape-string/2
   test-unescape-string/4
+  test-unescape-string/2
 end
