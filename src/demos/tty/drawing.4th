@@ -8,10 +8,13 @@
   ] load-list
 THEN
 
+s[ vendor/north/src/02/rand.4th
+] load-list
+
 ( fixme out' returns break when not found )
-( ' guy ' break equals? IF
+' guy ' break equals? UNLESS
   s" src/demos/tty/sprites/sprites.nth" load/2
-THEN )
+THEN
 
 def demo-tty-drawing-draw-loop ( fn h w n context -- )
   arg3 rand-n arg2 rand-n arg0 tty-context-move-to

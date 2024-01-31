@@ -2,6 +2,7 @@
   sys-alias> es" [s"] cross-immediate
 THEN )
 
+( todo color-reset write-crnl )
 
 ' es" defined? UNLESS
   " src/lib/escaped-strings.4th" load
@@ -23,11 +24,19 @@ alias> RECURSE repeat-frame immediate
 0x53544f50 const> terminator
 def terminator? arg0 terminator equals? return1 end
 
-def global-var 0 var> exit-frame end
+' NORTH-COMPILED-TIME defined? IF
+  sys-def global-var 0 var> exit-frame end
 
-def constant
-  0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke exit-frame
-end
+  sys-def constant
+    0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke exit-frame
+  end
+ELSE
+  def global-var 0 var> exit-frame end
+
+  def constant
+    0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke exit-frame
+  end
+THEN
 
 defcol arg4 4 argn swap endcol
 
@@ -148,13 +157,6 @@ end
 
 def tty-show-cursor s" \e[?25h" write-string/2 end
 def tty-hide-cursor s" \e[?25l" write-string/2 end
-
-( tty demos need )
-def rand-n ( max -- n )
-  crand arg0 int-mod set-arg0
-end
-
-0 var> rand-seed
 
 def read-byte
   ( fixme needs to read fd directly? )
