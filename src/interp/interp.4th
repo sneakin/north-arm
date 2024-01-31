@@ -389,7 +389,7 @@ defcol .h swap error-hex-uint endcol
 defcol ,i over error-int endcol
 defcol .i swap error-int endcol
 
-128 1024 * defvar> *interp-data-stack-size*
+512 1024 * defvar> *interp-data-stack-size*
 256 defvar> *interp-return-stack-size*
 
 def north-init-stacks!
