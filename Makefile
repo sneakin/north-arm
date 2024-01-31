@@ -472,5 +472,19 @@ bin/demo-tty-clock.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/demos/tty/clock.4th
 	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e tty-clock-boot -o $@ $^
 
+bin/demo-tty-raycast.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+	src/lib/tty/constants.4th \
+	src/demos/tty/clock/segment-constants.4th \
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	src/lib/tty.4th \
+	src/demos/tty/raycast.4th
+	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e raycaster-boot -o $@ $^
+
 %.html: %.org
 	emacs $< --batch -f org-html-export-to-html --kill

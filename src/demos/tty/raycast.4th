@@ -4,12 +4,14 @@
 
 ' TtyBuffer UNLESS
   s[ src/lib/linux.4th
-     src/lib/io.4th
      src/lib/threading/lock.4th
      src/lib/tty.4th
-     src/lib/geometry/angles.4th
   ] load-list
 THEN
+
+s[ src/lib/io.4th
+   src/lib/geometry/angles.4th
+] load-list
 
 ( Functions that belong else where: )
 
@@ -43,7 +45,7 @@ end
 ( fixme causes an artifact in the rays. may need more precision and/or ditching degrees )
 
 pi 2f float32-div const> pi/2
-pi/2 2f float32-div const> pi/4
+pi 4f float32-div const> pi/4
 
 0 var> sin-lut
 pi 128 int32->float32 float32-div const> pi/128
@@ -1339,7 +1341,9 @@ def raycaster-init
   exit-frame
 end
 
-" src/demos/tty/raycaster-worlds.4th" load
+' NORTH-COMPILE-TIME defined? UNLESS
+  " src/demos/tty/raycaster-worlds.4th" load
+THEN
 
 def raycaster-start ( world )
   0
@@ -1367,4 +1371,12 @@ end
 def reload!
   " src/demos/tty/raycast.4th" load
   s" raycaster-init" load-string/2 exit-frame
+end
+
+def raycaster-boot
+  interp-init
+  s" src/demos/tty/raycaster-worlds.4th" load/2
+  raycaster-init
+  interp
+  exit-frame
 end

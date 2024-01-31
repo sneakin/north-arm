@@ -106,6 +106,21 @@ def color/2 ( bg fg ++ )
   write-string/2
 end
 
+def black 0 0 color/2 end
+def red 0 1 color/2 end
+def green 0 2 color/2 end
+def yellow 0 3 color/2 end
+def blue 0 4 color/2 end
+def magenta 0 5 color/2 end
+def cyan 0 6 color/2 end
+def white 0 7 color/2 end
+def tty-default-fg 0 7 color/2 end
+
+def write-heading
+    doc( Print the argument out underlined, bold, and on its own line. )
+    bold underline arg0 write-line color-reset write-crnl
+end
+
 def tty-box-drawing-off 15 write-byte end
 def tty-box-drawing-on 14 write-byte end
 def tty-char-reset s" \e[0m" write-string/2 end
@@ -117,15 +132,18 @@ def tty-csi ( n code -- )
   arg0 write-byte
   2 return0-n
 end
+
+def tty-cursor-to-column arg0 char-code G tty-csi end
+def tty-cursor-home 0 tty-cursor-to-column end
 def tty-cursor-up arg0 char-code A tty-csi end
 def tty-cursor-right arg0 char-code C tty-csi end
 def tty-cursor-save s" \e[s" write-string/2 end
-def tty-cursor-to ( row col )
+def tty-cursor-to ( col row )
   s" \e[" write-string/2
-  arg0 write-int
-  s" ;" write-string/2
   arg1 write-int
-  s" f" write-string/2
+  s" ;" write-string/2
+  arg0 write-int
+  char-code f write-byte
 end
 
 def tty-show-cursor s" \e[?25h" write-string/2 end
