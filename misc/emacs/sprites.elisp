@@ -1,4 +1,35 @@
+;;; Use format-write-file to save into this format. Be sure to turn off enriched-mode.
+
 ;; todo whole buffer format
+
+(defun face-strike-p (face &optional frame inherit)
+  (eq (face-attribute face :strike-through frame inherit) t))
+
+(defun put-strike-property (&optional start end)
+  (interactive
+   (list (region-beginning)
+	 (region-end)))
+  (font-lock-append-text-property (or start (region-beginning)) (or end (region-end)) 'font-lock-face '(:strike-through t)))
+
+(defun face-blink-p (pt)
+  (interactive (list (point)))
+  (get-text-property pt 'blink))
+
+(defun put-blink-property (&optional start end)
+  (interactive
+   (list (region-beginning)
+	 (region-end)))
+  (put-text-property (or start (region-beginning)) (or end (region-end)) 'blink t))
+
+(defface blink
+  '((t :slant italic :background "magenta"))
+  "Basic blink placeholder face."
+  :group 'basic-faces)
+
+(defface strike
+  '((t :strike-through t))
+  "Basic strike through face."
+  :group 'basic-faces)
 
 (defconst TTY-IMG-VERSION "1.0")
 
@@ -61,12 +92,16 @@
       (list (if (face-bold-p face) :bold)
 	    (if (face-italic-p face) :italic)
 	    (if (face-underline-p face) :underline)
-	    (if (face-inverse-video-p face) :inverse))
+	    (if (face-inverse-video-p face) :inverse)
+	    (if (face-strike-p face) :strike))
     (list (if (cl-position 'bold face) :bold)
 	  (if (cl-position 'italic face) :italic)
 	  (if (cl-position 'underline face) :underline)
 	  (if (cl-position 'inverse-video face) :inverse)
-	  (if (cl-position 'invisible face) :invisible))))
+	  (if (cl-position 'invisible face) :invisible)
+	  (if (or (cl-position 'strike-through face)
+		  (second (or (assoc :strike-through face) '(:strike-through nil))))
+	      :strike))))
 
 (defun face-attr-list->attr-byte (lst)
   (logior (if (cl-position :dim lst) #x1 0)
@@ -75,34 +110,45 @@
 	  (if (cl-position :italic lst) #x10 0)
 	  (if (cl-position :underline lst) #x20 0)
 	  (if (cl-position :inverse lst) #x4 0)
-	  (if (cl-position :invisible lst) #x3 0)))
+	  (if (cl-position :invisible lst) #x3 0)
+	  (if (cl-position :strike lst) #x40 0)
+	  (if (cl-position :blink lst) #x80 0)))
+
+(defun translate-face-to-tty (face ch &optional last-fg last-bg blink)
+  (let* ((fga (if (facep face)
+		  (face-foreground face)
+		(or (get-face-prop :foreground face)
+		    "white")))
+	 (fg (color->tty-color fga last-fg))
+	 (bga (if (facep face)
+		  (face-background face)
+		(or (get-face-prop :background face) "black")))
+	 (bg (color->tty-color bga (or last-bg 0)))
+	 (attrs (get-face-attrs face)))
+    (unless (equal ch #xA)
+      (values
+       (list ch
+	     (logior (ash (logand fg #x7) 4)
+		     (logand bg #x7))
+	     (face-attr-list->attr-byte
+	      (list* (unless (< 0 (logand fg #x8)) :dim)
+		     (when blink :blink)
+		     attrs))
+	     fg bg attrs)
+       fg bg))))
 
 (defun translate-to-tty (str &optional acc last-fg last-bg)
   (dotimes (n (length str))
-    (let* ((face (get-text-property n 'face str))
-	   (fga (if (facep face)
-		    (face-foreground face)
-		  (or (get-face-prop :foreground face)
-		      "white")))
-	   (fg (color->tty-color fga last-fg))
-	   (bga (if (facep face)
-		    (face-background face)
-		  (or (get-face-prop :background face) "black")))
-	   (bg (color->tty-color bga (or last-bg 0)))
-	   (attrs (get-face-attrs face))
+    (let* ((face (or (get-text-property n 'font-lock-face str)
+		     (get-text-property n 'face str)))
+	   (blink (get-text-property n 'blink str))
 	   (ch (aref str n)))
-      (unless (equal ch #xA)
-	(setf acc 
-	      (cons (list ch
-			  (logior (ash (logand fg #x7) 4)
-				  (logand bg #x7))
-			  (face-attr-list->attr-byte
-			   (cons (unless (< 0 (logand fg #x8)) :dim)
-				 attrs))
-			  fg bg attrs)
-		    acc))
+      (multiple-value-bind (cell fg bg)
+	  (translate-face-to-tty face ch last-fg last-bg blink)
+      (when cell
+	(setf acc (cons cell acc))
 	(setf last-fg fg)
-	(setf last-bg bg))))
+	(setf last-bg bg)))))
   (nreverse acc))
 
 (defun pack-int32 (n)
@@ -145,7 +191,8 @@
 	     (list (if (< 0 (logand 2 attrs)) 'bold)
 		   (if (< 0 (logand #x10 attrs)) 'italic)
 		   (if (< 0 (logand #x20 attrs)) 'underline)
-		   (if (< 0 (logand #x40 attrs)) 'strike))))
+		   (if (< 0 (logand #x40 attrs)) 'strike-through)
+		   (if (< 0 (logand #x80 attrs)) 'blink))))
 
 
 (defun insert-tty-data-cell (cell n width)
@@ -160,15 +207,13 @@
 		 (:background ,bg)
 		 ,@attrs))
 	(char (char-to-string (unpack-int32 (cl-first cell)))))
-    ;;(when (< n 2000)
-    ;;(message (format "Props %i %i %s %s %s\n" n pt char cell props)))
     (insert char)
     ;;(font-lock-unfontify-region pt (+ 1 pt))
-    (set-text-properties pt (+ 1 pt) `(face ,props font-lock-face ,props fontified t))
-    ;;(put-text-property pt (+ 1 pt) 'face props)
-    ;;(put-text-property pt (+ 1 pt) 'font-lock-face props)
-    ;;(put-text-property pt (+ 1 pt) 'fontified t)
-    ))
+    (set-text-properties pt (+ 1 pt)
+			 `(face ,props
+				font-lock-face ,props
+				fontified nil
+				blink ,(if (cl-position :blink attrs) t nil)))))
 
 (defun insert-tty-data (data &optional width)
   (toggle-enable-multibyte-characters 1)
@@ -177,14 +222,7 @@
   (toggle-enable-multibyte-characters -1))
 
 (defun write-tty-data-to-buffer (data-list)
-  ;;(with-temp-buffer
-    ;;(toggle-enable-multibyte-characters)
-    ;;(set-buffer-file-coding-system 'raw-text)
-  (apply #'insert 
-	 (tty-data->bytes data-list))
-    ;;(write-region nil nil "~/char-inserted.wav")
-  ;;  )
-  )
+  (apply #'insert (tty-data->bytes data-list)))
 
 (defun translate-region-to-tty (&optional start end)
   (translate-to-tty
@@ -242,7 +280,7 @@
 
 (defun unprocess-buffer-tty-image (&optional start end)
   (goto-char (or start 1))
-  (let* ((img-start (search-forward-regexp "\\([0-9]+\\) +\\([0-9]+\\) +tty-img\\[[ \t\n]" end t))
+  (let* ((img-start (re-search-forward "\\([0-9]+\\) +\\([0-9]+\\) +tty-img\\[[ \t\n]" end t))
 	 (decl-s (match-beginning 0))
 	 (decl-e (match-end 0))
 	 (height (match-string 1))
@@ -269,8 +307,7 @@
   (cl-multiple-value-bind (new-start)
       (unprocess-buffer-tty-image start end)
     (if new-start
-	(unprocess-buffer-tty-images-loop new-start
-				   end)
+	(unprocess-buffer-tty-images-loop new-start end)
       start)))
 
 (defun unprocess-buffer-tty-images (&optional start end)
