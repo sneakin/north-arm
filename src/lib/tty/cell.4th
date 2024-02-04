@@ -5,13 +5,10 @@ uint<8> field: attr
 uint<16> field: padding
 
 def tty-cell-equals? ( a b -- yes? )
-  arg1 TtyCell . char peek-byte
-  arg0 TtyCell . char peek-byte equals?
-  arg1 TtyCell . attr peek-byte
-  arg0 TtyCell . attr peek-byte equals? logand
-  arg1 TtyCell . color peek-byte
-  arg0 TtyCell . color peek-byte equals? logand
-  2 return1-n
+  arg0 TtyCell . attr peek-byte arg1 TtyCell . attr peek-byte equals? UNLESS false 2 return1-n THEN
+  arg0 TtyCell . char peek arg1 TtyCell . char peek equals? UNLESS false 2 return1-n THEN
+  arg0 TtyCell . color peek-byte arg1 TtyCell . color peek-byte equals? UNLESS false 2 return1-n THEN
+  true 2 return1-n
 end
 
 def tty-cell-draw ( cell )

@@ -28,6 +28,7 @@ def demo-tty-drawing-loop
   arg0 tty-screen-resized? IF true 3 return1-n THEN
   current-input @ 0 poll-fd-in IF
     tty-read
+    tty-char-reset tty-erase-below
     false 3 return1-n
   THEN
   0
@@ -62,6 +63,7 @@ def demo-tty-drawing/2
 end
 
 8 var> tty-demo-loops
+guy var> tty-demo-image
 
 def demo-tty-line
   tty-demo-loops @ ' tty-context-line demo-tty-drawing/2
@@ -76,35 +78,41 @@ def demo-tty-circle
 end
 
 def demo-tty-blit
-  ' tty-context-blit/2 guy 1 partial-after
+  ' tty-context-blit/2 tty-demo-image @ 1 partial-after
   tty-demo-loops @ over demo-tty-drawing/2
 end
 
 def demo-tty-scaled-blit-fn ( y x context img -- )
   arg0 0 0 arg0 TtyBuffer -> height @ arg0 TtyBuffer -> width @ 
-  arg3 arg2 arg1 tty-context-scaled-blit/8
+  4 arg3 + 4 arg2 + ( 80 8 ) arg1 tty-context-scaled-blit/8
+  ( arg1 TtyContext -> buffer @ arg3 arg2 dup 8 32 rand-n + +
+  arg0 0 0 arg0 TtyBuffer -> height @ arg0 TtyBuffer -> width @
+  tty-buffer-textured-hline )
   4 return0-n
 end
 
 def demo-tty-scaled-blit
-  ' demo-tty-scaled-blit-fn guy partial-first
+  ' demo-tty-scaled-blit-fn tty-demo-image @ partial-first
   tty-demo-loops @ over demo-tty-drawing/2
 end
 
 def demo-tty-usage
   s" Usage: " write-string/2
   0 get-argv write-string
-  s"  line|circle|ellipse|blit" write-line/2
+  s"  line|circle|ellipse|blit|scale" write-line/2
 end
   
 def demo-tty-boot
   interp-init
+  s" src/demos/tty/sprites/sprites.nth" load/2
+  s" guy tty-demo-image poke" load-string/2
   1 get-argv CASE
     ( 0 OF demo-tty-usage ENDOF )
     s" line" OF-STR demo-tty-line ENDOF
     s" circle" OF-STR demo-tty-circle ENDOF
     s" ellipse" OF-STR demo-tty-ellipse ENDOF
     s" blit" OF-STR demo-tty-blit ENDOF
+    s" scale" OF-STR demo-tty-scaled-blit ENDOF
     demo-tty-usage
   ENDCASE
   exit-frame

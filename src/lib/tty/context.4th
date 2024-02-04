@@ -187,3 +187,15 @@ def tty-context-blit/2 ( src context -- )
   arg0 tty-context-blit/6
   2 return0-n
 end
+
+def tty-context-scaled-blit/8 ( src sy sx sh sw dh dw context -- )
+  6 argn 5 argn 4 argn arg3 7 argn
+  arg0 TtyContext -> y @
+  arg0 TtyContext -> x @
+  arg2
+  arg1
+  arg0 TtyContext -> buffer @
+  tty-buffer-scaled-blit/10
+  arg2 arg1 arg0 tty-context-move-by
+  8 return0-n
+end

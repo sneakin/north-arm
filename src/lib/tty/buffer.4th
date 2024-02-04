@@ -162,15 +162,6 @@ def tty-buffer-line-cell ( buffer y x -- buffer more? )
 end
 
 def tty-buffer-line ( char color attr y1 x1 y2 x2 buffer -- )
-  ( debug? IF
-    s" buffer-line" error-string/2 espace
-    6 argn error-hex-int espace
-    4 argn error-int espace
-    arg3 error-int espace
-    arg2 error-int espace
-    arg1 error-int enl
-  THEN )
-  ( check for horizontal and vertical special cases )
   ( draw the line )
   ' tty-buffer-line-cell/6
   5 argn 3 partial-after
@@ -218,15 +209,13 @@ def tty-buffer-fill-rect ( char color attr y x h w buffer -- )
   8 return0-n
 end
 
-( todo use ' copy )
-
 def tty-buffer-blit/10 ( src sy sx sh sw dest dy dx y x -- )
   arg0 5 argn int>= IF arg1 1 + set-arg1 0 set-arg0 THEN
   arg1 6 argn int>= IF 10 return0-n THEN
   8 argn arg1 +
   7 argn arg0 +
   9 argn tty-buffer-get-cell
-  dup TtyCell . attr @ TTY-CELL-ATTR-MASKED logand IF
+  dup TtyCell . attr peek-byte TTY-CELL-ATTR-MASKED logand IF
     drop
   ELSE
     arg3 arg1 +
@@ -234,4 +223,159 @@ def tty-buffer-blit/10 ( src sy sx sh sw dest dy dx y x -- )
     4 argn tty-buffer-set-cell/4
   THEN
   arg0 1 + set-arg0 repeat-frame
+end
+
+( Textured horizontal lines: )
+
+( todo eliminate multiplies, unnecessary args, use widths/heights instead of A to B )
+( todo no floats )
+( todo minimize type conversions )
+( todo rotator or eliminate src lerp )
+
+struct: TexturedHlineArgs
+pointer<any> field: dest
+float<32> field: dx2
+float<32> field: dx1
+int field: dy
+pointer<any> field: src
+float<32> field: sx2
+float<32> field: sy2
+float<32> field: sx1
+float<32> field: sy1
+
+( todo increment dx by 1 )
+
+def tty-buffer-textured-hline-loop ( dsy dsx dx dxt t state -- )
+  arg1 1f float32<= UNLESS 5 return0-n THEN
+  5 argn arg1 float32-mul arg0 TexturedHlineArgs . sy1 @ float32-add float32->int32 ( sy )
+  4 argn arg1 float32-mul arg0 TexturedHlineArgs . sx1 @ float32-add float32->int32 ( sx )
+  arg0 TexturedHlineArgs . src @ tty-buffer-get-cell
+  dup IF
+    dup TtyCell . attr peek-byte TTY-CELL-ATTR-MASKED logand UNLESS
+      arg0 TexturedHlineArgs . dy @
+      arg3 arg1 float32-mul arg0 TexturedHlineArgs . dx1 @ float32-add float32->int32 ( dx )
+      arg0 TexturedHlineArgs . dest @ tty-buffer-set-cell/4
+    ELSE drop
+    THEN
+  ELSE drop
+  THEN
+  arg1 arg2 float32-add set-arg1 repeat-frame
+end
+
+def tty-buffer-textured-hline ( sy1 sx1 sy2 sx2 src dy dx1 dx2 dest -- )
+  ( convert and order source points by X )
+  8 argn int32->float32
+  7 argn int32->float32
+  6 argn int32->float32
+  5 argn int32->float32
+  7 argn 5 argn int> IF 2swap THEN
+  args TexturedHlineArgs . sx2 !
+  args TexturedHlineArgs . sy2 !
+  args TexturedHlineArgs . sx1 !
+  args TexturedHlineArgs . sy1 !
+  ( convert and order dest X )
+  arg2 arg1 minmax int32->float32 swap int32->float32 swap
+  args TexturedHlineArgs . dx2 !
+  args TexturedHlineArgs . dx1 !
+  ( calculate deltas )
+  args TexturedHlineArgs . sy2 @ args TexturedHlineArgs . sy1 @ float32-sub
+  args TexturedHlineArgs . sx2 @ args TexturedHlineArgs . sx1 @ float32-sub
+  args TexturedHlineArgs . dx2 @ args TexturedHlineArgs . dx1 @ float32-sub
+  ( increment amount and counter )
+  1f over float32-div
+  0f
+  args
+  tty-buffer-textured-hline-loop
+  9 return0-n
+end
+
+( 40 40 make-tty-buffer var> b
+0 0 21 32 guy 0 0 40 b @ tty-buffer-textured-hline
+)
+
+( Scaling: )
+
+struct: TtyScalerState
+pointer<any> field: dest
+int field: dw
+int field: dh
+int field: dx
+int field: dy
+pointer<any> field: src
+int field: sw
+int field: sh
+int field: sx
+int field: sy
+
+def tty-buffer-scaled-blit-loop ( state dy dsy sy -- )
+  arg0 float32->int32 arg3 TtyScalerState . sh @ int>= IF 4 return0-n THEN
+  arg2 float32->int32 arg3 TtyScalerState . dh @ int>= IF 4 return0-n THEN
+  ( sy1 sx1 sy2 sx2 src )
+  arg3 TtyScalerState . sy @ int32->float32 arg0 float32-add float32->int32
+  arg3 TtyScalerState . sx @
+  over
+  over arg3 TtyScalerState . sw @ +
+  arg3 TtyScalerState . src @
+  ( y x0 x1 dest )
+  arg3 TtyScalerState . dy @ int32->float32 arg2 float32-add float32->int32
+  arg3 TtyScalerState . dx @
+  dup arg3 TtyScalerState . dw @ +
+  arg3 TtyScalerState . dest @
+  tty-buffer-textured-hline
+  ( inc counters )
+  arg2 1f float32-add set-arg2
+  arg0 arg1 float32-add set-arg0
+  repeat-frame
+end
+
+def tty-buffer-scaled-blit/10 ( sy sx sh sw src dy dx dh dw dest -- )
+  args
+  0f
+  7 argn int32->float32 arg2 int32->float32 float32-div
+  0f
+  tty-buffer-scaled-blit-loop
+  10 return0-n
+end
+
+0 IF
+  def test-tty-scaled-blit ( sprite h w -- )
+    0
+    arg2 TtyBuffer -> height @
+    arg2 TtyBuffer -> width @
+    arg1 arg0 make-tty-buffer set-local0
+    0 0 local1 local2 arg2 0 0 arg1 arg0 2 / local0 tty-buffer-scaled-blit/10
+    0 0 local1 local2 arg2 0 arg0 2 / arg1 2 / arg0 4 / local0 tty-buffer-scaled-blit/10
+    0 0 local1 local2 arg2 0 arg0 2 / arg0 4 / + arg1 4 / arg0 8 / local0 tty-buffer-scaled-blit/10
+    0 0 local1 local2 arg2 0 arg0 2 / arg0 4 / + arg0 8 / + arg1 8 / arg0 16 /  local0 tty-buffer-scaled-blit/10
+    local0 tty-buffer-draw tty-char-reset nl
+    3 return0-n
+  end
+
+  nl guy 24 51 test-tty-scaled-blit
+THEN
+
+( Masking by cell value: )
+
+def tty-buffer-mask-by-cell-loop ( cell buffer y x -- buffer )
+  arg0 arg2 TtyBuffer -> width @ uint< UNLESS 0 set-arg0 arg1 1 + set-arg1 THEN
+  arg1 arg2 TtyBuffer -> height @ uint< UNLESS arg2 4 return1-n THEN
+  arg1 arg0 arg2 tty-buffer-get-cell
+  dup arg3 tty-cell-equals? IF
+    TtyCell . attr dup peek-byte TTY-CELL-ATTR-MASKED logior swap poke-byte
+  ELSE drop
+  THEN
+  arg0 1 + set-arg0 repeat-frame
+end
+
+def tty-buffer-mask-by-cell ( cell buffer -- buffer )
+  ( Change the cell attributes to be a mask for all cell that match ~cell~. )
+  TtyCell allot-struct arg1 over TtyCell sizeof copy ( todo struct copier, allot-copy )
+  arg0 0 0 tty-buffer-mask-by-cell-loop
+  arg0 2 return1-n
+end
+
+def tty-buffer-mask-by-xy ( sy sx buffer -- buffer )
+  ( Change the cell attributes to be a mask for all cell that match the cell at ~X, Y~. )
+  arg2 arg1 arg0 tty-buffer-get-cell
+  dup IF arg0 tty-buffer-mask-by-cell ELSE drop arg0 THEN 3 return1-n
 end
