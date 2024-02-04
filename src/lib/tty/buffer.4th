@@ -243,24 +243,37 @@ float<32> field: sy2
 float<32> field: sx1
 float<32> field: sy1
 
-( todo increment dx by 1 )
+( S = S1 + [S2 - S1] * t )
+( D = D1 + [D2-D1] * t )
+( t' = t + 1/[D2-D1] )
 
-def tty-buffer-textured-hline-loop ( dsy dsx dx dxt t state -- )
-  arg1 1f float32<= UNLESS 5 return0-n THEN
-  5 argn arg1 float32-mul arg0 TexturedHlineArgs . sy1 @ float32-add float32->int32 ( sy )
-  4 argn arg1 float32-mul arg0 TexturedHlineArgs . sx1 @ float32-add float32->int32 ( sx )
+( S' = S + [S2 - S1] / [D2-D1] )
+( D' = D + 1 )
+
+def tty-buffer-textured-hline-loop ( dsy dsx sy sx dx state -- )
+  ( arg1 .f space 4 argn .f space arg3 .f nl dump-stack )
+  arg1 arg0 TexturedHlineArgs . dx2 @ float32< UNLESS 6 return0-n THEN
+  arg3 float32->int32 ( sy )
+  arg2 float32->int32 ( sx )
   arg0 TexturedHlineArgs . src @ tty-buffer-get-cell
   dup IF
     dup TtyCell . attr peek-byte TTY-CELL-ATTR-MASKED logand UNLESS
       arg0 TexturedHlineArgs . dy @
-      arg3 arg1 float32-mul arg0 TexturedHlineArgs . dx1 @ float32-add float32->int32 ( dx )
+      arg1 float32->int32 ( dx )
       arg0 TexturedHlineArgs . dest @ tty-buffer-set-cell/4
     ELSE drop
     THEN
   ELSE drop
   THEN
-  arg1 arg2 float32-add set-arg1 repeat-frame
+  ( D' = D + 1 )
+  arg1 1f float32-add set-arg1
+  ( S' = S + [S2 - S1] / [D2-D1] )
+  arg3 5 argn float32-add set-arg3
+  arg2 4 argn float32-add set-arg2
+  repeat-frame
 end
+
+( todo get [s2-s1]/[dx2-dx1] from caller )
 
 def tty-buffer-textured-hline ( sy1 sx1 sy2 sx2 src dy dx1 dx2 dest -- )
   ( convert and order source points by X )
@@ -278,12 +291,12 @@ def tty-buffer-textured-hline ( sy1 sx1 sy2 sx2 src dy dx1 dx2 dest -- )
   args TexturedHlineArgs . dx2 !
   args TexturedHlineArgs . dx1 !
   ( calculate deltas )
-  args TexturedHlineArgs . sy2 @ args TexturedHlineArgs . sy1 @ float32-sub
-  args TexturedHlineArgs . sx2 @ args TexturedHlineArgs . sx1 @ float32-sub
-  args TexturedHlineArgs . dx2 @ args TexturedHlineArgs . dx1 @ float32-sub
-  ( increment amount and counter )
-  1f over float32-div
-  0f
+  1f args TexturedHlineArgs . dx2 @ args TexturedHlineArgs . dx1 @ float32-sub float32-div
+  args TexturedHlineArgs . sy2 @ args TexturedHlineArgs . sy1 @ float32-sub over float32-mul
+  args TexturedHlineArgs . sx2 @ args TexturedHlineArgs . sx1 @ float32-sub shift float32-mul
+  args TexturedHlineArgs . sy1 @
+  args TexturedHlineArgs . sx1 @
+  args TexturedHlineArgs . dx1 @
   args
   tty-buffer-textured-hline-loop
   9 return0-n
