@@ -227,8 +227,8 @@ end
 
 ( Textured horizontal lines: )
 
-( todo eliminate multiplies, unnecessary args, use widths/heights instead of A to B )
-( todo no floats )
+( todo use widths/heights instead of A to B )
+( todo no floats: fixed point or error accumulator lerp )
 ( todo minimize type conversions )
 ( todo rotator or eliminate src lerp )
 
@@ -273,8 +273,6 @@ def tty-buffer-textured-hline-loop ( dsy dsx sy sx dx state -- )
   repeat-frame
 end
 
-( todo get [s2-s1]/[dx2-dx1] from caller )
-
 def tty-buffer-textured-hline ( sy1 sx1 sy2 sx2 src dy dx1 dx2 dest -- )
   ( convert and order source points by X )
   8 argn int32->float32
@@ -294,12 +292,40 @@ def tty-buffer-textured-hline ( sy1 sx1 sy2 sx2 src dy dx1 dx2 dest -- )
   1f args TexturedHlineArgs . dx2 @ args TexturedHlineArgs . dx1 @ float32-sub float32-div
   args TexturedHlineArgs . sy2 @ args TexturedHlineArgs . sy1 @ float32-sub over float32-mul
   args TexturedHlineArgs . sx2 @ args TexturedHlineArgs . sx1 @ float32-sub shift float32-mul
+  ( initial coordinates )
   args TexturedHlineArgs . sy1 @
   args TexturedHlineArgs . sx1 @
   args TexturedHlineArgs . dx1 @
   args
   tty-buffer-textured-hline-loop
   9 return0-n
+end
+
+def tty-buffer-textured-hline/11 ( sy1 sx1 sy2 sx2 src dy dx1 dx2 dest dsy dsx -- )
+  2 current-frame fargn
+  ( convert and order source points by X )
+  10 argn int32->float32
+  9 argn int32->float32
+  8 argn int32->float32
+  7 argn int32->float32
+  9 argn 7 argn int> IF 2swap THEN
+  local0 TexturedHlineArgs . sx2 !
+  local0 TexturedHlineArgs . sy2 !
+  local0 TexturedHlineArgs . sx1 !
+  local0 TexturedHlineArgs . sy1 !
+  ( convert and order dest X )
+  4 argn arg3 minmax int32->float32 swap int32->float32 swap
+  local0 TexturedHlineArgs . dx2 !
+  local0 TexturedHlineArgs . dx1 !
+  ( the deltas and starting coords )
+  arg1
+  arg0
+  local0 TexturedHlineArgs . sy1 @
+  local0 TexturedHlineArgs . sx1 @
+  local0 TexturedHlineArgs . dx1 @
+  local0
+  tty-buffer-textured-hline-loop
+  11 return0-n
 end
 
 ( 40 40 make-tty-buffer var> b
@@ -320,31 +346,34 @@ int field: sh
 int field: sx
 int field: sy
 
-def tty-buffer-scaled-blit-loop ( state dy dsy sy -- )
-  arg0 float32->int32 arg3 TtyScalerState . sh @ int>= IF 4 return0-n THEN
-  arg2 float32->int32 arg3 TtyScalerState . dh @ int>= IF 4 return0-n THEN
+def tty-buffer-scaled-blit-loop ( state dsy dsx dy sy -- )
+  arg0 float32->int32 4 argn TtyScalerState . sh @ int>= IF 5 return0-n THEN
+  arg1 float32->int32 4 argn TtyScalerState . dh @ int>= IF 5 return0-n THEN
   ( sy1 sx1 sy2 sx2 src )
-  arg3 TtyScalerState . sy @ int32->float32 arg0 float32-add float32->int32
-  arg3 TtyScalerState . sx @
+  4 argn TtyScalerState . sy @ int32->float32 arg0 float32-add float32->int32
+  4 argn TtyScalerState . sx @
   over
-  over arg3 TtyScalerState . sw @ +
-  arg3 TtyScalerState . src @
+  over 4 argn TtyScalerState . sw @ +
+  4 argn TtyScalerState . src @
   ( y x0 x1 dest )
-  arg3 TtyScalerState . dy @ int32->float32 arg2 float32-add float32->int32
-  arg3 TtyScalerState . dx @
-  dup arg3 TtyScalerState . dw @ +
-  arg3 TtyScalerState . dest @
-  tty-buffer-textured-hline
+  4 argn TtyScalerState . dy @ int32->float32 arg1 float32-add float32->int32
+  4 argn TtyScalerState . dx @
+  dup 4 argn TtyScalerState . dw @ +
+  4 argn TtyScalerState . dest @
+  0f
+  arg2
+  tty-buffer-textured-hline/11
   ( inc counters )
-  arg2 1f float32-add set-arg2
-  arg0 arg1 float32-add set-arg0
+  arg1 1f float32-add set-arg1
+  arg0 arg3 float32-add set-arg0
   repeat-frame
 end
 
 def tty-buffer-scaled-blit/10 ( sy sx sh sw src dy dx dh dw dest -- )
   args
-  0f
   7 argn int32->float32 arg2 int32->float32 float32-div
+  6 argn int32->float32 arg1 int32->float32 float32-div
+  0f
   0f
   tty-buffer-scaled-blit-loop
   10 return0-n
