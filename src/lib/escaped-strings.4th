@@ -210,7 +210,7 @@ es" hello\n\x02\e[1mworld\e[0m\n" 2dup write-line/2
 
 ( Decompiler hook: )
 
-' NORTH-COMPILE-TIME defined? IF
+sys' NORTH-COMPILE-TIME defined? IF
   out' decompile-string-fn IF
     out' escape-string/2 out' decompile-string-fn set-out-var!
   THEN
@@ -325,7 +325,7 @@ end
 
 ( todo POSTPONE needs a like word that uses dict for the source. )
 
-' NORTH-COMPILE-TIME defined? IF
+sys' NORTH-COMPILE-TIME defined? IF
   defalias> top-s" s"
   defalias> top" " 
   defalias> [top-tmp"] tmp" out-immediate-as top-tmp"

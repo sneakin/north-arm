@@ -23,7 +23,7 @@ s[ src/lib/escaped-strings.4th
    src/lib/math.4th
 ] load-list
 
-' NORTH-COMPILE-TIME defined? UNLESS
+sys' NORTH-COMPILE-TIME defined? UNLESS
   s[ src/lib/pointers.4th
      src/lib/list-cs.4th
      src/lib/structs.4th

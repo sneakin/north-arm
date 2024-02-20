@@ -30,7 +30,7 @@ SEGMENT-BOT SEGMENT-BOT-LEFT SEGMENT-BOT-RIGHT logior logior const> SEGMENT-BOT-
 ( 1 ) SEGMENT-RIGHT
 ( 0 ) SEGMENT-TOP SEGMENT-LEFT SEGMENT-RIGHT SEGMENT-BOT logior logior logior
 here
-' NORTH-COMPILE-TIME defined? IF
+sys' NORTH-COMPILE-TIME defined? IF
   dhere to-out-addr
   swap 16 ,seq
   const-offset> segment-digits

@@ -62,7 +62,7 @@ end
 
 ( A data-var with slot 0: the current size. )
 create> *next-data-var-slot*
-' NORTH-COMPILE-TIME defined? IF
+sys' NORTH-COMPILE-TIME defined? IF
   dup out' do-data-var does
   dhere to-out-addr swap dict-entry-data uint32!
   0 ,uint32 0 ,uint32
