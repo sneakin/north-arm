@@ -110,17 +110,15 @@ endcol
   ( set eip to callback landing zone, will get pushed on call )
   dict-entry-data uint32@ eip emit-load-int32
   ( syscalls wipe the registers. State needs to be loaded from after the branch. )
-  dhere 0 ,ins ( dict-reg )
   dhere 0 ,ins ( data-reg via cs-reg )
   cs-reg data-reg movrr ,ins
   dhere 0 ,ins ( cs-reg )
   cs-reg eip eip add ,ins
   0 emit-exec-pc
   4 align-data ( pad to get the size aligned for ldr-pc )
-  ( a word, dict, cs, and ds will be appended here when copied by ~ffi-callback-with~, so patch in PC relative loading. )
+  ( a word, cs, and ds will be appended here when copied by ~ffi-callback-with~, so patch in PC relative loading. )
+  cell-size 1 * cs-reg patch-ldr-pc!
   cell-size 2 * cs-reg patch-ldr-pc!
-  cell-size 3 * cs-reg patch-ldr-pc!
-  cell-size dict-reg patch-ldr-pc! ( todo could do without dict here )
 ;
 
 : ffi-callback-exec-0

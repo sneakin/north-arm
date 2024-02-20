@@ -3,7 +3,7 @@
 4 const> ptr-size
 ebp const> fp-reg
 ecx const> cs-reg
-edx const> dict-reg
+edx const> data-reg
 edi const> eval-ip
 esi const> this-word-reg
 
@@ -350,16 +350,16 @@ defop set-cs!
   ret
 endop
 
-defop dict
+defop ds
   ebx pop
   eax push
   ebx push
-  dict-reg eax modrr movr
+  ds-reg eax modrr movr
   ret
 endop
 
-defop set-dict!
-  eax dict-reg modrr movr
+defop set-ds!
+  eax ds-reg modrr movr
   ebx pop
   eax pop
   ebx push

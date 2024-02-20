@@ -1,5 +1,10 @@
 ( Dictionary entry structure: )
 
+0 defvar> *dict*
+
+defcol dict *dict* peek swap endcol
+defcol set-dict ( dict ) swap *dict* poke endcol
+
 cell-size 4 mult defconst> dict-entry-size
 
 defcol dict-entry-name

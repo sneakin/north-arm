@@ -1,7 +1,6 @@
 ( Register aliases: )
 
 r4 const> fp
-r5 const> dict-reg
 r6 const> cs-reg
 r7 const> eip ( todo suffix with reg? )
 r8 const> data-reg
@@ -807,18 +806,6 @@ defop calc-cs
   ( data: )
   ( 0 ,uint16 )
   to-out-addr 2 + negate ,uint32
-endop
-
-defop dict
-  0 r0 bit-set pushr ,ins
-  0 dict-reg r0 mov-lsl ,ins
-  emit-next
-endop
-
-defop set-dict
-  0 r0 dict-reg mov-lsl ,ins
-  0 r0 bit-set popr ,ins
-  emit-next
 endop
 
 defop push-lr

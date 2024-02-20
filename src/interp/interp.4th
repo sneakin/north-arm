@@ -400,6 +400,7 @@ end
 
 def interp-init
   north-init-stacks!
+  *init-dict* *dict* poke
   ( token-buffer )
   int32 0 token-buffer-length poke
   token-buffer-max stack-allot token-buffer poke

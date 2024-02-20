@@ -166,6 +166,7 @@ defcol jump-data
 end
 
 def runner-boot
+  *init-dict* *dict* poke
   read-uint32
   IF exec ' runner-loop jump-data
   ELSE words bye

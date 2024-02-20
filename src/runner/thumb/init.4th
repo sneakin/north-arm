@@ -12,7 +12,6 @@ defcol runner-thumb-init
   0 set-current-frame
   *ds-offset* cs + set-ds
   ( todo copy the data )
-  *init-dict* cs + set-dict
   _start sysexit
 endcol
 
