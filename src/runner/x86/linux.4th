@@ -2,19 +2,19 @@
 
 defop syscall/1
   cs-reg push
-  dict-reg push
+  data-reg push
   0x80 int
-  dict-reg pop
+  data-reg pop
   cs-reg pop
   ret
 endop
 
 defop syscall/2
   cs-reg push
-  dict-reg push
+  data-reg push
   cell-size 3 * esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
   0x80 int
-  dict-reg pop
+  data-reg pop
   cs-reg pop
   ebx pop
   cell-size esp esp modrr add#
@@ -24,11 +24,11 @@ endop
 
 defop syscall/3
   cs-reg push
-  dict-reg push
+  data-reg push
   cell-size 3 * esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
   cell-size 4 * esp modrm-sib x1 sib modrm-sib ecx modrm+ movr
   0x80 int
-  dict-reg pop
+  data-reg pop
   cs-reg pop
   ebx pop
   cell-size 2 * esp esp modrr add#
@@ -38,12 +38,12 @@ endop
 
 defop syscall/4
   cs-reg push
-  dict-reg push
+  data-reg push
   cell-size 3 * esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
   cell-size 4 * esp modrm-sib x1 sib modrm-sib ecx modrm+ movr
   cell-size 5 * esp modrm-sib x1 sib modrm-sib edx modrm+ movr
   0x80 int
-  dict-reg pop
+  data-reg pop
   cs-reg pop
   ebx pop
   cell-size 3 * esp esp modrr add#

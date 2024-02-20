@@ -1,5 +1,4 @@
-( todo save ds )
-0 cs-reg bit-set fp bit-set dict-reg bit-set eip bit-set const> state-register-mask
+0 cs-reg bit-set data-reg bit-set fp bit-set eip bit-set const> state-register-mask
 4 cell-size mult const> state-byte-size
 
 state-byte-size defconst> state-byte-size

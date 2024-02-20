@@ -65,6 +65,19 @@ def print-eip ( dict eip -- )
   THEN enl 2 return0-n
 end
 
+sys' NORTH-COMPILE-TIME defined? not
+NORTH-BUILD-TIME 1705910557 int<= logand IF
+  def signal-state-dict
+    arg0 signal-state-registers dict-reg seq-peek set-arg0
+  end
+ELSE
+  def signal-state-dict
+    arg0 signal-state-registers data-reg seq-peek
+    arg0 signal-state-registers cs-reg seq-peek ' *dict* dict-entry-data @ +
+    data-var-init-slot @ seq-peek set-arg0
+  end
+THEN
+
 def print-signal-state
   enl s" PID " error-string/2 getpid error-uint
   s"  caught signal " error-string/2
@@ -84,7 +97,7 @@ def print-signal-state
   ( fails if the signal happens in a syscall as FP and EIP are reused )
   NORTH-BUILD-TIME 1634096442 int> IF
     s" EIP: " error-string/2
-    arg2 signal-state-registers dict-reg seq-peek
+    arg2 signal-state-dict
     arg2 signal-state-registers eip-reg seq-peek print-eip
     s" Stack: " error-line/2
     arg2 signal-state-registers 0 seq-peek error-hex-uint espace
@@ -92,7 +105,7 @@ def print-signal-state
     arg2 signal-state-registers fp-reg seq-peek
     dup stack-pointer? IF
       s" Frames: " error-line/2
-      arg2 signal-state-registers dict-reg seq-peek
+      arg2 signal-state-dict
       stack-frame-depth @ print-stack-trace
     THEN
     ( todo proper call trace )
