@@ -1270,7 +1270,7 @@ def raycaster-prompt ( herd camera world screen -- repeat? )
     UNLESS true 4 return1-n THEN
   THEN
   ( Emacs' ansi-term will already be at the bottom but will ignore thin move )
-  arg0 TtyBuffer -> height @ 1 tty-cursor-to 2 dropn
+  1 arg0 TtyBuffer -> height @ tty-cursor-to 2 dropn
   ( align with what was drawn for the prompt. will be removed fram here soon. )
   tty-cursor-home 1 tty-cursor-up
   tty-show-cursor
