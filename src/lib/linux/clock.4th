@@ -72,6 +72,15 @@ def clock-get-secs ( clock-id -- timestamp )
   local0 timespec -> tv_sec peek 1 return1-n
 end
 
+def clock-get-nsecs ( clock-id -- timestamp nsecs )
+  0 
+  timespec make-instance set-local0
+  local0 value-of arg0 clock-gettime
+  local0 timespec -> tv_sec peek
+  local0 timespec -> tv_nsec peek
+  1 return2-n
+end
+
 def get-time-secs
   0 
   timeval make-instance set-local0

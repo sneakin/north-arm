@@ -149,9 +149,9 @@ def tty-cursor-right arg0 char-code C tty-csi end
 def tty-cursor-save s" \e[s" write-string/2 end
 def tty-cursor-to ( col row )
   s" \e[" write-string/2
-  arg1 write-int
-  s" ;" write-string/2
   arg0 write-int
+  s" ;" write-string/2
+  arg1 write-int
   char-code f write-byte
 end
 

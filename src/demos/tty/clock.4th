@@ -4,7 +4,7 @@
   s[ src/lib/time.4th
      src/lib/linux.4th
      src/lib/tty.4th
-  ] load-list
+   ] load-list
 THEN
 
 s[ src/lib/geometry/angles.4th
@@ -12,11 +12,8 @@ s[ src/lib/geometry/angles.4th
    src/demos/tty/clock/stdio.4th
    src/demos/tty/clock/tty.4th
    src/demos/tty/clock/buffer.4th
+   src/lib/getopt.4th
 ] load-list
-
-' getopt defined? UNLESS
-  s[ src/lib/getopt.4th ] load-list
-THEN
 
 15 const> CLOCK-REDRAW-PERIOD
 
