@@ -95,7 +95,10 @@ end
 0 var> tty-analog-clock-height
 0 var> tty-analog-clock-width
 
+60 60 * 48 * const> time-stamp-overflow-limiter
+
 def tty-analog-clock-draw ( context timestamp -- )
+  arg0 time-stamp-overflow-limiter floored-mod
   42 arg1 TtyContext -> char !
   ( center of clock )
   arg1 tty-context-height 2 /
@@ -121,17 +124,20 @@ def tty-analog-clock-draw ( context timestamp -- )
   arg1 tty-context-ellipse
   ( the hands )
   TTY-CELL-NORMAL arg1 TtyContext -> attr poke-byte
+  ( hours )
   0x33 arg1 TtyContext -> color poke-byte
-  2dup 65 arg0 time-stamp-hours 5 * 6 * arg1 tty-analog-clock-hand
+  2dup 65 local0 30 * 3600 floored-div arg1 tty-analog-clock-hand
+  ( minutes )
   0x77 arg1 TtyContext -> color poke-byte
-  2dup 80 arg0 time-stamp-minutes 6 * arg1 tty-analog-clock-hand
+  2dup 80 local0 6 * 60 floored-div arg1 tty-analog-clock-hand
+  ( seconds )
   0x11 arg1 TtyContext -> color poke-byte
-  2dup 95 arg0 time-stamp-seconds 6 * arg1 tty-analog-clock-hand
+  2dup 95 local0 6 * arg1 tty-analog-clock-hand
   debug? IF
     0x22 arg1 TtyContext -> color poke-byte
-    2dup 50 arg0 6 * arg1 tty-analog-clock-hand
+    2dup 50 local0 6 * arg1 tty-analog-clock-hand
     0x44 arg1 TtyContext -> color poke-byte
-    2dup 50 arg0 6 * 360 int-mod arg1 tty-analog-clock-hand
+    2dup 50 local0 6 * 360 int-mod arg1 tty-analog-clock-hand
   THEN
   2 return0-n
 end
