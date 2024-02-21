@@ -14,6 +14,10 @@ s[ src/lib/geometry/angles.4th
    src/demos/tty/clock/buffer.4th
 ] load-list
 
+' getopt defined? UNLESS
+  s[ src/lib/getopt.4th ] load-list
+THEN
+
 15 const> CLOCK-REDRAW-PERIOD
 
 def tty-center-segment-clock ( rows cols -- row col )
@@ -171,8 +175,44 @@ def tty-analog-clock ( tz )
   local0 arg0 tty-analog-clock-loop IF drop-locals repeat-frame ELSE tty-show-cursor THEN
 end
 
+0 var> tty-clock-tz-offset
+0 var> tty-clock-mode
+0 var> tty-clock-interp
+
+def tty-clock-opts-processor
+  arg0 CASE
+    s" h" OF-STR false 2 return1-n ENDOF
+    s" i" OF-STR true tty-clock-interp ! true 2 return1-n ENDOF
+    s" Z" OF-STR arg1 dup string-length parse-int
+		 IF tty-clock-tz-offset !
+		 ELSE s" Invalid time zone." error-line/2
+		 THEN true 2 return1-n
+	  ENDOF
+    s" z" OF-STR arg1 dup string-length parse-int
+		 IF hours->secs tty-clock-tz-offset !
+		 ELSE s" Invalid time zone." error-line/2
+		 THEN true 2 return1-n
+	  ENDOF
+    s" m" OF-STR arg1 tty-clock-mode ! true 2 return1-n ENDOF
+    drop false 2 return1-n
+  ENDCASE
+end
+
+" hiz:Z:m:" string-const> TTY-CLOCK-OPTS
+
 def tty-clock-boot
   interp-init
-  -5 hours->secs tty-analog-clock
-  interp exit-frame
+  ' tty-clock-opts-processor TTY-CLOCK-OPTS getopt UNLESS
+    s" Usage: clock [-z tz-offset-hours] [-z tz-offset-secs] [-m mode]" error-line/2
+    s" Mode: a - analog, d - digital, r - raw terminal" error-line/2
+  ELSE
+    tty-clock-mode @ CASE
+      s" a" OF-STR tty-clock-tz-offset @ tty-analog-clock ENDOF
+      s" d" OF-STR tty-clock-tz-offset @ tty-buffer-clock ENDOF
+      s" r" OF-STR tty-clock-tz-offset @ tty-raw-clock-loop ENDOF
+      s" Unknown mode: " error-string/2 dup IF error-line THEN
+    ENDCASE
+  THEN
+  tty-clock-interp @ IF interp THEN
+  exit-frame
 end
