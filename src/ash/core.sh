@@ -1,7 +1,7 @@
-#!/bin/sh
-
 # The stack is a multiline string. Each line is a single item.
 # Newline characters are escaped.
+
+set -e
 
 STACK=""
 STACK_SIZE=0
@@ -42,7 +42,7 @@ fpop1()
     LEN=$((${#WORD} + 1)) # + newline
     STACK="${STACK:${LEN}}"
     STACK_SIZE=$(($STACK_SIZE - 1))
-    if [[ "${STACK_SIZE}" -lt 0 ]]; then
+    if [ "${STACK_SIZE}" -lt 0 ]; then
         echo "Warning: stack underflow" 1>&2
         STACK_SIZE=0
     fi
@@ -53,7 +53,7 @@ fpop()
 {
     local N="${1:-1}"
     local I=0
-    while [[ $I -lt $N ]]; do
+    while [ $I -lt $N ]; do
         fpop1
         I=$(($I + 1))
     done
@@ -75,10 +75,10 @@ op_dump()
     local IFS=""
     local WORD
     local N=0
-    while [[ "$N" -lt "${STACK_SIZE}" ]] && read -r WORD; do
+    echo "${STACK}" | while [ "$N" -lt "${STACK_SIZE}" ] && read -r WORD; do
         printf "%4i  '%s'\n" "${N}" "${WORD}"
         N=$((${N} + 1))
-    done < <(echo "${STACK}")
+    done
     printf "%i cells\n" "${STACK_SIZE}"
 }
 
@@ -123,7 +123,7 @@ op_setovern()
     
     op_drop 2
 
-    while [[ "$I" -lt "$N" ]]; do
+    while [ "$I" -lt "$N" ]; do
         tos="$(ftos_raw)"
         op_drop
         priors="${priors}${tos}
@@ -148,16 +148,22 @@ fexec()
 {
     local WORD="${1//-/_}"
     local op="op_${WORD}"
+    echo "exec ${WORD}" 1>&2
     if [[ "$(type "${op}" 2>/dev/null)" =~ "function" ]]; then
         eval "${op}"
     else
+	if [[ $(printf "%i" "${WORD}" 2>/dev/null) != "${WORD}" ]]; then
+	    echo "Warning: ${WORD} not found." 1>&2
+	fi
         fpush "${WORD}"
     fi
 }
 
 feval()
 {
-    while [[ "$1" != "" ]]; do
+    echo "eval ${1}" 1>&2
+    while [ "$1" != "" ]; do
+	echo "feval ${1}" 1>&2
         fexec "$1"
         shift
     done
@@ -167,6 +173,7 @@ finterp()
 {
     local IFS=" "
     while read -r -p "OK> " LINE; do
+	echo "read ${LINE}" 2>&1
         feval $LINE
     done
 }
@@ -196,12 +203,12 @@ op_comp()
     local N=0
     FCOMP=1
     echo "Compiling" 1>&2
-    while [[ "$FCOMP" == 1 ]] && read -r -p "COMP> " LINE; do
+    while [ "$FCOMP" = 1 ] && read -r -p "COMP> " LINE; do
         echo "Read ${LINE}" 1>&2
-        while read -r WORD; do
+        echo "${LINE}" | tr " " "\n" | while read -r WORD; do
             fcompexec "$WORD"
             N=$(($N + 1))
-        done < <(echo "${LINE}" | tr " " "\n")
+        done
     done
     fpush "$N"
 }
@@ -251,7 +258,7 @@ op_join()
     # anything left?
     fpush 3
     op_overn
-    if [[ "$(ftos)" -lt 1 ]]; then
+    if [ "$(ftos)" -lt 1 ]; then
         op_drop
         # set last part, drop all args
         return
@@ -273,7 +280,7 @@ op_join()
     fpush 3
     op_overn
     op_dump
-    if [[ "$(ftos)" -gt 0 ]]; then
+    if [ "$(ftos)" -gt 0 ]; then
         # concat the spacer
         op_drop
         fpush 2
@@ -331,6 +338,20 @@ op_write_byte()
     printf "\\x$(printf %x "${V}")"
 }
 
+op_write_line()
+{
+    local LINE="$(ftos)"
+    op_drop
+    echo "$LINE"
+}
+
+op_error_line()
+{
+    local LINE="$(ftos)"
+    op_drop
+    echo "$LINE" 1>&2
+}
+
 op_readline()
 {
     local IFS=""
@@ -343,4 +364,3 @@ op_sysexit()
     local V="$(ftos)"
     exit "$V"
 }
-
