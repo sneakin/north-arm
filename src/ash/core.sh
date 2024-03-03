@@ -6,6 +6,13 @@ set -e
 STACK=""
 STACK_SIZE=0
 
+log()
+{
+    if [[ "${DEBUG}" != "" ]]; then
+	echo "$*" 1>&2
+    fi
+}
+
 fstack_init()
 {
     STACK=""
@@ -148,7 +155,7 @@ fexec()
 {
     local WORD="${1//-/_}"
     local op="op_${WORD}"
-    echo "exec ${WORD}" 1>&2
+    log "exec ${WORD}"
     if [[ "$(type "${op}" 2>/dev/null)" =~ "function" ]]; then
         eval "${op}"
     else
@@ -161,9 +168,9 @@ fexec()
 
 feval()
 {
-    echo "eval ${1}" 1>&2
+    log "feval enter ${1}"
     while [ "$1" != "" ]; do
-	echo "feval ${1}" 1>&2
+	log "feval loop ${1}"
         fexec "$1"
         shift
     done
@@ -173,7 +180,7 @@ finterp()
 {
     local IFS=" "
     while read -r -p "OK> " LINE; do
-	echo "read ${LINE}" 2>&1
+	log "read ${LINE}"
         feval $LINE
     done
 }
@@ -204,7 +211,7 @@ op_comp()
     FCOMP=1
     echo "Compiling" 1>&2
     while [ "$FCOMP" = 1 ] && read -r -p "COMP> " LINE; do
-        echo "Read ${LINE}" 1>&2
+        log "Read ${LINE}"
         echo "${LINE}" | tr " " "\n" | while read -r WORD; do
             fcompexec "$WORD"
             N=$(($N + 1))
@@ -289,7 +296,7 @@ op_join()
         op_concat
         # loop
         op_dump
-        echo "Looping" 1>&2
+        log "Looping"
         op_join
     else
         op_drop
@@ -328,7 +335,7 @@ op_define()
 {
   feval ${VALUE}
 }"
-    echo "$NAME" 1>&2
+    log "$NAME"
 }
 
 op_write_byte()
