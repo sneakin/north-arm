@@ -9,6 +9,8 @@ A:hover, A:active { color: black; background: cyan; }
 
 H1, H1 A { color: white; }
 
+PRE { overflow: wrap; }
+
 .comment { color: red; }
 .string { color: lime; }
 .list { color: lime; }
