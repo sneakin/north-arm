@@ -296,6 +296,7 @@ alias> peek-off dpeek-off
 alias> poke-off dpoke-off
 alias> string-const> const>
 alias> tmp" s"
+alias> sys' '
 
 : POSTPONE
   next-token
