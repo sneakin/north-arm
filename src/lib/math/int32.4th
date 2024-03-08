@@ -73,6 +73,7 @@ def exp-int32-loop ( x acc numer denom limit counter -- result )
   THEN
 end
 
+( A very rough estimate: )
 def exp-int32
   arg0 0 int< IF 0 1 return1-n THEN
   arg0 1 int< IF 1 1 return1-n THEN
@@ -164,6 +165,9 @@ def fun-factorial-int32
   1 arg0 1 + uint32-stepper ' int-mul 1 fun-reduce/3 set-arg0
 end
 
-builder-target-bits 32 equals? IF
+sys' builder-target-bits defined? IF
+  builder-target-bits @
+ELSE NORTH-BITS
+THEN 32 equals? IF
   s[ src/lib/math/32/int32.4th ] load-list
 THEN
