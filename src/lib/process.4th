@@ -128,11 +128,45 @@ def process-write ( str length process -- bytes-wrote )
   write 3 return1-n
 end
 
+def process-write-line ( str length process -- bytes-wrote )
+  arg2 arg1 arg0 process-write
+  negative? IF 3 return1-n THEN
+  nl-s 1 arg0 process-write
+  negative? UNLESS drop 1 + THEN 3 return1-n
+end
+
+( todo return str & bytes read )
+
 def process-read ( str length process -- bytes-read )
   ( Reads into string the ouput a process has writen to the output pipe. )
   arg1 arg2
   arg0 process -> output fd-pair . output peek
   read 3 return1-n
+end
+
+( Could use the reader for buffered processing. )
+
+def process-read-until-loop ( str length process char n -- bytes-read )
+  1 arg3 arg0 - uint< IF
+    0 here 1 arg2 process-read
+    negative? UNLESS
+      local0 arg1 equals? UNLESS
+	local0 4 argn arg0 poke-off-byte
+	arg0 1 + set-arg0
+	drop-locals repeat-frame
+      THEN
+    THEN
+  THEN
+  4 argn arg0 null-terminate
+  arg0 5 return1-n
+end
+
+def process-read-until ( str length process char -- bytes-read )
+  0 ' process-read-until-loop tail+1
+end
+
+def process-read-line ( str length process -- bytes-read )
+  0x0A ' process-read-until tail+1
 end
 
 def process-print-loop
