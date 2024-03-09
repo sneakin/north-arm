@@ -74,10 +74,6 @@ def parse-uint ( str length -- n valid? )
   set-arg0 set-arg1
 end
 
-def minus-sign?
-  arg0 int32 45 equals? set-arg0
-end
-
 def parse-int ( str length -- n valid? )
   ( leading minus sign: )
   arg1 int32 0 string-peek minus-sign? IF
@@ -100,4 +96,40 @@ def parse-int ( str length -- n valid? )
     set-arg0
   THEN
   set-arg1
+end
+
+def parse-float32 ( str len -- n valid? )
+  ( [-+]\d+\.\d+e\d+ )
+  ( todo exponent )
+  ( sign in local0 )
+  arg1 0 string-peek minus-sign?
+  arg1 0 string-peek plus-sign?
+  over or IF
+    arg1 1 + set-arg1
+    arg0 1 - set-arg0
+  THEN
+  arg0 0 equals? IF 0 int32->float32 false 2 return2-n THEN
+  ( whole number )
+  arg1 arg0 input-base @ 0 0 parse-uint-loop
+  3 overn 0 equals? not ( to detect " ." )
+  arg1 5 overn string-peek decimal-point?
+  and IF
+    ( the fraction )
+    drop
+    5 overn 5 overn 5 overn 5 overn 1 + 0 parse-uint-loop
+    UNLESS 0 int32->float32 false 2 return2-n
+    ELSE
+      uint32->float32
+      ( input-base ** [offset2 - offset1 - 1] )
+      input-base @ 3 overn 9 overn - 1 - int-pow
+      uint32->float32 float32-div
+      6 overn uint32->float32 float32-add
+    THEN
+  ELSE
+    ( just a whole or invalid number )
+    ( todo return an integer here so interp-token can skip reparsing )
+    IF uint32->float32 ELSE 0 int32->float32 false 2 return2-n THEN
+  THEN
+  ( apply the sign )
+  local0 IF float32-negate THEN true 2 return2-n
 end

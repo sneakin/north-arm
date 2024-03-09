@@ -55,3 +55,15 @@ end
 def is-upper-alpha?
   arg0 int32 90 int32 65 in-range? return1
 end
+
+def minus-sign?
+  arg0 int32 45 equals? set-arg0
+end
+
+def plus-sign?
+  arg0 int32 43 equals? set-arg0
+end
+
+def decimal-point?
+  arg0 int32 46 equals? set-arg0
+end

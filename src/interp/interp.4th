@@ -300,12 +300,27 @@ def token-not-found
   token-buffer peek token-buffer-length peek not-found/2
 end
 
-def interp-token/4 ( ptr length dict offset ++ value exec? )
-  arg3 arg2 parse-int
-  IF int32 0
-  ELSE drop arg3 arg2 arg1 arg0 dict-lookup/4 IF int32 1 ELSE int32 -1 THEN
-  THEN return2
-end
+out' parse-float32 defined? IF
+  def interp-token/4 ( ptr length dict offset ++ value exec? )
+    ( todo check the last byte for l, u, f, d )
+    arg3 arg2 parse-int
+    IF int32 0
+    ELSE
+      drop
+      arg3 arg2 parse-float32
+      IF int32 0
+      ELSE drop arg3 arg2 arg1 arg0 dict-lookup/4 IF int32 1 ELSE int32 -1 THEN
+      THEN
+    THEN return2
+  end
+ELSE
+  def interp-token/4 ( ptr length dict offset ++ value exec? )
+    arg3 arg2 parse-int
+    IF int32 0
+    ELSE drop arg3 arg2 arg1 arg0 dict-lookup/4 IF int32 1 ELSE int32 -1 THEN
+    THEN return2
+  end
+THEN
 
 def interp-token ( ptr length -- value exec? )
   arg1 arg0 dict cs interp-token/4 set-arg0 set-arg1

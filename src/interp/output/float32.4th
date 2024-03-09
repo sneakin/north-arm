@@ -31,5 +31,5 @@ def dump-float32
   dup float32-zero-exponent space write-float32 nl
 end
 
-alias> .f write-float32
+defcol .f swap write-float32 endcol
 defcol ,f over write-float32 endcol
