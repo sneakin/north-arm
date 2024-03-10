@@ -4,21 +4,6 @@ defcol locals-byte-size
   here locals swap - swap
 endcol
 
-def reverse-loop ( start ending )
-  arg1 arg0 uint>= IF return0 THEN
-  ( swap values )
-  arg1 peek arg0 peek
-  arg1 poke arg0 poke
-  ( loop towards the middle )
-  arg1 cell-size + set-arg1
-  arg0 cell-size - set-arg0
-  repeat-frame
-end
-
-def reverse ( ptr length )
-  arg1 arg1 arg0 1 - cell-size * + reverse-loop
-end
-
 ( Definitions: )
 
 def copy-dict-entry

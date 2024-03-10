@@ -38,17 +38,13 @@ end
 
 def test-string-index-of
   s" hello world"
-  2dup literal is-space? string-index-of
-  assert
-  5 assert-equals
-  2dup literal whitespace? string-index-of
-  assert
-  5 assert-equals
+  2dup ' is-space? string-index-of 5 assert-equals
+  2dup ' whitespace? string-index-of 5 assert-equals
   ( Todo
   2dup ' whitespace? string-index-of IF int32 5 equals? IF what ELSE crap THEN ELSE crap THEN
   2dup [ whitespace? not ] string-index-of IF int32 5 equals? IF what ELSE crap THEN ELSE crap THEN
   )
-  literal newline? string-index-of assert-not
+  2dup ' newline? string-index-of -1 assert-equals
 end
 
 def test-string-contains?
@@ -139,6 +135,52 @@ def test-byte-string-compare/2
   " hello!" " hello?" byte-string-compare/2 1 assert-equals
 end
 
+def test-string-partition
+  s" hello   there" ' is-space? string-partition/3
+  s" hello" assert-byte-string-equals/4
+  s"    " assert-byte-string-equals/4
+  s" there" assert-byte-string-equals/4
+
+  s"   hello there" ' is-space? string-partition/3
+  s" " assert-byte-string-equals/4
+  s"   " assert-byte-string-equals/4
+  s" hello there" assert-byte-string-equals/4
+
+  s" " ' is-space? string-partition/3
+  s" " assert-byte-string-equals/4
+  0 0 assert-byte-string-equals/4
+  0 0 assert-byte-string-equals/4  
+
+  s" hello" ' is-space? string-partition/3
+  s" hello" assert-byte-string-equals/4
+  0 0 assert-byte-string-equals/4
+  0 0 assert-byte-string-equals/4
+
+  s" hello    " ' is-space? string-partition/3
+  s" hello" assert-byte-string-equals/4
+  s"     " assert-byte-string-equals/4
+  s" " assert-byte-string-equals/4
+end
+
+def test-string-split
+  s" hello world. how are you?" ' is-space? string-split/3
+  here cell-size + assert-equals
+  5 assert-equals
+  s" hello" assert-byte-string-equals/4
+  s" world." assert-byte-string-equals/4
+  s" how" assert-byte-string-equals/4
+  s" are" assert-byte-string-equals/4
+  s" you?" assert-byte-string-equals/4
+
+  s" " ' is-space? string-split/3
+  here cell-size + assert-equals
+  0 assert-equals
+
+  s"    " ' is-space? string-split/3
+  here cell-size + assert-equals
+  0 assert-equals
+end
+
 def test-strings
   test-string-peek
   test-string-poke
@@ -147,4 +189,6 @@ def test-strings
   test-string-contains?
   test-string-append
   test-byte-string-compare/2
+  test-string-partition
+  test-string-split
 end

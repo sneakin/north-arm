@@ -165,22 +165,16 @@ end
 
 ( String matching: )
 
-def string-index-of/4 ( ptr len predicate position )
-  arg0 arg2 int<= UNLESS int32 0 return1 THEN
-  arg3 arg0 string-peek arg1 exec IF int32 1 return1 THEN
+def string-index-of/4 ( ptr len predicate offset -- index || -1 )
+  arg0 arg2 int<= UNLESS -1 4 return1-n THEN
+  arg3 arg0 string-peek arg1 exec-abs IF arg0 4 return1-n THEN
   arg0 int32 1 + set-arg0
   drop-locals repeat-frame
 end
 
-defcol string-index-of ( ptr len predicate -- index )
-  int32 4 overn int32 4 overn int32 4 overn
-  int32 0
-  string-index-of/4 ( ptr len pred ra ptr len pred index match )
-  int32 7 set-overn
-  int32 7 set-overn
-  int32 3 dropn
-  swap drop
-endcol
+def string-index-of ( ptr len predicate -- index )
+  0 ' string-index-of/4 tail+1
+end
 
 def string-contains?/5 ( string str-length needle ndl-length index ++ )
   arg3 arg0 - arg1 uint< IF -1 5 return1-n THEN

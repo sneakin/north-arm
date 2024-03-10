@@ -36,22 +36,23 @@
   THEN
 ;
 
-def assert-byte-string-equals/3
-  arg2 null? arg1 null? or IF
-    arg2 arg1 assert-equals
+def assert-byte-string-equals/4
+  arg3 null? arg1 null? or IF
+    arg3 arg1 assert-equals
     arg0 0 assert-equals
+    arg2 0 assert-equals
   ELSE
-    arg2 string-length arg0 assert-equals
-    arg2 arg1 arg0 byte-string-equals?/3 swap drop
-    assertion-message
-  THEN
+    arg2 arg0 assert-equals
+    arg3 arg1 arg0 byte-string-equals?/3 swap drop assertion-message
+  THEN 4 return0-n
 end
 
-def assert-byte-string-equals/4
-  arg2 arg0 equals?
-  IF arg3 arg1 arg0 assert-byte-string-equals/3
+def assert-byte-string-equals/3
+  arg2 string-length
+  dup arg0 equals?
+  IF arg2 swap arg1 arg0 assert-byte-string-equals/4
   ELSE assertion-failed
-  THEN
+  THEN 3 return0-n
 end
 
 def assert-string-null-terminated

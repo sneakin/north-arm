@@ -97,3 +97,21 @@ defop return2-n
   0 r1 bit-set pushr ,ins
   emit-next
 endop
+
+defop return3
+  ( Restore FP and SP before exiting, but keep the top three stack items. )
+  0 r1 bit-set r2 bit-set popr ,ins
+  fp sp movrr ,ins
+  0 fp bit-set eip bit-set popr ,ins
+  0 r1 bit-set r2 bit-set pushr ,ins
+  emit-next
+endop
+
+defop return4
+  ( Restore FP and SP before exiting, but keep the top four stack items. )
+  0 r1 bit-set r2 bit-set r3 bit-set popr ,ins
+  fp sp movrr ,ins
+  0 fp bit-set eip bit-set popr ,ins
+  0 r1 bit-set r2 bit-set r3 bit-set pushr ,ins
+  emit-next
+endop

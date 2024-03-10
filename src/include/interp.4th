@@ -5,6 +5,7 @@ s[ src/lib/seq.4th
    src/interp/messages.4th
    src/interp/dictionary.4th
    src/lib/fun.4th
+   src/interp/strings/partition.4th
    src/lib/assoc.4th
    src/interp/output/strings.4th
    src/interp/output/hex.4th
