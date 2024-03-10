@@ -145,7 +145,7 @@ end
 
 def data-script-write-float ( n process -- result read-n true | false)
   0 128 stack-allot-zero set-local0
-  local0 128 arg1 float32->string arg0 process-write-line
+  local0 128 arg1 9 float32->string/4 arg0 process-write-line
   2 sleep
   local0 128 arg0 process-read-line
   dup 0 int<= UNLESS
@@ -162,7 +162,7 @@ end
 
 def data-script-write-fixed16 ( n process -- result read-n true | false)
   0 128 stack-allot-zero set-local0
-  local0 128 arg1 fixed16->string arg0 process-write-line
+  local0 128 arg1 9 fixed16->string/4 arg0 process-write-line
   1 sleep ( fixme blocking process reads? )
   local0 128 arg0 process-read-line
   dup 0 int<= UNLESS

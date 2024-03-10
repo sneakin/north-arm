@@ -97,6 +97,12 @@ def parse-fixed16 ( str len -- n valid? )
   IF float32->fixed16 true ELSE 0 false THEN 2 return2-n
 end
 
+def fixed16->string/4 ( out-ptr len n decimals -- out-ptr real-len )
+  ( todo no float )
+  arg3 arg2 arg1 fixed16->float32 arg0 float32->string/4
+  4 return2-n
+end
+
 def fixed16->string ( out-ptr len n -- out-ptr real-len )
   ( todo no float )
   arg2 arg1 arg0 fixed16->float32 float32->string
