@@ -333,6 +333,7 @@ def float32-tan
   float32-div set-arg0
 end
 
+( todo for 1 < x < 2pi )
 def float32-atan
   ( sum[-1^n * x^[2n+1] / [2n+1], n, 0, inf] when |x| < 1 => x - x^3/3 + x^5/5 ... )
   arg0 float32-abs 1f float32< IF

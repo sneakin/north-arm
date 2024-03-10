@@ -116,6 +116,7 @@ def process-spawn-interp ( ++ process )
   ' interp process-spawn-word/1 dup IF exit-frame ELSE 0 return1 THEN
 end
 
+( fixme silently fails, besides a SIGCHLD, if the command is not found )
 def process-spawn-cmd ( cmdline ++ process )
   ' os-shell-exec arg0 partial-first process-spawn-word/1
   dup IF exit-frame ELSE 0 set-arg0 THEN
@@ -149,12 +150,13 @@ end
 def process-read-until-loop ( str length process char n -- bytes-read )
   1 arg3 arg0 - uint< IF
     0 here 1 arg2 process-read
-    negative? UNLESS
+    dup 1 equals? IF
       local0 arg1 equals? UNLESS
 	local0 4 argn arg0 poke-off-byte
 	arg0 1 + set-arg0
 	drop-locals repeat-frame
       THEN
+    ELSE 5 return1-n
     THEN
   THEN
   4 argn arg0 null-terminate
