@@ -7,4 +7,5 @@ BEGIN {
     if(!fn) fn="log";
 }
 
+/^mode/ { fn=$2; }
 /^[-+]?[0-9]+/ { print($1, @fn($1)); fflush(); }

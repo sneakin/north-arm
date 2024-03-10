@@ -185,22 +185,14 @@ def data-script-assert-fixed ( n fn process -- )
   THEN 3 return0-n
 end
 
-def test-fixed16-exp-fn ( n process -- )
-  arg1 arg0 data-script-write-fixed16 IF
-    arg1 assert-fixed16-equals
-    arg1 exp-fixed16 655 ( 0.01 ) assert-fixed16-within
-    true
-  ELSE s" Failed to generate data." error-line/2 false
-  THEN 2 return1-n
-end
-
 def test-fixed16-exp
   0 0
-  " awk -vfn=exp -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
+  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
   local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
+  s" mode exp" local0 process-write-line
   ' data-script-assert-fixed local0 partial-first ' exp-fixed16 partial-first set-local1
   local1 -1 int32->fixed16 1 int32->fixed16 0.1 float32->fixed16 fixed16-stepper
-  local1 -8 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -12 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
   local0 process-kill local0 process-wait
 end
 
@@ -215,8 +207,9 @@ end
 
 def test-fixed16-ln
   0
-  " awk -vfn=log -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
+  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
   local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
+  s" mode log" local0 process-write-line
   ' data-script-assert-fixed local0 partial-first ' ln-fixed16 partial-first
   0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
   local0 process-kill local0 process-wait
@@ -227,8 +220,9 @@ end
 
 def test-fixed16-pow2
   0
-  " awk -vfn=pow2 -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
+  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
   local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
+  s" mode pow2" local0 process-write-line
   ' data-script-assert-fixed local0 partial-first ' pow2-fixed16 partial-first
   0 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
   local0 process-kill local0 process-wait
@@ -236,29 +230,30 @@ end
 
 def test-fixed16-log2
   0
-  " awk -vfn=log2 -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
+  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
   local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
+  s" mode log2" local0 process-write-line
   ' data-script-assert-fixed local0 partial-first ' log2-fixed16 partial-first
   0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
   local0 process-kill local0 process-wait
 end
 
-def test-fixed16-sqrt-fn ( n process -- )
-  arg1 arg0 data-script-write-fixed16 IF
-    arg1 assert-fixed16-equals
-    arg1 sqrt-fixed16 655 ( 0.01 ) assert-fixed16-within
-    true
-  ELSE s" Failed to generate data." error-line/2 false
-  THEN 2 return1-n
-end
-
 def test-fixed16-sqrt
   0 0
-  " awk -vfn=sqrt -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
+  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
   local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
+  s" mode sqrt" local0 process-write-line
   ' data-script-assert-fixed local0 partial-first ' sqrt-fixed16 partial-first set-local1
   local1 0 int32->fixed16 16 int32->fixed16 0.25 float32->fixed16 fixed16-stepper
   local1 16 int32->fixed16 0xFFFF int32->fixed16 64.0 float32->fixed16 fixed16-stepper
   local0 process-kill local0 process-wait
 end
 
+def test-fixed16
+  test-fixed16-conversions
+  test-fixed16-exp
+  test-fixed16-ln
+  test-fixed16-pow2
+  test-fixed16-log2
+  test-fixed16-sqrt
+end
