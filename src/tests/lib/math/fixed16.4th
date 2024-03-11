@@ -1,38 +1,11 @@
 s[ src/lib/math/32/fixed16.4th
-   src/lib/assert.4th
-   src/lib/assertions/float.4th
    src/lib/linux/clock.4th
    src/lib/process.4th
+   src/lib/assert.4th
+   src/lib/assertions/float.4th
+   src/lib/assertions/fixed16.4th
+   src/lib/testing/data-script.4th
 ] load-list
-
-: write-fixed16-binop-message
-  swap write-fixed16 write-string write-fixed16
-;
-
-: assert-fixed16-equals
-  2dup equals dup assert IF
-    2 dropn
-  ELSE
-    space "  != " write-fixed16-binop-message nl
-  THEN
-;
-
-: assert-fixed16-not-equals
-  2dup equals not dup assert IF
-    2 dropn
-  ELSE
-    space "  == " write-fixed16-binop-message nl
-  THEN
-;
-
-: assert-fixed16-within ( a b epsilon -- )
-  3 overn 3 overn fixed16-sub fixed16-abs fixed16>=
-  dup assert IF
-    2 dropn
-  ELSE
-    space "  ≇ " write-fixed16-binop-message nl
-  THEN
-;
 
 def test-fixed16-conversions
   ( int32->fixed16 )
@@ -119,16 +92,89 @@ def test-fixed16-rounding
 end
 )
 
+def assert-int-binary-op-by-table ( table num-rows fn -- )
+  arg1 0 uint> UNLESS 3 return0-n THEN
+  arg1 1 - set-arg1
+  arg2 arg1 3 * cell-size * +
+  dup @
+  swap dup cell-size 2 * + @
+  swap cell-size + @
+  arg0 exec-abs assert-equals
+  repeat-frame
+end
+
 def test-fixed16-add
+  0 0 0
+  0 0x100000 0x100000
+  0x100000 0 0x100000
+  0 -0x100000 -0x100000
+  -0x100000 0 -0x100000
+  0x10000 0x10000 0x20000
+  -0x50000 0x8000 -0x48000
+  0x7fff0000 0x20000 0x80010000
+  0x7ffff 1 0x80000
+  -0x7fff0000 0x20000 -0x7ffd0000
+  -0x7ffff 1 -0x7fffe
+  0x7fffffff 0x7fffffff 0xFFFFFFFE
+  here 12 ' fixed16-add assert-int-binary-op-by-table
 end
 
 def test-fixed16-sub
+  0 0 0
+  0 0x100000 -0x100000
+  0x100000 0 0x100000
+  0 -0x100000 0x100000
+  -0x100000 0 -0x100000
+  0x10000 0x10000 0x0
+  -0x50000 0x8000 -0x58000
+  0x7fff0000 0x20000 0x7ffd0000
+  0x7ffff 1 0x7fffe
+  -0x7fff0000 0x20000 -0x80010000
+  -0x7ffff 1 -0x80000
+  0x7fffffff 0x7fffffff 0
+  here 12 ' fixed16-sub assert-int-binary-op-by-table
 end
 
 def test-fixed16-mul
+  0 0 0
+  0 0x100000 0
+  0x100000 0 0
+  0 -0x100000 0
+  -0x100000 0 0
+  0x10000 0x100000 0x100000
+  0x100000 0x10000 0x100000
+  0x10000 -0x100000 -0x7FEF0000
+  -0x100000 0x10000 -0x7FEF0000
+  -0x100000 -0x10000 0x7FEF0000
+  0x10000 0x10000 0x10000
+  -0x50000 0x8000 -0x28000
+  0x7fff0000 0x20000 0xfffe0000
+  0x7ffff 1 0x7
+  -0x7fff0000 0x20000 -0xfffe0000
+  -0x7ffff 1 -0x8
+  0x7fffffff 0x7fffffff 0xFFFF0000
+  here 17 ' fixed16-mul assert-int-binary-op-by-table
 end
 
 def test-fixed16-div
+  0 0 0
+  0 0x100000 0
+  0x100000 0 0 ( todo error )
+  0 -0x100000 0
+  -0x100000 0 0 ( err here too )
+  0x10000 0x100000 0x1000
+  0x100000 0x10000 0x100000
+  0x10000 -0x100000 -0x1000
+  -0x100000 0x10000 -0x100000
+  -0x100000 -0x10000 0x100000
+  0x10000 0x10000 0x10000
+  -0x50000 0x8000 -0xA0000
+  0x7fff0000 0x20000 0x3fff8000
+  0x7ffff 1 0x7ffff0000
+  -0x7fff0000 0x20000 -0x3fff0000
+  -0x7ffff 1 -0x7ffff0000
+  0x7fffffff 0x7fffffff 0x10000
+  here 17 ' fixed16-div assert-int-binary-op-by-table
 end
 
 def test-fixed16-divmod
@@ -140,119 +186,100 @@ end
 def test-fixed16-reciprocal
 end
 
+def test-ufixed16-sub
+end
+
+def test-ufixed16-mul
+end
+
+def test-ufixed16-div
+end
+
+def test-ufixed16-divmod
+end
+
+def test-ufixed16-mod
+end
+
+def test-ufixed16-reciprocal
+end
+
 def test-fixed16-to-string
-end
-
-def data-script-write-float ( n process -- result read-n true | false)
-  0 128 stack-allot-zero set-local0
-  local0 128 arg1 9 float32->string/4 arg0 process-write-line
-  2 sleep
-  local0 128 arg0 process-read-line
-  dup 0 int<= UNLESS
-    local0 over ' is-space? string-split/3
-    over 1 uint> IF
-      dup 1 seqn-peek over 0 seqn-peek parse-float32 drop
-      over 3 seqn-peek 3 overn 2 seqn-peek parse-float32 drop
-      set-arg1 set-arg0 true return1
-    ELSE s" Error processing script output." error-line/2
-    THEN
-  ELSE s" Error reading from script." error-line/2
-  THEN false 2 return1-n
-end
-
-def data-script-write-fixed16 ( n process -- result read-n true | false)
-  0 128 stack-allot-zero set-local0
-  local0 128 arg1 9 fixed16->string/4 arg0 process-write-line
-  1 sleep ( fixme blocking process reads? )
-  local0 128 arg0 process-read-line
-  dup 0 int<= UNLESS
-    local0 over ' is-space? string-split/3
-    over 1 uint> IF
-      dup 1 seqn-peek over 0 seqn-peek parse-fixed16 drop
-      over 3 seqn-peek 3 overn 2 seqn-peek parse-fixed16 drop
-      set-arg1 set-arg0 true return1
-    ELSE s" Error processing script output." error-line/2
-    THEN
-  ELSE s" Error reading from script." error-line/2
-  THEN false 2 return1-n
-end
-
-def data-script-assert-fixed ( n fn process -- )
-  arg2 arg0 data-script-write-fixed16 IF
-    arg2 assert-fixed16-equals
-    arg2 arg1 exec-abs 655 ( 0.01 ) assert-fixed16-within
-  ELSE s" Failed to generate data." error-line/2
-  THEN 3 return0-n
 end
 
 def test-fixed16-exp
   0 0
-  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
-  local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
-  s" mode exp" local0 process-write-line
-  ' data-script-assert-fixed local0 partial-first ' exp-fixed16 partial-first set-local1
+  s" exp" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-fixed16 local0 partial-first ' exp-fixed16 partial-first set-local1
   local1 -1 int32->fixed16 1 int32->fixed16 0.1 float32->fixed16 fixed16-stepper
   local1 -12 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
-  local0 process-kill local0 process-wait
-end
-
-def test-fixed16-ln-fn ( n process -- )
-  arg1 arg0 data-script-write-fixed16 IF
-    arg1 assert-fixed16-equals
-    arg1 ln-fixed16 655 ( 0.01 ) assert-fixed16-within
-    true
-  ELSE s" Failed to generate data." error-line/2 false
-  THEN 2 return1-n
+  local0 data-script-kill
 end
 
 def test-fixed16-ln
   0
-  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
-  local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
-  s" mode log" local0 process-write-line
-  ' data-script-assert-fixed local0 partial-first ' ln-fixed16 partial-first
+  s" log" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-fixed16 local0 partial-first ' ln-fixed16 partial-first
   0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
-  local0 process-kill local0 process-wait
+  local0 data-script-kill
 end
 
 def test-fixed16-pow
+  0 0
+  s" pow" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first 2 int32->fixed16 partial-first set-local1
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first 2 int32->fixed16 fixed16-reciprocal partial-first set-local1
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first 55 int32->fixed16 10 int32->fixed16 fixed16-div partial-first set-local1
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first fixed16-e partial-first set-local1
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first -3 int32->fixed16 partial-first set-local1
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local0 data-script-kill
 end
 
 def test-fixed16-pow2
-  0
-  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
-  local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
-  s" mode pow2" local0 process-write-line
-  ' data-script-assert-fixed local0 partial-first ' pow2-fixed16 partial-first
-  0 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
-  local0 process-kill local0 process-wait
+  0 0
+  s" pow2" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-fixed16 local0 partial-first ' pow2-fixed16 partial-first set-local1
+  local1 -16 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local0 data-script-kill
 end
 
 def test-fixed16-log2
   0
-  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
-  local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
-  s" mode log2" local0 process-write-line
-  ' data-script-assert-fixed local0 partial-first ' log2-fixed16 partial-first
+  s" log2" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-fixed16 local0 partial-first ' log2-fixed16 partial-first
   0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
-  local0 process-kill local0 process-wait
+  local0 data-script-kill
 end
 
 def test-fixed16-sqrt
   0 0
-  " awk -f ./scripts/math-fn-data-gen.awk" process-spawn-cmd set-local0
-  local0 UNLESS s" Failed to start script." error-line/2 return0 THEN
-  s" mode sqrt" local0 process-write-line
-  ' data-script-assert-fixed local0 partial-first ' sqrt-fixed16 partial-first set-local1
+  s" sqrt" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-fixed16 local0 partial-first ' sqrt-fixed16 partial-first set-local1
   local1 0 int32->fixed16 16 int32->fixed16 0.25 float32->fixed16 fixed16-stepper
   local1 16 int32->fixed16 0xFFFF int32->fixed16 64.0 float32->fixed16 fixed16-stepper
-  local0 process-kill local0 process-wait
+  local0 data-script-kill
 end
 
 def test-fixed16
   test-fixed16-conversions
+  test-fixed16-add
+  test-fixed16-sub
+  test-fixed16-mul
+  test-fixed16-div
   test-fixed16-exp
   test-fixed16-ln
+  test-fixed16-pow
   test-fixed16-pow2
   test-fixed16-log2
   test-fixed16-sqrt

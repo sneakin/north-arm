@@ -11,12 +11,19 @@
 0x1921fb544 const> fixed-pi ( pi << 31 )
 0x3243f const> fixed16-pi
 
+alias> fixed16-negate negate
+alias> fixed16-abs abs-int
+
 def fixed16-truncate
   arg0 0xFFFF lognot logand return1-1
 end
 
 def fixed16-fraction
   arg0 0xFFFF logand return1-1
+end
+
+def fixed16-signed-fraction
+  arg0 0xFFFF logand arg0 0 int< IF fixed16-negate THEN return1-1
 end
 
 def fixed16->int32
@@ -63,9 +70,6 @@ end
 def fixed16-sub
   arg1 arg0 - 2 return1-n
 end
-
-alias> fixed16-negate negate
-alias> fixed16-abs abs-int
 
 def fixed16-mul
   arg1 arg0 int-mulc 16 int64-absr drop 2 return1-n
@@ -186,14 +190,23 @@ end
 
 def pow-fixed16
   arg0 0 equals? IF fixed16-one 2 return1-n THEN
-  arg0 arg1 ln-fixed16 fixed16-mul exp-fixed16 2 return1-n
+  arg1 0 int<
+  dup arg0 fixed16-fraction 0 int> and IF
+    0
+  ELSE
+    arg0 arg1 fixed16-abs ln-fixed16 fixed16-mul exp-fixed16
+    local0 IF arg0 fixed16->int32 int32-odd? IF fixed16-negate THEN THEN
+  THEN 2 return1-n
 end
 
 def pow2-fixed16
   arg0 0 equals? IF fixed16-one return1-1 THEN
-  1 arg0 fixed16->int32 bsl int32->fixed16
-  2 int32->fixed16 arg0 fixed16-fraction pow-fixed16
-  fixed16-mul return1-1
+  arg0 0 int< IF
+    2 int32->fixed16 arg0 pow-fixed16
+  ELSE
+    2 int32->fixed16 arg0 fixed16-fraction pow-fixed16
+    1 arg0 fixed16->int32 bsl int32->fixed16 fixed16-mul
+  THEN return1-1
 end
 
 def log2-fixed16
@@ -210,26 +223,3 @@ def fixed16-stepper ( fn min max step ++ )
   arg2 arg3 exec-abs
   arg2 arg0 fixed16-add set-arg2 repeat-frame
 end
-
-def test-ln-fixed16-fn
-  arg0 write-fixed16 space
-  arg0 ln-fixed16 write-fixed16 nl
-  1 return0-n
-end
-
-def test-ln-fixed16 ( min max step -- )
-  ' test-ln-fixed16-fn arg2 arg1 arg0 fixed16-stepper
-  3 return0-n
-end
-
-def test-sqrt-fixed16-fn
-  arg0 write-fixed16 space
-  arg0 sqrt-fixed16 write-fixed16 nl
-  1 return0-n
-end
-
-def test-sqrt-fixed16 ( min max step -- )
-  ' test-sqrt-fixed16-fn arg2 arg1 arg0 fixed16-stepper
-  3 return0-n
-end
-
