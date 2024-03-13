@@ -160,7 +160,7 @@ def exp-fixed16
   fixed16-mul return1-1
 end
 
-def ln-fixed16-loop ( n guess counter -- log2<<16 )
+def ln-fixed16-loop ( n guess counter -- log-fixed16 )
   ( Use Newton's method to calculate the fraction. )
   ( y = ln[x] -> e**y = x )
   ( f[y] = e**y - x = 0 )

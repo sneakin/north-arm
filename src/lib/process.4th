@@ -2,8 +2,13 @@
 
 ( todo [e]poll based reactor )
 
+' EAGAIN defined? UNLESS s" src/lib/linux/errno.4th" load/2 THEN
+
 s[ src/lib/linux/process.4th
 ] load-list
+
+' get-time-secs defined? UNLESS s" src/lib/linux/clock.4th" load/2 THEN
+' poll-fd-in defined? UNLESS s" src/lib/linux/epoll.4th" load/2 THEN
 
 ( Children replace stdio but may want to use them. )
 
@@ -147,28 +152,50 @@ end
 
 ( Could use the reader for buffered processing. )
 
-def process-read-until-loop ( str length process char n -- bytes-read )
-  1 arg3 arg0 - uint< IF
-    0 here 1 arg2 process-read
+def process-wait-for-input ( timeout process -- time-left || -errno )
+  CLOCK-MONOTONIC clock-get-millis
+  arg0 process -> output fd-pair . output peek arg1 poll-fd-in
+  negative? UNLESS
+    arg1 0
+    CLOCK-MONOTONIC clock-get-millis local0 local1 int64-sub
+    int64-sub drop 0 max
+  THEN
+  2 return1-n
+end
+
+def process-read-until-loop ( str length process timeout predicate n -- bytes-read )
+  1 4 argn arg0 - uint< IF
+    0 here 1 arg3 process-read
     dup 1 equals? IF
-      local0 arg1 equals? UNLESS
-	local0 4 argn arg0 poke-off-byte
+      local0 arg1 exec-abs UNLESS
+	local0 5 argn arg0 poke-off-byte
 	arg0 1 + set-arg0
 	drop-locals repeat-frame
       THEN
-    ELSE 5 return1-n
+    ELSE
+      dup negate EAGAIN equals? arg2 0 int> and IF
+	arg2 arg3 process-wait-for-input
+	negative? UNLESS
+	  set-arg2
+	  drop-locals repeat-frame
+	THEN
+      THEN 6 return1-n
     THEN
   THEN
-  4 argn arg0 null-terminate
-  arg0 5 return1-n
+  5 argn arg0 null-terminate
+  arg0 6 return1-n
 end
 
-def process-read-until ( str length process char -- bytes-read )
+def process-read-until ( str length process timeout predicate -- bytes-read )
   0 ' process-read-until-loop tail+1
 end
 
+def process-read-line/4 ( str length process timeout -- bytes-read )
+  ' newline? ' process-read-until tail+1
+end
+
 def process-read-line ( str length process -- bytes-read )
-  0x0A ' process-read-until tail+1
+  -1 ' process-read-line/4 tail+1
 end
 
 def process-print-loop

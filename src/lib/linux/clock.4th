@@ -81,6 +81,16 @@ def clock-get-nsecs ( clock-id -- timestamp nsecs )
   1 return2-n
 end
 
+def timespec-pair->millis
+  arg1 0 1000 0 int64-mul
+  arg0 1000 / 0 int64-add
+  2 return2-n
+end
+
+def clock-get-millis ( clock-id -- msecs-since-epoch-lo hi )
+  arg0 clock-get-nsecs timespec-pair->millis 1 return2-n
+end
+
 def get-time-secs
   0 
   timeval make-instance set-local0
@@ -88,6 +98,7 @@ def get-time-secs
   local0 timeval -> sec peek return1
 end
 
+( todo return seconds too )
 def get-time-usecs
   0 
   timeval make-instance set-local0

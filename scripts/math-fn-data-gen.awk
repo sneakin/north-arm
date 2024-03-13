@@ -1,4 +1,4 @@
-#!/bin/env -S awk -f
+#!/usr/bin/env -S awk -f
 
 function pow(b, e) { return b**e; }
 function pow2(n) { return 2**n; }

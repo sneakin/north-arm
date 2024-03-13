@@ -1,8 +1,7 @@
 def data-script-query-float ( n process -- result read-n true | false)
   0 128 stack-allot-zero set-local0
   local0 128 arg1 9 float32->string/4 arg0 process-write-line
-  2 sleep
-  local0 128 arg0 process-read-line
+  local0 128 arg0 1000 process-read-line/4
   dup 0 int<= UNLESS
     local0 over ' is-space? string-split/3
     over 1 uint> IF
@@ -18,8 +17,7 @@ end
 def data-script-query-fixed16 ( n process -- result read-n true | false)
   0 128 stack-allot-zero set-local0
   local0 128 arg1 9 fixed16->string/4 arg0 process-write-line
-  1 sleep ( fixme blocking process reads? )
-  local0 128 arg0 process-read-line
+  local0 128 arg0 1000 process-read-line/4
   dup 0 int<= UNLESS
     local0 over ' is-space? string-split/3
     over 1 uint> IF
@@ -37,8 +35,7 @@ def data-script-query-fixed16-pair ( a b process -- result read-a read-b true | 
   local0 128 arg2 9 fixed16->string/4 arg0 process-write
   s"  " arg0 process-write
   local0 128 arg1 9 fixed16->string/4 arg0 process-write-line
-  1 sleep ( fixme blocking process reads? )
-  local0 128 arg0 process-read-line
+  local0 128 arg0 1000 process-read-line/4
   dup 0 int<= UNLESS
     local0 over ' is-space? string-split/3
     over 1 uint> IF
