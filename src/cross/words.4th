@@ -138,14 +138,20 @@ end
 ;
 
 : literalizes?
-  dup ' int32 equals
-  swap dup ' literal equals
-  swap dup ' pointer equals
-  swap dup ' string equals
-  swap dup ' cstring equals
-  swap dup ' offset32 equals
-  swap ' uint32 equals
-  logior logior logior logior logior logior
+  CASE
+    ' literal OF true ENDOF
+    ' pointer OF true ENDOF
+    ' int32 OF true ENDOF
+    ' uint32 OF true ENDOF
+    ' string OF true ENDOF
+    ' cstring OF true ENDOF
+    ' offset32 OF true ENDOF
+    ' uint64 OF true ENDOF
+    ' int64 OF true ENDOF
+    ' float32 OF true ENDOF
+    ' float64 OF true ENDOF
+    drop false
+  ENDCASE
 ;
 
 : oword-printer ( state word -- new-state )

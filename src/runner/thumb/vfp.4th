@@ -369,3 +369,6 @@ defop float32->float64
   0 r1 bit-set pushr ,ins
   emit-next
 endop
+
+defalias> float32 uint32
+defalias> float64 uint64

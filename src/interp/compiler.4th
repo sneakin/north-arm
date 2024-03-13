@@ -84,6 +84,8 @@ def literalizes?
     pointer string OF true ENDOF
     pointer uint64 OF true ENDOF
     pointer int64 OF true ENDOF
+    pointer float32 OF true ENDOF
+    pointer float64 OF true ENDOF
     false
   ENDCASE 1 return1-n
 end

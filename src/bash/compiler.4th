@@ -331,3 +331,4 @@ alias> sys' '
 " src/bash/list.4th" load
 " src/bash/seq.4th" load
 " src/bash/process.4th" load
+" src/lib/case.4th" load
