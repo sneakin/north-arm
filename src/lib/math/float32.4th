@@ -1,5 +1,6 @@
 ( Determines the number of terms the repeated series use. > 1000 needed for sin-prod. )
 11 var> float-precision
+16 var> float32-hyperbolic-cut-off
 
 ( Constants )
 
@@ -22,6 +23,10 @@ pi 2f float32-mul const> 2pi
 ( 4590455 uint32->float32 10000000 uint32->float32 float32-div )
 2718281828 uint32->float32 ( float32-add )
 1000000000 uint32->float32 float32-div const> e
+738905609 uint32->float32 ( float32-add )
+100000000 uint32->float32 float32-div const> float32-ee
+2008553692 uint32->float32 ( float32-add )
+100000000 uint32->float32 float32-div const> float32-eee
 
 ( Explicitly defined e. Could be calculated below. )
 ( 5599453 uint32->float32 10000000 uint32->float32 float32-div )
@@ -206,10 +211,26 @@ def float32-exp-series
   ' float32-exp-stepper arg0 1f fun-power-series ' float32-add 1f fun-reduce/3 set-arg0
 end
 
+def float32-exp-big-exp-loop ( acc exp -- acc new-exp )
+  arg0 3 int32->float32 float32< IF return0 THEN
+  arg0 4 int32->float32 float32<
+  IF 1 e
+  ELSE				    
+    arg0 6 int32->float32 float32<
+    IF 2 float32-ee
+    ELSE 3 float32-eee
+    THEN
+  THEN
+  arg1 float32-mul set-arg1
+  int32->float32 arg0 swap float32-sub set-arg0 repeat-frame
+end
+
 def float32-exp
   arg0 0f float32-equals? IF 1f 1 return1-n THEN
   arg0 0f float32<= IF arg0 float32-negate ELSE arg0 THEN
+  1.0 swap float32-exp-big-exp-loop
   float32-exp-series
+  float32-mul
   arg0 0f float32<= IF float32-invert THEN set-arg0
 end
 
@@ -260,6 +281,9 @@ end
 def float32-sinh
   ( sum[x^[2n+1] / [2n+1]!, n, 0, inf] => x + x^3/3! + x^5/5! ... )
   ( With x=0.5: 0.5 + [0.5]^3/3! + [0.5]^5/5! ... = 0.5 + 0.125/6 + 0.03125/120 => last * [0.5]^2/[2n*[2n+1]] )
+  arg0 float32->int32
+  dup float32-hyperbolic-cut-off @ int> IF float32-infinity return1-1 THEN
+  float32-hyperbolic-cut-off @ negate int< IF float32-negative-infinity return1-1 THEN
   ' float32-sinh-stepper arg0 float32-square arg0 fun-power-series
   ' float32-add arg0 fun-reduce/3 set-arg0
 end
@@ -276,12 +300,16 @@ end
 
 def float32-cosh
   ( sum[x^[2n] / [2n]!, n, 0, inf] => x + x^2/2! + x^4/4! ... )
+  dup float32-hyperbolic-cut-off @ abs-int int> IF float32-infinity return1-1 THEN
   ' float32-cosh-stepper arg0 float32-square 1f fun-power-series
   ' float32-add 1f fun-reduce/3 set-arg0
 end
 
 def float32-tanh
   ( sinh/cosh )
+  arg0 float32->int32
+  dup float32-hyperbolic-cut-off @ int> IF 1f return1-1 THEN
+  float32-hyperbolic-cut-off @ negate int< IF -1f return1-1 THEN
   arg0 float32-sinh
   arg0 float32-cosh
   float32-div set-arg0
@@ -341,6 +369,22 @@ def float32-atan
     ' float32-add arg0 fun-reduce/3
   ELSE float32-nan
   THEN set-arg0
+end
+
+( fixme mostly zero )
+def float32-asin
+  ( atan[x / sqrt[1-x**2]] )
+  arg0
+  1f arg0 arg0 float32-mul float32-sub float32-sqrt
+  float32-div
+  float32-atan set-arg0
+end
+
+def float32-acos
+  ( atan[sqrt[1-x**2] / x] )
+  1f arg0 arg0 float32-mul float32-sub float32-sqrt
+  arg0 float32-div
+  float32-atan set-arg0
 end
 
 ( Sine and cosine calculated with a repeated product: see [https://en.m.wikipedia.org/wiki/Trigonometric_functions]. To be close to accurate it requires thousands of terms. )

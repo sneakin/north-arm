@@ -1,6 +1,7 @@
 ( 32 bit floating point output: )
 
-( todo take an fd asjankarg )
+( todo take an fd as an arg )
+( todo treat overflowing input strings as invalid )
 
 4 var> output-precision
 
@@ -9,8 +10,8 @@ def float32->string/5 ( str max-len n decimals offset -- str real-len )
   arg2 float32-sign IF
     45 4 argn arg0 string-poke
     arg0 1 + set-arg0
+    arg2 float32-negate set-arg2
   THEN
-  arg2 float32-abs set-arg2
   ( special cases )
   arg2 float32-infinity float32-equals? IF
     s" Inf"
@@ -52,8 +53,11 @@ end
 
 def write-float32/2 ( n decimals )
   ( the sign )
-  arg1 float32-sign IF s" -" write-string/2 THEN
-  arg1 float32-abs
+  arg1 float32-sign IF
+    s" -" write-string/2
+    arg1 float32-negate
+  ELSE arg1
+  THEN
   ( special cases )
   dup float32-infinity float32-equals? IF s" Inf" write-string/2 2 return0-n THEN
   dup float32-nan float32-equals? IF s" NaN" write-string/2 2 return0-n THEN
@@ -70,7 +74,9 @@ def write-float32/2 ( n decimals )
   2 return0-n
 end
 
-def write-float32 ( n ) arg0 output-precision @ write-float32/2 1 return0-n end
+def write-float32 ( n )
+  arg0 output-precision @ write-float32/2 1 return0-n
+end
 
 def dump-float32
   arg0 dup bin write-uint dec

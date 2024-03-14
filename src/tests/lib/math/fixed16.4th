@@ -7,6 +7,8 @@ s[ src/lib/math/32/fixed16.4th
    src/lib/testing/data-script.4th
 ] load-list
 
+fixed16-one 100 * var> test-fixed16-big-step-size
+
 def test-fixed16-conversions
   ( int32->fixed16 )
   s" i32" write-line/2
@@ -212,17 +214,20 @@ def test-fixed16-exp
   s" exp" data-script-spawn
   IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
   ' data-script-assert-fixed16 local0 partial-first ' exp-fixed16 partial-first set-local1
-  local1 -1 int32->fixed16 1 int32->fixed16 0.1 float32->fixed16 fixed16-stepper
-  local1 -12 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -1 int32->fixed16 1 int32->fixed16 0.1 float32->fixed16 map-fixed16-range
+  ( overflows by e**12 )
+  local1 -12 int32->fixed16 12 int32->fixed16 0.25 float32->fixed16 map-fixed16-range
+  local1 -0x7FFF int32->fixed16 0 int32->fixed16 test-fixed16-big-step-size @ map-fixed16-range
   local0 data-script-kill
 end
 
 def test-fixed16-ln
-  0
+  0 0
   s" log" data-script-spawn
   IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
-  ' data-script-assert-fixed16 local0 partial-first ' ln-fixed16 partial-first
-  0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  ' data-script-assert-ufixed16 local0 partial-first ' ln-fixed16 partial-first set-local1
+  local1 0 int32->fixed16 128 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
+  local1 0 int32->fixed16 0xFFFF int32->fixed16 test-fixed16-big-step-size @ map-ufixed16-range
   local0 data-script-kill
 end
 
@@ -231,15 +236,15 @@ def test-fixed16-pow
   s" pow" data-script-spawn
   IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
   ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first 2 int32->fixed16 partial-first set-local1
-  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first 2 int32->fixed16 fixed16-reciprocal partial-first set-local1
-  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first 55 int32->fixed16 10 int32->fixed16 fixed16-div partial-first set-local1
-  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first fixed16-e partial-first set-local1
-  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   ' data-script-assert-fixed16-pair local0 partial-first ' pow-fixed16 partial-first -3 int32->fixed16 partial-first set-local1
-  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -15 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   local0 data-script-kill
 end
 
@@ -248,7 +253,7 @@ def test-fixed16-pow2
   s" pow2" data-script-spawn
   IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
   ' data-script-assert-fixed16 local0 partial-first ' pow2-fixed16 partial-first set-local1
-  local1 -16 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  local1 -16 int32->fixed16 16 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   local0 data-script-kill
 end
 
@@ -257,7 +262,7 @@ def test-fixed16-log2
   s" log2" data-script-spawn
   IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
   ' data-script-assert-fixed16 local0 partial-first ' log2-fixed16 partial-first
-  0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 fixed16-stepper
+  0 int32->fixed16 12 int32->fixed16 0.5 float32->fixed16 map-fixed16-range
   local0 data-script-kill
 end
 
@@ -265,9 +270,9 @@ def test-fixed16-sqrt
   0 0
   s" sqrt" data-script-spawn
   IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
-  ' data-script-assert-fixed16 local0 partial-first ' sqrt-fixed16 partial-first set-local1
-  local1 0 int32->fixed16 16 int32->fixed16 0.25 float32->fixed16 fixed16-stepper
-  local1 16 int32->fixed16 0xFFFF int32->fixed16 64.0 float32->fixed16 fixed16-stepper
+  ' data-script-assert-ufixed16 local0 partial-first ' sqrt-fixed16 partial-first set-local1
+  local1 0 int32->fixed16 16 int32->fixed16 0.1 float32->fixed16 map-fixed16-range
+  local1 0 int32->fixed16 0xFFFF int32->fixed16 test-fixed16-big-step-size @ map-ufixed16-range
   local0 data-script-kill
 end
 
