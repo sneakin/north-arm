@@ -293,20 +293,17 @@ end
 
 ( With a limited range of 0...4, a loop multiplying by e while subtracting the exponent  by 1 until the range works. )
 
-( todo break the exponent down by /2 )
-
 def exp-fixed16-big-exp-loop ( acc-lo acc-hi exp -- acc-lo acc-hi new-exp )
-  arg0 3 int32->fixed16 ufixed16< IF return0 THEN
-  arg0 4 int32->fixed16 ufixed16<
-  IF 1 fixed16-e
-  ELSE				    
-    arg0 6 int32->fixed16 ufixed16<
-    IF 2 fixed16-ee
-    ELSE 3 fixed16-eee
-    THEN
+  arg0 1 int32->fixed16 ufixed16< IF return0 THEN
+  arg0 2 int32->fixed16 ufixed16>= IF
+    1 int32->fixed48.16 arg0 1 absr exp-fixed16-big-exp-loop
+    1 bsl set-arg0
+    2dup fixed48.16-mul arg2 arg1 fixed48.16-mul set-arg1 set-arg2
+    repeat-frame
+  ELSE
+    fixed16-e fixed16->fixed48.16 arg2 arg1 fixed48.16-mul set-arg1 set-arg2
+    arg0 1 int32->fixed16 fixed16-sub set-arg0 repeat-frame
   THEN
-  fixed16->fixed48.16 arg2 arg1 fixed48.16-mul set-arg1 set-arg2
-  int32->fixed16 arg0 swap fixed16-sub set-arg0 repeat-frame
 end
 
 ( Breaks down when the exponent is >= 11.5. 16 bits overflows at that point. )
