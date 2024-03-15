@@ -211,10 +211,10 @@ def float32-exp-series
   ' float32-exp-stepper arg0 1f fun-power-series ' float32-add 1f fun-reduce/3 set-arg0
 end
 
-def exp-float32-big-exp-loop ( acc exp -- acc new-exp )
+def float32-exp-big-exp-loop ( acc exp -- acc new-exp )
   arg0 1f float32< IF return0 THEN
   arg0 2f float32>= IF
-    1f arg0 0.5 float32-mul exp-float32-big-exp-loop
+    1f arg0 0.5f float32-mul float32-exp-big-exp-loop
     2f float32-mul set-arg0
     dup float32-mul arg1 float32-mul set-arg1
     repeat-frame
