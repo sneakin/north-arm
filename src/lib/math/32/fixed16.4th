@@ -79,20 +79,6 @@ def fixed16-sign
   arg0 0 fixed16< return1-1
 end
 
-def fixed16-round
-  arg0 fixed16-fraction fixed16-1/2 fixed16>=
-  IF arg0 fixed16-one fixed16-add
-  ELSE arg0
-  THEN fixed16-truncate set-arg0
-end
-
-alias> fixed16-floor fixed16-truncate
-
-def fixed16-ceil
-  arg0 fixed16-fraction 0 equals?
-  UNLESS arg0 fixed16-truncate fixed16-one fixed16-add set-arg0 THEN
-end
-
 def fixed16-add
   arg1 arg0 + 2 return1-n
 end
@@ -176,6 +162,20 @@ end
 ( fixme )
 def ufixed48.16-reciprocal
   0 0x10000000 arg1 arg0 uint64-div 28 int64-absr 2 return2-n
+end
+
+def fixed16-round
+  arg0 fixed16-fraction fixed16-1/2 fixed16>=
+  IF arg0 fixed16-one fixed16-add
+  ELSE arg0
+  THEN fixed16-truncate set-arg0
+end
+
+alias> fixed16-floor fixed16-truncate
+
+def fixed16-ceil
+  arg0 fixed16-fraction 0 equals?
+  UNLESS arg0 fixed16-truncate fixed16-one fixed16-add set-arg0 THEN
 end
 
 def parse-ufixed16 ( str len -- n valid? )
