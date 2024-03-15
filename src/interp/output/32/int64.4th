@@ -10,9 +10,9 @@ end
 
 def uint64->string/6 ( padding out-str out-size lo hi radix n -- out-str length )
   arg0 0 int<= IF 5 argn 4 argn 6 return2-n THEN
-  arg0 1 - set-arg0
   arg3 arg2 arg1 uint64-divmod32
   arg0 0 equals? over 0 equals? and IF drop 6 argn ELSE ascii-digit THEN
+  arg0 1 - set-arg0
   5 argn arg0 string-poke
   2dup 0LL int64-equals? IF 5 argn arg0 + 4 argn arg0 - 6 return2-n THEN
   set-arg2 set-arg3
@@ -81,8 +81,9 @@ def write-hex-int64 ( lo hi -- )
   2 return0-n
 end
 
-defalias> .Q write-uint64
-defalias> .q write-int64
-defalias> .Qh write-hex-uint64
-defalias> .qh write-hex-int64
-
+' defalias> defined? IF
+  defalias> .Q write-uint64
+  defalias> .q write-int64
+  defalias> .Qh write-hex-uint64
+  defalias> .qh write-hex-int64
+THEN
