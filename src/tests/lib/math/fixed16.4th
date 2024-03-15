@@ -4,6 +4,7 @@ s[ src/lib/math/32/fixed16.4th
    src/lib/assert.4th
    src/lib/assertions/float.4th
    src/lib/assertions/fixed16.4th
+   src/lib/assertions/int.4th
    src/lib/testing/data-script.4th
 ] load-list
 
@@ -81,28 +82,24 @@ def test-ufixed16-comparisons
   ufixed16>
   ufixed16>=
 end
+)
 
 def test-fixed16-parts
-  +/- fixed16-truncate
-  +/- fixed16-fraction
+  0xABC8000 fixed16-truncate 0xABC0000 assert-fixed16-equals
+  0xABC8000 negate fixed16-truncate 0xABD0000 negate assert-fixed16-equals
+  0xA8765 fixed16-fraction 0x8765 assert-fixed16-equals
+  0xA8765 negate fixed16-fraction 0x789B assert-fixed16-equals
 end
 
 def test-fixed16-rounding
-  +/- floor
-  +/- ceil
-  +/- round
-end
-)
-
-def assert-int-binary-op-by-table ( table num-rows fn -- )
-  arg1 0 uint> UNLESS 3 return0-n THEN
-  arg1 1 - set-arg1
-  arg2 arg1 3 * cell-size * +
-  dup @
-  swap dup cell-size 2 * + @
-  swap cell-size + @
-  arg0 exec-abs assert-equals
-  repeat-frame
+  0xABC8000 fixed16-floor 0xABC0000 assert-fixed16-equals
+  0xABC8000 negate fixed16-floor 0xABD0000 negate assert-fixed16-equals
+  0xABC8000 fixed16-ceil 0xABD0000 assert-fixed16-equals
+  0xABC8000 negate fixed16-ceil 0xABC0000 negate assert-fixed16-equals
+  0xABC8000 fixed16-round 0xABD0000 assert-fixed16-equals
+  0xABC8000 negate fixed16-round 0xABC0000 negate assert-fixed16-equals
+  0xABC7FFF fixed16-round 0xABC0000 assert-fixed16-equals
+  0xABC7FFF negate fixed16-round 0xABC0000 negate assert-fixed16-equals
 end
 
 def test-fixed16-add
@@ -311,6 +308,8 @@ def test-fixed16
   test-fixed16-conversions
   test-fixed16-to-string
   test-ufixed16-to-string
+  test-fixed16-parts
+  test-fixed16-rounding
   test-fixed16-add
   test-fixed16-sub
   test-fixed16-mul
