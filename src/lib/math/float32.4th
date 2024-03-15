@@ -211,24 +211,23 @@ def float32-exp-series
   ' float32-exp-stepper arg0 1f fun-power-series ' float32-add 1f fun-reduce/3 set-arg0
 end
 
-def float32-exp-big-exp-loop ( acc exp -- acc new-exp )
-  arg0 3 int32->float32 float32< IF return0 THEN
-  arg0 4 int32->float32 float32<
-  IF 1 e
-  ELSE				    
-    arg0 6 int32->float32 float32<
-    IF 2 float32-ee
-    ELSE 3 float32-eee
-    THEN
+def exp-float32-big-exp-loop ( acc exp -- acc new-exp )
+  arg0 1f float32< IF return0 THEN
+  arg0 2f float32>= IF
+    1f arg0 0.5 float32-mul exp-float32-big-exp-loop
+    2f float32-mul set-arg0
+    dup float32-mul arg1 float32-mul set-arg1
+    repeat-frame
+  ELSE
+    e arg1 float32-mul set-arg1
+    arg0 1f float32-sub set-arg0 repeat-frame
   THEN
-  arg1 float32-mul set-arg1
-  int32->float32 arg0 swap float32-sub set-arg0 repeat-frame
 end
 
 def float32-exp
   arg0 0f float32-equals? IF 1f 1 return1-n THEN
   arg0 0f float32<= IF arg0 float32-negate ELSE arg0 THEN
-  1.0 swap float32-exp-big-exp-loop
+  1f swap float32-exp-big-exp-loop
   float32-exp-series
   float32-mul
   arg0 0f float32<= IF float32-invert THEN set-arg0
