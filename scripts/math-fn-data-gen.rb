@@ -4,6 +4,7 @@ $mode = 'exp'
 
 Modes = {
   pow: lambda { |b, e| b ** e },
+  pow2: lambda { |e| 2 ** e },
   sqrt: Math.method(:sqrt),
   exp: Math.method(:exp),
   log: Math.method(:log),
@@ -26,6 +27,9 @@ def call_fn *args
   r = Modes.fetch($mode.to_sym).call(*args)
   $stdout.puts((args + [ r ]).collect { |a| "%.8f" % [ a ]}.join(" "))
   $stdout.flush
+rescue RangeError
+  $stderr.puts($!)
+  $stdout.puts((args + [ 0 ]).collect { |a| "%.8f" % [ a ]}.join(" "))
 end
 
 ARGF.each_line do |line|
