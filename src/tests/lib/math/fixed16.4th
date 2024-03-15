@@ -207,6 +207,26 @@ def test-ufixed16-reciprocal
 end
 
 def test-fixed16-to-string
+  0 128 stack-allot set-local0
+  local0 128 0 fixed16->string s" 0" assert-byte-string-equals/4
+  local0 128 fixed16-one fixed16->string s" 1" assert-byte-string-equals/4
+  local0 128 fixed16-one fixed16-negate fixed16->string s" -1" assert-byte-string-equals/4
+  local0 128 123456 10 int-div->fixed16 fixed16->string s" 12345.5999" assert-byte-string-equals/4
+  local0 128 -123456 1000 int-div->fixed16 fixed16->string s" -123.4559" assert-byte-string-equals/4
+  local0 128 0x7FFF int32->fixed16 fixed16->string s" 32767" assert-byte-string-equals/4
+  local0 128 -0x7FFF int32->fixed16 fixed16->string s" -32767" assert-byte-string-equals/4
+end
+
+def test-ufixed16-to-string
+  0 128 stack-allot set-local0
+  local0 128 0 ufixed16->string s" 0" assert-byte-string-equals/4
+  local0 128 fixed16-one ufixed16->string s" 1" assert-byte-string-equals/4
+  local0 128 fixed16-one fixed16-negate ufixed16->string s" 65535" assert-byte-string-equals/4
+  local0 128 123456 10 uint-div->ufixed16 ufixed16->string s" 12345.5999" assert-byte-string-equals/4
+  local0 128 123456 1000 uint-div->ufixed16 ufixed16->string s" 123.4559" assert-byte-string-equals/4
+  local0 128 0x7FFF int32->fixed16 ufixed16->string s" 32767" assert-byte-string-equals/4
+  local0 128 0x8000 int32->fixed16 ufixed16->string s" 32768" assert-byte-string-equals/4
+  local0 128 0xFFFF int32->fixed16 ufixed16->string s" 65535" assert-byte-string-equals/4
 end
 
 def test-fixed16-exp
@@ -216,8 +236,19 @@ def test-fixed16-exp
   ' data-script-assert-fixed16 local0 partial-first ' exp-fixed16 partial-first set-local1
   local1 -1 int32->fixed16 1 int32->fixed16 0.1 float32->fixed16 map-fixed16-range
   ( overflows by e**12 )
-  local1 -12 int32->fixed16 12 int32->fixed16 0.25 float32->fixed16 map-fixed16-range
+  local1 -12 int32->fixed16 11 int32->fixed16 0.25 float32->fixed16 map-fixed16-range
   local1 -0x7FFF int32->fixed16 0 int32->fixed16 test-fixed16-big-step-size @ map-fixed16-range
+  local0 data-script-kill
+end
+
+def test-fixed16-uexp
+  0 0
+  s" exp" data-script-spawn
+  IF set-local0 ELSE s" Failed to start script." error-line/2 return0 THEN
+  ' data-script-assert-ufixed16 local0 partial-first ' exp-ufixed16 partial-first set-local1
+  local1 0 int32->fixed16 2 int32->fixed16 0.1 float32->fixed16 map-ufixed16-range
+  ( overflows by e**12 )
+  local1 0 int32->fixed16 11 int32->fixed16 0.25 float32->fixed16 map-ufixed16-range
   local0 data-script-kill
 end
 
@@ -278,11 +309,14 @@ end
 
 def test-fixed16
   test-fixed16-conversions
+  test-fixed16-to-string
+  test-ufixed16-to-string
   test-fixed16-add
   test-fixed16-sub
   test-fixed16-mul
   test-fixed16-div
   test-fixed16-exp
+  test-fixed16-uexp
   test-fixed16-ln
   test-fixed16-pow
   test-fixed16-pow2

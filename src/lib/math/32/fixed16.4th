@@ -3,7 +3,7 @@
 0x8000 const> fixed16-1/2
 0x10000 const> fixed16-one
 0xb504f333 const> fixed-sqrt-2 ( sqrt[2] << 31 )
-45426 const> fixed-LN2 ( 0.6931471805599453 << 16 )
+45426 const> fixed16-ln2 ( 0.6931471805599453 << 16 )
 ( 94548 ) 0xb8aa3b29 const> fixed-1/LN2 ( 1 / 0.6931471805599453 << 31 )
 0x2B7DE const> fixed16-e ( e<<16 )
 0x76387 const> fixed16-ee ( e**2 << 16 )
@@ -54,6 +54,17 @@ def float32->ufixed16
   arg0 fixed16-one int32->float32 float32-mul float32->uint32 return1-1
 end
 
+alias> fixed16->fixed48.16 int32->64
+alias> ufixed16->ufixed48.16 uint32->64
+
+def fixed48.16->fixed16
+  arg1 2 return1-n
+end
+
+def int32->fixed48.16
+  arg0 int32->fixed16 fixed16->fixed48.16 1 return2-n
+end
+
 alias> fixed16< int<
 alias> fixed16<= int<=
 alias> fixed16> int>
@@ -96,32 +107,61 @@ def fixed16-mul-int32->int32
   arg1 arg0 int-mulc 16 int64-absr drop 2 return1-n
 end
 
+def fixed48.16-mul ( a-lo a-hi b-lo b-hi -- lo hi )
+  arg3 arg2 arg1 arg0 int64-mul 16 int64-absr 4 return2-n
+end
+
 def fixed16-div ( fixed fixed -- fixed )
-  arg1 0 16 int64-bsl arg0 int64-div32 drop 2 return1-n
+  arg1 int32->64 16 int64-bsl arg0 int64-div32 drop 2 return1-n
 end
 
 def ufixed16-div ( fixed fixed -- fixed )
-  arg1 0 16 int64-bsl arg0 uint64-div32 drop 2 return1-n
+  arg1 int32->64 16 int64-bsl arg0 uint64-div32 drop 2 return1-n
 end
 
 def ufixed16-div-int32 ( fixed int32 -- fixed )
-  arg1 0 arg0 uint64-div32 drop 2 return1-n
+  arg1 int32->64 arg0 uint64-div32 drop 2 return1-n
 end
 
 def fixed16-div-int32 ( fixed int32 -- fixed )
-  arg1 0 arg0 int64-div32 drop 2 return1-n
+  arg1 int32->64 arg0 int64-div32 drop 2 return1-n
 end
 
-def int-div->ufixed16 ( int32 int32 -- fixed )
-  arg1 0 16 int64-bsl arg0 uint64-div32 drop 2 return1-n
+def int-div->fixed16 ( int32 int32 -- fixed )
+  arg1 int32->64 16 int64-bsl arg0 int64-div32 drop 2 return1-n
+end
+
+def uint-div->ufixed16 ( int32 int32 -- fixed )
+  arg1 int32->64 16 int64-bsl arg0 uint64-div32 drop 2 return1-n
+end
+
+def fixed48.16-div ( a-lo a-hi d-lo d-hi -- q-lo q-hi )
+  arg3 arg2 16 int64-bsl arg1 arg0 int64-div 4 return2-n
+end
+
+def ufixed48.16-div ( a-lo a-hi d-lo d-hi -- q-lo q-hi )
+  arg3 arg2 16 int64-bsl arg1 arg0 uint64-div 4 return2-n
 end
 
 def fixed16-reciprocal
   0 1 arg0 int64-div32 drop return1-1
 end
 
+def ufixed16-reciprocal
+  0 1 arg0 uint64-div32 drop return1-1
+end
+
 def fixed16-reciprocal32 ( fixed16 -- fixed32 )
   0 0x10000 arg0 int64-div32 drop return1-1
+end
+
+def ufixed16-reciprocal32 ( fixed16 -- fixed32 )
+  0 0x10000 arg0 uint64-div32 drop return1-1
+end
+
+( fixme )
+def ufixed48.16-reciprocal
+  0 0x10000000 arg1 arg0 uint64-div 28 int64-absr 2 return2-n
 end
 
 def parse-ufixed16 ( str len -- n valid? )
@@ -138,7 +178,7 @@ def parse-ufixed16 ( str len -- n valid? )
     UNLESS 0 int32->fixed16 false 2 return2-n
     ELSE
       ( input-base ** [offset2 - offset1 - 1] )
-      input-base @ 3 overn 9 overn - 1 - int-pow int-div->ufixed16
+      input-base @ 3 overn 9 overn - 1 - int-pow uint-div->ufixed16
       6 overn uint32->fixed16 fixed16-add
     THEN
   ELSE
@@ -237,17 +277,17 @@ def write-ufixed16 ( n )
   arg0 output-precision @ write-ufixed16/2 1 return0-n
 end
 
-def exp-fixed16-loop ( x acc numer-lo numer-hi denom limit counter -- result )
+def exp-fixed16-loop ( x acc-lo acc-hi numer-lo numer-hi denom limit counter -- result-lo result-hi )
   ( sum[x^k/k!, k, 0, infinity] )
   ( pow and factorial build up in the loop )
   ( arg0 write-int space 4 argn arg3 write-hex-int64 space arg2 write-hex-int space 5 argn write-hex-int nl )
   arg0 arg1 uint< IF
-    4 argn arg3 6 argn 0 int64-mul 16 int64-absr set-arg3 4 set-argn
+    4 argn arg3 7 argn ufixed16->ufixed48.16 int64-mul 16 int64-bsr set-arg3 4 set-argn
     arg2 arg0 int-mul set-arg2
     4 argn arg3 arg2 int64-div32
-    5 argn 0 int64-add drop 5 set-argn
+    6 argn 5 argn int64-add 5 set-argn 6 set-argn
     arg0 1 + set-arg0 repeat-frame
-  ELSE 5 argn 7 return1-n
+  ELSE 6 argn 5 argn 8 return2-n
   THEN
 end
 
@@ -255,29 +295,40 @@ end
 
 ( todo break the exponent down by /2 )
 
-def exp-fixed16-big-exp-loop ( acc exp -- acc new-exp )
-  arg0 3 int32->fixed16 fixed16< IF return0 THEN
-  arg0 4 int32->fixed16 fixed16<
+def exp-fixed16-big-exp-loop ( acc-lo acc-hi exp -- acc-lo acc-hi new-exp )
+  arg0 3 int32->fixed16 ufixed16< IF return0 THEN
+  arg0 4 int32->fixed16 ufixed16<
   IF 1 fixed16-e
   ELSE				    
-    arg0 6 int32->fixed16 fixed16<
+    arg0 6 int32->fixed16 ufixed16<
     IF 2 fixed16-ee
     ELSE 3 fixed16-eee
     THEN
   THEN
-  arg1 fixed16-mul set-arg1
+  fixed16->fixed48.16 arg2 arg1 fixed48.16-mul set-arg1 set-arg2
   int32->fixed16 arg0 swap fixed16-sub set-arg0 repeat-frame
 end
 
 ( Breaks down when the exponent is >= 11.5. 16 bits overflows at that point. )
 
-def exp-fixed16
+def exp-ufixed48.16
+  1 int32->fixed48.16 arg0 exp-fixed16-big-exp-loop
+  1 int32->fixed48.16 2dup 1 int32-precision peek 1 exp-fixed16-loop
+  fixed48.16-mul 1 return2-n
+end
+
+def exp-fixed48.16
   ( arg0 0 fixed16< IF 0 int32->fixed16 1 return1-n THEN )
-  arg0 0 fixed16< IF arg0 negate exp-fixed16 fixed16-reciprocal return1-1 THEN
-  ( arg0 1 int32->fixed16 fixed16< IF 1 int32->fixed16 1 return1-n THEN )
-  1 int32->fixed16 arg0 exp-fixed16-big-exp-loop
-  1 int32->fixed16 dup 0 1 int32-precision peek 1 exp-fixed16-loop
-  fixed16-mul return1-1
+  arg0 0 fixed16< IF arg0 fixed16-negate exp-ufixed48.16 ufixed48.16-reciprocal 1 return2-n THEN
+  ' exp-ufixed48.16 tail-0
+end
+
+def exp-fixed16
+  arg0 exp-fixed48.16 drop return1-1
+end
+
+def exp-ufixed16
+  arg0 exp-ufixed48.16 drop return1-1
 end
 
 def ln-fixed16-loop ( n guess counter -- log-fixed16 )
@@ -290,24 +341,32 @@ def ln-fixed16-loop ( n guess counter -- log-fixed16 )
   arg0 0 uint> UNLESS arg1 3 return1-n THEN
   arg1
     fixed16-one
-      arg2 arg1 exp-fixed16 fixed16-div
+    arg2 ufixed16->ufixed48.16
+      arg1 exp-ufixed48.16 ufixed48.16-div fixed48.16->fixed16
     fixed16-sub
   fixed16-sub set-arg1
   arg0 1 - set-arg0 repeat-frame
 end
 
-0x15000000 ( 0x7FFFFFFF ) var> fixed16-ln-cut-off
+0x80000000 ( 0x7FFFFFFF ) var> fixed16-ln-cut-off
 
 def ln-fixed16
-  ( ln[x] = -ln[1/x] )
-  arg0 fixed16-ln-cut-off @ fixed16< IF
-    arg0
-    arg0 fixed16->int32 badlog2-uint int32->fixed16
-    int32-precision @ ln-fixed16-loop return1-1
+  arg0 0 equals? IF 0 return1-1 THEN
+  arg0 fixed16-one ufixed16< IF
+    ( No need for a signed loop with: ln[x] = -ln[1/x] )
+    arg0 fixed16-reciprocal ln-fixed16 negate
   ELSE
-    arg0 fixed16-reciprocal ln-fixed16
-    negate return1-1
-  THEN
+    arg0 fixed16-ln-cut-off @ ufixed16< IF
+      arg0
+      arg0 fixed16->int32 badlog2-uint 9 umin uint32->fixed16
+      int32-precision @
+      ln-fixed16-loop
+    ELSE
+      ( accurary shot down after 32768, so clip the domain )
+      ( log[x] = -log[2] + log[2x] -> log[x] + log[2] = log[2x] )
+      arg0 1 bsr ln-fixed16 fixed16-ln2 fixed16-add
+    THEN
+  THEN return1-1
 end
 
 def pow-fixed16
@@ -338,6 +397,11 @@ end
 def sqrt-fixed16
   ( domain seems to error out after 24000 )
   arg0 ln-fixed16 fixed16-1/2 fixed16-mul exp-fixed16 return1-1
+end
+
+def sqrt-ufixed16
+  ( domain seems to error out after 24000 )
+  arg0 ln-fixed16 fixed16-1/2 fixed16-mul exp-ufixed16 return1-1
 end
 
 def map-fixed16-range ( fn min max step ++ )

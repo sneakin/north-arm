@@ -116,7 +116,7 @@ def data-script-assert-ufixed16 ( n fn process -- )
   arg2 arg0 data-script-query-ufixed16 IF
     arg2 assert-fixed16-equals
     arg2 debug? IF dup write-ufixed16 space THEN
-    arg1 exec-abs data-script-fixed16-margin @ assert-fixed16-within
+    arg1 exec-abs data-script-fixed16-margin @ assert-ufixed16-within
   ELSE s" Failed to generate data." error-line/2
   THEN 3 return0-n
 end

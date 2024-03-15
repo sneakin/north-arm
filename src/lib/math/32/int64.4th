@@ -304,6 +304,13 @@ def uint64-divmod ( alo ahi blo bhi -- qlo qhi mlo mhi )
   THEN set-arg0 set-arg1 set-arg2 set-arg3
 end
 
+def int64-div ( alo ahi d-lo d-hi -- lo hi )
+  arg3 arg2 abs-int64 arg1 arg0 abs-int64 uint64-div
+  arg3 arg2 0LL int64<
+  arg1 arg0 0LL int64<
+  logxor IF int64-negate THEN 4 return2-n
+end
+
 ( Exponentiation: )
 
 def int64-pow32-loop ( lo hi n rlo rhi -- lo hi )

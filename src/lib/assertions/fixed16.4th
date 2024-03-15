@@ -2,6 +2,10 @@
   swap write-fixed16 write-string write-fixed16
 ;
 
+: write-ufixed16-binop-message
+  swap write-ufixed16 write-string write-ufixed16
+;
+
 : assert-fixed16-equals
   2dup equals dup assert IF
     2 dropn
@@ -24,5 +28,14 @@
     2 dropn
   ELSE
     space "  ≇ " write-fixed16-binop-message nl
+  THEN
+;
+
+: assert-ufixed16-within ( a b epsilon -- )
+  3 overn 3 overn fixed16-sub fixed16>=
+  dup assert IF
+    2 dropn
+  ELSE
+    space "  ≇ " write-ufixed16-binop-message nl
   THEN
 ;
