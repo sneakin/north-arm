@@ -29,6 +29,10 @@
   THEN
 ;
 
+: assert-bool
+  1 logand swap 1 logand swap assert-equals
+;
+
 : assertion-message
   IF assertion-passed 2 dropn
   ELSE assertion-failed space

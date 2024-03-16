@@ -31,6 +31,22 @@
   THEN
 ;
 
+: assert-ufixed16-equals
+  2dup equals dup assert IF
+    2 dropn
+  ELSE
+    space "  != " write-ufixed16-binop-message nl
+  THEN
+;
+
+: assert-ufixed16-not-equals
+  2dup equals not dup assert IF
+    2 dropn
+  ELSE
+    space "  == " write-ufixed16-binop-message nl
+  THEN
+;
+
 : assert-ufixed16-within ( a b epsilon -- )
   3 overn 3 overn fixed16-sub fixed16>=
   dup assert IF

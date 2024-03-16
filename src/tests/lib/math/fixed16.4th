@@ -5,6 +5,7 @@ s[ src/lib/math/32/fixed16.4th
    src/lib/assertions/float.4th
    src/lib/assertions/fixed16.4th
    src/lib/assertions/int.4th
+   src/lib/assertions/binops.4th
    src/lib/testing/data-script.4th
 ] load-list
 
@@ -68,21 +69,121 @@ def test-fixed16-conversions
   float32-nan float32->ufixed16 0 assert-fixed16-equals
 end
 
-(
 def test-fixed16-comparisons
-  fixed16<
-  fixed16<=
-  fixed16>
-  fixed16>=
+  0 0 false
+  -1 0 true
+  0 -1 false
+  1 0 false
+  0 1 true
+  0x10000 0x20000 true
+  0x20000 0x10000 false
+  -0x10000 0x20000 true
+  -0x20000 0x10000 true
+  0x10000 -0x20000 false
+  0x20000 -0x10000 false
+  0x40000 0x40000 false
+  here 12 ' fixed16< assert-bool-binary-op-by-table
+
+  0 0 true
+  -1 0 true
+  0 -1 false
+  1 0 false
+  0 1 true
+  0x10000 0x20000 true
+  0x20000 0x10000 false
+  -0x10000 0x20000 true
+  -0x20000 0x10000 true
+  0x10000 -0x20000 false
+  0x20000 -0x10000 false
+  0x40000 0x40000 true
+  here 12 ' fixed16<= assert-bool-binary-op-by-table
+
+  0 0 false
+  -1 0 false
+  0 -1 true
+  1 0 true
+  0 1 false
+  0x10000 0x20000 false
+  0x20000 0x10000 true
+  -0x10000 0x20000 false
+  -0x20000 0x10000 false
+  0x10000 -0x20000 true
+  0x20000 -0x10000 true
+  0x40000 0x40000 false
+  here 12 ' fixed16> assert-bool-binary-op-by-table
+
+  0 0 true
+  -1 0 false
+  0 -1 true
+  1 0 true
+  0 1 false
+  0x10000 0x20000 false
+  0x20000 0x10000 true
+  -0x10000 0x20000 false
+  -0x20000 0x10000 false
+  0x10000 -0x20000 true
+  0x20000 -0x10000 true
+  0x40000 0x40000 true
+  here 12 ' fixed16>= assert-bool-binary-op-by-table
 end
 
 def test-ufixed16-comparisons
-  ufixed16<
-  ufixed16<=
-  ufixed16>
-  ufixed16>=
+  0 0 false
+  -1 0 false
+  0 -1 true
+  1 0 false
+  0 1 true
+  0x10000 0x20000 true
+  0x20000 0x10000 false
+  -0x10000 0x20000 false
+  -0x20000 0x10000 false
+  0x10000 -0x20000 true
+  0x20000 -0x10000 true
+  0x40000 0x40000 false
+  here 12 ' ufixed16< assert-bool-binary-op-by-table
+
+  0 0 true
+  -1 0 false
+  0 -1 true
+  1 0 false
+  0 1 true
+  0x10000 0x20000 true
+  0x20000 0x10000 false
+  -0x10000 0x20000 false
+  -0x20000 0x10000 false
+  0x10000 -0x20000 true
+  0x20000 -0x10000 true
+  0x40000 0x40000 true
+  here 12 ' ufixed16<= assert-bool-binary-op-by-table
+
+  0 0 false
+  -1 0 true
+  0 -1 false
+  1 0 true
+  0 1 false
+  0x10000 0x20000 false
+  0x20000 0x10000 true
+  -0x10000 0x20000 true
+  -0x20000 0x10000 true
+  0x10000 -0x20000 false
+  0x20000 -0x10000 false
+  0x40000 0x40000 false
+  here 12 ' ufixed16> assert-bool-binary-op-by-table
+
+  0 0 true
+  -1 0 true
+  0 -1 false
+  1 0 true
+  0 1 false
+  0x10000 0x20000 false
+  0x20000 0x10000 true
+  -0x10000 0x20000 true
+  -0x20000 0x10000 true
+  0x10000 -0x20000 false
+  0x20000 -0x10000 false
+  0x40000 0x40000 true
+  here 12 ' ufixed16>= assert-bool-binary-op-by-table
 end
-)
 
 def test-fixed16-parts
   0xABC8000 fixed16-truncate 0xABC0000 assert-fixed16-equals
@@ -200,7 +301,50 @@ end
 def test-ufixed16-mod
 end
 
+def test-fixed16-reciprocal
+  0 fixed16-reciprocal 0 assert-fixed16-equals
+  fixed16-one fixed16-reciprocal fixed16-one assert-fixed16-equals
+  fixed16-one negate fixed16-reciprocal fixed16-one negate assert-fixed16-equals
+  2 int32->fixed16 fixed16-reciprocal fixed16-1/2 assert-fixed16-equals
+  fixed16-1/2 fixed16-reciprocal 2 int32->fixed16 assert-fixed16-equals
+  -2 int32->fixed16 fixed16-reciprocal fixed16-1/2 negate assert-fixed16-equals
+  fixed16-1/2 negate fixed16-reciprocal -2 int32->fixed16 assert-fixed16-equals
+  0x7fff0000 fixed16-reciprocal 0x0002 assert-fixed16-equals
+  0x2 fixed16-reciprocal 0x80000000 assert-fixed16-equals
+end
+
 def test-ufixed16-reciprocal
+  0 ufixed16-reciprocal 0 assert-ufixed16-equals
+  fixed16-one ufixed16-reciprocal fixed16-one assert-ufixed16-equals
+  0xFFFFFFFF ufixed16-reciprocal 1 assert-ufixed16-equals
+  2 int32->fixed16 ufixed16-reciprocal fixed16-1/2 assert-ufixed16-equals
+  fixed16-1/2 ufixed16-reciprocal 2 int32->fixed16 assert-ufixed16-equals
+  0x7fff0000 ufixed16-reciprocal 0x0002 assert-ufixed16-equals
+  0x2 ufixed16-reciprocal 0x80000000 assert-ufixed16-equals
+  0x80000000 ufixed16-reciprocal 2 assert-ufixed16-equals
+end
+
+def test-fixed16-reciprocal32
+  0 fixed16-reciprocal32 0 assert-equals
+  fixed16-one fixed16-reciprocal32 fixed16-one 16 bsl assert-equals
+  fixed16-one negate fixed16-reciprocal32 fixed16-one negate 16 bsl assert-equals
+  2 int32->fixed16 fixed16-reciprocal32 fixed16-1/2 16 bsl assert-equals
+  fixed16-1/2 fixed16-reciprocal32 2 int32->fixed16 16 bsl assert-equals
+  -2 int32->fixed16 fixed16-reciprocal32 fixed16-1/2 negate 16 bsl assert-equals
+  fixed16-1/2 negate fixed16-reciprocal32 -2 int32->fixed16 16 bsl assert-equals
+  0x7fff0000 fixed16-reciprocal32 0x20004 assert-equals
+  0x2 fixed16-reciprocal32 0 assert-equals
+end
+
+def test-ufixed16-reciprocal32
+  0 ufixed16-reciprocal32 0 assert-ufixed16-equals
+  fixed16-one ufixed16-reciprocal32 fixed16-one 16 bsl assert-ufixed16-equals
+  0xFFFFFFFF ufixed16-reciprocal32 1 16 bsl assert-ufixed16-equals
+  2 int32->fixed16 ufixed16-reciprocal32 fixed16-1/2 16 bsl assert-ufixed16-equals
+  fixed16-1/2 ufixed16-reciprocal32 2 int32->fixed16 16 bsl assert-ufixed16-equals
+  0x7fff0000 ufixed16-reciprocal32 0x20004 assert-ufixed16-equals
+  0x2 ufixed16-reciprocal32 0 assert-ufixed16-equals
+  0x80000000 ufixed16-reciprocal32 2 16 bsl assert-ufixed16-equals
 end
 
 def test-fixed16-to-string
@@ -308,12 +452,18 @@ def test-fixed16
   test-fixed16-conversions
   test-fixed16-to-string
   test-ufixed16-to-string
+  test-fixed16-comparisons
+  test-ufixed16-comparisons
   test-fixed16-parts
   test-fixed16-rounding
   test-fixed16-add
   test-fixed16-sub
   test-fixed16-mul
   test-fixed16-div
+  test-fixed16-reciprocal
+  test-ufixed16-reciprocal
+  test-fixed16-reciprocal32
+  test-ufixed16-reciprocal32
   test-fixed16-exp
   test-fixed16-uexp
   test-fixed16-ln
