@@ -2,7 +2,7 @@
 def copy ( src dest num-bytes -- )
   ( [src... ]
     [dest...] )
-  arg2 arg1 equals? IF return0 THEN
+  arg2 arg1 equals? IF 3 return0-n THEN
   (        [ src... ]
         -->
       [ dest.. ] )
