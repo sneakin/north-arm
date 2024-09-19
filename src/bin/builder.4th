@@ -44,25 +44,6 @@ def BUILDER-TARGET
   builder-target @ return1
 end
 
-def north-stacks-init!
-  return-stack peek UNLESS
-    512 proper-init
-    verbosity @ IF s" Initialized return stack: " error-string/2
-		   return-stack @ error-hex-uint enl
-		THEN
-  THEN
-
-  dhere UNLESS
-    512 1024 * data-init-stack
-    verbosity @ IF s" Initialized data stack: " error-string/2
-		   data-stack-base @ error-hex-uint espace
-		   data-stack-size @ error-uint enl
-		THEN
-  THEN
-
-  exit-frame
-end
-
 def build
   reset!
 
@@ -89,8 +70,10 @@ def build
 
   show-version @ IF about 0 return1 THEN
 
-  north-stacks-init!
-  interp-init
+  ( fixme the condition can be removed once interp-init is updated to check for prior init )
+  return-stack @ UNLESS
+    interp-init
+  THEN
 
   verbosity @ IF
     s" Target: " error-string/2 builder-target @ error-line
