@@ -123,8 +123,8 @@ build.sh: Makefile
 	@echo "#!/bin/sh" > $@
 	@echo "HOST?=\"\$${2:-$(HOST)}\"" >> $@
 	@echo "TARGET?=\"\$${1:-$(TARGET)}\"" >> $@
-	@make -Bns all TARGET='${TARGET}' HOST='${HOST}' \
-	  | sed -e 's:${TARGET}:"$${TARGET}":g' -e 's:${HOST}:"$${HOST}":g' >> $@
+	@make -Bns all TARGET='$(TARGET)' HOST='$(HOST)' \
+	  | sed -e 's:$(TARGET):"$${TARGET}":g' -e 's:$(HOST):"$${HOST}":g' >> $@
 
 
 #
@@ -346,6 +346,7 @@ bin/%$(EXECEXT): src/bin/%.4th
 
 # Per stage variabless:
 
+# todo filenames need full triples and this would really cross compile
 define define_stage # stage
 STAGE$(1)_PRIOR=$(shell echo $$(($(1) - 1)))
 STAGE$(1)_FORTH=$(RUNNER) ./bin/interp.$(RUN_OS).$(1)$(EXECEXT)
