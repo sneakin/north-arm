@@ -119,6 +119,14 @@ version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 src/copyright.4th: src/copyright.4th.tmpl src/copyright.txt
 	./scripts/copyright-gen.sh $< > $@
 
+build.sh: Makefile
+	@echo "#!/bin/sh" > $@
+	@echo "HOST?=\"\$${2:-$(HOST)}\"" >> $@
+	@echo "TARGET?=\"\$${1:-$(TARGET)}\"" >> $@
+	@make -Bns all TARGET='${TARGET}' HOST='${HOST}' \
+	  | sed -e 's:${TARGET}:"$${TARGET}":g' -e 's:${HOST}:"$${HOST}":g' >> $@
+
+
 #
 # Formatted code docs
 #
