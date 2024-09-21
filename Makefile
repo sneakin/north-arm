@@ -340,12 +340,12 @@ doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 # Stage 0
 
 %$(EXECEXT): %.4th
-	@echo -e "Building \e[36;1m$@\e[0m"
+	@echo -e "Building \e[36;1m$(@)\e[0m"
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
 bin/%$(EXECEXT): src/bin/%.4th
-	@echo -e "Building \e[36;1m$@\e[0m"
+	@echo -e "Building \e[36;1m$(@)\e[0m"
 	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
 	chmod u+x $@
 
@@ -362,13 +362,13 @@ endef
 
 define define_stage_targets # target, stage
 bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
-	@echo -e "\e[36;1mBuilding $$@\e[0m"
+	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
 bin/interp.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th
-	@echo -e "\e[36;1mBuilding $$@\e[0m"
+	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e interp-boot -o $$@ $$^
 bin/runner.$(1).$(2)$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
-	@echo -e "\e[36;1mBuilding $$@\e[0m"
+	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e runner-boot -o $$@ $$^
 endef
 
@@ -541,7 +541,7 @@ PGRM_demo_tty_raycast_sources=\
 define define_north_program # name, target, stage, entry point, sources
 PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
 $(1): $(5)
-	@echo -e "Building \e[36;1m$$$$@\e[0m"
+	@echo -e "Building \e[36;1m$$(@)\e[0m"
 	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $$^
 endef
 
