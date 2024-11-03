@@ -2,7 +2,6 @@
   " src/lib/byte-data.4th" load
 THEN
 
-( todo data ops need a shorter handed use of immed-op, reg-op, and .i. )
 ( todo mask arguments )
 ( todo place ins bits last in functions )
 
@@ -99,22 +98,72 @@ S set condition codes
   logior ( op2 )
 ;
 
-: and data-op-args 0 data-op ; ( operand1 AND operand2 )
+: data-op-reg 2swap reg-op shift ;
+: data-op-immed 2swap immed-op shift ;
+
+: and ( op2 rn rd -- ins ) data-op-args 0 data-op ; ( operand1 AND operand2 )
+: andr ( shift-op rm rn rd -- ins ) data-op-reg and ;
+: and# ( rshift immed rn rd -- ins ) data-op-immed and .i ;
+
 : eor data-op-args 1 data-op ; ( operand1 EOR operand2 )
+: eorr ( shift-op rm rn rd -- ins ) data-op-reg eor ;
+: eor# ( rshift immed rn rd -- ins ) data-op-immed eor .i ;
+
 : sub data-op-args 0x2 data-op ; ( operand1 - operand2 )
+: subr ( shift-op rm rn rd -- ins ) data-op-reg sub ;
+: sub# ( rshift immed rn rd -- ins ) data-op-immed sub .i ;
+
 : rsm data-op-args 0x3 data-op ; ( operand2 - operand1 )
+: rsmr ( shift-op rm rn rd -- ins ) data-op-reg rsm ;
+: rsm# ( rshift immed rn rd -- ins ) data-op-immed rsm .i ;
+
 : add data-op-args 0x4 data-op ; ( operand1 + operand2 )
+: addr ( shift-op rm rn rd -- ins ) data-op-reg add ;
+: add# ( rshift immed rn rd -- ins ) data-op-immed add .i ;
+
 : adc data-op-args 0x5 data-op ; ( operand1 + operand2 + carry )
+: adcr ( shift-op rm rn rd -- ins ) data-op-reg adc ;
+: adc# ( rshift immed rn rd -- ins ) data-op-immed adc .i ;
+
 : sbc data-op-args 0x6 data-op ; ( operand1 - operand2 + carry - 1 )
+: sbcr ( shift-op rm rn rd -- ins ) data-op-reg sbc ;
+: sbc# ( rshift immed rn rd -- ins ) data-op-immed sbc .i ;
+
 : rsc data-op-args 0x7 data-op ; ( operand2 - operand1 + carry - 1 )
+: rscr ( shift-op rm rn rd -- ins ) data-op-reg rsc ;
+: rsc# ( rshift immed rn rd -- ins ) data-op-immed rsc .i ;
+
 : tst data-op-args 0x8 data-op ; ( as AND, but result is not written )
+: tstr ( shift-op rm rn rd -- ins ) data-op-reg tst ;
+: tst# ( rshift immed rn rd -- ins ) data-op-immed tst .i ;
+
 : teq data-op-args 0x9 data-op ; ( as EOR, but result is not written )
+: teqr ( shift-op rm rn rd -- ins ) data-op-reg teq ;
+: teq# ( rshift immed rn rd -- ins ) data-op-immed teq .i ;
+
 : cmp data-op-args 0xA data-op ; ( as SUB, but result is not written )
+: cmpr ( shift-op rm rn rd -- ins ) data-op-reg cmp ;
+: cmp# ( rshift immed rn rd -- ins ) data-op-immed cmp .i ;
+
 : cmn data-op-args 0xB data-op ; ( as ADD, but result is not written )
+: cmnr ( shift-op rm rn rd -- ins ) data-op-reg cmn ;
+: cmn# ( rshift immed rn rd -- ins ) data-op-immed cmn .i ;
+
 : orr data-op-args 0xC data-op ; ( operand1 OR operand2 )
+: orrr ( shift-op rm rn rd -- ins ) data-op-reg orr ;
+: orr# ( rshift immed rn rd -- ins ) data-op-immed orr .i ;
+
 : mov data-op-args 0xD data-op ; ( operand2, operand1 is ignored )
+: movr ( shift-op rm rn rd -- ins ) data-op-reg mov ;
+: mov# ( rshift immed rn rd -- ins ) data-op-immed mov .i ;
+
 : bic data-op-args 0xE data-op ; ( operand1 AND NOT operand2, Bit clear )
+: bicr ( shift-op rm rn rd -- ins ) data-op-reg bic ;
+: bic# ( rshift immed rn rd -- ins ) data-op-immed bic .i ;
+
 : mvn data-op-args 0xF data-op ; ( NOT operand2, operand1 is ignored )
+: mvnr ( shift-op rm rn rd -- ins ) data-op-reg mvn ;
+: mvn# ( rshift immed rn rd -- ins ) data-op-immed mvn .i ;
 
 : nop r0 r0 r0 mov ;
 
@@ -298,14 +347,19 @@ Offset
 
 ( todo needs auto .up, but the offset may be a shift )
 
-: str ( offset rn rd -- ins )
+: str# ( offset rn rd -- ins )
   0xE4000000
   swap 12 bsl logior ( rd )
   swap 16 bsl logior ( rn )
   swap 0xFFF logand logior ( offset )
 ;
 
+: str ( offset rn rd -- ins )
+  str# .i
+;
+
 : ldr str .l ;
+: ldr# str# .l ;
 
 (
 4    | 3     | 20                                | 1 | 4 |

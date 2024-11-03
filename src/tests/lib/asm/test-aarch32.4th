@@ -5,7 +5,15 @@ THEN
 dhere const> mark
 
 r7 r2 r3 and ,ins
+4 BARREL-BSL immed-shift r1 r2 r3 andr ,ins
+r2 BARREL-BSL reg-shift r1 r2 r3 andr ,ins
+16 16 r2 r3 and# ,ins
+
 r7 r2 r3 eor ,ins
+4 BARREL-BSL immed-shift r1 r2 r3 eorr ,ins
+r2 BARREL-BSL reg-shift r1 r2 r3 eorr ,ins
+16 16 r2 r3 eor# ,ins
+
 r7 r2 r3 sub ,ins
 r7 r2 r3 rsm ,ins
 r1 r7 r3 add ,ins
@@ -29,23 +37,35 @@ nop ,ins
 4 15 immed-op r1 r2 and .i ,ins
 16 123 immed-op r1 r2 and .i ,ins
 
+16 123 r1 r2 and# ,ins
+16 123 r1 r2 add# ,ins
+
 3 BARREL-BSL immed-shift r3 reg-op r1 r2 add ,ins
 4 BARREL-BSR immed-shift r3 reg-op r1 r2 add ,ins
 5 BARREL-ASR immed-shift r3 reg-op r1 r2 add ,ins
 6 BARREL-RSR immed-shift r3 reg-op r1 r2 add ,ins
+
+6 BARREL-RSR immed-shift r3 r1 r2 addr ,ins
 
 r4 BARREL-BSL reg-shift r3 reg-op r1 r2 adc ,ins
 r5 BARREL-BSR reg-shift r3 reg-op r1 r2 adc ,ins
 r6 BARREL-ASR reg-shift r3 reg-op r1 r2 adc ,ins
 r7 BARREL-RSR reg-shift r3 reg-op r1 r2 adc ,ins
 
+r7 BARREL-RSR reg-shift r3 r1 r2 adcr ,ins
+
 0 r3 reg-op r1 r2 sbc ,ins
 1 r3 reg-op r1 r2 sbc ,ins
 2 r3 reg-op r1 r2 sbc ,ins
 3 r3 reg-op r1 r2 sbc ,ins
 
+3 r3 r1 r2 sbcr ,ins
+
 2 BARREL-BSL immed-shift r3 reg-op r1 r2 eor ,ins
 r3 BARREL-BSR reg-shift r3 reg-op r1 r2 eor ,ins
+
+2 BARREL-BSL immed-shift r3 r1 r2 eorr ,ins
+r3 BARREL-BSR reg-shift r3 r1 r2 eorr ,ins
 
 nop ,ins
 nop ,ins
@@ -153,11 +173,11 @@ r3 BARREL-BSR reg-shift r3 reg-op msri .spsr ,ins
 nop ,ins
 nop ,ins
 
-23 r1 r2 str ,ins
-23 r1 r2 ldr .up ,ins
+23 r1 r2 str# ,ins
+23 r1 r2 ldr# .up ,ins
 
-0 r3 reg-op r1 r2 str .i ,ins
-0 r3 reg-op r1 r2 ldr .i ,ins
+0 r3 reg-op r1 r2 str ,ins
+0 r3 reg-op r1 r2 ldr ,ins
 
 nop ,ins
 nop ,ins
