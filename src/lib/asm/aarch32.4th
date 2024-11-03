@@ -1,3 +1,5 @@
+( aarch32 assembly words )
+
 ' ,uint32 defined? UNLESS
   " src/lib/byte-data.4th" load
 THEN
@@ -8,6 +10,8 @@ THEN
 : shift3 ( c b a x -- x c b a )
   3 swapn 2 swapn swap
 ;
+
+( Registers: )
 
 0 const> r0
 1 const> r1
@@ -32,6 +36,8 @@ alias> ip r12
 alias> fp r11
 alias> sl r10
 
+( Condition code modifiers: )
+
 : .condition 28 bsl swap 0xFFFFFFF logand logior ;
 
 : .eq  0 .condition ; ( eq Z " set equal" )
@@ -50,7 +56,8 @@ alias> sl r10
 : .le  13 .condition ; ( le Z " set OR [N not equal to V] less than or equal" )
 : .al  14 .condition ; ( al _ " always" )
 
-(
+( Data processing:
+
 4   | 3     | 4      | 1 | 4  | 4  | 12        |
 Cond| 0 0 I | Opcode | S | Rn | Rd | Operand 2 | Data Processing / PSR Transfer
 Opcode operation, 0..16
@@ -69,6 +76,13 @@ S set condition codes
 2 const> BARREL-ASR
 3 const> BARREL-RSR
 
+( For I=0 )
+: immed-op ( shift-right/2 immed -- operand2 )
+  0xFF logand swap 0xF logand 8 bsl logior
+;
+
+( For I=1 )
+
 : immed-shift ( amount type -- shift )
   0x3 logand 1 bsl
   swap 0x1F logand 3 bsl logior
@@ -83,9 +97,7 @@ S set condition codes
   0xF logand swap 0xFF logand 4 bsl logior
 ;
 
-: immed-op ( shift-right/2 immed -- operand2 )
-  0xFF logand swap 0xF logand 8 bsl logior
-;
+( Op macros )
 
 : data-op ( operands op -- ins )
   21 bsl 0xE0000000 logior ( op )
@@ -100,6 +112,8 @@ S set condition codes
 
 : data-op-reg 2swap reg-op shift ;
 : data-op-immed 2swap immed-op shift ;
+
+( The data ops: )
 
 : and ( op2 rn rd -- ins ) data-op-args 0 data-op ; ( operand1 AND operand2 )
 : andr ( shift-op rm rn rd -- ins ) data-op-reg and ;
@@ -133,27 +147,27 @@ S set condition codes
 : rscr ( shift-op rm rn rd -- ins ) data-op-reg rsc ;
 : rsc# ( rshift immed rn rd -- ins ) data-op-immed rsc .i ;
 
-: tst data-op-args 0x8 data-op ; ( as AND, but result is not written )
-: tstr ( shift-op rm rn rd -- ins ) data-op-reg tst ;
-: tst# ( rshift immed rn rd -- ins ) data-op-immed tst .i ;
+: tst 0 data-op-args 0x8 data-op .set ; ( as AND, but result is not written )
+: tstr ( shift-op rm rn -- ins ) data-op-reg tst ;
+: tst# ( rshift immed rn -- ins ) data-op-immed tst .i ;
 
-: teq data-op-args 0x9 data-op ; ( as EOR, but result is not written )
-: teqr ( shift-op rm rn rd -- ins ) data-op-reg teq ;
-: teq# ( rshift immed rn rd -- ins ) data-op-immed teq .i ;
+: teq 0 data-op-args 0x9 data-op .set ; ( as EOR, but result is not written )
+: teqr ( shift-op rm rn -- ins ) data-op-reg teq ;
+: teq# ( rshift immed rn -- ins ) data-op-immed teq .i ;
 
-: cmp data-op-args 0xA data-op ; ( as SUB, but result is not written )
-: cmpr ( shift-op rm rn rd -- ins ) data-op-reg cmp ;
-: cmp# ( rshift immed rn rd -- ins ) data-op-immed cmp .i ;
+: cmp 0 data-op-args 0xA data-op .set ; ( as SUB, but result is not written )
+: cmpr ( shift-op rm rn -- ins ) data-op-reg cmp ;
+: cmp# ( rshift immed rn -- ins ) data-op-immed cmp .i ;
 
-: cmn data-op-args 0xB data-op ; ( as ADD, but result is not written )
-: cmnr ( shift-op rm rn rd -- ins ) data-op-reg cmn ;
-: cmn# ( rshift immed rn rd -- ins ) data-op-immed cmn .i ;
+: cmn 0 data-op-args 0xB data-op .set ; ( as ADD, but result is not written )
+: cmnr ( shift-op rm rn -- ins ) data-op-reg cmn ;
+: cmn# ( rshift immed rn -- ins ) data-op-immed cmn .i ;
 
 : orr data-op-args 0xC data-op ; ( operand1 OR operand2 )
 : orrr ( shift-op rm rn rd -- ins ) data-op-reg orr ;
 : orr# ( rshift immed rn rd -- ins ) data-op-immed orr .i ;
 
-: mov data-op-args 0xD data-op ; ( operand2, operand1 is ignored )
+: mov 0 swap data-op-args 0xD data-op ; ( operand2, operand1 is ignored )
 : movr ( shift-op rm rn rd -- ins ) data-op-reg mov ;
 : mov# ( rshift immed rn rd -- ins ) data-op-immed mov .i ;
 
@@ -161,13 +175,12 @@ S set condition codes
 : bicr ( shift-op rm rn rd -- ins ) data-op-reg bic ;
 : bic# ( rshift immed rn rd -- ins ) data-op-immed bic .i ;
 
-: mvn data-op-args 0xF data-op ; ( NOT operand2, operand1 is ignored )
-: mvnr ( shift-op rm rn rd -- ins ) data-op-reg mvn ;
-: mvn# ( rshift immed rn rd -- ins ) data-op-immed mvn .i ;
+: mvn 0 swap data-op-args 0xF data-op ; ( NOT operand2, operand1 is ignored )
+: mvnr ( shift-op rm rd -- ins ) data-op-reg mvn ;
+: mvn# ( rshift immed rd -- ins ) data-op-immed mvn .i ;
 
-: nop r0 r0 r0 mov ;
+( Multiplication
 
-(
 4    | 8               | 4  | 4  | 4  | 4       | 4  |
 Cond | 0 0 0 0 0 0 A S | Rd | Rn | Rs | 1 0 0 1 | Rm | Multiply
 A 0 = multiply, 1 = multiply and accumulate
@@ -185,12 +198,12 @@ S set condition codes
 : mul 0 shift3 mul/4 ;
 
 : .a 1 21 bsl logior ;
-: .s 1 20 bsl logior ;
 
 : mla mul/4 .a ;
-: muls mul .s ;
+: muls mul .set ;
 
-(
+( 64 bit out multiply
+
 4    | 8               | 4    | 4    | 4  | 4       | 4  |
 Cond | 0 0 0 0 1 U A S | RdHi | RdLo | Rn | 1 0 0 1 | Rm | Multiply Long
 A 0 = multiply, 1 = multiply and accumulate
@@ -209,23 +222,14 @@ U unsigned/signed
 ;
 
 : umlal umull .a ;
-: umulls umull .s ;
+: umulls umull .set ;
 
 : smull umull .signed ;
 : smlal umlal .signed ;
 : smulls umulls .signed ;
 
-(
-4    | 8               | 8               | 8               | 4 |
-Cond | 0 0 0 1 0 0 1 0 | 1 1 1 1 1 1 1 1 | 1 1 1 1 0 0 0 1 | Rn | Branch and Exchange
-)
+( 16 and 8 bit load and store
 
-: bx
-  0xF logand 0xE12fff10 logior
-;
-
-
-(
 4    | 8               | 4  | 4  | 8               | 4 |
 Cond | 0 0 0 P U 0 W L | Rn | Rd | 0 0 0 0 1 S H 1 | Rm | Halfword Data Transfer: register offset
 P post/pre indexing
@@ -259,7 +263,8 @@ Rm offset
 : ldrsb strh .l 0xFFFFFF0F logand 0xD0 logior ;
 : ldrsh strh .l 0xFFFFFF0F logand 0xF0 logior ;
 
-(
+( 16 and 8 bit load and store w/ immediate offset
+
 4    | 8               | 4  | 4  | 4      | 4       | 4 |
 Cond | 0 0 0 P U 1 W L | Rn | Rd | Offset | 1 S H 1 | Offset | Halfword Data Transfer:immediate offset
 )
@@ -282,7 +287,8 @@ Cond | 0 0 0 P U 1 W L | Rn | Rd | Offset | 1 S H 1 | Offset | Halfword Data Tra
 : ldrshi strhi .l 0xFFFFFF0F logand 0xF0 logior ; 
 
 
-(
+( Data swap
+
 4    | 8               | 4  | 4  | 8               | 4  |
 Cond | 0 0 0 1 0 B 0 0 | Rn | Rd | 0 0 0 0 1 0 0 1 | Rm | Single Data Swap
 B word/byte
@@ -299,7 +305,8 @@ Rm offset
   strhi/3 .p 0xFFFFFF0F logand 0x90 logior
 ;
 
-(
+( PSR Transfer
+
 4    | 6           | 5         | 4  | 12
 Cond | 0 0 0 1 0 P | 0 0 1 1 1 | Rd | 000000000000 |
 P 0 = cspsr, 1 = spsr
@@ -310,7 +317,8 @@ P 0 = cspsr, 1 = spsr
 
 : mrsp mrs 0x1000000 logior ;
 
-(
+( PSR loading
+
 4    | 5         | 1  | 10         | 8        | 4  |
 Cond | 0 0 0 1 0 | Pd | 1010011111 | 00000000 | Rm |
 )
@@ -320,7 +328,8 @@ Cond | 0 0 0 1 0 | Pd | 1010011111 | 00000000 | Rm |
 
 : .spsr 0x400000 logior ;
 
-(
+( PSR flag loading from an immediate
+
 4    | 5         | 1  | 10         | 12             |
 Cond | 0 0 I 1 0 | Pd | 1010001111 | Source operand |
 )
@@ -329,7 +338,8 @@ Cond | 0 0 I 1 0 | Pd | 1010001111 | Source operand |
   0xE128f000 logior
 ;
 
-(
+( Single word load and store
+
 4    | 8               | 4  | 4  | 12     |
 Cond | 0 1 I P U B W L | Rn | Rd | Offset | Single Data Transfer
 I immediate offset?
@@ -366,7 +376,8 @@ Offset
 Cond | 0 1 1 | . . . . . . . . | . . . . . . . . | 1 | . . . . | Undefined
 )
 
-(
+( Block data transfer
+
 4    | 8               | 4  | 16 |
 Cond | 1 0 0 P U S W L | Rn | Register List | Block Data Transfer
 P post/pre increment indexing
@@ -386,7 +397,18 @@ L store/load
 
 : ldm stm .l ;
 
-(
+( Branch exchange
+
+4    | 8               | 8               | 8               | 4 |
+Cond | 0 0 0 1 0 0 1 0 | 1 1 1 1 1 1 1 1 | 1 1 1 1 0 0 0 1 | Rn | Branch and Exchange
+)
+
+: bx
+  0xF logand 0xE12fff10 logior
+;
+
+( Branch
+
 4    | 4       | 24 |
 Cond | 1 0 1 L | Offset | Branch
 L link bit: 1 = branch w/ link
@@ -395,7 +417,8 @@ L link bit: 1 = branch w/ link
 : b 0xFFFFFF logand 0xEA000000 logior ;
 : bl b 0x1000000 logior ;
 
-(
+( Coprocessor data transfer
+
 4    | 8               | 4  | 4   | 4 | 8 |
 Cond | 1 1 0 P U N W L | Rn | CRd | CP# | Offset | Coprocessor Data Transfer
 P post/pre increment indexing
@@ -419,7 +442,8 @@ offset
 
 : ldc stc 0x100000 logior ;
 
-(
+( Coprocessor data ops
+
 4    | 4       | 4      | 4   | 4   | 4   | 3  | 1 | 4 |
 Cond | 1 1 1 0 | CP Opc | CRn | CRd | CP# | CP | 0 | CRm | Coprocessor Data Operation
 CP_Opc operation code
@@ -440,7 +464,8 @@ CRm coprocessor operand register
   0xEE000000 logior
 ;
 
-(
+( Coprocessor register transfer
+
 4    | 4       | 3      | 1 | 4   | 4  | 4   | 3  | 1 | 4 |
 Cond | 1 1 1 0 | CP Opc | L | CRn | Rd | CP# | CP | 1 | CRm | Coprocessor Register Transfer
 CP_opc coprocessor operation code
@@ -464,7 +489,8 @@ CRm coprocessor operand register
 
 : mcr mrc 0x100000 logior ;
 
-(
+( Software interrupt
+
 4    | 4       | 24 |
 Cond | 1 1 1 1 | Ignored by processor | Software Interrupt
 )
@@ -473,10 +499,13 @@ Cond | 1 1 1 1 | Ignored by processor | Software Interrupt
   0xFFFFFF logand 0xEF000000 logior
 ;
 
-( Helpers: )
+( Helpers: )
+
 alias> ,ins ,uint32
 alias> ins@ uint32@
 alias> ins! uint32!
+
+: nop r0 r0 mov ;
 
 : dropr ( base -- ins )
   16 4 immed-op swap dup add .i

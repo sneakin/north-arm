@@ -20,14 +20,16 @@ r1 r7 r3 add ,ins
 r1 r7 r3 adc ,ins
 r1 r2 r7 sbc ,ins
 r1 r2 r7 rsc ,ins
-r1 r2 r3 tst ,ins
-r1 r2 r3 teq ,ins
-r1 r2 r3 cmp ,ins
-r1 r2 r3 cmn ,ins
+r1 r2 tst ,ins
+r1 r2 teq ,ins
+r1 r2 cmp ,ins
+r1 r2 cmn ,ins
 r1 r2 r3 orr ,ins
-r1 r2 r3 mov ,ins
+r1 r2 mov ,ins
+12 16 r1 r2 mov# ,ins
+0 BARREL-BSL immed-shift r1 r2 movr ,ins
 r1 r2 r3 bic ,ins
-r1 r2 r3 mvn ,ins
+r1 r2 mvn ,ins
 
 nop ,ins
 nop ,ins
@@ -95,7 +97,7 @@ r3 r2 r1 mul ,ins
 r1 r2 r3 mul .a ,ins
 r1 r2 r3 r4 mul/4 .a ,ins
 r1 r2 r3 r4 mla ,ins
-r1 r2 r3 mul .s ,ins
+r1 r2 r3 mul .set ,ins
 r1 r2 r3 muls ,ins
 
 nop ,ins
