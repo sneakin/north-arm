@@ -24,28 +24,28 @@ r1 r2 r3 mvn ,ins
 nop ,ins
 nop ,ins
 
-r1 r2 0 1 immed-op and ,ins
-r1 r2 0 15 immed-op and .i ,ins
-r1 r2 4 15 immed-op and .i ,ins
-r1 r2 16 123 immed-op and .i ,ins
+0 1 immed-op r1 r2 and ,ins
+0 15 immed-op r1 r2 and .i ,ins
+4 15 immed-op r1 r2 and .i ,ins
+16 123 immed-op r1 r2 and .i ,ins
 
-r1 r2 3 BARREL-BSL immed-shift r3 reg-op add ,ins
-r1 r2 4 BARREL-BSR immed-shift r3 reg-op add ,ins
-r1 r2 5 BARREL-ASR immed-shift r3 reg-op add ,ins
-r1 r2 6 BARREL-RSR immed-shift r3 reg-op add ,ins
+3 BARREL-BSL immed-shift r3 reg-op r1 r2 add ,ins
+4 BARREL-BSR immed-shift r3 reg-op r1 r2 add ,ins
+5 BARREL-ASR immed-shift r3 reg-op r1 r2 add ,ins
+6 BARREL-RSR immed-shift r3 reg-op r1 r2 add ,ins
 
-r1 r2 r4 BARREL-BSL reg-shift r3 reg-op adc ,ins
-r1 r2 r5 BARREL-BSR reg-shift r3 reg-op adc ,ins
-r1 r2 r6 BARREL-ASR reg-shift r3 reg-op adc ,ins
-r1 r2 r7 BARREL-RSR reg-shift r3 reg-op adc ,ins
+r4 BARREL-BSL reg-shift r3 reg-op r1 r2 adc ,ins
+r5 BARREL-BSR reg-shift r3 reg-op r1 r2 adc ,ins
+r6 BARREL-ASR reg-shift r3 reg-op r1 r2 adc ,ins
+r7 BARREL-RSR reg-shift r3 reg-op r1 r2 adc ,ins
 
-r1 r2 0 r3 reg-op sbc ,ins
-r1 r2 1 r3 reg-op sbc ,ins
-r1 r2 2 r3 reg-op sbc ,ins
-r1 r2 3 r3 reg-op sbc ,ins
+0 r3 reg-op r1 r2 sbc ,ins
+1 r3 reg-op r1 r2 sbc ,ins
+2 r3 reg-op r1 r2 sbc ,ins
+3 r3 reg-op r1 r2 sbc ,ins
 
-r1 r2 2 BARREL-BSL immed-shift r3 reg-op eor ,ins
-r1 r2 r3 BARREL-BSR reg-shift r3 reg-op eor ,ins
+2 BARREL-BSL immed-shift r3 reg-op r1 r2 eor ,ins
+r3 BARREL-BSR reg-shift r3 reg-op r1 r2 eor ,ins
 
 nop ,ins
 nop ,ins
@@ -70,11 +70,13 @@ r8 r9 r10 and .al ,ins
 nop ,ins
 nop ,ins
 
-r1 r2 r3 r4 mul ,ins
-r1 r2 r3 r4 mul .a ,ins
+r1 r2 r3 mul ,ins
+r3 r2 r1 mul ,ins
+r1 r2 r3 mul .a ,ins
+r1 r2 r3 r4 mul/4 .a ,ins
 r1 r2 r3 r4 mla ,ins
-r1 r2 r3 r4 mul .s ,ins
-r1 r2 r3 r4 muls ,ins
+r1 r2 r3 mul .s ,ins
+r1 r2 r3 muls ,ins
 
 nop ,ins
 nop ,ins
@@ -104,20 +106,26 @@ nop ,ins
 r1 r2 r3 strh ,ins
 r1 r2 r3 ldrh ,ins
 
+r1 negate r2 r3 strh ,ins
+r1 negate r2 r3 ldrh ,ins
+
 r1 r2 r3 ldrsb ,ins
 r1 r2 r3 ldrsh ,ins
 
 r1 r2 r3 ldrsb .up ,ins
 r1 r2 r3 ldrsh .up ,ins
 
-r1 r2 15 strhi ,ins
-r1 r2 15 ldrhi ,ins
+-15 r1 r2 strhi ,ins
+-15 r1 r2 ldrhi ,ins
 
-r1 r2 15 strhi .up ,ins
-r1 r2 15 ldrhi .up ,ins
+15 r1 r2 strhi .up ,ins
+15 r1 r2 ldrhi .up ,ins
 
-r1 r2 64 ldrsbi ,ins
-r1 r2 100 ldrshi ,ins
+15 r1 r2 strhi ,ins
+15 r1 r2 ldrhi ,ins
+
+64 r1 r2 ldrsbi ,ins
+100 r1 r2 ldrshi ,ins
 
 nop ,ins
 nop ,ins
@@ -145,14 +153,14 @@ r3 BARREL-BSR reg-shift r3 reg-op msri .spsr ,ins
 nop ,ins
 nop ,ins
 
-r1 r2 r3 str ,ins
-r1 r2 r3 ldr ,ins
+23 r1 r2 str ,ins
+23 r1 r2 ldr .up ,ins
 
 nop ,ins
 nop ,ins
 
-r1 0xFFFF stm ,ins
-r2 0xFFFF ldm ,ins
+0xFFFF r1 stm ,ins
+0xFFFF r2 ldm ,ins
 
 nop ,ins
 nop ,ins
@@ -163,24 +171,32 @@ nop ,ins
 nop ,ins
 nop ,ins
 
-r1 2 3 0x77 stc ,ins
-r1 2 3 0x77 stc ,ins
+0x77 r1 2 3 stc ,ins
+0x7 r1 2 10 stc ,ins
+0x7 r1 2 10 stc .up ,ins
+0x7 r1 3 10 stc .up ,ins
 
-r1 2 11 0x77 ldc ,ins
-r1 2 11 0x77 ldc ,ins
+0x77 r1 2 3 ldc ,ins
+0x7 r1 2 10 ldc ,ins
+0x7 r1 2 10 ldc .up ,ins
+0x7 r1 3 10 ldc .up ,ins
 
 1 2 3 4 5 6 cdp ,ins
-1 2 3 11 5 6 cdp ,ins
+1 2 3 4 5 1 cdp ,ins
+1 2 3 4 5 10 cdp ,ins
 
 1 2 3 4 5 6 mrc ,ins
-1 2 3 11 5 6 mrc ,ins
+1 2 3 4 5 1 mrc ,ins
+1 2 3 4 5 10 mrc ,ins
 
 1 2 3 4 5 6 mcr ,ins
-1 2 3 11 5 6 mcr ,ins
+1 2 3 4 5 1 mcr ,ins
+1 2 3 4 5 10 mcr ,ins
 
 nop ,ins
 nop ,ins
 
 0x1234 swi ,ins
+-123 swi ,ins
 
 mark ddump-binary-bytes

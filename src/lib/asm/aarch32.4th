@@ -1,5 +1,14 @@
-( todo reverse operond order, reverse of objdump / standard )
+' ,uint32 defined? UNLESS
+  " src/lib/byte-data.4th" load
+THEN
+
 ( todo data ops need a shorter handed use of immed-op, reg-op, and .i. )
+( todo mask arguments )
+( todo place ins bits last in functions )
+
+: shift3 ( c b a x -- x c b a )
+  3 swapn 2 swapn swap
+;
 
 0 const> r0
 1 const> r1
@@ -26,66 +35,21 @@ alias> sl r10
 
 : .condition 28 bsl swap 0xFFFFFFF logand logior ;
 
-  ( Code Suffix Flags Meaning )
-: .eq ( eq Z " set equal" )
-0 .condition
-;
-
-: .ne ( ne Z " clear not equal" )
-  1 .condition
-;
-
-: .cs ( cs C " set unsigned higher or same" ) 
-  2 .condition
-;
-
-: .cc ( cc C " clear unsigned lower" )
-  3 .condition
-;
-
-: .mi ( mi N " set negative" )
-  4 .condition
-;
-
-: .pl ( pl N " clear positive or zero" )
-  5 .condition
-;
-
-: .vs ( vs V " set overflow" )
-  6 .condition
-;
-
-: .vc ( vc V " clear no overflow" )
-  7 .condition
-;
-
-: .hi ( hi C " set and Z clear unsigned higher" )
-  8 .condition
-;
-
-: .ls ( ls C " clear or Z set unsigned lower or same" )
-  9 .condition
-;
-
-: .ge ( ge N " equals V greater or equal" )
-  10 .condition
-;
-
-: .lt ( lt N " not equal to V less than" )
-  11 .condition
-;
-
-: .gt ( gt Z " clear AND [N equals V] greater than" )
-  12 .condition
-;
-
-: .le ( le Z " set OR [N not equal to V] less than or equal" )
-  13 .condition
-;
-
-: .al ( al _ " always" )
-  14 .condition
-;
+: .eq  0 .condition ; ( eq Z " set equal" )
+: .ne  1 .condition ; ( ne Z " clear not equal" )
+: .cs  2 .condition ; ( cs C " set unsigned higher or same" ) 
+: .cc  3 .condition ; ( cc C " clear unsigned lower" )
+: .mi  4 .condition ; ( mi N " set negative" )
+: .pl  5 .condition ; ( pl N " clear positive or zero" )
+: .vs  6 .condition ; ( vs V " set overflow" )
+: .vc  7 .condition ; ( vc V " clear no overflow" )
+: .hi  8 .condition ; ( hi C " set and Z clear unsigned higher" )
+: .ls  9 .condition ; ( ls C " clear or Z set unsigned lower or same" )
+: .ge  10 .condition ; ( ge N " equals V greater or equal" )
+: .lt  11 .condition ; ( lt N " not equal to V less than" )
+: .gt  12 .condition ; ( gt Z " clear AND [N equals V] greater than" )
+: .le  13 .condition ; ( le Z " set OR [N not equal to V] less than or equal" )
+: .al  14 .condition ; ( al _ " always" )
 
 (
 4   | 3     | 4      | 1 | 4  | 4  | 12        |
@@ -124,14 +88,15 @@ S set condition codes
   0xFF logand swap 0xF logand 8 bsl logior
 ;
 
-: data-op ( operands op -- ins32 )
+: data-op ( operands op -- ins )
   21 bsl 0xE0000000 logior ( op )
   logior ( operands )
 ;
 
-: data-op-args ( rn rd op2 -- ins32 )
-  swap 12 bsl logior ( rd<<12 | op2 )
+: data-op-args ( op2 rn rd -- ins )
+  12 bsl ( rd )
   swap 16 bsl logior ( rn )
+  logior ( op2 )
 ;
 
 : and data-op-args 0 data-op ; ( operand1 AND operand2 )
@@ -160,18 +125,20 @@ A 0 = multiply, 1 = multiply and accumulate
 S set condition codes
 )
 
-: mul ( rd rn rs rm -- ins32 )
+: mul/4 ( rn rm rs rd -- ins )
   0xE0000090 ( b1001 )
+  swap 16 bsl logior ( rd )
   logior ( rm )
   swap 8 bsl logior ( rs )
-  swap 12 bsl logior ( rs )
-  swap 16 bsl logior ( rd )
+  swap 12 bsl logior ( rn )
 ;
+
+: mul 0 shift3 mul/4 ;
 
 : .a 1 21 bsl logior ;
 : .s 1 20 bsl logior ;
 
-: mla mul .a ;
+: mla mul/4 .a ;
 : muls mul .s ;
 
 (
@@ -184,12 +151,12 @@ U unsigned/signed
 
 : .signed 1 22 bsl logior ;
 
-: umull ( rdhi rdlo rn rm -- ins32 )
+: umull ( rn rm rdhi rdlo -- ins )
   0xE0800090
-  logior ( rm )
-  swap 8 bsl logior ( rn )
   swap 12 bsl logior ( rdlo )
   swap 16 bsl logior ( rdhi )
+  logior ( rm )
+  swap 8 bsl logior ( rn )
 ;
 
 : umlal umull .a ;
@@ -222,17 +189,21 @@ S H 00 swap, 01 unsigned short, 10 signed byte, 11 signed short
 Rm offset
 )
 
-( LDRH/STRH/LDRSB/LDRSH )
-
 : .l 0x100000 logior ;
 : .p 0x1000000 logior ;
 : .up 0x800000 logior ;
 : .w 0x200000 logior ;
 
-: strh ( rn rd rm -- ins32 )
-  0xE00000B0 logior
+: strh/3 ( rm rn rd -- ins )
+  0xE00000B0
   swap 12 bsl logior ( rd )
   swap 16 bsl logior ( rn )
+  logior ( rm )
+;
+
+: strh ( rm rn rd -- ins )
+  3 overn abs-int shift strh/3
+  swap 0 int> IF .up THEN
 ;
 
 : ldrh strh .l ;
@@ -244,13 +215,17 @@ Rm offset
 Cond | 0 0 0 P U 1 W L | Rn | Rd | Offset | 1 S H 1 | Offset | Halfword Data Transfer:immediate offset
 )
 
-( LDRH/STRH/LDRSB/LDRSH )
-
-: strhi ( rn rd offset -- ins32 )
-  dup 0xF logand 0xE04000B0 logior ( offset low )
-  swap 4 bsr 0xF logand 8 bsl logior ( ogfset high )
+: strhi/3 ( offset rn rd -- ins )
+  0xE04000B0
   swap 12 bsl logior ( rd )
   swap 16 bsl logior ( rn )
+  over 0xF logand logior ( offset low )
+  swap 4 bsr 0xF logand 8 bsl logior ( offset high )
+;
+
+: strhi ( offset rn rd -- ins )
+  3 overn abs-int shift strhi/3
+  swap 0 int> IF .up THEN
 ;
 
 : ldrhi strhi .l ;
@@ -267,12 +242,12 @@ Rd destination
 Rm offset
 )
 
-: swp ( rn rd rm -- ins )
-  strh .p 0xFFFFFF0F logand 0x90 logior
+: swp ( rm rn rd -- ins )
+  strh/3 .p 0xFFFFFF0F logand 0x90 logior
 ;
 
-: swpi ( rn rd rm -- ins )
-  strhi .p 0xFFFFFF0F logand 0x90 logior
+: swpi ( offset rn rd -- ins )
+  strhi/3 .p 0xFFFFFF0F logand 0x90 logior
 ;
 
 (
@@ -320,10 +295,11 @@ Offset
 
 : .b 0x400000 logior ;
 
-: str ( rn rd offset -- ins32 )
-  0xE4000000 logior
-  swap 12 bsl logior
-  swap 16 bsl logior
+: str ( offset rn rd -- ins )
+  0xE4000000
+  swap 12 bsl logior ( rd )
+  swap 16 bsl logior ( rn )
+  swap 0xFFF logand logior ( offset )
 ;
 
 : ldr str .l ;
@@ -345,9 +321,9 @@ L store/load
 
 : .psr 0x400000 logior ;
 
-: stm ( rn reglist -- ins )
-  0xFFFF logand
-  swap 16 bsl logior
+: stm ( reglist rn -- ins )
+  16 bsl ( rn )
+  swap 0xFFFF logand logior ( reglist )
   0xE8000000 logior
 ;
 
@@ -376,14 +352,15 @@ CP# coprocessor number
 offset
 )
 
-: stc ( rn crd cp# offset -- ins32 )
-  0xEC000000 logior ( offset )
+: stc ( offset rn crd cp# -- ins )
+  0xEC000000
   swap 8 bsl logior ( cp# )
   swap 12 bsl logior ( crd )
   swap 16 bsl logior ( rn )
+  swap 0xFF logand logior ( offset )
 ;
 
-: ldc str 0x100000 logior ;
+: ldc stc 0x100000 logior ;
 
 (
 4    | 4       | 4      | 4   | 4   | 4   | 3  | 1 | 4 |
@@ -396,13 +373,14 @@ CP coprocessor info
 CRm coprocessor operand register
 )
 
-: cdp ( cpop crn crd cp# cp crm -- ins32 )
-  0xEE000000 logior ( crm )
-  swap 5 bsl logior ( cp )
-  swap 8 bsl logior ( cp# )
+: cdp ( cp crm crn crd cpop cp# -- ins )
+  8 bsl ( cp# )
+  swap 20 bsl logior ( cpop )
   swap 12 bsl logior ( crd )
   swap 16 bsl logior ( crn )
-  swap 20 bsl logior ( cpop )
+  logior ( crm )
+  swap 5 bsl logior ( cp )
+  0xEE000000 logior
 ;
 
 (
@@ -417,13 +395,14 @@ CP coprocessor info
 CRm coprocessor operand register
 )
 
-: mrc ( cpop crn rd cp# cp crm -- ins32 )
-  0xEE000010 logior ( crm )
-  swap 5 bsl logior ( cp )
-  swap 8 bsl logior ( cp# )
+: mrc ( cp crm crn rd cpop cp# -- ins )
+  0xF logand 8 bsl ( cp# )
+  swap 0x7 logand 21 bsl logior ( cpop )
   swap 12 bsl logior ( rd )
   swap 16 bsl logior ( crn )
-  swap 20 bsl logior ( cpop )
+  logior ( crm )
+  swap 0x7 logand 5 bsl logior ( cp )
+  0xEE000010 logior
 ;
 
 : mcr mrc 0x100000 logior ;
@@ -433,8 +412,8 @@ CRm coprocessor operand register
 Cond | 1 1 1 1 | Ignored by processor | Software Interrupt
 )
 
-: swi ( comment -- ins32 )
-  0xEF000000 logior
+: swi ( comment -- ins )
+  0xFFFFFF logand 0xEF000000 logior
 ;
 
 ( Helpers: )
