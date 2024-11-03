@@ -156,6 +156,9 @@ nop ,ins
 23 r1 r2 str ,ins
 23 r1 r2 ldr .up ,ins
 
+0 r3 reg-op r1 r2 str .i ,ins
+0 r3 reg-op r1 r2 ldr .i ,ins
+
 nop ,ins
 nop ,ins
 
@@ -198,5 +201,20 @@ nop ,ins
 
 0x1234 swi ,ins
 -123 swi ,ins
+
+nop ,ins
+nop ,ins
+
+r3 dropr ,ins
+r10 dropr ,ins
+
+r3 r4 popr ,ins
+r10 r2 popr ,ins
+
+r2 r4 pushr ,ins
+r3 r5 pushr ,ins
+
+r3 pop ,ins
+r4 push ,ins
 
 mark ddump-binary-bytes

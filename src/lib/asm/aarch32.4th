@@ -62,7 +62,7 @@ I operand 2 type: 0 = op2 is register, 1 = op2 is immediate
 S set condition codes
 )
 
-: .i 0x2000000 logior ;
+: .i 0x2000000 logior ; ( todo use seems a bit backward )
 : .set 0x100000 logior ;
 
 0 const> BARREL-BSL
@@ -283,6 +283,7 @@ Cond | 0 0 I 1 0 | Pd | 1010001111 | Source operand |
 (
 4    | 8               | 4  | 4  | 12     |
 Cond | 0 1 I P U B W L | Rn | Rd | Offset | Single Data Transfer
+I immediate offset?
 P post/pre indexing
 U down/up
 B word/byte
@@ -294,6 +295,8 @@ Offset
 )
 
 : .b 0x400000 logior ;
+
+( todo needs auto .up, but the offset may be a shift )
 
 : str ( offset rn rd -- ins )
   0xE4000000
@@ -420,3 +423,18 @@ Cond | 1 1 1 1 | Ignored by processor | Software Interrupt
 alias> ,ins ,uint32
 alias> ins@ uint32@
 alias> ins! uint32!
+
+: dropr ( base -- ins )
+  16 4 immed-op swap dup add .i
+;
+
+: popr ( base dest -- ins )
+  4 shift ldr .up .w  
+;
+
+: pushr ( base src -- ins )
+  4 shift str .w  
+;
+
+: pop sp swap popr ;
+: push sp swap pushr ;
