@@ -417,13 +417,19 @@ def interp-init
   north-init-stacks!
   *init-dict* *dict* poke
   ( token-buffer )
-  int32 0 token-buffer-length poke
-  token-buffer-max stack-allot token-buffer poke
+  token-buffer peek UNLESS
+    int32 0 token-buffer-length poke
+    token-buffer-max stack-allot token-buffer poke
+  THEN
   ( string-buffer )
-  int32 0 string-buffer-length poke
-  token-buffer-max stack-allot string-buffer poke
+  string-buffer peek UNLESS
+    int32 0 string-buffer-length poke
+    token-buffer-max stack-allot string-buffer poke
+  THEN
   ( stdin reader )
-  token-buffer-max stack-allot token-buffer-max make-prompt-reader the-reader poke
+  the-reader peek UNLESS ( todo push a new one always? )
+    token-buffer-max stack-allot token-buffer-max make-prompt-reader the-reader poke
+  THEN
   ' default-prompt prompt poke
   s" core-init" dict dict-lookup IF exec-abs THEN
   exit-frame

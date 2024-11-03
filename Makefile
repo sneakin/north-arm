@@ -26,12 +26,20 @@ TRIPLE_static=$(TARGET_ARCH)-$(TARGET_OS)-static
 TRIPLE_android=$(TARGET_ARCH)-$(TARGET_OS)-android
 TRIPLE_gnueabi=$(TARGET_ARCH)-$(TARGET_OS)-gnueabi
 
-#OUT_TARGETS?=static android gnueabi
+STAGES=1 2 3 4
+ABIS=static android gnueabi
+
+#OUT_TARGETS?=$(ABIS)
 OUT_TARGETS?=$(TARGET_ABI)
 
-OUTPUTS=version.4th
+OUTPUTS=version.4th bin/interp$(EXECEXT)
 
-$(foreach stage,1 2 3 4, \
+ifeq ($(QUICK),)
+	OUTPUTS+=\
+		bin/fforth.dict
+endif
+
+$(foreach stage,$(STAGES), \
   $(foreach target,$(OUT_TARGETS), \
     $(eval OUTPUTS+= \
        bin/builder.$(target).$(stage)$(EXECEXT) \
@@ -40,8 +48,6 @@ $(foreach stage,1 2 3 4, \
 
 ifeq ($(QUICK),)
 	OUTPUTS+=\
-		bin/interp$(EXECEXT) \
-		bin/fforth.dict \
 		bin/assembler-thumb.sh \
 		bin/assembler-thumb.dict
 endif
@@ -60,9 +66,8 @@ ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 
 all: $(OUTPUTS)
 tests: lib/ffi-test-lib$(SOEXT) bin/interp-tests$(EXECEXT)
-north: bin/north$(EXECEXT)
 
-.PHONY: clean doc all quick git-info
+.PHONY: clean doc all quick git-info env programs
 
 git-info:
 	@echo $(GIT) at "$(shell cat .git/HEAD | sed -e 's/.*: \(.*\)/\1/')"
@@ -78,8 +83,6 @@ quick:
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
 
-bin:
-	mkdir bin
 
 #
 # Prebuilt binary building from a clean tree.
@@ -118,6 +121,14 @@ version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 
 src/copyright.4th: src/copyright.4th.tmpl src/copyright.txt
 	./scripts/copyright-gen.sh $< > $@
+
+build.sh: Makefile
+	@echo "#!/bin/sh" > $@
+	@echo "HOST?=\"\$${2:-$(HOST)}\"" >> $@
+	@echo "TARGET?=\"\$${1:-$(TARGET)}\"" >> $@
+	@make -Bns all TARGET='$(TARGET)' HOST='$(HOST)' \
+	  | sed -e 's:$(TARGET):"$${TARGET}":g' -e 's:$(HOST):"$${HOST}":g' >> $@
+
 
 #
 # Formatted code docs
@@ -329,15 +340,18 @@ doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 # Stage 0
 
 %$(EXECEXT): %.4th
+	@echo -e "Building \e[36;1m$(@)\e[0m"
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
 bin/%$(EXECEXT): src/bin/%.4th
+	@echo -e "Building \e[36;1m$(@)\e[0m"
 	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
 	chmod u+x $@
 
 # Per stage variabless:
 
+# todo filenames need full triples and this would really cross compile
 define define_stage # stage
 STAGE$(1)_PRIOR=$(shell echo $$(($(1) - 1)))
 STAGE$(1)_FORTH=$(RUNNER) ./bin/interp.$(RUN_OS).$(1)$(EXECEXT)
@@ -347,21 +361,22 @@ endef
 # Per target and stage outputs:
 
 define define_stage_targets # target, stage
-bin/%.$(1).$(2)$$(EXECEXT):
-	$$(STAGE$(2)_BUILDER) -t $$(TRIPLE_$(1)) -o $$@ $$^
 bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
 bin/interp.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th
+	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e interp-boot -o $$@ $$^
 bin/runner.$(1).$(2)$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
+	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e runner-boot -o $$@ $$^
 endef
 
 # Define instances of the above:
-$(foreach stage,1 2 3 4,$(eval $(call define_stage,$(stage))))
+$(foreach stage,$(STAGES),$(eval $(call define_stage,$(stage))))
 
-$(foreach stage,1 2 3 4, \
-  $(foreach target,static android gnueabi, \
+$(foreach stage,$(STAGES), \
+  $(foreach target,$(ABIS), \
     $(eval $(call define_stage_targets,$(target),$(stage)))))
 
 # Bootstrap stage 0:
@@ -378,18 +393,24 @@ STAGE1_BUILDER=$(RUNNER) ./bin/builder.static.1$(EXECEXT)
 bin/builder$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
 	$(STAGE0_BUILDER) -t $(TARGET_ARCH)-$(TARGET_OS)-static -e build -o $@ $^
 
+ifeq ($(QUICK),)
 bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+else
+bin/interp$(EXECEXT):
+	cp bootstrap/interp.elf $@
+endif
+
 bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
-bin/assembler$(EXECEXT): src/bin/assembler.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th src/lib/strings.4th $(THUMB_ASSEMBLER_SRC)
 bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
-bin/north$(EXECEXT): src/bin/north.4th $(RUNNER_THUMB_SRC) src/interp/cross.4th
+
+#
+# Test cases:
+#
 
 # Barebones ELF files:
 bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
-
-# Test cases:
 
 # FFI Test library
 lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
@@ -409,6 +430,14 @@ misc/cpio/binary.cpio: $(RUNNER_THUMB_SRC)
 test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpio
 	echo 'load-core tmp" src/tests/lib/cpio.4th" load/2 test-cpio' | $(STAGE3_FORTH)
 
+#m
+# Rules
+#
+
+# Org-mode
+%.html: %.org
+	emacs $< --batch -f org-html-export-to-html --kill
+
 # Image fun
 %.png: %$(EXECEXT)
 	./scripts/bintopng.sh e $< $@
@@ -416,10 +445,18 @@ test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpi
 %.raw: %.png
 	./scripts/bintopng.sh d $< $@
 
-# Scantool for stats and syntax highlighting.
-bin/scantool.$(TARGET_ABI).$(STAGE)$(EXECEXT): src/include/interp.4th src/interp/cross.4th src/bin/scantool.4th
+#
+# Demo programs
+#
 
-bin/interp+core.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+PROGRAMS=\
+  interp_core \
+  scantool \
+  interp_armasm \
+  demo_tty_drawing \
+  demo_tty_raycast
+
+PGRM_interp_core_sources= \
 	src/include/interp.4th \
 	src/interp/proper.4th \
 	src/lib/pointers.4th \
@@ -427,9 +464,18 @@ bin/interp+core.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/lib/structs.4th \
 	src/interp/cross.4th \
 	src/interp/boot/include.4th
-	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e interp-boot -o $@ $^
+PGRM_interp_core_output=bin/interp+core
+PGRM_interp_core_entry=interp-boot
 
-bin/interp-armasm.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+# Scantool for stats and syntax highlighting.
+PGRM_scantool_sources=\
+	src/include/interp.4th src/interp/cross.4th src/bin/scantool.4th
+PGRM_scantool_output=bin/scantool
+PGRM_scantool_entry=main
+
+PGRM_interp_armasm_output=bin/interp-armasm
+PGRM_interp_armasm_entry=interp-boot
+PGRM_interp_armasm_sources=\
 	src/include/interp.4th \
 	src/interp/proper.4th \
 	src/lib/pointers.4th \
@@ -443,9 +489,10 @@ bin/interp-armasm.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/lib/asm/thumb/disasm.4th \
 	src/lib/elf/stub32.4th \
 	src/lib/elf/stub32-dynamic.4th
-	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e interp-boot -o $@ $^
 
-bin/demo-tty-drawing.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+PGRM_demo_tty_drawing_output=bin/demo-tty-drawing
+PGRM_demo_tty_drawing_entry=demo-tty-boot
+PGRM_demo_tty_drawing_sources=\
 	src/lib/tty/constants.4th \
 	src/include/interp.4th \
 	src/interp/proper.4th \
@@ -456,9 +503,10 @@ bin/demo-tty-drawing.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/interp/boot/include.4th \
 	src/lib/tty.4th \
 	src/demos/tty/drawing.4th
-	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e demo-tty-boot -o $@ $^
 
-bin/demo-tty-clock.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+PGRM_demo_tty_clock_output=bin/demo-tty-clock
+PGRM_demo_tty_clock_entry=tty-clock-boot
+PGRM_demo_tty_clock_sources=\
 	src/lib/tty/constants.4th \
 	src/demos/tty/clock/segment-constants.4th \
 	src/include/interp.4th \
@@ -470,9 +518,10 @@ bin/demo-tty-clock.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/interp/boot/include.4th \
 	src/lib/tty.4th \
 	src/demos/tty/clock.4th
-	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e tty-clock-boot -o $@ $^
 
-bin/demo-tty-raycast.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
+PGRM_demo_tty_raycast_output=bin/demo-tty/raycast
+PGRM_demo_tty_raycast_entry=raycaster-boot
+PGRM_demo_tty_raycast_sources=\
 	src/lib/tty/constants.4th \
 	src/demos/tty/clock/segment-constants.4th \
 	src/include/interp.4th \
@@ -484,7 +533,25 @@ bin/demo-tty-raycast.$(TARGET_ABI).$(STAGE)$(EXECEXT): \
 	src/interp/boot/include.4th \
 	src/lib/tty.4th \
 	src/demos/tty/raycast.4th
-	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e raycaster-boot -o $@ $^
 
-%.html: %.org
-	emacs $< --batch -f org-html-export-to-html --kill
+#
+# Now to use the PGRM variables:
+#
+
+define define_north_program # name, target, stage, entry point, sources
+PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
+$(1): $(5)
+	@echo -e "Building \e[36;1m$$(@)\e[0m"
+	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $$^
+endef
+
+$(foreach stage,$(STAGES), \
+  $(foreach target,$(ABIS), \
+    $(foreach program,$(PROGRAMS), \
+      $(eval $(call define_north_program,\
+	      $(PGRM_$(program)_output).$(target).$(stage)$(EXECEXT),\
+        $(target),$(stage),\
+        $(PGRM_$(program)_entry),\
+        $(PGRM_$(program)_sources))))))
+
+programs: $(PGRMS_$(TARGET_ABI)_$(STAGE))

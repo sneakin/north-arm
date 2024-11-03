@@ -38,18 +38,21 @@ Arm(R) is a registered trademark of Arm Limited (or its subsidaries) in the
 Building with the shell script is quite slow.
 The prebuilt binaries under ~./bootstrap/~ can be used to skip steps.
 
+~make quick~ will copy ~bootstrap/interp.elf~ to ~bin/~ but you may want one of:
+
 - ~./bootstrap/interp.static.elf~ :: Only requires a Linux kernel, but can not load dynamic libraries.
 - ~./bootstrap/interp.android.elf~ :: Is built to use Android's dynamic linker.
 - ~./bootstrap/interp.gnueabi.elf~ :: Is built to use the GNU dynamic linker found on desktops.
 
 Termux may set ~$LD_PRELOAD~ which requires unsetting it: ~LD_PRELOAD='' ./bin/interp.elf~
 
-
 * Building
 
-~make~ is the preferred build tool. If you're on a different
-architecture from your target, you will to set binfmt up to execute
-using Qemu.
+** All
+
+I cheated: ~make~ is the preferred build tool. If you're on a
+different architecture from your target, you will to set binfmt up to
+execute using Qemu.
 
 The default task, ~make all~, will use Bash to boot strap a static
 executable: ~bin/interp.elf~.
@@ -63,6 +66,15 @@ make all HOST=x86_64-linux-static TARGET=thumb-linux-static
 
 Be prepared to wait.
 
+To skip the Bash build. use ~make quick~ or:
+
+#+BEGIN_SRC
+make all QUICK=1 HOST=x86_64-linux-static TARGET=thumb-linux-static
+#+END_SRC
+
+
+** Stages
+
 ~make targets~ will print a full list of ~HOST~ and ~TARGET~ strings,
 and to view information about the host and target there is ~make env~.
 
@@ -73,9 +85,6 @@ suffixes.  ~${linker}~ may be any or all of ~static~, ~android~, and
 ~gnueabi~.  The ~HOST~, ~TARGET~, ~OUT_TARGETS~ Make variables control
 and define the platform triples. ~STAGE~ controls what stage is
 building.
-
-~make quick~ will skip the full rebuild of stage 0 by copying the
-~./bootstrap/~ executables.
 
 The build scripts / top level programs found in ~src/bin/~ can be
 built by running ~make bin/${app}.elf~.  This build will be done with
@@ -107,7 +116,7 @@ file: ~cat src/bin/interp.4th | ./src/bash/forth.sh > interp.elf~
 ** Boot strapped
 
 This describes any of the ~./bin/interp*~ executables.
-These will need Qemu if compiled for a different platform.
+These will need Qemu or suitable emulator if compiled for a different platform.
 
 A list of words can be printed with ~words~. Compiling words with ~iwords~.
 

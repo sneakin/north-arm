@@ -165,9 +165,11 @@ def fun-factorial-int32
   1 arg0 1 + uint32-stepper ' int-mul 1 fun-reduce/3 set-arg0
 end
 
-sys' builder-target-bits defined? IF
+NORTH-STAGE 0 equals?
+IF true ELSE
+  sys' builder-target-bits defined? IF
   builder-target-bits @
-ELSE NORTH-BITS
-THEN 32 equals? IF
+  ELSE NORTH-BITS THEN 32 equals? ( fixme the host or target? )
+THEN IF
   s[ src/lib/math/32/int32.4th ] load-list
 THEN
