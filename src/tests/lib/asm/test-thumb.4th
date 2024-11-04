@@ -1,107 +1,130 @@
 dhere const> origin
 
-8 r4 r0 mov-lsl ,uint16
-16 r3 r1 mov-lsr ,uint16
-16 r2 r2 mov-asr ,uint16
+tmp" mov" error-line/2
 
-r2 r1 r0 add ,uint16
-3 r3 r1 add .immed ,uint16
+8 r4 r0 mov-lsl ,ins
+16 r3 r1 mov-lsr ,ins
+16 r2 r2 mov-asr ,ins
 
-r2 r1 r0 sub ,uint16
-3 r3 r1 sub .immed ,uint16
+tmp" Math" error-line/2
 
-255 r2 mov# ,uint16
-255 r2 cmp# ,uint16
-127 r2 add# ,uint16
-15 r2 sub# ,uint16
+r2 r1 r0 add ,ins
+3 r3 r1 add .immed ,ins
 
-r2 r1 and ,uint16
-r2 r1 eor ,uint16
-r2 r1 lsl ,uint16
-r2 r1 lsr ,uint16
-r2 r1 asr ,uint16
-r2 r1 adc ,uint16
-r2 r1 sbc ,uint16
-r2 r1 ror ,uint16
-r2 r1 tst ,uint16
-r2 r1 neg ,uint16
-r2 r1 cmp ,uint16
-r2 r1 cmn ,uint16
-r2 r1 orr ,uint16
-r2 r1 mul ,uint16
-r2 r1 bic ,uint16
-r2 r1 mvn ,uint16
+r2 r1 r0 sub ,ins
+3 r3 r1 sub .immed ,ins
 
-r10 r2 add-hilo ,uint16
-r2 r10 add-lohi ,uint16
-r10 r11 add-hihi ,uint16
-r10 r11 addrr ,uint16
+tmp" immediates" error-line/2
 
-r10 r2 cmp-hilo ,uint16
-r2 r10 cmp-lohi ,uint16
-r10 r11 cmp-hihi ,uint16
-r10 r11 cmprr ,uint16
+255 r2 mov# ,ins
+255 r2 cmp# ,ins
+127 r2 add# ,ins
+15 r2 sub# ,ins
 
-r10 r2 mov-hilo ,uint16
-r2 r10 mov-lohi ,uint16
-r10 r11 mov-hihi ,uint16
-r10 r11 movrr ,uint16
+tmp" Data ops" error-line/2
 
-r2 0 bx-lo ,uint16
-r10 0 bx-hi ,uint16
-r10 bx ,uint16
+r2 r1 and ,ins
+r2 r1 eor ,ins
+r2 r1 lsl ,ins
+r2 r1 lsr ,ins
+r2 r1 asr ,ins
+r2 r1 adc ,ins
+r2 r1 sbc ,ins
+r2 r1 ror ,ins
+r2 r1 tst ,ins
+r2 r1 neg ,ins
+r2 r1 cmp ,ins
+r2 r1 cmn ,ins
+r2 r1 orr ,ins
+r2 r1 mul ,ins
+r2 r1 bic ,ins
+r2 r1 mvn ,ins
 
-123 r2 ldr-pc ,uint16
+tmp" Hilo" error-line/2
 
-r3 r2 r1 str ,uint16
-r3 r2 r1 str .byte ,uint16
-r3 r2 r1 str-half ,uint16
+r10 r2 add-hilo ,ins
+r2 r10 add-lohi ,ins
+r10 r11 add-hihi ,ins
+r10 r11 addrr ,ins
 
-r4 r3 r2 ldr ,uint16
-r4 r3 r2 ldr .byte ,uint16
-r3 r2 r1 ldr-half ,uint16
-r3 r2 r1 ldsb ,uint16
-r3 r2 r1 ldsh ,uint16
+tmp" Cmp Hilo" error-line/2
 
-8 r2 r1 str-offset ,uint16
-8 r2 r1 ldr-offset ,uint16
+r10 r2 cmp-hilo ,ins
+r2 r10 cmp-lohi ,ins
+r10 r11 cmp-hihi ,ins
+r10 r11 cmprr ,ins
 
-8 r2 r1 strh ,uint16
-8 r2 r1 ldrh ,uint16
+r10 r2 mov-hilo ,ins
+r2 r10 mov-lohi ,ins
+r10 r11 mov-hihi ,ins
+r10 r11 movrr ,ins
 
-127 r2 str-sp ,uint16
-127 r2 ldr-sp ,uint16
+tmp" Branch" error-line/2
 
-120 r2 addr-pc ,uint16
-121 r1 addr-sp ,uint16
+r2 0 bx-lo ,ins
+r10 0 bx-hi ,ins
+r10 bx ,ins
 
-55 inc-sp ,uint16
-45 dec-sp ,uint16
+tmp" Load" error-line/2
 
-0xFF pushr ,uint16
-0x80 pushr .pclr ,uint16
+123 r2 ldr-pc ,ins
 
-0xFF popr ,uint16
-0x80 popr .pclr ,uint16
+r3 r2 r1 str ,ins
+r3 r2 r1 str .byte ,ins
+r3 r2 r1 str-half ,ins
 
-r2 0xFF stmia ,uint16
-r3 0xFF ldmia ,uint16
+r4 r3 r2 ldr ,ins
+r4 r3 r2 ldr .byte ,ins
+r3 r2 r1 ldr-half ,ins
+r3 r2 r1 ldsb ,ins
+r3 r2 r1 ldsh ,ins
 
-0x1FF beq ,uint16
-0x10 beq ,uint16
--0x10 beq ,uint16
-0x3FF bvs ,uint16
-0x10 bvs ,uint16
-0x3FF ble ,uint16
-0x10 ble ,uint16
-0x10 bgt ,uint16
+8 r2 r1 str-offset ,ins
+8 r2 r1 ldr-offset ,ins
 
-22 swi ,uint16
+8 r2 r1 strh ,ins
+8 r2 r1 ldrh ,ins
 
-0x1FF branch ,uint16
-0x10 branch ,uint16
--4 branch ,uint16
+127 r2 str-sp ,ins
+127 r2 ldr-sp ,ins
+
+120 r2 addr-pc ,ins
+121 r1 addr-sp ,ins
+
+55 inc-sp ,ins
+45 dec-sp ,ins
+
+0xFF pushr ,ins
+0x80 pushr .pclr ,ins
+
+0xFF popr ,ins
+0x80 popr .pclr ,ins
+
+r2 0xFF stmia ,ins
+r3 0xFF ldmia ,ins
+
+0x1FF beq ,ins
+0x10 beq ,ins
+-0x10 beq ,ins
+0x3FF bvs ,ins
+0x10 bvs ,ins
+0x3FF ble ,ins
+0x10 ble ,ins
+0x10 bgt ,ins
+
+22 swi ,ins
+
+0x1FF branch ,ins
+0x10 branch ,ins
+-4 branch ,ins
 
 0x123456 dhere - 4 - branch-link ,uint32
+
+0 r1 emit-load-int32
+1 r2 emit-load-int32
+0xFF r3 emit-load-int32
+0xFFFF r4 emit-load-int32
+0xFF0000 r5 emit-load-int32
+-1 r6 emit-load-int32
 
 origin ddump-binary-bytes

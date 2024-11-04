@@ -69,6 +69,7 @@ S set condition codes
 )
 
 : .i 0x2000000 logior ; ( todo use seems a bit backward )
+: ~.i 0x2000000 lognot logand ;
 : .set 0x100000 logior ;
 
 0 const> BARREL-BSL
@@ -113,6 +114,9 @@ S set condition codes
 : data-op-reg 2swap reg-op shift ;
 : data-op-immed 2swap immed-op shift ;
 
+: data-op1-reg shift reg-op swap ;
+: data-op1-immed shift immed-op swap ;
+
 ( The data ops: )
 
 : and ( op2 rn rd -- ins ) data-op-args 0 data-op ; ( operand1 AND operand2 )
@@ -148,36 +152,36 @@ S set condition codes
 : rsc# ( rshift immed rn rd -- ins ) data-op-immed rsc .i ;
 
 : tst 0 data-op-args 0x8 data-op .set ; ( as AND, but result is not written )
-: tstr ( shift-op rm rn -- ins ) data-op-reg tst ;
-: tst# ( rshift immed rn -- ins ) data-op-immed tst .i ;
+: tstr ( shift-op rm rn -- ins ) data-op1-reg tst ;
+: tst# ( rshift immed rn -- ins ) data-op1-immed tst .i ;
 
 : teq 0 data-op-args 0x9 data-op .set ; ( as EOR, but result is not written )
-: teqr ( shift-op rm rn -- ins ) data-op-reg teq ;
-: teq# ( rshift immed rn -- ins ) data-op-immed teq .i ;
+: teqr ( shift-op rm rn -- ins ) data-op1-reg teq ;
+: teq# ( rshift immed rn -- ins ) data-op1-immed teq .i ;
 
 : cmp 0 data-op-args 0xA data-op .set ; ( as SUB, but result is not written )
-: cmpr ( shift-op rm rn -- ins ) data-op-reg cmp ;
-: cmp# ( rshift immed rn -- ins ) data-op-immed cmp .i ;
+: cmpr ( shift-op rm rn -- ins ) data-op1-reg cmp ;
+: cmp# ( rshift immed rn -- ins ) data-op1-immed cmp .i ;
 
 : cmn 0 data-op-args 0xB data-op .set ; ( as ADD, but result is not written )
-: cmnr ( shift-op rm rn -- ins ) data-op-reg cmn ;
-: cmn# ( rshift immed rn -- ins ) data-op-immed cmn .i ;
+: cmnr ( shift-op rm rn -- ins ) data-op1-reg cmn ;
+: cmn# ( rshift immed rn -- ins ) data-op1-immed cmn .i ;
 
 : orr data-op-args 0xC data-op ; ( operand1 OR operand2 )
 : orrr ( shift-op rm rn rd -- ins ) data-op-reg orr ;
 : orr# ( rshift immed rn rd -- ins ) data-op-immed orr .i ;
 
 : mov 0 swap data-op-args 0xD data-op ; ( operand2, operand1 is ignored )
-: movr ( shift-op rm rn rd -- ins ) data-op-reg mov ;
-: mov# ( rshift immed rn rd -- ins ) data-op-immed mov .i ;
+: movr ( shift-op rm rd -- ins ) data-op1-reg mov ;
+: mov# ( rshift immed rd -- ins ) data-op1-immed mov .i ;
 
 : bic data-op-args 0xE data-op ; ( operand1 AND NOT operand2, Bit clear )
 : bicr ( shift-op rm rn rd -- ins ) data-op-reg bic ;
 : bic# ( rshift immed rn rd -- ins ) data-op-immed bic .i ;
 
 : mvn 0 swap data-op-args 0xF data-op ; ( NOT operand2, operand1 is ignored )
-: mvnr ( shift-op rm rd -- ins ) data-op-reg mvn ;
-: mvn# ( rshift immed rd -- ins ) data-op-immed mvn .i ;
+: mvnr ( shift-op rm rd -- ins ) data-op1-reg mvn ;
+: mvn# ( rshift immed rd -- ins ) data-op1-immed mvn .i ;
 
 ( Multiplication
 
