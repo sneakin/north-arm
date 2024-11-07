@@ -302,7 +302,6 @@ INTERP_RUNTIME_SRC=\
 	src/lib/math/float32.4th \
 	src/interp/output/float32.4th \
 	src/lib/linux.4th \
-	src/lib/linux/types.4th \
 	src/lib/linux/clock.4th \
 	src/lib/linux/stat.4th \
 	src/lib/linux/mmap.4th \
@@ -454,6 +453,7 @@ PROGRAMS=\
   scantool \
   interp_armasm \
   demo_tty_drawing \
+  demo_tty_clock \
   demo_tty_raycast
 
 PGRM_interp_core_sources= \
@@ -555,3 +555,6 @@ $(foreach stage,$(STAGES), \
         $(PGRM_$(program)_sources))))))
 
 programs: $(PGRMS_$(TARGET_ABI)_$(STAGE))
+
+print-programs:
+	@echo $(PGRMS_$(TARGET_ABI)_$(STAGE))
