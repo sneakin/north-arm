@@ -19,8 +19,6 @@
   over 17 bit-set? IF 11 bit-set THEN
   over 16 bit-set? IF 13 bit-set THEN
   swap
-  ( dup error-hex-uint espace
-  dup 0x1f + error-hex-uint )
   1 bsr
   dup 0x7FF logand
   swap 11 bsr 0x3F logand 16 bsl logior
@@ -199,16 +197,18 @@
   swap 0xF logand logior
 ;
 
-: cdp ( CRn Op1 CRm Opc2 coproc CRd -- ins32 )
-  cdp-lo 16 bsl
-  shift cdp-hi
+: cdp ( Opc2 CRm CRn CRd Op1 coproc -- ins32 )
+  ( CRm Opc2 coproc CRd )
+  5 overn 7 overn 3 overn 6 overn cdp-lo 16 bsl
+  ( CRn Op1 )
+  5 overn 4 overn cdp-hi
   logior
+  6 set-overn 5 dropn
 ;
 
 : .cdp-n 23 bit-set ;
 
 ( Register transfers: )
-( todo reorder args to match actual asm )
 
 ( 1 1 1 C 1 1 1 0 Op1:3 L CRn:4 )
 : mcr-hi ( CRn Op1 -- ins16 )
@@ -230,24 +230,32 @@
 ;
 
 ( Transfer to coprocessor. )
-: mcr ( CRn Op1 CRm Op2 coproc Rxf )
-  mcr-lo 16 bsl
-  shift mcr-hi logior
+: mcr ( Opc2 CRm CRn CRd Op1 coproc -- ins32 )
+  ( CRm Opc2 coproc CRd )
+  5 overn 7 overn 3 overn 6 overn mcr-lo 16 bsl
+  ( CRn Op1 )
+  5 overn 4 overn mcr-hi
+  logior
+  6 set-overn 5 dropn
 ;
 
 ( Transfer from coprocessor. )
-: mrc ( CRn Op1 CRm Op2 coproc Rxf )
-  mcr-lo 16 bsl
-  shift mrc-hi logior
+: mrc ( Opc2 CRm CRn CRd Op1 coproc -- ins32 )
+  ( CRm Opc2 coproc CRd )
+  5 overn 7 overn 3 overn 6 overn mcr-lo 16 bsl
+  ( CRn Op1 )
+  5 overn 4 overn mrc-hi
+  logior
+  6 set-overn 5 dropn
 ;
 
 : cpuid-pfr0
-  0 0 1 0 0xF 6 overn mrc
+  0 1 0 4 overn 0 0xF mrc
   swap drop
 ;
 
 : cpuid-pfr1
-  0 0 1 1 0xF 6 overn mrc
+  1 1 0 4 overn 0 0xF mrc
   swap drop
 ;
 

@@ -37,7 +37,7 @@ endop
 defop float32-add
   r0 1 fmsrs ,ins
   2 vpop ,ins
-  2 1 0 fadds ,ins
+  1 2 0 fadds ,ins
   0 r0 fmrss ,ins
   emit-next
 endop
@@ -93,7 +93,7 @@ endcol
 defop float32-sub
   r0 1 fmsrs ,ins
   2 vpop ,ins
-  2 1 0 fsubs ,ins
+  1 2 0 fsubs ,ins
   0 r0 fmrss ,ins
   emit-next
 endop
@@ -101,7 +101,7 @@ endop
 defop float32-mul
   r0 1 fmsrs ,ins
   2 vpop ,ins
-  2 1 0 fmuls ,ins
+  1 2 0 fmuls ,ins
   0 r0 fmrss ,ins
   emit-next
 endop
@@ -109,7 +109,7 @@ endop
 defop float32-div
   r0 1 fmsrs ,ins
   2 vpop ,ins
-  2 1 0 fdivs ,ins
+  1 2 0 fdivs ,ins
   0 r0 fmrss ,ins
   emit-next
 endop

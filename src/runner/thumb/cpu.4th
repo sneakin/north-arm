@@ -15,14 +15,14 @@ endop
 defop aarch32-midr
   ( works in qemu )
   0 r0 bit-set pushr ,ins
-  0 0 0 0 0xF r0 mrc ,ins
+  0 0 0 r0 0 0xF mrc ,ins
   emit-next
 endop
 
 defop aarch32-acr
   ( works in qemu )
   0 r0 bit-set pushr ,ins
-  1 0 0 2 0xF r0 mrc ,ins
+  2 0 1 r0 0 0xF mrc ,ins
   emit-next
 endop
 
@@ -40,12 +40,12 @@ endop
 
 defop cpuid-isa0
   0 r0 bit-set pushr ,ins
-  0 0 2 0 0xF r0 mrc ,ins
+  0 2 0 r0 0 0xF mrc ,ins
   emit-next
 endop
 
 defop cpuid-isa1
   0 r0 bit-set pushr ,ins
-  0 0 2 1 0xF r0 mrc ,ins
+  1 2 0 r0 0 0xF mrc ,ins
   emit-next
 endop
