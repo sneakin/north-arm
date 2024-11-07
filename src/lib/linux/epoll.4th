@@ -26,10 +26,11 @@ int<32> field: data1 ( todo union of 32 and 64 bit values )
 int<32> field: data2
 
 NORTH-PLATFORM tmp" linux" drop contains?
-NORTH-PLATFORM tmp" thumb" drop contains? and IF
+NORTH-PLATFORM tmp" aarch32" drop contains? 
+NORTH-PLATFORM tmp" thumb" drop contains? or and IF
   tmp" src/lib/linux/arm32/epoll.4th" load/2
 ELSE
-  tmp" Unsupported platform" error-line ( todo raise an error )
+  tmp" Unsupported platform" error-line/2 ( todo raise an error )
 THEN
 
 ( epoll wrappers for single file descriptors: )

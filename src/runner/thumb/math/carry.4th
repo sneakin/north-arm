@@ -1,10 +1,10 @@
 : emit-sign-extender ( src-reg dest-reg -- )
   ( sign extend what last set the flags into dest-reg )
-  6 bvc ,ins ( no overflow so skip to using actual sign bit )
+  6 bvc-ins ,ins ( no overflow so skip to using actual sign bit )
   0 over mov# ,ins
-  4 bcc ,ins ( sign is in carry bit. skip when positive )
+  4 bcc-ins ,ins ( sign is in carry bit. skip when positive )
   dup dup mvn ,ins ( -1 for hi )
-  0 branch ,ins
+  0 branch-ins ,ins
   31 shift mov-asr ,ins ( actual sign extension )
 ;
 

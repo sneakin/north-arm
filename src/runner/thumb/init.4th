@@ -34,4 +34,4 @@ defop init
 endop
 
 ( todo pass eip as an argument to a top level eval. Likewise with the dictionaries and other state like registers. )
-  ( todo set dict in colon def from const )
+

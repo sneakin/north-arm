@@ -71,10 +71,12 @@ NORTH-BUILD-TIME 1705910557 int<= logand IF
     arg0 signal-state-registers dict-reg seq-peek set-arg0
   end
 ELSE
+  ( fixme signals during a syscall have invalid CS and DS state )
   def signal-state-dict
     arg0 signal-state-registers data-reg seq-peek
-    arg0 signal-state-registers cs-reg seq-peek ' *dict* dict-entry-data @ +
-    data-var-init-slot @ seq-peek set-arg0
+    arg0 signal-state-registers cs-reg seq-peek
+    ' *dict* dict-entry-data @ +
+    data-var-init-slot @ seq-peek return1-1
   end
 THEN
 
@@ -94,11 +96,14 @@ def print-signal-state
   THEN
   s" Signal context registers: " error-line/2
   arg2 signal-state-registers NORTH-BUILD-TIME 1634096442 int> IF print-regs/1 ELSE print-regs THEN
-  ( fails if the signal happens in a syscall as FP and EIP are reused )
+  ( fixme fails if the signal happens in a syscall as FP and EIP are reused )
   NORTH-BUILD-TIME 1634096442 int> IF
-    s" EIP: " error-string/2
     arg2 signal-state-dict
-    arg2 signal-state-registers eip-reg seq-peek print-eip
+    dup IF
+      s" EIP: " error-string/2
+      arg2 signal-state-registers eip-reg seq-peek print-eip
+    ELSE drop
+    THEN
     s" Stack: " error-line/2
     arg2 signal-state-registers 0 seq-peek error-hex-uint espace
     arg2 signal-state-registers sp-reg seq-peek 128 cmemdump

@@ -1,4 +1,5 @@
 ( aarch32 assembly words )
+( See https://gab.wallawalla.edu/~curt.nelson/cptr380/textbook/advanced%20material/Appendix_B2.pdf )
 
 ' ,uint32 defined? UNLESS
   " src/lib/byte-data.4th" load
@@ -246,10 +247,11 @@ S H 00 swap, 01 unsigned short, 10 signed byte, 11 signed short
 Rm offset
 )
 
-: .l 0x100000 logior ;
 : .p 0x1000000 logior ;
 : .up 0x800000 logior ;
+: .n 0x400000 logior ;
 : .w 0x200000 logior ;
+: .l 0x100000 logior ;
 
 : strh/3 ( rm rn rd -- ins )
   0xE00000B0
@@ -418,7 +420,7 @@ Cond | 1 0 1 L | Offset | Branch
 L link bit: 1 = branch w/ link
 )
 
-: b 0xFFFFFF logand 0xEA000000 logior ;
+: b 4 - 2 absr 0xFFFFFF logand 0xEA000000 logior ;
 : bl b 0x1000000 logior ;
 
 ( Coprocessor data transfer
@@ -481,7 +483,7 @@ CP coprocessor info
 CRm coprocessor operand register
 )
 
-: mrc ( cp crm crn rd cpop cp# -- ins )
+: mcr ( cp crm crn rd cpop cp# -- ins )
   0xF logand 8 bsl ( cp# )
   swap 0x7 logand 21 bsl logior ( cpop )
   swap 12 bsl logior ( rd )
@@ -491,7 +493,7 @@ CRm coprocessor operand register
   0xEE000010 logior
 ;
 
-: mcr mrc 0x100000 logior ;
+: mrc mcr 0x100000 logior ;
 
 ( Software interrupt
 
@@ -502,6 +504,19 @@ Cond | 1 1 1 1 | Ignored by processor | Software Interrupt
 : swi ( comment -- ins )
   0xFFFFFF logand 0xEF000000 logior
 ;
+
+( Breakpoint
+12                      | 12          | 4       | 4
+1 1 1 0 0 0 0 1 0 0 1 0 | immed[15:4] | 0 1 1 1 | immed [3:0]
+)
+
+: bkpt/1
+  0xFFFF logand dup 4 bsr 8 bsl
+  swap 0xF logand logior
+  0xE1200070 logior
+;
+
+: bkpt 0 bkpt/1 ;
 
 ( Helpers: )
 

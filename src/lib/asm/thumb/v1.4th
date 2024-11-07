@@ -284,6 +284,22 @@ alias> sl r10
 ( Branch if Z set, or N set and V clear, or N clear and V set, less than or equal )
 : ble beq 13 set-branch-cond ;
 
+( Aliases to ease portability w/ fake-thumb. )
+alias> beq-ins beq
+alias> bne-ins bne
+alias> bcs-ins bcs
+alias> bcc-ins bcc
+alias> bmi-ins bmi
+alias> bpl-ins bpl
+alias> bvs-ins bvs
+alias> bvc-ins bvc
+alias> bhi-ins bhi
+alias> bls-ins bls
+alias> bge-ins bge
+alias> blt-ins blt
+alias> bgt-ins bgt
+alias> ble-ins ble
+
 ( 1 1 0 1 1 1 1 1 Value:8 Software Interrupt )
 : swi ( value )
   0xFF logand
@@ -329,6 +345,9 @@ alias> sl r10
   swap 1 bsr bl-lo 16 bsl
   logior
 ;
+
+alias> branch-ins branch
+alias> branch-link-ins branch-link
 
 : bkpt/1
   0xFF logand 0xBE00 logior

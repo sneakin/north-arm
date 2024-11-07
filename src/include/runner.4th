@@ -1,4 +1,4 @@
-target-thumb? IF
+target-aarch32? target-thumb? or IF
 ( Core ops )
 s[ src/runner/thumb/ops.4th
    src/runner/thumb/cpu.4th

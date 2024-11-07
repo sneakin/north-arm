@@ -121,6 +121,8 @@ nop ,ins
 nop ,ins
 
 r1 bx ,ins
+r2 bx ,ins
+lr bx ,ins
 
 nop ,ins
 nop ,ins
@@ -223,6 +225,10 @@ nop ,ins
 
 0x1234 swi ,ins
 -123 swi ,ins
+
+0x1234 bkpt/1 ,ins
+-1 bkpt/1 ,ins
+bkpt ,ins
 
 nop ,ins
 nop ,ins

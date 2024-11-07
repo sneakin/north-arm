@@ -3,16 +3,16 @@
 ( Copies from low to high memory by the byte. )
 defop copy-up-1
   1 r0 cmp# ,ins
-  18 bcc ,ins
+  18 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   1 r0 cmp# ,ins
-  10 bcc ,ins
+  10 bcc-ins ,ins
   0 r2 r3 ldr-offset .offset-byte ,ins
   0 r1 r3 str-offset .offset-byte ,ins
   1 r0 sub# ,ins
   1 r1 add# ,ins
   1 r2 add# ,ins
-  -18 branch ,ins
+  -18 branch-ins ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
   emit-next
 endop
@@ -20,16 +20,16 @@ endop
 ( Copies from low to high memory by the 4 byte cell. )
 defop copy-up-4
   cell-size r0 cmp# ,ins
-  18 bcc ,ins
+  18 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   cell-size r0 cmp# ,ins
-  10 bcc ,ins
+  10 bcc-ins ,ins
   0 r2 r3 ldr-offset ,ins
   0 r1 r3 str-offset ,ins
   cell-size r0 sub# ,ins
   cell-size r1 add# ,ins
   cell-size r2 add# ,ins
-  -18 branch ,ins
+  -18 branch-ins ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
   emit-next
 endop
@@ -37,15 +37,15 @@ endop
 : emit-copy-up ( bytes register -- )
   ( todo cmp r0 before pop )
   over r0 cmp# ,ins
-  18 bcc ,ins
+  18 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   dup pushr ,ins
   over r0 cmp# ,ins
-  6 bcc ,ins
+  6 bcc-ins ,ins
   r2 over ldmia ,ins
   r1 over stmia ,ins
   over r0 sub# ,ins
-  -14 branch ,ins
+  -14 branch-ins ,ins
   dup popr ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
   2 dropn
@@ -89,16 +89,16 @@ end
 ( Copies from high to low memory by the byte. )
 defop copy-down-1
   1 r0 cmp# ,ins
-  18 bcc ,ins
+  18 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   1 r0 cmp# ,ins
-  10 bcc ,ins
+  10 bcc-ins ,ins
   1 r2 sub# ,ins
   1 r1 sub# ,ins
   1 r0 sub# ,ins
   0 r2 r3 ldr-offset .offset-byte ,ins
   0 r1 r3 str-offset .offset-byte ,ins
-  -18 branch ,ins
+  -18 branch-ins ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
   emit-next
 endop
@@ -106,27 +106,27 @@ endop
 ( Copies from high to low memory by 4 bytes, 1 cell. )
 defop copy-down-4
   cell-size r0 cmp# ,ins
-  18 bcc ,ins
+  18 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   cell-size r0 cmp# ,ins
-  10 bcc ,ins
+  10 bcc-ins ,ins
   cell-size r2 sub# ,ins
   cell-size r1 sub# ,ins
   cell-size r0 sub# ,ins
   0 r2 r3 ldr-offset ,ins
   0 r1 r3 str-offset ,ins
-  -18 branch ,ins
+  -18 branch-ins ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
   emit-next
 endop
 
 : emit-copy-down
   over r0 cmp# ,ins
-  26 bcc ,ins
+  26 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   dup pushr ,ins
   over r0 cmp# ,ins
-  14 bcc ,ins
+  14 bcc-ins ,ins
   over r1 sub# ,ins
   over r2 sub# ,ins
   r2 r3 movrr ,ins
@@ -134,7 +134,7 @@ endop
   r1 r3 movrr ,ins
   r3 over stmia ,ins
   over r0 sub# ,ins
-  -22 branch ,ins
+  -22 branch-ins ,ins
   dup popr ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
   2 dropn

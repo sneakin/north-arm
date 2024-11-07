@@ -19,18 +19,20 @@ alias> a.movr movr
 ;
 
 ( 0 0 0 1 1 I Op Rn/offset:3 Rs:3 Rd:3 Add/subtract )
-0 IF
-: add ( rn rs rd )
-  add
+alias> a.add add
+alias> a.sub sub
+
+: add ( rs rn rd )
+  a.add
 ;
 
 : sub
-  sub
+  a.sub
 ;
-THEN
+
 
 ( todo immediates get shifted? )
-: .immed ~.i ;
+: .immed .i ; ( fixme )
 
 ( 0 0 1 Op:2 Rd:3 Offset:8 Move/compare/add/subtract immediate )
 alias> a.mov# mov#
@@ -58,6 +60,7 @@ alias> a.orr orr
 alias> a.mul mul
 alias> a.bic bic
 alias> a.mvn mvn
+alias> a.rsc# rsc#
 
 : and dup a.and ;
 : eor dup a.eor ;
@@ -68,7 +71,7 @@ alias> a.mvn mvn
 : sbc dup a.sbc ;
 : ror swap BARREL-RSR reg-shift swap dup a.movr ;
 ( : tst a.tst ; )
-: neg dup a.mvn ;
+: neg 0 swap dup a.rsc# ;
 ( : cmp a.cmp ; )
 ( : cmn a.cmn ; )
 : orr dup a.orr ;
@@ -99,11 +102,11 @@ alias> a.mvn mvn
 : movrr mov ;
 
 : bx-lo bx ;
-: bx-hi 8 + bx ;
+: bx-hi bx ;
 
 ( 0 1 0 0 1 Rd Word:8 PC-relative load )
 : ldr-pc ( value rd )
-  swap 16 swap immed-op pc roll ldr# .up
+  pc swap ldr# .up .p
 ;
 
 ( 0 1 0 1 L B 0 Ro:3 Rb:3 Rd:3 Load/store with register offset )
@@ -111,27 +114,27 @@ alias> a.str str
 alias> a.ldr ldr
 
 : str ( Ro rb rd )
-  a.str .up
+  a.str .up .p
 ;
 
 : .byte .b ;
 
-: ldr a.ldr .up ;
+: ldr a.ldr .up .p ;
 
 ( 0 1 0 1 H S 1 Ro:3 Rb:3 Rd:3 Load/store sign-extended byte/halfword )
 : .half 9 bit-set ;
-: str-half strh ;
-: ldr-half ldrh ;
-: ldsb ldrsb ;
-: ldsh ldrsh ;
+: str-half strh .p ;
+: ldr-half ldrh .p ;
+: ldsb ldrsb .p ;
+: ldsh ldrsh .p ;
 
 ( 0 1 1 B L Offset:5 Rb:3 Rd:3 Load/store with immediate offset )
 : str-offset ( offset rb rd )
-  str# .up
+  str# .up .p
 ;
 
 : ldr-offset
-  ldr# .up
+  ldr# .up .p
 ;
 
 : .offset-byte .b ;
@@ -145,11 +148,11 @@ alias> a.ldr ldr
 
 ( 1 0 0 1 L Rd:3 Word:8 SP-relative load/store )
 : str-sp ( offset rd )
-  swap 16 swap immed-op sp roll str# .up
+  swap 16 swap immed-op sp roll str# .up .p
 ;
 
 : ldr-sp
-  swap 16 swap immed-op sp roll ldr# .up
+  swap 16 swap immed-op sp roll ldr# .up .p
 ;
 
 ( 1 0 1 0 SP Rd:3 Word:8 Load address )
@@ -170,47 +173,79 @@ alias> a.ldr ldr
 
 ( 1 0 1 1 L 1 0 R Rlist Push/pop registers )
 : pushr ( rlist )
-  sp stm .w
+  sp stm .p .w
 ;
 
 : .pclr dup 0 .l logand IF pc ELSE lr THEN bit-set ;
 
-: popr pushr .l ;
+: popr sp ldm .w .up ;
 
 ( 1 1 0 0 L Rb Rlist Multiple load/store )
-: stmia ( rb rlist ) swap stm ;
-: ldmia swap ldm ;
+: stmia ( rb rlist ) swap stm .w .up ;
+: ldmia swap ldm .w .up ;
+
+( 1 1 1 0 0 Offset:11 Unconditional branch )
+: branch ( byte-offset -- ins )
+  b
+;
+
+( 1 1 1 1 H Offset:11 Long branch with link )
+: branch-link ( byte-offset -- ins )
+  bl
+;
+
+: branch-ins ( #ins -- ins )
+  2 * 4 + branch
+;
+
+: branch-link-ins ( #ins -- ins )
+  2 * 4 + branch-link
+;
 
 ( 1 1 0 1 Cond:4 Soffset:8 Conditional branch )
 ( Branch if Z set, equal )
-: beq ( offset ) b .eq ;
+: beq ( offset ) branch .eq ;
+: beq-ins ( offset ) branch-ins .eq ;
 
 ( Branch if Z clear, not equal )
-: bne b .ne ;
+: bne branch .ne ;
+: bne-ins branch-ins .ne ;
 ( Branch if C set, unsigned higher or same )
-: bcs b .cs ;
+: bcs branch .cs ;
+: bcs-ins branch-ins .cs ;
 ( Branch if C clear, unsigned lower )
-: bcc b .cc ;
+: bcc branch .cc ;
+: bcc-ins branch-ins .cc ;
 ( Branch if N set, negative )
-: bmi b .mi ;
+: bmi branch .mi ;
+: bmi-ins branch-ins .mi ;
 ( Branch if N clear, positive or zero )
-: bpl b .pl ;
+: bpl branch .pl ;
+: bpl-ins branch-ins .pl ;
 ( Branch if V set, overflow )
-: bvs b .vs ;
+: bvs branch .vs ;
+: bvs-ins branch-ins .vs ;
 ( Branch if V clear, no overflow )
-: bvc b .vc ;
+: bvc branch .vc ;
+: bvc-ins branch-ins .vc ;
 ( Branch if C set and Z clear, unsigned higher )
-: bhi b .hi ;
+: bhi branch .hi ;
+: bhi-ins branch-ins .hi ;
 ( Branch if C clear or Z set, unsigned lower or same )
-: bls b .ls ;
+: bls branch .ls ;
+: bls-ins branch-ins .ls ;
 ( Branch if N set and V set, or N clear and V clear, greater or equal )
-: bge b .ge ;
+: bge branch .ge ;
+: bge-ins branch-ins .ge ;
 ( Branch if N set and V clear, or N clear and V set, less than )
-: blt b .lt ;
+: blt branch .lt ;
+: blt-ins branch-ins .lt ;
 ( Branch if Z clear, and either N set and V set or N clear and V clear, greater than )
-: bgt b .gt ;
+: bgt branch .gt ;
+: bgt-ins branch-ins .gt ;
 ( Branch if Z set, or N set and V clear, or N clear and V set, less than or equal )
-: ble b .le ;
+: ble branch .le ;
+: ble-ins branch-ins .le ;
 
 ( 1 1 0 1 1 1 1 1 Value:8 Software Interrupt )
 0 IF
@@ -219,22 +254,90 @@ alias> a.ldr ldr
 ;
 THEN
 
-( 1 1 1 0 0 Offset:11 Unconditional branch )
-: branch ( offset )
-  b
+alias> a.mrs mrs
+alias> a.msr msr
+alias> a.msri msri
+alias> a.mcr mcr
+alias> a.mrc mrc
+alias> a.cdp cdp
+
+: mrs ( reg ) a.mrs ;
+: msr ( reg mask ) swap drop a.msri ;
+
+: coproc-p .p ;
+: coproc-u .up ;
+: coproc-d 0 .up lognot logand ;
+: coproc-w .w ;
+: .ldc .l ;
+: .cdp-n .n ;
+
+: cdp ( CRn Op1 CRm Opc2 coproc CRd -- ins32 )
+  3 overn ( op2 )
+  5 overn ( crm )
+  8 overn ( crn )
+  4 overn ( crd )
+  9 overn ( op1 )
+  7 overn ( cp# )
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  a.cdp
+;
+ 
+: mcr ( CRn Op1 CRm Op2 coproc Rxf )
+  3 overn ( op2 )
+  5 overn ( crm )
+  8 overn ( crn )
+  4 overn ( rxf )
+  9 overn ( op1 )
+  7 overn ( cp# )
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  a.mcr
 ;
 
-( 1 1 1 1 H Offset:11 Long branch with link )
-: branch-link ( offset -- 32bit-ins )
-  bl
+: mrc ( CRn Op1 CRm Op2 coproc Rxf )
+  3 overn ( op2 )
+  5 overn ( crm )
+  8 overn ( crn )
+  4 overn ( rxf )
+  9 overn ( op1 )
+  7 overn ( cp# )
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  6 set-overn
+  a.mrc
 ;
 
-: bkpt/1
-  swi
+: cpuid-pfr0
+  0 0 1 0 0xF 6 overn mrc
+  swap drop
 ;
 
-: bkpt
-  0 swi
+: cpuid-pfr1
+  0 0 1 1 0xF 6 overn mrc
+  swap drop
+;
+
+alias> a.stc stc
+alias> a.ldc ldc
+
+: stc ( Rn imm8 coproc CRd -- ins32 )
+  2swap swap 2swap swap a.stc
+;
+
+: ldc ( Rn imm8 coproc CRd -- ins32 )
+  2swap swap 2swap swap a.ldc
 ;
 
 ( Change processor endian mode. )
@@ -247,26 +350,25 @@ THEN
 : bigend 1 setend ;
 : lilend 0 setend ;
 
+( Misc Thumb 2: )
+
+: ldr-pc.w ldr-pc .w ;
+ 
 ( Helpers: )
 
-0 IF
-: emit-load-int32 ( n reg )
-  ( 0xAAbbccdd )
-  2 overn 24 bsr 0xFF logand 2 overn mov# ,ins ( init reg with highest byte )
-  2 overn 0xFF000000 logand IF 8 over dup mov-lsl ,ins ( reg<<8 ) THEN
-  ( 0xaaBBccdd )
-  2 overn 16 bsr 0xFF logand
-  dup 0 equals IF drop ELSE 2 overn add# ,ins ( add byte to reg<<8 ) THEN
-  2 overn 0xFFFF0000 logand IF 8 over dup mov-lsl ,ins ( reg<<8 ) THEN
-  ( 0xaabbCCdd )
-  2 overn 8 bsr 0xFF logand
-  dup 0 equals IF drop ELSE 2 overn add# ,ins ( add byte to reg<<8 ) THEN
-  2 overn 0xFFFFFF00 logand IF 8 over dup mov-lsl ,ins ( reg<<8 ) THEN
-  ( 0xaabbccDD )
-  2 overn 0xFF logand
-  dup 0 equals IF drop ELSE 2 overn add# ,ins ( add byte to reg<<8 ) THEN
-  2 dropn
+: patch-ldr-pc!/2 ( where reg -- )
+  ( replaces the instruction at ~where~ with a ~ldr-pc~ for ~dhere~. )
+  swap dhere over - target-aarch32? IF 8 - ELSE 2 - THEN roll ldr-pc swap ins!
 ;
-THEN
 
-" src/lib/asm/thumb/helpers.4th" load
+: patch-ldr-pc! ( where offset reg -- )
+  ( replaces the instruction at ~where~ with a ~ldr-pc~ that loads from ~dhere + offset~ )
+  dhere 4 overn - target-aarch32? IF 8 - ELSE 2 - THEN
+  ( add the delta to the offset and poke with a new ldr-pc )
+  roll + swap ldr-pc swap ins!
+;
+
+s[ src/lib/asm/thumb/helpers.4th
+   src/lib/asm/thumb/vfp-constants.4th
+   src/lib/asm/thumb/vfp.4th
+] load-list

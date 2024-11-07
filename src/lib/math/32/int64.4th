@@ -116,6 +116,8 @@ end
 
 ( Multiplication: )
 
+( fixme does this work? )
+
 def int-mulc ( a b -- lo hi )
   arg1 abs-int arg0 abs-int uint-mulc
   arg1 0 int< arg0 0 int< logxor IF int64-negate THEN

@@ -39,7 +39,7 @@ Auxvec #3 gives the program headers and #9 gives the entry point.
 ( ' type uint16 field )
 2 ,uint16
 ( ' machine uint16 field )
-target-thumb? IF 40 ELSE target-x86? IF 3 ELSE 0 THEN THEN ,uint16
+target-aarch32? target-thumb? or IF 40 ELSE target-x86? IF 3 ELSE 0 THEN THEN ,uint16
 ( ' version uint32 field )
 1 ,uint32
 ( ' entry uint32 field )

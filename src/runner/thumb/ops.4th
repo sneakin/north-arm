@@ -66,7 +66,7 @@ THEN
       ( ldr-pc is 4 byte aligned. Determine if the offset will be padded: )
       dhere to-out-addr 2 logand
       ( s" Branch aligned: " error-string/2 espace dhere to-out-addr error-hex-uint espace dup error-int espace enl )
-      dup 6 + r0 ldr-pc ,ins
+      dup target-aarch32? IF 8 ELSE 6 THEN + r0 ldr-pc ,ins
       ( stash the offset in IP and restore R0 )
       r0 ip movrr ,ins
       0 r0 bit-set popr ,ins
@@ -76,10 +76,10 @@ THEN
       ( align the data? )
       swap IF
         2 + ( add padding to offset's offset )
-	0 ,uint16 ( the padding )
+        0 ,uint16 ( the padding )
       THEN
       ( the offset: adjusted for padding & add pc address )
-      - 6 - ,uint32 
+      - target-aarch32? IF 20 ELSE 6 THEN - ,uint32 
     THEN
   THEN
 ;
@@ -618,49 +618,49 @@ endop
 : emit-truther
   2 swap exec ,ins
   0 r0 mov# ,ins
-  0 branch ,ins
+  0 branch-ins ,ins
   1 r0 mov# ,ins
 ;
 
 defop int<
   0 r1 bit-set popr ,ins
   r0 r1 cmp ,ins
-  ' blt emit-truther
+  ' blt-ins emit-truther
   emit-next
 endop
 
 defop int<=
   0 r1 bit-set popr ,ins
   r0 r1 cmp ,ins
-  ' ble emit-truther
+  ' ble-ins emit-truther
   emit-next
 endop
 
 defop uint<
   0 r1 bit-set popr ,ins
   r0 r1 cmp ,ins
-  ' bcc emit-truther
+  ' bcc-ins emit-truther
   emit-next
 endop
 
 defop uint<=
   0 r1 bit-set popr ,ins
   r0 r1 cmp ,ins
-  ' bls emit-truther
+  ' bls-ins emit-truther
   emit-next
 endop
 
 : emit-comparable-resulter
   ( not eq )
-  10 beq ,ins
+  10 beq-ins ,ins
     ( less than )
-    4 blt ,ins
+    4 blt-ins ,ins
       1 r0 mov# ,ins
       r0 r0 neg ,ins
-      4 branch ,ins
+      4 branch-ins ,ins
       ( else )
       1 r0 mov# ,ins
-      0 branch ,ins
+      0 branch-ins ,ins
     ( else )
     0 r0 mov# ,ins
 ;
@@ -674,15 +674,15 @@ endop
 
 : emit-unsigned-comparable-resulter
   ( not eq )
-  10 beq ,ins
+  10 beq-ins ,ins
     ( less than )
-    4 bcc ,ins
+    4 bcc-ins ,ins
       1 r0 mov# ,ins
       r0 r0 neg ,ins
-      4 branch ,ins
+      4 branch-ins ,ins
       ( else )
       1 r0 mov# ,ins
-      0 branch ,ins
+      0 branch-ins ,ins
     ( else )
     0 r0 mov# ,ins
 ;
@@ -746,20 +746,20 @@ endop
 defop equals?
   0 r1 bit-set popr ,ins
   r1 r0 cmp ,ins
-  ' beq emit-truther
+  ' beq-ins emit-truther
   emit-next
 endop
 
 defop null?
   0 r0 cmp# ,ins
-  ' beq emit-truther
+  ' beq-ins emit-truther
   emit-next
 endop
 
 defop if-jump
   0 r1 bit-set popr ,ins
   0 r1 cmp# ,ins
-  2 beq ,ins
+  2 beq-ins ,ins
   2 r0 r0 mov-lsl ,ins
   r0 eip eip add ,ins
   0 r0 bit-set popr ,ins
@@ -769,7 +769,7 @@ endop
 defop unless-jump
   0 r1 bit-set popr ,ins
   0 r1 cmp# ,ins
-  2 bne ,ins
+  2 bne-ins ,ins
   2 r0 r0 mov-lsl ,ins
   r0 eip eip add ,ins
   0 r0 bit-set popr ,ins
@@ -805,7 +805,7 @@ defop calc-cs
   emit-next
   ( data: )
   ( 0 ,uint16 )
-  to-out-addr 2 + negate ,uint32
+  to-out-addr target-aarch32? IF 4 ELSE 2 THEN + negate ,uint32
 endop
 
 defop push-lr

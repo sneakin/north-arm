@@ -27,7 +27,7 @@ defop syscall-clone ( args num-args syscall -- pid-or-error )
   emit-syscall
   ( skip the argument drop if in child process )
   0 r0 cmp# ,ins
-  0 beq ,ins
+  0 beq-ins ,ins
   ( drop the arguments )
   2 cell-size mult inc-sp ,ins
   ( drop 0 return value the child sees )

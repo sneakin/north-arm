@@ -201,7 +201,7 @@
 
 : cdp ( CRn Op1 CRm Opc2 coproc CRd -- ins32 )
   cdp-lo 16 bsl
-  rot swap cdp-hi
+  shift cdp-hi
   logior
 ;
 
@@ -232,13 +232,13 @@
 ( Transfer to coprocessor. )
 : mcr ( CRn Op1 CRm Op2 coproc Rxf )
   mcr-lo 16 bsl
-  rot swap mcr-hi logior
+  shift mcr-hi logior
 ;
 
 ( Transfer from coprocessor. )
 : mrc ( CRn Op1 CRm Op2 coproc Rxf )
   mcr-lo 16 bsl
-  rot swap mrc-hi logior
+  shift mrc-hi logior
 ;
 
 : cpuid-pfr0

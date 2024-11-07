@@ -23,10 +23,15 @@ def builder-load
     s" Loading thumb assembler..." error-line/2
     " src/include/thumb-asm.4th" load ( load-thumb-asm )
   ELSE
-    target-x86? IF
-      s" Loading x86 assembler..." error-line/2
-      " src/include/x86-asm.4th" load
-    ELSE s" Unsupported target" error-line/2 -1 sysexit ( todo error )
+    target-aarch32? IF
+      s" Loading aarch32 assembler..." error-line/2
+      " src/include/aarch32-asm.4th" load
+    ELSE
+      target-x86? IF
+        s" Loading x86 assembler..." error-line/2
+        " src/include/x86-asm.4th" load
+      ELSE s" Unsupported target" error-line/2 -1 sysexit ( todo error )
+      THEN
     THEN
   THEN
   " src/cross/builder/run/interp.4th" load

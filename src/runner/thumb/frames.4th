@@ -15,9 +15,9 @@ defop end-frame
   ( Set FP to the frame's parent. )
   ( todo more primitive: current-frame parent-frame set-current-frame )
   fp sp cmprr ,ins
-  2 bhi ,ins
+  2 bhi-ins ,ins
   0 fp fp ldr-offset ,ins
-  0 branch ,ins
+  0 branch-ins ,ins
   0 r0 fp mov-lsl ,ins
   emit-next
 endop

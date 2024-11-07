@@ -45,7 +45,7 @@
 : fstores ( offset Rn Fd -- ins32 )
   ( -> Rn imm8 coproc CRd -> ins32 )
   2 overn 4 overn 10 4 overn 1 bsr stc
-  swap 1 logand IF coproc-d THEN
+  swap 1 logand ( fixme? negative test? ) IF coproc-d THEN
   rot 2 dropn
 ;
 

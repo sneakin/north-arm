@@ -35,10 +35,10 @@ endop
 ( Single precision: )
 
 defop float32-add
-  r0 0 fmsrs ,ins
-  1 vpop ,ins
-  1 0 2 fadds ,ins
-  2 r0 fmrss ,ins
+  r0 1 fmsrs ,ins
+  2 vpop ,ins
+  2 1 0 fadds ,ins
+  0 r0 fmrss ,ins
   emit-next
 endop
 
@@ -91,39 +91,39 @@ endcol
 )
 
 defop float32-sub
-  r0 0 fmsrs ,ins
-  1 vpop ,ins
-  1 0 2 fsubs ,ins
-  2 r0 fmrss ,ins
+  r0 1 fmsrs ,ins
+  2 vpop ,ins
+  2 1 0 fsubs ,ins
+  0 r0 fmrss ,ins
   emit-next
 endop
 
 defop float32-mul
-  r0 0 fmsrs ,ins
-  1 vpop ,ins
-  1 0 2 fmuls ,ins
-  2 r0 fmrss ,ins
+  r0 1 fmsrs ,ins
+  2 vpop ,ins
+  2 1 0 fmuls ,ins
+  0 r0 fmrss ,ins
   emit-next
 endop
 
 defop float32-div
-  r0 0 fmsrs ,ins
-  1 vpop ,ins
-  1 0 2 fdivs ,ins
-  2 r0 fmrss ,ins
+  r0 1 fmsrs ,ins
+  2 vpop ,ins
+  2 1 0 fdivs ,ins
+  0 r0 fmrss ,ins
   emit-next
 endop
 
 defop float32-negate
-  r0 0 fmsrs ,ins
-  0 2 fnegs ,ins
+  r0 1 fmsrs ,ins
+  1 2 fnegs ,ins
   2 r0 fmrss ,ins
   emit-next
 endop
 
 defop float32-sqrt
-  r0 0 fmsrs ,ins
-  0 2 fsqrts ,ins
+  r0 1 fmsrs ,ins
+  1 2 fsqrts ,ins
   2 r0 fmrss ,ins
   emit-next
 endop
@@ -137,17 +137,17 @@ endop
 
 defop float32-equals?
   r0 0 fmsrs ,ins
-  1 vpop ,ins
-  0 1 fcmps ,ins
-  1 r15 fmrxs ,ins
-  ' beq emit-truther
+  2 vpop ,ins
+  0 2 fcmps ,ins
+  1 r15 fmrxs ,ins ( fixme to PC? )
+  ' beq-ins emit-truther
   emit-next
 endop
 
 defop float32<=>
   r0 0 fmsrs ,ins
-  1 vpop ,ins
-  1 0 fcmps ,ins
+  2 vpop ,ins
+  2 0 fcmps ,ins
   1 r15 fmrxs ,ins
   emit-comparable-resulter
   emit-next
@@ -157,7 +157,7 @@ defop float32-zero?
   r0 0 fmsrs ,ins
   0 fcmpzs ,ins
   1 r15 fmrxs ,ins
-  ' beq emit-truther
+  ' beq-ins emit-truther
   emit-next
 endop
 
@@ -190,16 +190,16 @@ defop float32->int32
 endop
 
 defop float32->int32-rounded
-  r0 0 fmsrs ,ins
-  0 0 ftosis ,ins
+  r0 1 fmsrs ,ins
+  1 0 ftosis ,ins
   0 r0 fmrss ,ins
   emit-next
 endop
 
 defop int32->float32
-  r0 2 fmsrs ,ins
-  2 1 fsitos ,ins
-  1 r0 fmrss ,ins
+  r0 2 fmsrs ,ins ( bit of a test of the asm word )
+  2 0 fsitos ,ins
+  0 r0 fmrss ,ins
   emit-next
 endop
 
@@ -289,7 +289,7 @@ defop float64-equals? ( ah al bh bl -- true? )
   2 0 vpopnd ,ins
   0 1 fcmpd ,ins
   1 r15 fmrxs ,ins
-  ' beq emit-truther
+  ' beq-ins emit-truther
   emit-next
 endop
 
@@ -308,7 +308,7 @@ defop float64-zero? ( ah al -- true? )
   r1 0 fmdhrd ,ins
   0 fcmpzd ,ins
   1 r15 fmrxs ,ins
-  ' beq emit-truther
+  ' beq-ins emit-truther
   emit-next
 endop
 
@@ -371,4 +371,4 @@ defop float32->float64
 endop
 
 defalias> float32 uint32
-defalias> float64 uint64
+defalias> float64 uint64 ( fixme coming up undefined? )
