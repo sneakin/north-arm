@@ -200,7 +200,7 @@ end
 def tty-clock-boot
   interp-init
   ' tty-clock-opts-processor TTY-CLOCK-OPTS getopt UNLESS
-    s" Usage: clock [-z tz-offset-hours] [-z tz-offset-secs] [-m mode]" error-line/2
+    s" Usage: clock [-z tz-offset-hours] [-Z tz-offset-secs] [-m mode]" error-line/2
     s" Mode: a - analog, d - digital, r - raw terminal" error-line/2
   ELSE
     tty-clock-mode @ CASE
