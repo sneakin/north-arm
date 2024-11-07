@@ -518,6 +518,31 @@ Cond | 1 1 1 1 | Ignored by processor | Software Interrupt
 
 : bkpt 0 bkpt/1 ;
 
+( Signed Divide
+4    | 8               | 4  | 4      | 4  | 4       | 4  |
+cond | 0 1 1 1 0 0 0 1 | Rd | [1111] | Rm | 0 0 0 1 | Rn |
+cond != 0xF
+)
+
+: sdiv ( rn rm rd -- ins )
+  16 bsl
+  swap 8 bsl logior
+  logior
+  0xE710F010 logior
+;
+
+( Unsigned divide
+4    | 8               | 4  | 4    | 4  | 4       | 4  |
+cond | 0 1 1 1 0 0 1 1 | Rd | 1111 | Rm | 0 0 0 1 | Rn |
+)
+: udiv ( rn rm rd -- ins )
+  16 bsl
+  swap 8 bsl logior
+  logior
+  0xE730F010 logior
+;
+
+
 ( Helpers: )
 
 alias> ,ins ,uint32

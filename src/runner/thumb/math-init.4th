@@ -27,8 +27,12 @@ endcol
 def math-init/1 ( platform-str -- )
   ( s" thumb2" contains? )
   arg0 0 peek-off-byte 0x74 equals?
-  arg0 5 peek-off-byte 0x32 equals?
-  and IF
+  arg0 5 peek-off-byte 0x32 equals? and
+  ( s" aarch32" contains? )
+  arg0 0 peek-off-byte 0x61 equals?
+  arg0 5 peek-off-byte 0x33 equals? and
+  arg0 6 peek-off-byte 0x32 equals? and
+  or IF
     arm-hard-divmod
   THEN
   1 return0-n

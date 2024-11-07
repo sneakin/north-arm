@@ -31,7 +31,8 @@ THEN
 
 : emit-blx ( reg -- )
   ( Emit a BLX or equivalent instruction sequence depending on if ~*arm-thumb2*~ is set. )
-  thumb2? IF
+  ( todo target-aaarch32-v7? )
+  target-aarch32? thumb2? or IF
     blx ,ins
   ELSE
     emit-fake-blx

@@ -267,6 +267,23 @@ alias> a.ldc ldc
 : lilend 0 setend ;
 THEN
 
+( Branch link exchange
+4    | 8               | 8         | 8         | 4  |
+cond | 0 0 0 1 0 0 1 0 | 1111 1111 | 1111 0011 | Rm |
+cond != 0xF
+)
+
+: blx ( rm -- ins )
+  0xE12FFF30 logior
+;
+
+( Divide )
+alias> a.sdiv sdiv
+alias> a.udiv udiv
+
+: sdiv dup a.sdiv ;
+: udiv dup a.udiv ;
+
 
 ( Helpers: )
 
