@@ -551,17 +551,29 @@ alias> ins! uint32!
 
 : nop r0 r0 mov ;
 
-: dropr ( base -- ins )
-  16 4 immed-op swap dup add .i
+: dropi ( base num-words -- ins )
+  15 rot dup add#
 ;
 
-: popr ( base dest -- ins )
-  4 shift ldr .up .w  
+: drop1 ( base -- ins )
+  1 dropi
 ;
 
-: pushr ( base src -- ins )
-  4 shift str .w  
+: popr ( reglist base -- ins )
+  ldm .up .w  
 ;
 
-: pop sp swap popr ;
-: push sp swap pushr ;
+: pushr ( reg/ist base -- ins )
+  stm .w  
+;
+
+: pop1 ( base dest -- ins )
+  0 swap bit-set swap popr
+;
+
+: push1 ( base src -- ins )
+  0 swap bit-set swap pushr
+;
+
+: pop sp swap pop1 ;
+: push sp swap push1 ;

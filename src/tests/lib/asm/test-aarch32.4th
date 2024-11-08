@@ -233,16 +233,34 @@ bkpt ,ins
 nop ,ins
 nop ,ins
 
-r3 dropr ,ins
-r10 dropr ,ins
+r6 4 dropi ,ins
+r6 1 dropi ,ins
+r3 drop1 ,ins
+r10 drop1 ,ins
 
-r3 r4 popr ,ins
-r10 r2 popr ,ins
+0 r4 bit-set r3 popr ,ins
+0 r2 bit-set r8 bit-set r15 bit-set r10 popr ,ins
 
-r2 r4 pushr ,ins
-r3 r5 pushr ,ins
+0 r4 bit-set r1 bit-set r3 pushr ,ins
+0 r5 bit-set r8 bit-set r9 bit-set r15 bit-set r2 pushr ,ins
+
+r4 r3 pop1 ,ins
+r2 r10 pop1 ,ins
+r10 r2 pop1 ,ins
+
+r2 r4 push1 ,ins
+r3 r5 push1 ,ins
 
 r3 pop ,ins
 r4 push ,ins
+
+nop ,ins
+nop ,ins
+
+(
+0x12345678 r10 emit-load-uint32
+0x12345678 r3 emit-load-int32
+-0x1234 r5 emit-load-int32
+)
 
 mark ddump-binary-bytes
