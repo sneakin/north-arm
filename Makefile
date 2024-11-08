@@ -463,7 +463,7 @@ PROGRAMS=\
   interp_armasm \
   demo_tty_drawing \
   demo_tty_clock \
-  demo_tty_raycast
+  demo_tty_raycaster
 
 PGRM_interp_core_sources= \
 	src/include/interp.4th \
@@ -499,7 +499,7 @@ PGRM_interp_armasm_sources=\
 	src/lib/elf/stub32.4th \
 	src/lib/elf/stub32-dynamic.4th
 
-PGRM_demo_tty_drawing_output=bin/demo-tty-drawing
+PGRM_demo_tty_drawing_output=bin/demo-tty/drawing
 PGRM_demo_tty_drawing_entry=demo-tty-boot
 PGRM_demo_tty_drawing_sources=\
 	src/lib/tty/constants.4th \
@@ -513,7 +513,7 @@ PGRM_demo_tty_drawing_sources=\
 	src/lib/tty.4th \
 	src/demos/tty/drawing.4th
 
-PGRM_demo_tty_clock_output=bin/demo-tty-clock
+PGRM_demo_tty_clock_output=bin/demo-tty/clock
 PGRM_demo_tty_clock_entry=tty-clock-boot
 PGRM_demo_tty_clock_sources=\
 	src/lib/tty/constants.4th \
@@ -528,9 +528,9 @@ PGRM_demo_tty_clock_sources=\
 	src/lib/tty.4th \
 	src/demos/tty/clock.4th
 
-PGRM_demo_tty_raycast_output=bin/demo-tty/raycast
-PGRM_demo_tty_raycast_entry=raycaster-boot
-PGRM_demo_tty_raycast_sources=\
+PGRM_demo_tty_raycaster_output=bin/demo-tty/raycaster
+PGRM_demo_tty_raycaster_entry=raycaster-boot
+PGRM_demo_tty_raycaster_sources=\
 	src/lib/tty/constants.4th \
 	src/demos/tty/clock/segment-constants.4th \
 	src/include/interp.4th \
@@ -551,6 +551,7 @@ define define_north_program # name, target, stage, entry point, sources
 PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
 $(1): $(5)
 	@echo -e "Building \e[36;1m$$(@)\e[0m"
+	@mkdir -p $$(dir $$@)
 	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $$^
 endef
 
