@@ -1,5 +1,6 @@
-( load-core )
-( tmp" src/lib/assert.4th" drop load )
+' assert defined? UNLESS
+  " src/lib/assert.4th" load
+THEN
 
 ( Float32 tests: )
 

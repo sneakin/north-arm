@@ -145,7 +145,7 @@ endop
 defop float32<=>
   r0 0 fmsrs ,ins
   2 vpop ,ins
-  2 0 fcmps ,ins
+  0 2 fcmps ,ins
   1 r15 fmrxs ,ins
   emit-comparable-resulter
   emit-next
@@ -212,7 +212,7 @@ defop float64-add ( bh bl ah al -- rh rl )
   )
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  1 0 2 faddd ,ins
+  0 1 2 faddd ,ins
   2 r0 fmrdld ,ins
   2 r1 fmrdhd ,ins
   0 r1 bit-set pushr ,ins
@@ -222,7 +222,7 @@ endop
 defop float64-sub ( bh bl ah al -- rh rl )
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  1 0 2 fsubd ,ins
+  0 1 2 fsubd ,ins
   2 r0 fmrdld ,ins
   2 r1 fmrdhd ,ins
   0 r1 bit-set pushr ,ins
@@ -232,7 +232,7 @@ endop
 defop float64-mul
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  1 0 2 fmuld ,ins
+  0 1 2 fmuld ,ins
   2 r0 fmrdld ,ins
   2 r1 fmrdhd ,ins
   0 r1 bit-set pushr ,ins
@@ -242,7 +242,7 @@ endop
 defop float64-div
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  1 0 2 fdivd ,ins
+  0 1 2 fdivd ,ins
   2 r0 fmrdld ,ins
   2 r1 fmrdhd ,ins
   0 r1 bit-set pushr ,ins
@@ -275,9 +275,9 @@ defop float64-abs
   0 r1 bit-set popr ,ins
   r0 0 fmdlrd ,ins
   r1 0 fmdhrd ,ins
-  0 2 fabsd ,ins
-  2 r0 fmrdld ,ins
-  2 r1 fmrdhd ,ins
+  0 3 fabsd ,ins
+  3 r0 fmrdld ,ins
+  3 r1 fmrdhd ,ins
   0 r1 bit-set pushr ,ins
   emit-next
 endop
@@ -285,7 +285,7 @@ endop
 defop float64-equals? ( ah al bh bl -- true? )
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  0 1 fcmpd ,ins
+  1 0 fcmpd ,ins
   1 r15 fmrxs ,ins
   ' beq-ins emit-truther
   emit-next
@@ -294,7 +294,7 @@ endop
 defop float64<=> ( ah al bh bl -- trival )
   0 r0 bit-set pushr ,ins
   2 0 vpopnd ,ins
-  1 0 fcmpd ,ins
+  0 1 fcmpd ,ins
   1 r15 fmrxs ,ins
   emit-comparable-resulter
   emit-next

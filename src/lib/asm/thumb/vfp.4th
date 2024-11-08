@@ -210,6 +210,23 @@
   5 set-overn 4 dropn
 ;
 
+: vfp64-cdp-raw-op ( fm fn fd op2 op1 -- ins )
+  2 overn 6 overn 6 overn 6 overn 5 overn 11 cdp
+  5 set-overn 4 dropn
+;
+
+: vfp64-cdp-op1 ( fm fn fd op2 op1 -- ins )
+  2 overn 6 overn 6 overn 6 overn 1 bsr 5 overn 11 cdp
+  4 overn 1 logand IF 23 bit-set THEN
+  5 set-overn 4 dropn
+;
+
+: vfp64-cdp-op2 ( fm fn fd op2 op1 -- ins )
+  2 overn 6 overn 1 bsr 6 overn 6 overn 5 overn 11 cdp
+  ( 6 overn 1 logand IF 23 bit-set THEN )
+  5 set-overn 4 dropn
+;
+
 : fadds ( fm fn fd )
   0 3 vfp-cdp-op
 ;
@@ -284,7 +301,7 @@
 
 : fcvtds ( fm fd )
   ( float32 to float64 )
-  0xF swap 2 0xB vfp-cdp-op
+  1 bsl 0xF swap 2 0xB vfp-cdp-op
 ;
 
 ( Double precision: )
@@ -313,84 +330,79 @@
   rot 2 dropn
 ;
 
-: vfp64-cdp-op ( fm fn fd op2 op1 -- ins )
-  2 overn 6 overn 6 overn 6 overn 5 overn 11 cdp
-  5 set-overn 4 dropn
-;
-
 : faddd ( fm fn fd )
-  0 3 vfp64-cdp-op
+  0 3 vfp64-cdp-raw-op
 ;
 
 : fsubd ( fm fn fd )
-  2 3 vfp64-cdp-op
+  2 3 vfp64-cdp-raw-op
 ;
 
 : fmuld ( fm fn fd )
-  0 2 vfp64-cdp-op
+  0 2 vfp64-cdp-raw-op
 ;
 
 : fdivd ( fm fn fd )
-  0 8 vfp64-cdp-op
+  0 8 vfp64-cdp-raw-op
 ;
 
 : fnegd
-  1 swap 2 0xB vfp64-cdp-op
+  1 swap 2 0xB vfp64-cdp-raw-op
 ;
 
 : fsqrtd
-  1 swap 2 0xB vfp64-cdp-op .cdp-n
+  1 swap 6 0xB vfp64-cdp-raw-op
 ;
 
 : fcpyd
-  0 swap 6 0xB vfp64-cdp-op
+  0 swap 2 0xB vfp64-cdp-raw-op
 ;
 
 : fabsd
-  0 swap 6 0xB vfp64-cdp-op .cdp-n
+  0 swap 6 0xB vfp64-cdp-raw-op
 ;
 
 : fcmpd
-  4 swap 6 0xB vfp64-cdp-op
+  4 swap 6 0xB vfp64-cdp-raw-op
 ;
 
 : fcmpzd
-  0 5 roll 6 0xB vfp64-cdp-op
+  0 5 roll 6 0xB vfp64-cdp-raw-op
 ;
 
 ( Float64 conversions: )
 
 : ftouid ( fm fd )
   ( float64 to uint32 )
-  0xC swap 2 0xB vfp64-cdp-op
+  0xC swap 2 0xB vfp64-cdp-op1
 ;
 
 : ftouizd ( fm fd )
   ( float64 to uint32, round to zero )
-  0xC swap 6 0xB vfp64-cdp-op
+  0xC swap 6 0xB vfp64-cdp-op1
 ;
 
 : ftosid ( fm fd )
   ( float64 to int32 )
-  0xD swap 2 0xB vfp64-cdp-op
+  0xD swap 2 0xB vfp64-cdp-op1
 ;
 
 : ftosizd ( fm fd )
   ( float64 to int32, round to zero )
-  0xD swap 6 0xB vfp64-cdp-op
+  0xD swap 6 0xB vfp64-cdp-op1
 ;
 
 : fuitod
   ( uint32 to float64 )
-  8 swap 2 0xB vfp64-cdp-op
+  8 swap 2 0xB vfp64-cdp-op2
 ;
 
 : fsitod ( fm fd )
   ( int32 to float64 )
-  8 swap 6 0xB vfp64-cdp-op
+  8 swap 6 0xB vfp64-cdp-op2
 ;
 
 : fcvtsd ( fm fd )
   ( float64 to float32 )
-  7 swap 6 0xB vfp64-cdp-op
+  7 swap 6 0xB vfp64-cdp-op1
 ;
