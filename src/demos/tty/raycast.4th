@@ -44,6 +44,7 @@ end
 ( Trig lookup tables: )
 ( fixme causes an artifact in the rays. may need more precision and/or ditching degrees )
 
+2f 2f float32-mul const> 4f
 pi 2f float32-div const> pi/2
 pi 4f float32-div const> pi/4
 

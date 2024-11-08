@@ -50,10 +50,10 @@ def float32-zero-exponent arg0 0 float32-set-exponent set-arg0 end
 
 ( Comparisons: )
 
-def float32< arg1 arg0 float32<=> 0 int< 2 return1-n end
-def float32<= arg1 arg0 float32<=> 0 int<= 2 return1-n end
-def float32> arg1 arg0 float32<=> 0 int> 2 return1-n end
-def float32>= arg1 arg0 float32<=> 0 int>= 2 return1-n end
+def float32> arg1 arg0 float32<=> 0 int< 2 return1-n end
+def float32>= arg1 arg0 float32<=> 0 int<= 2 return1-n end
+def float32< arg1 arg0 float32<=> 0 int> 2 return1-n end
+def float32<= arg1 arg0 float32<=> 0 int>= 2 return1-n end
 
 ( Odd & even )
 
