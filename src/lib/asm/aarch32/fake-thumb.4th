@@ -289,12 +289,12 @@ alias> a.udiv udiv
 
 : patch-ldr-pc!/2 ( where reg -- )
   ( replaces the instruction at ~where~ with a ~ldr-pc~ for ~dhere~. )
-  swap dhere over - target-aarch32? IF 8 - ELSE 2 - THEN roll ldr-pc swap ins!
+  swap dhere over - ( target-aarch32? IF ) 8 - ( ELSE 2 - THEN ) roll ldr-pc swap ins!
 ;
 
 : patch-ldr-pc! ( where offset reg -- )
   ( replaces the instruction at ~where~ with a ~ldr-pc~ that loads from ~dhere + offset~ )
-  dhere 4 overn - target-aarch32? IF 8 - ELSE 2 - THEN
+  dhere 4 overn - ( target-aarch32? IF ) 8 - ( ELSE 2 - THEN )
   ( add the delta to the offset and poke with a new ldr-pc )
   roll + swap ldr-pc swap ins!
 ;
