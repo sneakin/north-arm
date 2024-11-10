@@ -2,6 +2,7 @@ target-aarch32? target-thumb? or IF
 ( Core ops )
 s[ src/runner/thumb/ops.4th
    src/runner/thumb/cpu.4th
+   src/runner/thumb/math/int64.4th
    src/runner/thumb/vfp.4th
  ] load-list
 
@@ -45,7 +46,6 @@ s[ src/runner/thumb/frames.4th
    src/runner/math/division.4th
    src/runner/thumb/math/division.4th
    src/runner/thumb/math/carry.4th
-   src/runner/thumb/math/int64.4th
    src/runner/math.4th
    src/runner/aliases.4th
    src/runner/thumb/vfp-constants.4th

@@ -133,13 +133,11 @@ defop exec-abs
 endop
 
 defop next
-  ( load word eip points at )
+  ( load word eip points at and increase eip )
   dhere
-  0 eip r1 ldr-offset ,ins
-  ( todo apply op-mask )
-  ( increase eip )
-  -op-size eip add# ,ins
-  out' exec-r1 emit-op-call
+  eip 0 r1 bit-set ldmia ,ins
+  cs-reg r1 r1 add ,ins
+  out' exec-r1-abs emit-op-call
   dhere - 4 - branch ,ins
 endop
 
@@ -149,14 +147,6 @@ endop
 ;
 
 ( Calling words: )
-
-defop ?exec-abs
-  0 r0 cmp# ,ins
-  2 bne ,ins
-  0 r0 bit-set popr ,ins
-  emit-next
-  out' exec-abs emit-op-jump
-endop
 
 defop jump
   ( Set eip. )
@@ -191,13 +181,6 @@ defop enter-r1
   out' next emit-op-jump
 endop
 
-defop enter-r0
-  ( Call the ToS. )
-  0 r0 r1 mov-lsl ,ins
-  0 r0 bit-set popr ,ins
-  out' enter-r1 emit-op-jump
-endop
-
 defop do-col
   ( Enter the definition from word's data field. )
   ( load r1's data+cs into r1 )
@@ -211,11 +194,6 @@ defop exit
   ( pop eip )
   0 r0 eip mov-lsl ,ins
   0 r0 bit-set popr ,ins
-  emit-next
-endop
-
-defop quit
-  ( todo reset stack & state )
   emit-next
 endop
 
