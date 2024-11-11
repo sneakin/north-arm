@@ -386,8 +386,10 @@ THEN
   int32 4
 ;
 
+: swap-nibbles dup 16 bsl swap 16 bsr 0xFFFF logand logior ;
+
 : disasm-mcrr ( op32 -- Rt2 CRm Opc Coproc Rt mcrr 9 )
-  literal mcrr swap
+  literal mcrr
   dup 28 bsr disasm-register swap
   dup 24 bsr 0xF logand swap literal int32 swap
   dup 20 bsr 0xF logand swap literal int32 swap
@@ -406,54 +408,70 @@ THEN
   drop int32 9
 ;
 
-: disasm-stc ( op32 -- Rn imm8 coproc CRd stc 8 )
-  literal stc swap
-  dup 28 bsr 0xF logand swap literal int32 swap
-  dup 24 bsr 0xF logand swap literal int32 swap
-  dup 16 bsr 0xFF logand swap literal int32 swap
-  dup disasm-register swap
-  drop int32 8
+( todo flags )
+( todo standardized ordering of args )
+( toda reverse arg lists )
+
+: disasm-stc-flags ( counter op32 -- ops... counter op32 )
+  dup 5 bit-set? IF swap 1 + swap literal coproc-w shift THEN
+  dup 6 bit-set? IF swap 1 + swap literal coproc-d shift THEN
+  dup 7 bit-set? IF swap 1 + swap literal coproc-u shift THEN
+  dup 8 bit-set? IF swap 1 + swap literal coproc-p shift THEN
 ;
 
-: disasm-ldc ( op32 -- Rn imm8 coproc CRd ldc 8 )
-  literal ldc swap
-  dup 28 bsr 0xF logand swap literal int32 swap
-  dup 24 bsr 0xF logand swap literal int32 swap
-  dup 16 bsr 0xFF logand swap literal int32 swap
-  dup disasm-register swap
-  drop int32 8
+: disasm-stc ( op32 -- Rn imm8 coproc CRd stc flags... 9+#flags )
+  0 swap disasm-stc-flags
+  literal stc shift
+  dup 28 bsr 0xF logand shift literal int32 shift
+  dup 24 bsr 0xF logand shift literal int32 shift
+  dup 16 bsr 0xFF logand shift literal int32 shift
+  dup 0xF logand shift literal int32 shift ( disasm-register shift )
+  drop 9 +
 ;
 
-: disasm-cdp ( op32 -- CRn Op1 CRm Opc2 coproc CRd cdp 13 )
-  literal cdp swap
-  dup 28 bsr 0xF logand swap literal int32 swap
-  dup 24 bsr 0xF logand swap literal int32 swap
-  dup 21 bsr 0x7 logand swap literal int32 swap
+: disasm-ldc ( op32 -- Rn imm8 coproc CRd ldc flags... 9+#flags )
+  0 swap disasm-stc-flags
+  literal ldc shift
+  dup 28 bsr 0xF logand shift literal int32 shift
+  dup 24 bsr 0xF logand shift literal int32 shift
+  dup 16 bsr 0xFF logand shift literal int32 shift
+  dup 0xF logand shift literal int32 shift ( disasm-register shift )
+  drop 9 +
+;
+
+: disasm-cdp ( op32 -- cp crm crn crd cpop cp# 13 )
+  literal cdp
+  swap swap-nibbles
+  dup 8 bsr 0xF logand swap literal int32 swap
+  dup 20 bsr 0xF logand swap literal int32 swap
+  dup 12 bsr 0xF logand swap literal int32 swap
   dup 16 bsr 0xF logand swap literal int32 swap
-  dup 4 bsr 0xF logand swap literal int32 swap
   dup 0xF logand swap literal int32 swap
+  dup 5 bsr 0x7 logand swap literal int32 swap
   drop int32 13
 ;
 
-: disasm-mcr ( op32 -- CRn Op1 CRm Op2 coproc Rxf mcr 12 )
-  literal mcr swap
-  dup 28 bsr disasm-register swap
-  dup 24 bsr 0xF logand swap literal int32 swap
+: disasm-mcr ( op32 -- cp crm crn rd cpop cp# mcr 12 )
+  literal mcr
+  swap swap-nibbles
+  dup 8 bsr 0xF logand swap literal int32 swap
   dup 21 bsr 0x7 logand swap literal int32 swap
+  dup 12 bsr 0xF logand disasm-register swap
   dup 16 bsr 0xF logand swap literal int32 swap
-  dup 5 bsr 0x7 logand swap literal int32 swap
   dup 0xF logand swap literal int32 swap
+  dup 5 bsr 0x7 logand swap literal int32 swap
   drop int32 12
 ;
 
-: disasm-mrc ( op32 -- CRn Op1 CRm Op2 coproc Rxf mrc 12 )
-  literal mrc swap
-  dup 28 bsr disasm-register swap
-  dup 24 bsr 0xF logand swap literal int32 swap
+: disasm-mrc ( op32 -- cp crm crn rd cpop cp# mrc 12 )
+  literal mrc
+  swap swap-nibbles
+  dup 8 bsr 0xF logand swap literal int32 swap
   dup 21 bsr 0x7 logand swap literal int32 swap
+  dup 12 bsr 0xF logand disasm-register swap
   dup 16 bsr 0xF logand swap literal int32 swap
-  dup 5 bsr 0x7 logand swap literal int32 swap
   dup 0xF logand swap literal int32 swap
+  dup 5 bsr 0x7 logand swap literal int32 swap
   drop int32 12
 ;
 

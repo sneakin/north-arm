@@ -155,6 +155,8 @@
 : coproc-d 6 bit-set ;
 : coproc-w 5 bit-set ;
 
+( todo standardize ordering of stc and ldc )
+
 ( 1 1 1 C 1 1 0 P U N W L Rn:4 )
 : stc-hi ( Rn -- ins16 )
   0xF logand coproc logior
