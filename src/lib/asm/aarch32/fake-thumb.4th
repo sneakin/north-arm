@@ -244,17 +244,6 @@ alias> a.cdp cdp
   swap drop
 ;
 
-alias> a.stc stc
-alias> a.ldc ldc
-
-: stc ( Rn imm8 coproc CRd -- ins32 )
-  2swap swap 2swap swap a.stc
-;
-
-: ldc ( Rn imm8 coproc CRd -- ins32 )
-  2swap swap 2swap swap a.ldc
-;
-
 ( Change processor endian mode: )
 
 0 IF ( fixme todo )

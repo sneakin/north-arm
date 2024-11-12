@@ -42,7 +42,7 @@
 
 : fstores ( offset Rn Fd -- ins32 )
   ( -> Rn imm8 coproc CRd -> ins32 )
-  2 overn 4 overn 10 4 overn 1 bsr stc
+  3 overn 3 overn 3 overn 1 bsr 10 stc
   swap 1 logand ( fixme? negative test? ) IF coproc-d THEN
   rot 2 dropn
 ;
@@ -109,7 +109,7 @@
 
 : fstored ( offset Rn Fd -- ins32 )
   ( -> Rn imm8 coproc CRd -> ins32 )
-  swap rot swap 11 swap stc
+  11 stc
 ;
 
 : fstd- rot 2 bsr rot fstored coproc-p ;

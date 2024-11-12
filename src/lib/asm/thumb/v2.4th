@@ -172,12 +172,13 @@
   swap 0xFF logand logior
 ;
 
-: stc ( Rn imm8 coproc CRd -- ins32 )
-  stc-lo 16 bsl
-  swap stc-hi logior
+: stc ( imm8 Rn CRd coproc -- ins32 )
+  4 overn 2 overn 4 overn stc-lo 16 bsl
+  4 overn stc-hi logior
+  4 set-overn 3 dropn
 ;
 
-: ldc ( Rn imm8 coproc CRd -- ins32 )
+: ldc ( imm8 Rn CRd coproc -- ins32 )
   stc-lo 16 bsl
   swap ldc-hi logior
 ;

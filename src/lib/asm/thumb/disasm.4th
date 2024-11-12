@@ -419,24 +419,24 @@ THEN
   dup 8 bit-set? IF swap 1 + swap literal coproc-p shift THEN
 ;
 
-: disasm-stc ( op32 -- Rn imm8 coproc CRd stc flags... 9+#flags )
+: disasm-stc ( op32 -- imm8 Rn CRd coproc stc flags... 9+#flags )
   0 swap disasm-stc-flags
   literal stc shift
-  dup 28 bsr 0xF logand shift literal int32 shift
   dup 24 bsr 0xF logand shift literal int32 shift
+  dup 28 bsr 0xF logand shift literal int32 shift
+  dup 0xF logand ( shift literal int32 shift ) disasm-register shift
   dup 16 bsr 0xFF logand shift literal int32 shift
-  dup 0xF logand shift literal int32 shift ( disasm-register shift )
   drop 9 +
 ;
 
-: disasm-ldc ( op32 -- Rn imm8 coproc CRd ldc flags... 9+#flags )
+: disasm-ldc ( op32 -- imm8 Rn CRd coproc ldc flags... 9+#flags )
   0 swap disasm-stc-flags
   literal ldc shift
-  dup 28 bsr 0xF logand shift literal int32 shift
   dup 24 bsr 0xF logand shift literal int32 shift
+  dup 28 bsr 0xF logand shift literal int32 shift
+  dup 0xF logand ( shift literal int32 shift ) disasm-register shift
   dup 16 bsr 0xFF logand shift literal int32 shift
-  dup 0xF logand shift literal int32 shift ( disasm-register shift )
-  drop 9 +
+  drop 8 +
 ;
 
 : disasm-cdp ( op32 -- cp crm crn crd cpop cp# 13 )
