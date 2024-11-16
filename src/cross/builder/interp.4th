@@ -21,15 +21,15 @@ def builder-load
   IF 3 dropn ELSE 3 dropn load-core THEN
   target-thumb? IF
     s" Loading thumb assembler..." error-line/2
-    " src/include/thumb-asm.4th" load ( load-thumb-asm )
+    " src/include/asm/thumb.4th" load ( load-thumb-asm )
   ELSE
     target-aarch32? IF
       s" Loading aarch32 assembler..." error-line/2
-      " src/include/aarch32-asm.4th" load
+      " src/include/asm/aarch32.4th" load
     ELSE
       target-x86? IF
         s" Loading x86 assembler..." error-line/2
-        " src/include/x86-asm.4th" load
+        " src/include/asm/x86.4th" load
       ELSE s" Unsupported target" error-line/2 -1 sysexit ( todo error )
       THEN
     THEN

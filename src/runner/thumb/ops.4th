@@ -1,9 +1,18 @@
 ( Register aliases: )
 
+( runner/thumb/constants.4th references these which were only in the asm dictionary )
+4 const> fp
+5 const> data-reg
+6 const> cs-reg
+7 const> eip ( todo suffix with reg? )
+13 const> sp
+
+push-asm-mark
+
 r4 const> fp
+r5 const> data-reg
 r6 const> cs-reg
 r7 const> eip ( todo suffix with reg? )
-r5 const> data-reg
 
 ( target-thumb2? )
 BUILDER-TARGET tmp" thumb2" drop contains? IF
@@ -98,6 +107,8 @@ THEN
   dict-entry-code uint32@ dhere to-out-addr - branch-link ,ins
 ;
 
+pop-mark
+
 ( Core execution: )
 
 defop exec-r1-abs
@@ -141,10 +152,14 @@ defop next
   dhere - 4 - branch ,ins
 endop
 
+push-asm-mark
+
 : emit-next
   ( out' next emit-op-jump )
   lr bx ,ins
 ;
+
+pop-mark
 
 ( Calling words: )
 
@@ -510,6 +525,8 @@ endop
 
 ( Dictionary helpers: )
 
+push-asm-mark
+
 : emit-load-word ( offset reg )
   over to-out-addr over emit-load-int32
   cs-reg over dup add ,ins
@@ -557,6 +574,45 @@ endop
   int32 3 dropn
 ;
 
+: emit-truther
+  2 swap exec ,ins
+  0 r0 mov# ,ins
+  0 branch-ins ,ins
+  1 r0 mov# ,ins
+;
+
+: emit-comparable-resulter
+  ( not eq )
+  10 beq-ins ,ins
+    ( less than )
+    4 blt-ins ,ins
+      1 r0 mov# ,ins
+      r0 r0 neg ,ins
+      4 branch-ins ,ins
+      ( else )
+      1 r0 mov# ,ins
+      0 branch-ins ,ins
+    ( else )
+    0 r0 mov# ,ins
+;
+
+: emit-unsigned-comparable-resulter
+  ( not eq )
+  10 beq-ins ,ins
+    ( less than )
+    4 bcc-ins ,ins
+      1 r0 mov# ,ins
+      r0 r0 neg ,ins
+      4 branch-ins ,ins
+      ( else )
+      1 r0 mov# ,ins
+      0 branch-ins ,ins
+    ( else )
+    0 r0 mov# ,ins
+;
+
+pop-mark
+
 ( Integer Math: )
 
 defop negate
@@ -594,13 +650,6 @@ defop uint-div-v2
   emit-next
 endop
 
-: emit-truther
-  2 swap exec ,ins
-  0 r0 mov# ,ins
-  0 branch-ins ,ins
-  1 r0 mov# ,ins
-;
-
 defop int<
   0 r1 bit-set popr ,ins
   r0 r1 cmp ,ins
@@ -629,42 +678,12 @@ defop uint<=
   emit-next
 endop
 
-: emit-comparable-resulter
-  ( not eq )
-  10 beq-ins ,ins
-    ( less than )
-    4 blt-ins ,ins
-      1 r0 mov# ,ins
-      r0 r0 neg ,ins
-      4 branch-ins ,ins
-      ( else )
-      1 r0 mov# ,ins
-      0 branch-ins ,ins
-    ( else )
-    0 r0 mov# ,ins
-;
-
 defop int<=>
   0 r1 bit-set popr ,ins
   r0 r1 cmp ,ins
   emit-comparable-resulter
   emit-next
 endop
-
-: emit-unsigned-comparable-resulter
-  ( not eq )
-  10 beq-ins ,ins
-    ( less than )
-    4 bcc-ins ,ins
-      1 r0 mov# ,ins
-      r0 r0 neg ,ins
-      4 branch-ins ,ins
-      ( else )
-      1 r0 mov# ,ins
-      0 branch-ins ,ins
-    ( else )
-    0 r0 mov# ,ins
-;
 
 defop uint<=>
   0 r1 bit-set popr ,ins

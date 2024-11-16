@@ -10,9 +10,7 @@ s[
   src/lib/elf/stub64.4th
   src/lib/elf/stub.4th
 
-  src/lib/asm/thumb/v1.4th
-  src/lib/asm/thumb/v2.4th
-  src/lib/asm/thumb/vfp.4th
+  src/lib/asm/thumb.4th
 
   src/cross/defining/op.4th
   src/cross/defining/alias.4th

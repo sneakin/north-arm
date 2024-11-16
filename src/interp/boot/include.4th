@@ -34,6 +34,8 @@ sys' NORTH-COMPILE-TIME defined? UNLESS
   ] load-list
 THEN
 
+s[ src/lib/mark.4th ] load-list
+
 def load-core true return1 end
 
 def core-init

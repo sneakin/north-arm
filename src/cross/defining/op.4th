@@ -8,10 +8,14 @@
 ;
 
 : defop
+  push-asm-mark
   create> does-op
   0 ,uint32
   ( 0xCCCCCCCC ,uint32 )
 ;
+
+( defop enters the asm dictionary, so: )
+push-asm-mark
 
 : endop
   ( calculate the sequence's size )
@@ -22,7 +26,10 @@
   ( pad the sequence )
   0 ,uint16
   4 align-data
+  top-pop-mark
 ;
+
+pop-mark
 
 : op@
   -op-size 2 equals IF uint16@ ELSE uint32@ THEN

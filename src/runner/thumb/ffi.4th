@@ -4,6 +4,8 @@
 
 ( FFI code words that load the function from the data field into R0: )
 
+push-asm-mark
+
 : emit-fficaller-r1 ( pop-mask )
   0 r0 bit-set pushr ,ins
   ( Load the import's [r1] address into r0 )
@@ -17,6 +19,8 @@
   ( make the call )
   ip emit-blx
 ;
+
+pop-mark
 
 ( Void callees: )
 
@@ -79,14 +83,6 @@ endop
 
 ( Callbacks: )
 
-: emit-exec-pc ( cell-offset -- )
-  out' exec-r1-abs dict-entry-code uint32@ cell-size + r2 emit-load-int32
-  cs-reg r2 r2 add ,ins
-  dhere to-out-addr 2 logand IF 1 + THEN
-  cell-size mult r1 ldr-pc ,ins
-  r2 bx ,ins
-;
-
 ( The C ABI returns by putting LR back in the PC. Callbacks are made to return to a definition that moves LR to PC. )
 
 defop ffi-return
@@ -105,6 +101,16 @@ defcol ffi-callback-lz-1
 endcol
 
 ( todo push the ABI's locals in cs-reg and dict-reg, but before the callback's args. )
+
+push-asm-mark
+
+: emit-exec-pc ( cell-offset -- )
+  out' exec-r1-abs dict-entry-code uint32@ cell-size + r2 emit-load-int32
+  cs-reg r2 r2 add ,ins
+  dhere to-out-addr 2 logand IF 1 + THEN
+  cell-size mult r1 ldr-pc ,ins
+  r2 bx ,ins
+;
 
 : ffi-callback-exec ( landing-zone -- )
   ( set eip to callback landing zone, will get pushed on call )
@@ -128,6 +134,8 @@ endcol
 : ffi-callback-exec-1
   out' ffi-callback-lz-1 ffi-callback-exec
 ;
+
+pop-mark
 
 ( Ops get copied in trampolines that are called from C where the args are in registers: )
 ( ARM abi: lr = return address, r0-3 = args0-3, arg4+ on stack )

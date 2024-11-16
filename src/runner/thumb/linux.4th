@@ -1,5 +1,7 @@
 ( System calls: arguments go into R0-R6 with the syscall number in R7. )
 
+push-asm-mark
+
 : emit-syscall
   ( save registers )
   state-register-mask pushr ,ins
@@ -13,6 +15,8 @@
   ( restore registers, keep return value in R0 )
   state-register-mask popr ,ins
 ;
+
+pop-mark
 
 defop syscall ( args num-args syscall -- result )
   emit-syscall

@@ -1,3 +1,5 @@
+push-asm-mark
+
 : emit-sign-extender ( src-reg dest-reg -- )
   ( sign extend what last set the flags into dest-reg )
   6 bvc-ins ,ins ( no overflow so skip to using actual sign bit )
@@ -7,6 +9,8 @@
   0 branch-ins ,ins
   31 shift mov-asr ,ins ( actual sign extension )
 ;
+
+pop-mark
 
 defop int-adc
   0 r1 bit-set popr ,ins

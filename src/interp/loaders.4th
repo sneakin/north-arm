@@ -9,7 +9,7 @@ def load-debug
 end
 
 def load-thumb-asm
-  s" ./src/include/thumb-asm.4th" load/2
+  s" ./src/include/asm/thumb.4th" load/2
   exit-frame
 end
 

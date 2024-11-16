@@ -34,6 +34,8 @@ defop copy-up-4
   emit-next
 endop
 
+push-asm-mark
+
 : emit-copy-up ( bytes register -- )
   ( todo cmp r0 before pop )
   over r0 cmp# ,ins
@@ -50,6 +52,8 @@ endop
   0 r1 bit-set r2 bit-set pushr ,ins
   2 dropn
 ;
+
+pop-mark
 
 ( Copies from low to high memory by 8 bytes, 2 cells. )
 defop copy-up-8
@@ -120,6 +124,8 @@ defop copy-down-4
   emit-next
 endop
 
+push-asm-mark
+
 : emit-copy-down
   over r0 cmp# ,ins
   26 bcc-ins ,ins
@@ -139,6 +145,8 @@ endop
   0 r1 bit-set r2 bit-set pushr ,ins
   2 dropn
 ;
+
+pop-mark
 
 ( Copies from high to low memory by 8 bytes, 2 cells. )
 defop copy-down-8

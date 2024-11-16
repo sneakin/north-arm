@@ -15,7 +15,7 @@
 ( todo detect which board this is on to dynamic set this: )
 
 load-core
-load-thumb-asm
+s[ src/lib/asm/thumb.4th src/lib/asm/aarch32.4th ] load-list
 
 0xFE000000 const> MMIO-BASE4 ( pi 4 )
 0x3f000000 const> MMIO-BASE2 ( Pi 2+, Zero 2 )
@@ -30,10 +30,23 @@ dhere const> origin
 ( enter thumb by adding 1 to PC, for ARMs with Thumb2 )
 ( 0xE28FF001 ,uint32 ) ( 1 pc pc add a# )
 ( enter thumb by bx; more portable )
+' asm-aarch32 defined? IF
+asm-aarch32 push-mark
+
+pc r7 movr ,ins
+5 r7 r7 add# ,ins
+r7 bx ,ins
+nop ,ins
+
+pop-mark
+ELSE
 0xe1a0700f ,uint32 ( pc r7 mov )
 0xe2877005 ,uint32 ( 5 r7 r7 add a# )
 0xe12fff17 ,uint32 ( r7 branchx )
 0x00000000 ,uint32 ( nop )
+THEN
+
+push-asm-mark
 
 0x12 r3 mov# ,ins
 0x34 r4 mov# ,ins
@@ -187,4 +200,5 @@ r0 r6 adc ,ins
 -4 branch ,ins
 
 ( Dump the assembled bytes to standard out. )
+pop-mark
 origin ddump-binary-bytes

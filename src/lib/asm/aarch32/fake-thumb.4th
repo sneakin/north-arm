@@ -1,6 +1,10 @@
 ( ARM Thumb ops translated to equivalent A32: )
 
-" src/lib/asm/aarch32.4th" load
+' asm-aarch32 defined? UNLESS
+  " src/lib/asm/aarch32.4th" load
+THEN
+
+asm-aarch32 push-mark
 
 alias> a.movr movr
 
@@ -292,3 +296,5 @@ s[ src/lib/asm/thumb/helpers.4th
    src/lib/asm/thumb/vfp-constants.4th
    src/lib/asm/thumb/vfp.4th
 ] load-list
+
+pop-mark

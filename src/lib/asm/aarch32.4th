@@ -5,6 +5,12 @@
   " src/lib/byte-data.4th" load
 THEN
 
+' mark> defined? UNLESS
+  " src/lib/mark.4th" load
+THEN
+
+mark> pre-asm-aarch32
+
 ( todo mask arguments )
 ( todo place ins bits last in functions )
 
@@ -577,3 +583,9 @@ alias> ins! uint32!
 
 : pop sp swap pop1 ;
 : push sp swap push1 ;
+
+( Dictionary mark to keep these words from polluting the namespace: )
+mark> asm-aarch32
+pre-asm-aarch32 push-mark> asm-aarch32
+
+: push-asm-mark asm-aarch32 push-mark ;
