@@ -1,6 +1,7 @@
 STAGE?=3
 
 BASH?=bash
+SHELL=$(BASH)
 FORTH?=$(BASH) ./src/bash/forth.sh
 HTMLER?=./scripts/htmler.sh
 GIT?=git
