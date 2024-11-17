@@ -1,5 +1,9 @@
 ( s[ src/lib/structs.4th src/lib/linux/clock.4th ] load-list )
 
+' timespec UNLESS
+  s[ src/lib/linux/clock.4th ] load-list
+THEN
+
 alias> dev_t uint<64>
 alias> ino_t uint<64>
 alias> mode_t uint<32>
