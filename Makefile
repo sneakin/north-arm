@@ -340,12 +340,12 @@ doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 # Stage 0
 
 %$(EXECEXT): %.4th
-	@echo -e "Building \e[36;1m$(@)\e[0m"
+	@echo -e "\e[36;1mBuilding $(@)\e[0m"
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
 bin/%$(EXECEXT): src/bin/%.4th
-	@echo -e "Building \e[36;1m$(@)\e[0m"
+	@echo -e "\e[36;1mBuilding $(@)\e[0m"
 	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
 	chmod u+x $@
 
