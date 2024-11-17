@@ -29,6 +29,8 @@ used to rebuild.
 
 
 * Tasks
+** May
+*** Strings as seqn with length.
 ** March
 *** Swap ~string length~ returns to ~length string~ ordering. SeqN for free.
 *** Literalizer for float32
@@ -39,6 +41,23 @@ used to rebuild.
 *** parse-float with exponents
 *** TTY reader
 *** data script error handling: need to abort the tests
+*** comparisons need to return true / -1 and false / 0.
+*** make-typed-pointer print out
+#+BEGIN_SRC
+FFB15684:-5155192 > 3 integer make-typed-pointer
+FFB15678:-5155204 > dup print-instance
+FFB1567C:0 integer (B364283F) < value
+
+  0:4 pointer<any> name 16843078 1010146
+  4:4 uint<32> byte-size 0 0
+  8:4 pointer<any> super 0 0
+  12:4 pointer<any> data 671089408 28000300
+#+END_SRC
+
+Should print like a struct with a single field.
+
+*** value-of's offset detection may fail w/ stack addresses.
+*** Types and structs for existing data like dictionary entries.
 
 ** Jan 24
 *** Interfaces
