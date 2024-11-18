@@ -9,7 +9,5 @@ s[ src/lib/asm/thumb/v1.4th
    src/lib/asm/thumb/vfp.4th
 ] load-list
 
-mark> asm-thumb
 pre-asm-thumb push-mark> asm-thumb
-
 : push-asm-mark asm-thumb push-mark ;

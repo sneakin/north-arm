@@ -252,6 +252,11 @@
   6 set-overn 5 dropn
 ;
 
+: cpuid-midr
+  0 0 0 4 overn 0 0xF mrc
+  swap drop
+;
+
 : cpuid-pfr0
   0 1 0 4 overn 0 0xF mrc
   swap drop

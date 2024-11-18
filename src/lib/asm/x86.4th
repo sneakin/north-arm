@@ -1926,7 +1926,5 @@ SMSW mem16	| 0F 01 /4 | Store the low 16 bits of CR0 to memory. )
 ;
 
 ( Dictionary mark to keep these words from polluting the namespace: )
-mark> asm-x86
 pre-asm-x86 push-mark> asm-x86
-
 : push-asm-mark asm-x86 push-mark ;

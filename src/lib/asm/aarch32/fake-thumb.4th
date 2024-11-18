@@ -4,6 +4,7 @@
   " src/lib/asm/aarch32.4th" load
 THEN
 
+mark> asm-aarch32-no-thumb
 asm-aarch32 push-mark
 
 alias> a.movr movr
@@ -297,4 +298,5 @@ s[ src/lib/asm/thumb/helpers.4th
    src/lib/asm/thumb/vfp.4th
 ] load-list
 
-pop-mark
+pre-asm-aarch32 push-mark> asm-aarch32-thumb
+: push-asm-mark asm-aarch32-thumb push-mark ;

@@ -585,7 +585,5 @@ alias> ins! uint32!
 : push sp swap push1 ;
 
 ( Dictionary mark to keep these words from polluting the namespace: )
-mark> asm-aarch32
 pre-asm-aarch32 push-mark> asm-aarch32
-
 : push-asm-mark asm-aarch32 push-mark ;

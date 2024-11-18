@@ -15,7 +15,7 @@ endop
 defop aarch32-midr
   ( works in qemu )
   0 r0 bit-set pushr ,ins
-  0 0 0 r0 0 0xF mrc ,ins
+  r0 cpuid-midr ,ins
   emit-next
 endop
 
