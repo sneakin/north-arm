@@ -9,9 +9,12 @@
     - Real hardware :: todo
     - Qemu raspi2 :: ~qemu-system-arm -M raspi2 -kernel misc/pi-bare-metal.bin -serial stdio~
     - Qemu raspi0 :: ~qemu-system-arm -M raspi0 -kernel misc/pi-bare-metal.bin -serial stdio~
+
+Define target-pi-zero to restrict the used CPU features.
 )
-( todo detect if Thumb2 is supported for coprocessor ops; adding 1 to PC only works on T2 devices. )
-( todo proper uart init, enter interpreter, then start other cores, uart, interrupts, framebuffer, threading )
+
+( todo detect if Thumb2 is supported for coprocessor ops [coproc15 register]; adding 1 to PC only works on T2 devices. )
+( todo enter interpreter, proper uart init, start other cores, uart, interrupts, framebuffer, threading )
 
 load-core
 
@@ -19,6 +22,7 @@ load-core
 0x3f000000 const> MMIO-BASE2 ( Pi 2+, Zero 2 )
 0x20000000 const> MMIO-BASE1 ( Pi 1, Zero )
 ' target-pi-zero defined? IF MMIO-BASE1 ELSE MMIO-BASE2 THEN var> MMIO-BASE
+
 dhere const> origin
 
 s[ src/lib/asm/aarch32/fake-thumb.4th ] load-list
@@ -30,23 +34,13 @@ s[ src/lib/asm/thumb.4th ] load-list
 
 ( enter thumb by adding 1 to PC, for ARMs with Thumb2 )
 ( 0xE28FF001 ,uint32 ) ( 1 pc pc add a# )
+
 ( enter thumb by bx; more portable )
-' asm-aarch32-thumb defined? IF
-  tmp" Generating aarch32 jump" error-line/2
-  asm-aarch32-thumb push-mark
-
+asm-aarch32-thumb push-mark
   pc r7 movrr ,ins
-  9 r7 add# ,ins
+  5 r7 add# ,ins
   r7 bx ,ins
-  thumb-nop ,ins
-
-  pop-mark
-ELSE
-  0xe1a0700f ,uint32 ( pc r7 movrr )
-  0xe2877009 ,uint32 ( 9 r7 add# )
-  0xe12fff17 ,uint32 ( r7 bx )
-  0x00000000 ,uint32 ( nop )
-THEN
+pop-mark
 
 asm-thumb push-mark
 
@@ -70,12 +64,20 @@ pc sp movrr ,ins
 origin dhere - abs-int 4 + dec-sp ,ins
 
 ( detect and push the correct mmio base )
-pc r0 movrr ,ins
-7 r0 add# ,ins
-r0 lr movrr ,ins
-dhere const> branch-mmio-base
-0 r0 addr-pc ,ins
-r0 bx ,ins
+' target-pi-zero defined? IF
+  ( fake a blx to exit thumb )
+  pc r0 movrr ,ins
+  7 r0 add# ,ins
+  r0 lr movrr ,ins
+
+  dhere const> branch-mmio-base
+  0 r0 addr-pc ,ins
+  r0 bx ,ins
+ELSE
+  dhere const> branch-mmio-base
+  0 r0 addr-pc ,ins
+  r0 blx ,ins
+THEN
 0 r0 bit-set pushr ,ins
 
 ( read the CPU ID register )
@@ -106,6 +108,7 @@ r5 r5 mvn ,ins
 r5 r6 and ,ins
 8 r6 add# ,ins
 
+( load MMIO-BASE and send msg )
 9 4 * r0 ldr-sp ,ins
 0xB880 r7 emit-load-uint32
 r0 r7 addrr ,ins
@@ -115,7 +118,7 @@ r0 r7 addrr ,ins
 ( drop msg from stack )
 9 4 * inc-sp ,ins
 
-( load uart0's base address into r7 )
+( load mmio base + uart0's base address into r7 )
 0x201000 r7 emit-load-int32
 r0 r7 addrr ,ins
 
@@ -165,15 +168,15 @@ r2 15 1 15 r4 mcrr ,ins )
 
 ( Only on Pi >1, start each core at origin by writing to 0x4000008C + core offset.
   Core 2 +0x10, 3 +0x20, 4 +0x30. 4 int32 slots per core. )
-MMIO-BASE2 r1 emit-load-uint32
+MMIO-BASE1 r1 emit-load-uint32
 r1 r0 cmprr ,ins
 dhere
-0 bne ,ins
+0 beq ,ins
 
   0x4000008C r6 emit-load-int32
   pc r5 movrr ,ins
   dhere origin - 2 + r5 sub# ,ins
-  r5 r10 movrr ,ins
+  r5 r10 movrr ,ins ( for debug? )
   0x10 r6 r5 str-offset ,ins
   0x20 r6 r5 str-offset ,ins
   0x30 r6 r5 str-offset ,ins
@@ -182,7 +185,7 @@ dhere
   66 r6 mov# ,ins
   0 r7 r6 str-offset ,ins
 
-dhere over - 4 - bne swap ins!
+dhere over - 4 - beq swap ins!
 
 0 r0 mov# ,ins ( fake core0 having r0 = 0 )
 
@@ -203,12 +206,20 @@ r7 sp movrr ,ins
 
 ( determine MMIO base on each core and place in R1 and ToS )
 0 r0 bit-set pushr ,ins
-pc r0 movrr ,ins
-7 r0 add# ,ins
-r0 lr movrr ,ins
-dhere const> branch-mmio-base-2
-0 r0 addr-pc ,ins
-r0 bx ,ins
+' target-pi-zero defined? IF
+  ( fake a blx )
+  pc r0 movrr ,ins
+  7 r0 add# ,ins
+  r0 lr movrr ,ins
+
+  dhere const> branch-mmio-base-2
+  0 r0 addr-pc ,ins
+  r0 bx ,ins
+ELSE
+  dhere const> branch-mmio-base-2
+  0 r0 addr-pc ,ins
+  r0 blx ,ins
+THEN
 r0 r1 movrr ,ins
 0 r0 bit-set popr ,ins
 0 r1 bit-set pushr ,ins
@@ -249,13 +260,13 @@ r0 r6 adc ,ins
 Register list: https://forums.raspberrypi.com/viewtopic.php?t=126891
 )
 4 pad-data
-dhere branch-mmio-base - r0 addr-pc branch-mmio-base ins!
-dhere branch-mmio-base-2 - r0 addr-pc branch-mmio-base-2 ins!
+dhere branch-mmio-base - ' target-pi-zero UNLESS 4 - THEN r0 addr-pc branch-mmio-base ins!
+dhere branch-mmio-base-2 - ' target-pi-zero UNLESS 4 - THEN r0 addr-pc branch-mmio-base-2 ins!
 
 ( Zero lacks thumb2. )
 asm-aarch32-thumb push-mark
   0 0 0 r3 0 0xF mrc ,ins ( main ID )
-  ( [[midr >> 12] & 0xF - 0xB] * 4 )
+  ( index into table w/ [[midr >> 12] & 0xF - 0xB] * 4 )
   12 r3 r0 mov-lsr ,ins
   0xF r1 mov# ,ins
   r1 r0 and ,ins
@@ -266,6 +277,7 @@ dhere
   r0 r1 r0 ldr ,ins
   lr bx ,ins
 
+( the MMIO table )
 dhere over - 8 - r1 addr-pc swap ins!
 MMIO-BASE1 ,uint32
 MMIO-BASE2 ,uint32
