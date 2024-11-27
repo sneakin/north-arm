@@ -11,9 +11,9 @@ null var> this-word
 
 ( Defining words: )
 
-: defined?
-  get-word null? not swap drop
-;
+: defined? get-word null? not swap drop ;
+
+: DEFINED? next-token defined? ;
 
 : make-const
   swap " fpush " ++

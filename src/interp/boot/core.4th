@@ -330,4 +330,10 @@ def defined?/2
 end
 THEN
 
+tmp" DEFINED?" defined?/2 UNLESS
+def DEFINED? ( : word -- yes? )
+  next-word defined?/2 return1
+end
+THEN
+
 tmp" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN

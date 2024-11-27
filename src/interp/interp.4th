@@ -291,6 +291,10 @@ tmp" src/interp/toplevel-if.4th" load/2
 
 ( Word lookups: )
 
+def DEFINED? ( : word -- yes? )
+  next-token defined?/2 return1
+end
+
 defcol not-found/2
   s" Not found: " error-string/2
   rot swap error-line/2
