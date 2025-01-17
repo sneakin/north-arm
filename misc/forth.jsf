@@ -22,6 +22,7 @@
 :first Idle
 	*	code	noeat
 	"("	comment	recolor=-1
+	"\\" eol_comment recolor=-1
 	
 :comment Cmnt
 	*	comment
@@ -36,6 +37,10 @@
 	*	underline_comment
 	"_"	comment
 	")"	reset
+
+:eol_comment Cmnt
+  * eol_comment
+  "\n" reset
 
 :code Idle
 	*	token noeat buffer
@@ -71,6 +76,13 @@
 	"[UNLESS]"	immediate
 	"[ELSE]"	immediate
 	"[THEN]"	immediate
+	"DO" immediate
+	"?DO" immediate
+	"DO<" immediate
+	"DO<=" immediate
+	"LEAVE" immediate
+	"LOOP" immediate
+	"+LOOP" immediate
 	"alias>"	toplevel
 	"defalias>"	toplevel
 	"var>"	toplevel
@@ -90,6 +102,7 @@
 	"struct:"	def
 	"field:"	def
 	"s\""	string
+	"S\""	string
 	"\""	string
 	"s["	string_list
 	"arg0"	frameword
