@@ -41,6 +41,10 @@ def platform-target-none?
   arg0 " none" contains? set-arg0
 end
 
+def platform-target-raspi?
+  arg0 " raspi" contains? set-arg0
+end
+
 ( Linker predicates: )
 
 def platform-target-android?

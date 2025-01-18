@@ -5,6 +5,8 @@ THEN
 s[ src/lib/digest/sha256.4th ] load-list
 
 false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. Defined here instead of globals.4th so it remains undefined until this file is loaded. )
+0 var> boot-punter
+0 var> copyright-address
 
 tmp" open-output-file/2" defined?/2 UNLESS
   def open-output-file/2 ( mode path -- fid )
@@ -63,6 +65,8 @@ def builder-run ( entry len src-cons )
   dhere code-origin poke
 
   ( Plain text message: )
+  target-raspi? IF " src/runner/thumb/boot.4th" load THEN
+  dhere copyright-address poke
   BUILD-COPYRIGHT peek dup IF ,byte-string ELSE drop THEN
   ( Words to later patch: )
   s" _start" create
@@ -76,7 +80,7 @@ def builder-run ( entry len src-cons )
   arg0 load-list
 
   out-dict update-structs
-  s" copyright" cross-lookup IF code-origin peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
+  s" copyright" cross-lookup IF copyright-address peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
   s" _start" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
   s" *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
   s" immediates" cross-lookup IF output-immediates peek to-out-addr swap dict-entry-data uint32@ from-out-addr data-var-init-value uint32! ELSE not-found drop THEN
@@ -91,6 +95,7 @@ def builder-run ( entry len src-cons )
   ( entry point: )
   s" init" cross-lookup UNLESS " no init found" error-line not-found return0 THEN
   dict-entry-code uint32@ cell-size +
+  boot-punter peek dup IF 2dup to-out-addr - swap poke ELSE drop THEN
   ( finish the ELF file )
   write-elf-ending
   s" *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN

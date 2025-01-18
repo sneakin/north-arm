@@ -37,6 +37,10 @@ def target-win32?
   builder-target @ platform-target-win32? return1
 end
 
+def target-raspi?
+  builder-target @ platform-target-raspi? return1
+end
+
 ( Linker predicates: )
 
 def target-android?

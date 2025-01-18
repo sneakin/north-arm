@@ -2,6 +2,7 @@ TARGETS=bash-linux-static \
 	thumb-linux-static thumb-linux-gnueabi thumb-linux-android \
 	thumb2-linux-static thumb2-linux-gnueabi thumb2-linux-android \
 	aarch32-linux-static aarch32-linux-gnueabi aarch32-linux-android \
+  thumb-raspi-static aarch32-raspi-static \
 	x86-linux-static x86-linux-gnueabi \
 	x86_64-linux-static x86_64-linux-gnueabi \
 	x86-netbsd-static x86-netbsd-dynamic
@@ -62,6 +63,8 @@ $$(error "Bad arch: $(2)")
 		$(1)_OS?=netbsd
 	else ifneq (,$$(findstring netbsd,$(2)))
 		$(1)_OS?=netbsd
+	else ifneq (,$$(findstring raspi,$(2)))
+		$(1)_OS?=raspi
 	else
 $$(error "Bad OS: $(2)")
 	endif
