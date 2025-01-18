@@ -1,3 +1,4 @@
+0 defvar> *return-stack-base*
 0 defvar> return-stack
 
 defop proper-enter-r1

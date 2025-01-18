@@ -81,3 +81,7 @@ end
     swap drop loop
   THEN
 ;
+
+: assert-in-range
+  in-range? assert 3 dropn
+;
