@@ -53,6 +53,8 @@ $$(error "Bad arch: $(2)")
 		$(1)_OS?=linux
 	else ifneq (,$$(findstring windows,$(2)))
 		$(1)_OS?=windows
+	else ifneq (,$$(findstring msys,$(2)))
+		$(1)_OS?=windows
 	else ifneq (,$$(findstring netbsd,$(2)))
 		$(1)_OS?=netbsd
 	else ifneq (,$$(findstring dragonfly,$(2)))
@@ -80,6 +82,9 @@ $$(error "Bad OS: $(2)")
 		$(1)_STATIC?=true
 	else ifneq (,$$(findstring dynamic,$(2)))
 		$(1)_ABI?=dynamic
+		$(1)_STATIC?=false
+	else ifneq (,$$(findstring msys,$(2)))
+		$(1)_ABI=msys
 		$(1)_STATIC?=false
 	else
 $$(info "Bad ABI: $(2)")
