@@ -40,27 +40,35 @@
 
 :eol_comment Cmnt
   * eol_comment
-  "\n" reset
+  "\r\n" reset
 
 :code Idle
 	*	token noeat buffer
-	"-+"	minus recolor=-1
-	"0-9"	number	recolor=-1
-	"\f\b"	ctrlcode	recolor=-1
+	"-+#"	minus recolor=-2
+	"0-9"	number recolor=-1
+	"\f\b" ctrlcode recolor=-1
 	" \t\n"	reset
 
-:minus Idle
-	*	operator noeat recolor=-2
-	"+-"	minus
-	"A-Za-z"	token noeat recolor=-2
-	"0-9"	number noeat recolor=-2
+:minus Number
+	*	token noeat buffer recolor=-2
+	"x" hexnumber recolor=-2
+	"-+#"	minus
+	"0-9."	number noeat recolor=-2
+	" \t\r\n"	operator noeat recolor=-2
 
 :ctrlcode ControlCode
 	*	reset	noeat
 
 :number Number
-	*	reset	noeat
-	"0-9A-Fa-fx."	number
+	*	token	noeat recolor=-2
+	" \t\r\n"	reset	noeat recolor=-1
+	"x" hexnumber recolor=-1
+	"0-9."	number
+
+:hexnumber Number
+	*	token	noeat recolor=-2
+	" \t\r\n"	reset	noeat recolor=-1
+	"0-9a-fA-F."	hexnumber
 
 :token Idle
 	*	word	noeat strings
@@ -76,13 +84,13 @@
 	"[UNLESS]"	immediate
 	"[ELSE]"	immediate
 	"[THEN]"	immediate
-	"DO" immediate
-	"?DO" immediate
-	"DO<" immediate
-	"DO<=" immediate
-	"LEAVE" immediate
-	"LOOP" immediate
-	"+LOOP" immediate
+	"DO" loopword
+	"?DO" loopword
+	"DO<" loopword
+	"DO<=" loopword
+	"LEAVE" loopword
+	"LOOP" loopword
+	"+LOOP" loopword
 	"alias>"	toplevel
 	"defalias>"	toplevel
 	"var>"	toplevel
@@ -132,7 +140,7 @@
 	"*"	operator
 done
 	"'"	quote	recolor=-1
-	"a-zA-Z0-9-_+<>=/*:\"'[]@!"	token
+	"-a-zA-Z0-9_+<>=/*:\"'[]@!?"	token
 	
 :quote Immediate
 	*	defword recolor=-1
@@ -167,7 +175,7 @@ done
 	"\""	reset
 	
 :string_list_end TopLevel
-        *	string_list_end
+  * string_list_end
 	" \t\n"	reset
 	
 :string_list_inner String
