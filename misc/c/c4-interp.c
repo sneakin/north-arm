@@ -14,7 +14,7 @@
 
 const FLASH char crnl_str[] = "\r\n";
 
-DEFCONST2(cell_size, "cell-size", { i: sizeof(Cell) }, &words);
+DEFCONST2(cell_size, "cell-size", { .i = sizeof(Cell) }, &words);
 
 DEFCOL(pick, &cell_size) {
   &swap,
@@ -24,22 +24,22 @@ DEFCOL(pick, &cell_size) {
   &swap, &return0
 };
 
-DEFCONST2(standard_input, "standard-input", { i: 0 }, &pick);
-DEFCONST2(standard_output, "standard-output", { i: 1 }, &standard_input);
-DEFCONST2(standard_error, "standard-error", { i: 2 }, &standard_output);
+DEFCONST2(standard_input, "standard-input", { .i = 0 }, &pick);
+DEFCONST2(standard_output, "standard-output", { .i = 1 }, &standard_input);
+DEFCONST2(standard_error, "standard-error", { .i = 2 }, &standard_output);
 
-DEFVAR2(current_input, "current-input", { i: 0 }, &standard_error);
-DEFVAR2(current_output, "current-output", { i: 1 }, &current_input);
-DEFVAR2(current_error, "current-error", { i: 2 }, &current_output);
+DEFVAR2(current_input, "current-input", { .i = 0 }, &standard_error);
+DEFVAR2(current_output, "current-output", { .i = 1 }, &current_input);
+DEFVAR2(current_error, "current-error", { .i = 2 }, &current_output);
 
 #define INPUT_BUFFER_SIZE 1024
 
-DEFVAR2(input_buffer, "input-buffer", { ptr: NULL }, &current_error);
-DEFVAR2(input_buffer_max_size, "input-buffer-max-size", { i: 0 }, &input_buffer);
-DEFVAR2(input_buffer_size, "input-buffer-size", { i: 0 }, &input_buffer_max_size);
-DEFVAR2(input_buffer_offset, "input-buffer-offset", { i: 0 }, &input_buffer_size);
+DEFVAR2(input_buffer, "input-buffer", { .ptr = NULL }, &current_error);
+DEFVAR2(input_buffer_max_size, "input-buffer-max-size", { .i = 0 }, &input_buffer);
+DEFVAR2(input_buffer_size, "input-buffer-size", { .i = 0 }, &input_buffer_max_size);
+DEFVAR2(input_buffer_offset, "input-buffer-offset", { .i = 0 }, &input_buffer_size);
 
-DEFVAR2(stack_top, "stack-top", { ui: 0 }, &input_buffer_offset);
+DEFVAR2(stack_top, "stack-top", { .ui = 0 }, &input_buffer_offset);
 
 const FLASH char empty_string[] = "";
 
@@ -301,9 +301,9 @@ DEFCOL(nseq, &reverse) {
   &literal, (WordPtr)-22, &jumprel
 };
 
-DEFVAR2(token_buffer, "token-buffer", { ptr: NULL }, &nseq);
-DEFVAR2(token_buffer_size, "token-buffer-size", { i: 0 }, &token_buffer);
-DEFVAR(istate, { word: &exec }, &token_buffer_size);
+DEFVAR2(token_buffer, "token-buffer", { .ptr = NULL }, &nseq);
+DEFVAR2(token_buffer_size, "token-buffer-size", { .i = 0 }, &token_buffer);
+DEFVAR(istate, { .word = &exec }, &token_buffer_size);
 
 const FLASH char bye_str[] = "Bye";
 
@@ -373,15 +373,15 @@ DEFCOL2(mem_info, "mem-info", &mem_used) {
   &return0  
 };
 
-DEFCONST2(zero, "0", { i: 0 }, &mem_info);
-DEFCONST2(one, "1", { i: 1 }, &zero);
-DEFCONST2(mone, "-1", { i: -1 }, &one);
-DEFCONST2(two, "2", { i: 2 }, &mone);
-DEFCONST2(three, "3", { i: 3 }, &two);
-DEFCONST2(four, "4", { i: 4 }, &three);
-DEFCONST2(sixteen, "16", { i: 16 }, &four);
+DEFCONST2(zero, "0", { .i = 0 }, &mem_info);
+DEFCONST2(one, "1", { .i = 1 }, &zero);
+DEFCONST2(mone, "-1", { .i = -1 }, &one);
+DEFCONST2(two, "2", { .i = 2 }, &mone);
+DEFCONST2(three, "3", { .i = 3 }, &two);
+DEFCONST2(four, "4", { .i = 4 }, &three);
+DEFCONST2(sixteen, "16", { .i = 16 }, &four);
 
-DEFVAR2(xvar, "x", { i: 0x12345678 }, &sixteen);
+DEFVAR2(xvar, "x", { .i = 0x12345678 }, &sixteen);
 
 #ifdef DEBUG
 const FLASH char win[] = "write-int";

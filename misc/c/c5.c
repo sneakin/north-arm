@@ -63,7 +63,7 @@ WordPtr _doconst(Cell **sp, WordListPtr *eip) {
   return next_op(eip);
 }
 
-DEFCONST(doconst, { fn: _doconst }, 0);
+DEFCONST(doconst, { .fn = _doconst }, 0);
 
 WordPtr _doop(Cell **sp, WordListPtr *eip) {
   WordPtr w = (*sp)->word;
@@ -72,7 +72,7 @@ WordPtr _doop(Cell **sp, WordListPtr *eip) {
   return f(sp, eip);
 }
 
-DEFCONST(doop, { fn: _doop }, &doconst);
+DEFCONST(doop, { .fn = _doop }, &doconst);
 
 DEFOP(exec, &doop) {
   WordPtr w = (*sp)->word;
@@ -268,7 +268,7 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
   else return r;
 }
 
-DEFCONST(docol, { fn: _docol }, &fdup);
+DEFCONST(docol, { .fn = _docol }, &fdup);
 
 #ifndef NEEDED_ONLY
 DEFOP(eip, &docol) {
@@ -511,7 +511,7 @@ WordPtr _dovar(Cell **sp, WordListPtr *eip) {
   return next_op(eip);
 }
 
-DEFCONST(dovar, { fn: _dovar }, &rot);
+DEFCONST(dovar, { .fn = _dovar }, &rot);
 
 WordPtr _doivar(Cell **sp, WordListPtr *eip) {
   //*(*sp) = (*sp)->word->data;
@@ -522,7 +522,7 @@ WordPtr _doivar(Cell **sp, WordListPtr *eip) {
   return next_op(eip);
 }
 
-DEFCONST(doivar, { fn: _doivar }, &dovar);
+DEFCONST(doivar, { .fn = _doivar }, &dovar);
 
 DEFOP2(free_ram, "free-ram", &doivar) {
 #ifdef AVR

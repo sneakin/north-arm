@@ -75,7 +75,7 @@ State _exec(Cell **sp, Word ***eip) {
 
 Word exec = { "exec", _doop, _exec, &doop };
 
-Cell _trace_next = { i: 0 };;
+Cell _trace_next = { .i = 0 };;
 Word trace_next = { "*trace-next*", _doivar, &_trace_next, &exec };
 
 State _next(Cell **sp, Word ***eip) {
@@ -103,7 +103,7 @@ State _cputs(Cell **sp, Word ***eip) {
 Word cputs = { "cputs", _doop, _cputs, &next };
 
 State _write_string(Cell **sp, Word ***eip) {
-  printf((*sp)->str);
+  printf("%s", (*sp)->str);
   (*sp)++;
   return GO;
 }

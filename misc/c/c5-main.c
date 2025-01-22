@@ -35,7 +35,8 @@ int main(int argc, const char *argv[], const char *env[])
   WordListPtr eip = booter;
   Cell stack[STACK_SIZE];
   Cell *sp = stack + STACK_SIZE - 1;
-  sp->ptr = sp--;
+  sp->ptr = sp;
+  sp--;
 #ifdef AVR
   avr_init();
 #endif

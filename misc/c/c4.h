@@ -52,7 +52,7 @@ typedef WordPtr *WordListPtr;
 
 #define DEFOP2(cname, name, next) \
   WordPtr _##cname(Cell **sp, WordListPtr *eip); \
-  DEFWORD2(cname, name, _doop, { fn: _##cname }, next); \
+  DEFWORD2(cname, name, _doop, { .fn = _##cname }, next); \
   WordPtr _##cname(Cell **sp, WordListPtr *eip)
 
 #define DEFOP(name, next) \
@@ -74,7 +74,7 @@ typedef WordPtr *WordListPtr;
 
 #define DEFVAR2(cname, name, value, next) \
   Cell _##cname = value; \
-  DEFWORD2(cname, name, _doivar, { ptr: &_##cname }, next)
+  DEFWORD2(cname, name, _doivar, { .ptr = &_##cname }, next)
 
 #define DEFVAR(name, value, next) \
   DEFVAR2(name, #name, value, next)

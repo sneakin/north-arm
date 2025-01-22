@@ -62,10 +62,10 @@ extern WordPtr last_word;
 #define DEFWORD2(cname, name, code, data, next) \
   const FLASH char _##cname##_name[] = name; \
   WordDef cname = { \
-    { roptr: _##cname##_name }, \
-    { fn: code }, \
+    { .roptr = _##cname##_name }, \
+    { .fn = code }, \
     data, \
-    { roptr: next } \
+    { .roptr = next } \
   };
 
 #define DEFWORD(name, code, data, next) \
@@ -73,7 +73,7 @@ extern WordPtr last_word;
 
 #define DEFOP2(cname, name, next) \
   WordPtr _##cname(Cell **sp, WordListPtr *eip); \
-  DEFWORD2(cname, name, _doop, { fn: _##cname }, next); \
+  DEFWORD2(cname, name, _doop, { .fn = _##cname }, next); \
   WordPtr _##cname(Cell **sp, WordListPtr *eip)
 
 #define DEFOP(name, next) \
@@ -81,7 +81,7 @@ extern WordPtr last_word;
 
 #define DEFCOL2(cname, name, next) \
   extern const FLASH WordList _##cname; \
-  DEFWORD2(cname, name, _docol, { word_list: _##cname }, next); \
+  DEFWORD2(cname, name, _docol, { .word_list = _##cname }, next); \
   const FLASH WordList _##cname = 
 
 #define DEFCOL(name, next) \
@@ -95,13 +95,13 @@ extern WordPtr last_word;
 
 #define DEFVAR2(cname, name, value, next) \
   Cell _##cname = value; \
-  DEFWORD2(cname, name, _doivar, { ptr: &_##cname }, next)
+  DEFWORD2(cname, name, _doivar, { .ptr = &_##cname }, next)
 
 #define DEFVAR(name, value, next) \
   DEFVAR2(name, #name, value, next)
 
 #define DEFCVAR2(cname, name, var, next) \
-  DEFWORD2(cname, name, _doivar, { ptr: &var }, next)
+  DEFWORD2(cname, name, _doivar, { .ptr = &var }, next)
 
 #define DEFCVAR(name, var, next) \
   DEFCVAR2(name, #name, var, next)
