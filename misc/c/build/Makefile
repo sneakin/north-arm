@@ -18,7 +18,7 @@ c5: ../c5.c ../c5-main.c
 
 clean:
 	rm c1 c2 c3 libc3.so shared-test
-	rm c4-interp.static c4-interp.standalonec4-words c4-scripts libc4*.so
+	rm c4-interp.static c4-interp.standalone c4-words c4-scripts libc4*.so
 	rm c5 c5-interp c5-interp.static c5-interp.standalone libc5*.so 
 
 %: ../%.c
