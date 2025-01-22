@@ -1,0 +1,4 @@
+*words.h
+*.so
+build/c*
+build/shared-test
