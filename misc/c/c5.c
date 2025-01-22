@@ -27,6 +27,10 @@
 #define fprintf_P fprintf
 #endif
 
+#ifdef NOLOG
+#define DBGOUT(level, fmt, ...) {}
+#else
+
 #ifdef DEBUG_CALLS
 unsigned long _debug_level = DBG_TRACE|DBG_CALLS|DBG_IO|DBG_INFO|DBG_INFO1;
 #else
@@ -37,16 +41,13 @@ int is_debug_level(unsigned long level) {
   return _debug_level & (level&~0xF);
 }
 
-#ifdef NOLOG
-#define DBGOUT(level, fmt, ...) {}
-#else
 #define DBGOUT(level, fmt, ...) \
   if(is_debug_level(level)) \
   { fprintf_P(stderr, PSTR("\e[3%im"), level & 0x7); \
     fprintf_P(stderr, PSTR(fmt), __VA_ARGS__); \
     fprintf_P(stderr, PSTR("\e[37m\r\n")); \
   }
-#endif
+#endif // NOLOG
 
 #define OUTPUT_BUFFER_SIZE 32
 char output_buffer[OUTPUT_BUFFER_SIZE];
@@ -110,11 +111,13 @@ DEFOP(next, &exec) {
   DBGOUT(DBG_TRACE, "next %p\t%p\t%lx", *eip, *sp, **sp);
   *eip += 1;
   while(w != NULL && *eip) {
+#ifndef NOLOG
     if(is_debug_level(DBG_TRACE)) {
       i = strncpy_M(output_buffer, w->name.rostr, OUTPUT_BUFFER_SIZE);
       DBGOUT(DBG_TRACE, "-> %p\t%p\t%i %p \"%s\"", (void*)*eip, (void*)w, i, (void*)output_buffer, output_buffer);
       DBGOUT(DBG_TRACE, "   %p\t%lx\t%li", (void*)*sp, (unsigned long)(*sp)->ui, (long)(*sp)->i);
     }
+#endif
     *sp -= 1;
     (*sp)->word = w;
     w = w->code.fn(sp, eip);
@@ -243,12 +246,14 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
   WordPtr w = (*sp)->word;
 #ifdef AVR
   char *n = output_buffer;
+#ifndef NOLOG
   if(is_debug_level(DBG_CALLS)) {
     strncpy_M(n, w->name.rostr, OUTPUT_BUFFER_SIZE);
   }
-#else
+#endif // NOLOG
+#else // AVR
   const FLASH char *n = w->name.rostr;
-#endif
+#endif // AVR
   DBGOUT(DBG_CALLS, "docol %p \"%s\" (%S) from %p", (void*)w, n, w->name.rostr, *eip);
   //(*sp)->word_list = *eip;
   //*sp += 1;
@@ -265,6 +270,7 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
 
 DEFCONST(docol, { fn: _docol }, &fdup);
 
+#ifndef NEEDED_ONLY
 DEFOP(eip, &docol) {
   *sp -= 1;
   (*sp)->word_list = *eip;
@@ -276,7 +282,11 @@ DEFOP2(abort_next, "abort-next", &eip) {
   return NULL;
 }
 
-DEFOP2(write_hex_int, "write-hex-int", &abort_next) {
+DEFOP2(write_hex_int, "write-hex-int", &abort_next)
+#else // NEEDED_ONLY
+DEFOP2(write_hex_int, "write-hex-int", &docol)
+#endif // NEEDED_ONLY
+{
   printf("%lx ", (*sp)->ui);
   fflush(stdout);
   *sp += 1;
@@ -541,16 +551,33 @@ DEFOP(move, &ram_used) {
   return next_op(eip);
 }
 
+#ifndef NOLOG
 DEFCVAR2(debug_level, "*debug-level*", _debug_level, &move);
+#endif
+
+#ifndef NEEDED_ONLY
 extern WordPtr last_word;
 
-DEFOP2(set_dict, "set-dict", &debug_level) {
+#ifdef NOLOG
+DEFOP2(set_dict, "set-dict", &move)
+#else
+DEFOP2(set_dict, "set-dict", &debug_level)
+#endif
+{
   last_word = (*sp)->word;
   *sp += 1;
   return next_op(eip);
 }
 
-DEFOP(dict, &set_dict) {
+DEFOP(dict, &set_dict)
+#else // NEEDED_ONLY
+#ifdef NOLOG
+DEFOP(dict, &move)
+#else
+DEFOP(dict, &debug_level)
+#endif
+#endif // NEEDED_ONLY
+{
   *sp -= 1;
   Cell *here = *sp;
   here->ui = 0;
