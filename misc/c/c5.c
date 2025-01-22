@@ -479,12 +479,29 @@ DEFOP(roll, &jumprel) {
   return next_op(eip);
 }
 
+DEFOP(shift, &roll) {
+  // a b c -- b c a
+  Cell t = **sp;
+  **sp = *(*sp+2);
+  *(*sp+2) = *(*sp+1);
+  *(*sp+1) = t;
+  return next_op(eip);
+}
+
+DEFOP(rot, &shift) {
+  // a b c -- c b a
+  Cell t = **sp;
+  **sp = *(*sp+2);
+  *(*sp+2) = t;
+  return next_op(eip);
+}
+
 WordPtr _dovar(Cell **sp, WordListPtr *eip) {
   (*sp)->roptr = &(*sp)->word->data;
   return next_op(eip);
 }
 
-DEFCONST(dovar, { fn: _dovar }, &roll);
+DEFCONST(dovar, { fn: _dovar }, &rot);
 
 WordPtr _doivar(Cell **sp, WordListPtr *eip) {
   //*(*sp) = (*sp)->word->data;

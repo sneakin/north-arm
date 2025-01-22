@@ -1,4 +1,7 @@
-all: c1 c2 c3 c4-words c4-scripts shared-test c4-interp c4-interp-tests c5-interp
+all: \
+	c1 c2 c3 \
+	c4-words c4-scripts shared-test c4-interp c4-interp.standalone c4-interp-tests \
+	c5-interp c5-interp.standalone
 static: c4-interp.static c5-interp.static
 
 ../c4-words.h: ../c4.c
@@ -15,8 +18,8 @@ c5: ../c5.c ../c5-main.c
 
 clean:
 	rm c1 c2 c3 libc3.so shared-test
-	rm c4-words c4-scripts libc4*.so
-	rm c5 c5-interp libc5*.so 
+	rm c4-interp.static c4-interp.standalonec4-words c4-scripts libc4*.so
+	rm c5 c5-interp c5-interp.static c5-interp.standalone libc5*.so 
 
 %: ../%.c
 	$(CC) $(CFLAGS) -o $@ $^
@@ -42,11 +45,17 @@ c4-interp-tests: ../c4-words.h ../c4-interp.c ../c4-words-def.c ../c4-interp-tes
 c4-interp.static: ../c4-words.h ../c4-interp.c ../c4-words-def.c ../c4.c ../c4-main.c
 	$(CC) $(CFLAGS) -DC4 -DSTATIC -static -o $@ ../c4-interp.c ../c4.c ../c4-main.c
 
+c4-interp.standalone: ../c4-words.h ../c4-interp.c ../c4-words-def.c ../c4.c ../c4-main.c
+	$(CC) $(CFLAGS) -DC4 -o $@ ../c4-interp.c ../c4.c ../c4-main.c
+
 c5-interp: ../c5-words.h ../c4-interp.c ../c4-words-def.c libc5.so libc5-main.so
 	$(CC) $(CFLAGS) -DC5 -o $@ ../c4-interp.c libc5.so libc5-main.so
 
 c5-interp.static: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../c5.c ../c5-main.c
 	$(CC) $(CFLAGS) -DC5 -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c
+
+c5-interp.standalone: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../c5.c ../c5-main.c
+	$(CC) $(CFLAGS) -DC5 -o $@ ../c4-interp.c ../c5.c ../c5-main.c
 
 ifndef AVR_CC
 AVR_CC=avr-gcc

@@ -32,50 +32,19 @@ DEFVAR2(current_input, "current-input", { i: 0 }, &standard_error);
 DEFVAR2(current_output, "current-output", { i: 1 }, &current_input);
 DEFVAR2(current_error, "current-error", { i: 2 }, &current_output);
 
-DEFCOL2(read_byte, "read-byte", &current_error) {
-  &literal, (WordPtr)0, &here,
-  &literal, (WordPtr)1, &swap,
-  &current_input, &peek, &cread,
-  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)3, &ifjump,
-  &drop, &swap, &return0,
-  &swap, &drop, &literal, (WordPtr)-1, &int_add, &swap, &return0
-};
+#define INPUT_BUFFER_SIZE 1024
 
-DEFCOL2(is_space, "is-space?", &read_byte) {
-  &swap, &literal, (WordPtr)32, &int_lte, &swap, &return0
-};
+DEFVAR2(input_buffer, "input-buffer", { ptr: NULL }, &current_error);
+DEFVAR2(input_buffer_max_size, "input-buffer-max-size", { i: 0 }, &input_buffer);
+DEFVAR2(input_buffer_size, "input-buffer-size", { i: 0 }, &input_buffer_max_size);
+DEFVAR2(input_buffer_offset, "input-buffer-offset", { i: 0 }, &input_buffer_size);
 
-DEFCOL2(read_token3, "read-token/3", &is_space) {
-// buffer max-len count -- buffer count
-// todo empty reads look the same as errors
-// todo leading spaces need to be skipped, eliminates 0 byte reads
-  &read_byte, // &fdup, &write_int,
-  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)21, &ifjump,
-  &fdup, &is_space, &literal, (WordPtr)18, &ifjump,
-  &literal, (WordPtr)4, &pick, // &fdup, &write_hex_int,
-  &literal, (WordPtr)3, &pick, // &fdup, &write_int,
-  &int_add, &poke_byte,
-  &swap, &literal, (WordPtr)1, &int_add, /* &fdup, &write_int, */ &swap,
-  &literal, (WordPtr)-29, &jumprel,
-  &roll, &swap,
-  &drop,
-  &literal, (WordPtr)3, &pick,
-  &literal, (WordPtr)2, &pick,
-  &int_add, &literal, (WordPtr)0, &swap, &poke_byte,
-  &return0
-};
-
-DEFCOL2(read_token, "read-token", &read_token3) {
-  // buffer max-len -- buffer read-length
-  &roll, &literal, (WordPtr)0, &read_token3,
-  &swap, &drop, &roll, &roll, &return0
-};
-
-DEFVAR2(stack_top, "stack-top", { ui: 0 }, &read_token);
+DEFVAR2(stack_top, "stack-top", { ui: 0 }, &input_buffer_offset);
 
 const FLASH char empty_string[] = "";
 
-DEFCOL(memdump, &stack_top) { // addr bytes
+DEFCOL(memdump, &stack_top) {
+  // addr bytes --
   &over, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)8, &unlessjump,
   &literal, (WordPtr)empty_string, &cputs,
   &swap, &drop, &swap, &drop, &return0,
@@ -87,6 +56,7 @@ DEFCOL(memdump, &stack_top) { // addr bytes
 };
 
 const FLASH char dump_stack_s1[] = "Stack";
+
 DEFCOL2(dump_stack, "dump-stack", &memdump) {
   &literal, (WordPtr)dump_stack_s1, &cputs,
   &here, &fdup, &write_hex_int,
@@ -96,7 +66,115 @@ DEFCOL2(dump_stack, "dump-stack", &memdump) {
   &memdump, &return0
 };
 
-DEFCOL2(dict_entry_name, "dict-entry-name", &dump_stack) {
+const FLASH char prompt_str[] = "> ";
+
+DEFCOL(prompt, &dump_stack) {
+  &over, &write_int, &literal, (WordPtr)prompt_str, &write_string,
+  &current_output, &peek, &flush,
+  &return0
+};
+
+DEFCOL2(read_byte, "read-byte", &prompt) {
+  // ++ byte || < 0
+  &literal, (WordPtr)0, &here,
+  &literal, (WordPtr)1, &swap,
+  &current_input, &peek, &cread,
+  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)3, &ifjump,
+  &drop, &swap, &return0,
+  &swap, &drop, &literal, (WordPtr)-1, &int_add, &swap, &return0
+};
+
+DEFCOL2(is_space, "is-space?", &read_byte) {
+  // byte -- yes?
+  &swap, &literal, (WordPtr)32, &equals, &swap, &return0
+};
+
+DEFCOL2(is_newline, "is-newline?", &is_space) {
+  // byte -- yes?
+  &swap, &literal, (WordPtr)10, &equals, &swap, &return0
+};
+
+DEFCOL2(read_line3, "read-line/3", &is_newline) {
+  // buffer max-len counter -- buffer counter
+  &literal, (WordPtr)2, &pick,
+  &literal, (WordPtr)2, &pick,
+  &int_lte, &literal, (WordPtr)3, &unlessjump, &shift, &drop, &return0,
+  &read_byte,
+  &fdup, &literal, 0, &int_lt, &literal, (WordPtr)4, &unlessjump, &drop, &shift, &drop, &return0,
+  &fdup,
+  &literal, (WordPtr)5, &pick,
+  &literal, (WordPtr)4, &pick,
+  &int_add, &poke_byte,
+  &rot, &literal, (WordPtr)1, &int_add, &rot,
+  &is_newline, &literal, (WordPtr)3, &unlessjump, &shift, &drop, &return0,
+  &literal, (WordPtr)-49, &jumprel
+};
+
+DEFCOL2(null_terminate, "null-terminate", &read_line3) {
+  // string length --
+  &literal, (WordPtr)0,
+  &literal, (WordPtr)3, &pick,
+  &literal, (WordPtr)3, &pick, &int_add, &poke_byte,
+  &roll, &drop, &drop, &return0
+};
+
+DEFCOL2(refill_input_buffer, "refill-input-buffer", &null_terminate) {
+  // ++ ok?
+  &prompt,
+  &input_buffer, &peek, &input_buffer_max_size, &peek, &literal, 0, &read_line3,
+  &over, &over, &null_terminate,
+  &swap, &drop,
+  &fdup, &input_buffer_size, &poke,
+  &literal, 0, &input_buffer_offset, &poke,
+  &literal, 0, &int_lte, &literal, (WordPtr)4, &unlessjump, &literal, 0, &swap, &return0,
+  &literal, (WordPtr)1, &swap, &return0
+};
+
+DEFCOL2(input_buffer_read_byte, "input-buffer-read-byte", &refill_input_buffer) {
+  // ++ byte || < 0
+  &input_buffer_size, &peek,
+  &fdup, &literal, 0, &int_lt, &literal, (WordPtr)2, &unlessjump, &swap, &return0,
+  &input_buffer_offset, &peek, &swap, &int_lt, &literal, (WordPtr)11, &ifjump,
+  &refill_input_buffer, &literal, (WordPtr)4, &ifjump, &literal, (WordPtr)-1, &swap, &return0,
+  &literal, (WordPtr)-29, &jumprel,
+  &input_buffer, &peek, &input_buffer_offset, &peek, &int_add, &peek_byte,
+  &input_buffer_offset, &peek, &literal, (WordPtr)1, &int_add, &input_buffer_offset, &poke,
+  &swap, &return0
+};
+
+DEFCOL2(eat_spaces, "eat-spaces", &input_buffer_read_byte) {
+  // ++ next-byte || < 0
+  &input_buffer_read_byte,
+  &fdup, &is_newline, &literal, (WordPtr)4, &unlessjump, &drop, &literal, (WordPtr)-10, &jumprel,
+  &fdup, &is_space, &literal, (WordPtr)4, &unlessjump, &drop, &literal, (WordPtr)-19, &jumprel,
+  &swap, &return0
+};
+
+DEFCOL2(read_token3, "read-token/3", &eat_spaces) {
+  // buffer max-len count -- buffer count
+  &eat_spaces, &literal, (WordPtr)1, &jumprel,
+  &input_buffer_read_byte,
+  &fdup, &literal, (WordPtr)0, &int_lt, &literal, (WordPtr)26, &ifjump,
+  &fdup, &is_newline, &literal, (WordPtr)21, &ifjump,
+  &fdup, &is_space, &literal, (WordPtr)16, &ifjump,
+  &literal, (WordPtr)4, &pick,
+  &literal, (WordPtr)3, &pick,
+  &int_add, &poke_byte,
+  &swap, &literal, (WordPtr)1, &int_add, /* &fdup, &write_int, */ &swap,
+  &literal, (WordPtr)-34, &jumprel,
+  &literal, (WordPtr)4, &pick,
+  &literal, (WordPtr)3, &pick,
+  &int_add, &literal, (WordPtr)0, &swap, &poke_byte,
+  &drop, &shift, &drop, &return0
+};
+
+DEFCOL2(read_token, "read-token", &read_token3) {
+  // buffer max-len -- buffer read-length
+  &roll, &literal, (WordPtr)0, &read_token3,
+  &shift, &return0
+};
+
+DEFCOL2(dict_entry_name, "dict-entry-name", &read_token) {
   &swap, &literal, (WordPtr)offsetof(Word, name), &int_add, &swap, &return0
 };
 
@@ -116,7 +194,7 @@ DEFCOL2(dict_entry_next, "dict-entry-next", &dict_entry_data) {
 // fixme lookup also not terminating on doconst
 
 DEFCOL2(byte_string_equals4, "byte-string-equals?/4", &dict_entry_next) {
-  // a b length index
+  // a b length index -- yes?
   // index <= length
   &over, &literal, (WordPtr)3, &pick, &int_lte, &literal, (WordPtr)14, &ifjump,
   // got to the end, drop args and return true
@@ -141,7 +219,7 @@ DEFCOL2(byte_string_equals4, "byte-string-equals?/4", &dict_entry_next) {
 };
 
 DEFCOL2(byte_string_equals3, "byte-string-equals?/3", &byte_string_equals4) {
-  // a b length
+  // a b length -- yes?
   &literal, (WordPtr)3, &pick,
   &literal, (WordPtr)3, &pick,
   &literal, (WordPtr)3, &pick,
@@ -174,6 +252,7 @@ DEFCOL(lookup, &byte_string_equals3) {
 const FLASH char not_found[] = "Not found.";
 
 DEFCOL2(quote, "'", &lookup) {
+  // -- word
   &here, &rpush,
   &literal, (WordPtr)0, &literal, (WordPtr)0, &literal, (WordPtr)0, &literal, (WordPtr)0,
   &here, &literal, (WordPtr)32, &read_token,
@@ -186,15 +265,16 @@ DEFCOL2(quote, "'", &lookup) {
 };
 
 DEFCOL2(swap_places, "swap-places", &quote) {
-  // a b
-  &literal, (WordPtr)2, &pick, &peek, //&fdup, &write_int,
-  &literal, (WordPtr)2, &pick, &peek, //&fdup, &write_int,
+  // a b --
+  &literal, (WordPtr)2, &pick, &peek,
+  &literal, (WordPtr)2, &pick, &peek,
   &literal, (WordPtr)4, &pick, &poke,
   &literal, (WordPtr)2, &pick, &poke,
   &swap, &drop, &swap, &drop, &return0  
 };
 
-DEFCOL(reverse3, &swap_places) { // ptr length n
+DEFCOL(reverse3, &swap_places) {
+  // ptr length n --
   &literal, (WordPtr)3, &pick,
   &literal, (WordPtr)3, &pick,
   &literal, (WordPtr)3, &pick, &int_sub, &literal, (WordPtr)1, &int_sub, &cell_size, &int_mul, &int_add,
@@ -207,11 +287,13 @@ DEFCOL(reverse3, &swap_places) { // ptr length n
 };
 
 DEFCOL(reverse, &reverse3) {
+  // ptr length --
   &roll, &literal, (WordPtr)0, &reverse3,
   &drop, &drop, &drop, &return0
 };
 
-DEFCOL(nseq, &reverse) { // n ++ 0 1 2 ... n-1
+DEFCOL(nseq, &reverse) {
+  // n ++ 0 1 2 ... n-1
   &literal, (WordPtr)0, &roll,
   &swap, &literal, (WordPtr)1, &int_sub, &swap,
   &over, &literal, (WordPtr)3, &ifjump, &swap, &drop, &return0,
@@ -219,53 +301,48 @@ DEFCOL(nseq, &reverse) { // n ++ 0 1 2 ... n-1
   &literal, (WordPtr)-22, &jumprel
 };
 
-const FLASH char prompt_str[] = "> ";
-
-DEFCOL(prompt, &nseq) {
-  &over, &write_int, &literal, (WordPtr)prompt_str, &write_string, &current_output, &peek, &flush, &return0
-};
-
-DEFVAR2(input_buffer, "input-buffer", { ptr: NULL }, &prompt);
-DEFVAR2(input_buffer_size, "input-buffer-size", { i: 0 }, &input_buffer);
-DEFVAR(istate, { word: &exec }, &input_buffer_size);
+DEFVAR2(token_buffer, "token-buffer", { ptr: NULL }, &nseq);
+DEFVAR2(token_buffer_size, "token-buffer-size", { i: 0 }, &token_buffer);
+DEFVAR(istate, { word: &exec }, &token_buffer_size);
 
 const FLASH char bye_str[] = "Bye";
 
 DEFCOL2(interp_loop, "interp-loop", &istate) {
   &rpush,
-  &prompt,
-  &input_buffer, &peek, &input_buffer_size, &peek, &read_token,
-  &fdup, &literal, (WordPtr)0, &int_lt, &literal, (WordPtr)18, &ifjump,
+  &token_buffer, &peek, &token_buffer_size, &peek, &read_token,
+  &fdup, &literal, (WordPtr)0, &int_lte, &literal, (WordPtr)18, &ifjump,
   &dict, &lookup,
-  /* &fdup, &write_int, &fdup, &literal, (WordPtr)4, &unlessjump,
-  &over, &dict_entry_name, &peek, &cputs,  */
   &literal, (WordPtr)6, &unlessjump,
   &istate, &peek, &exec, &literal, (WordPtr)4, &jumprel,
   &drop, &literal, (WordPtr)not_found, &cputs,
-  &literal, (WordPtr)-31, &jumprel,
+  &literal, (WordPtr)-30, &jumprel,
   &literal, (WordPtr)bye_str, &cputs,
   &rpop, &return0
 };
 
 DEFCOL2(stack_allot, "stack-allot", &interp_loop) {
+  // num-bytes -- ... pointer
   &rpush,
   &here, &swap, &uint_sub, &move, &here,
   &rpop, &return0
 };
 
-#define INPUT_BUFFER_SIZE 32
+#define TOKEN_BUFFER_SIZE 32
 
 DEFCOL(interp, &stack_allot) {
   &rpush,
+  &literal, (WordPtr)TOKEN_BUFFER_SIZE, &stack_allot, &token_buffer, &poke,
+  &literal, (WordPtr)TOKEN_BUFFER_SIZE, &token_buffer_size, &poke,
   &literal, (WordPtr)INPUT_BUFFER_SIZE, &stack_allot, &input_buffer, &poke,
-  &literal, (WordPtr)INPUT_BUFFER_SIZE, &input_buffer_size, &poke,
+  &literal, (WordPtr)INPUT_BUFFER_SIZE, &input_buffer_max_size, &poke,
   &interp_loop,
-  &literal, (WordPtr)0, &input_buffer, &poke,
-  &literal, (WordPtr)0, &input_buffer_size, &poke,
+  &literal, (WordPtr)0, &token_buffer, &poke,
+  &literal, (WordPtr)0, &token_buffer_size, &poke,
   &rpop, &return0
 };
 
 DEFCOL(load, &interp) {
+  // path ++
   &rpush,
   &current_input, &peek, &rpush,
   &current_input, &poke, 
@@ -314,10 +391,10 @@ DEFCOL(boot, &xvar) {
   &here, &stack_top, &poke, // todo AVR is no longer setting this since ring buffer
 #ifdef DEBUG
   &cell_size, &write_int,
-    &literal, (WordPtr)win, &literal, (WordPtr)9, &dict, &lookup,
-    &write_int, &cputs,
-    &literal, (WordPtr)0, &literal, (WordPtr)0, &here, &literal, (WordPtr)sizeof(WordPtr), &fdup, &int_add, &read_token,
-    &write_int, &cputs,
+  &literal, (WordPtr)win, &literal, (WordPtr)9, &dict, &lookup,
+  &write_int, &cputs,
+  &literal, (WordPtr)0, &literal, (WordPtr)0, &here, &literal, (WordPtr)sizeof(WordPtr), &fdup, &int_add, &read_token,
+  &write_int, &cputs,
 #endif
   &mem_info, &interp, &return0
 };

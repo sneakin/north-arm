@@ -478,6 +478,7 @@ State _jumprel(Cell **sp, Word ***eip) {
 Word jumprel = { "jumprel", _doop, _jumprel, &cwrite };
 
 State _roll(Cell **sp, Word ***eip) {
+  // a b c -- c a b
   Cell t = **sp;
   **sp = *(*sp+1);
   *(*sp+1) = *(*sp+2);
@@ -487,12 +488,33 @@ State _roll(Cell **sp, Word ***eip) {
 
 Word roll = { "roll", _doop, _roll, &jumprel };
 
+State _shift(Cell **sp, Word ***eip) {
+  // a b c -- b c a
+  Cell t = **sp;
+  **sp = *(*sp+2);
+  *(*sp+2) = *(*sp+1);
+  *(*sp+1) = t;
+  return GO;
+}
+
+Word shift = { "shift", _doop, _shift, &roll };
+
+State _rot(Cell **sp, Word ***eip) {
+  // a b c -- c b a
+  Cell t = **sp;
+  **sp = *(*sp+2);
+  *(*sp+2) = t;
+  return GO;
+}
+
+Word rot = { "rot", _doop, _rot, &shift };
+
 State _dovar(Cell **sp, Word ***eip) {
   (*sp)->ptr = &(*sp)->word->data;
   return GO;
 }
 
-Word dovar = { "dovar", _doconst, _dovar, &roll };
+Word dovar = { "dovar", _doconst, _dovar, &rot };
 
 State _doivar(Cell **sp, Word ***eip) {
   (*sp)->ptr = (*sp)->word->data.ptr;
