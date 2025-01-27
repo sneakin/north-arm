@@ -546,7 +546,16 @@ DEFOP2(ram_used, "ram-used", &free_ram) {
   return next_op(eip);
 }
 
-DEFOP(move, &ram_used) {
+#ifdef AVR
+DEFOP(reboot, &ram_used) {
+  avr_reboot();
+}
+
+DEFOP(move, &reboot)
+#else // AVR
+DEFOP(move, &ram_used)
+#endif // AVR
+{
   *sp = (*sp)->cell_ptr;
   return next_op(eip);
 }
