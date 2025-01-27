@@ -57,25 +57,15 @@ c5-interp.static: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../c5.c ../c5-m
 c5-interp.standalone: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../c5.c ../c5-main.c
 	$(CC) $(CFLAGS) -DC5 -o $@ ../c4-interp.c ../c5.c ../c5-main.c
 
-ifndef AVR_CC
-AVR_CC=avr-gcc
-endif
-ifndef AVR_MCU
-AVR_MCU=atmega328p
-endif
-ifndef AVRDUDE_MCU
-AVRDUDE_MCU=m328p
-endif
-ifndef AVR_PORT
-AVR_PORT=/dev/ttyUSB1
-endif
-
-ifndef AVR_BAUD
-AVR_BAUD=19200
-endif
+AVR_CC?=avr-gcc
+AVR_MCU?=atmega328p
+AVRDUDE_MCU?=m328p
+AVR_PORT?=/dev/ttyUSB1
+AVR_BAUD?=19200
+AVR_FLAGS?=-Os -DNOLOG
 
 c5-interp.avr: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../avr.h ../unix_io.h ../c5.c ../c5-main.c ../ringbuffer.c ../ringbuffer.h
-	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c -DAVR_UART_INTR ../ringbuffer.c
+	$(AVR_CC) $(CFLAGS) $(AVR_FLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c -DAVR_UART_INTR ../ringbuffer.c
 c5-interp.hex: c5-interp.avr
 	avr-objcopy -Oihex $< $@
 
