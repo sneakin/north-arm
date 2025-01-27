@@ -11,6 +11,7 @@
 #include <alloca.h>
 #include <avr/pgmspace.h>
 #include <avr/cpufunc.h>
+#include <avr/wdt.h>
 #include <util/setbaud.h>
 
 #include "ringbuffer.h"
@@ -42,7 +43,12 @@ int uart_rx_full() {
   return abs(uart_rx_buffer.rpos - uart_rx_buffer.wpos) > UART_BUFFER_SIZE/2;
 }
 
-ISR(USART_RX_vect) {
+#ifdef USART_RX_vect
+ISR(USART_RX_vect)
+#else
+ISR(USART1_RX_vect)
+#endif
+ {
   if(ring_buffer_put(&uart_rx_buffer, UDR0) == 0 ||
      uart_rx_full()) {
     xoff();
@@ -92,7 +98,19 @@ int static_getchar(FILE *f) {
 static FILE static_in = FDEV_SETUP_STREAM(NULL, static_getchar, _FDEV_SETUP_READ);
 #endif
 
+void avr_reboot() {
+  wdt_enable(WDTO_15MS);
+  for(;;) {
+    // noop
+  }
+}
+
 void avr_init() {
+  // disable lingering watch dogs
+  MCUSR = 0;
+  wdt_disable();
+
+  // initialize the UART  
   UBRR0H = UBRRH_VALUE;
   UBRR0L = UBRRL_VALUE;
   
@@ -107,6 +125,7 @@ void avr_init() {
   UCSR0B |= (1<<RXCIE0);
 #endif
 
+  // initialize the IO streams
   stdout = stderr = &serial_out;
 #ifdef STATIC_INPUT
   static_input_pos = 0;
