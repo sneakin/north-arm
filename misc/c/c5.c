@@ -110,7 +110,7 @@ DEFOP(next, &exec) {
   size_t i = 0;
   DBGOUT(DBG_TRACE, "next %p\t%p\t%lx", *eip, *sp, **sp);
   *eip += 1;
-  while(w != NULL && *eip) {
+  while(w != NULL && *eip != NULL) {
 #ifndef NOLOG
     if(is_debug_level(DBG_TRACE)) {
       i = strncpy_M(output_buffer, w->name.rostr, OUTPUT_BUFFER_SIZE);
@@ -261,8 +261,10 @@ WordPtr _docol(Cell **sp, WordListPtr *eip) {
   Cell *fp = (*sp)->cell_ptr = (*sp)+1;
   WordListPtr neip = w->data.word_list;
   WordPtr r = _next(sp, &neip);
-  if(neip) DBGOUT(DBG_WARN, "eip is not null\t%p", neip);
+#ifndef NOLOG
+  if(neip != NULL) DBGOUT(DBG_WARN, "eip is not null\t%p", neip);
   DBGOUT(DBG_INFO, "<= %S returned: %p", w->name.rostr, r);
+#endif
   if(r == &return0) { *sp = fp; return next_op(eip); }
   if(r == NULL) return next_op(eip);
   else return r;
