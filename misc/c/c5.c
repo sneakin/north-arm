@@ -131,6 +131,7 @@ DEFOP(next, &exec) {
   return NULL;
 }
 
+// todo get the IO stream from an argument and/or current-output
 DEFOP(cputs, &next) {
 #ifdef AVR
   int n = strncpy_M(output_buffer, (*sp)->rostr, OUTPUT_BUFFER_SIZE);
