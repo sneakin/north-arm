@@ -3,6 +3,8 @@
 
 set -e
 
+# todo test the stack ops with actual newlines, "\n", "\\n". Have a hunch "\\n" will break with fpush.
+
 STACK=""
 STACK_SIZE=0
 
@@ -19,14 +21,28 @@ fstack_init()
     STACK_SIZE=0
 }
 
-fpush()
+fescape()
+{
+    local V="$1"
+    V="${V//$'\\'/\\\\}"
+    V="${V//$'\n'/\\n}"
+    echo "$V"
+}
+
+fpush_raw()
 {
     local V
+    local i
     for i in "${@}"; do
-        STACK="${i//$'\n'/\\n}
+        STACK="${i}
 ${STACK}"
         STACK_SIZE=$(($STACK_SIZE + 1))
     done
+}
+
+fpush()
+{
+    fpush_raw "$(fescape "$1")"
 }
 
 ftos()
@@ -243,7 +259,8 @@ op_space()
 
 op_nl()
 {
-    fpush '\n'
+    fpush "
+"
 }
 
 op_nil()
@@ -256,7 +273,7 @@ op_concat()
     local A="$(ftos_raw)"
     local B="$(fovern_raw 1)"
     op_drop 2
-    fpush "${B}${A}"
+    fpush_raw "${B}${A}"
 }
 
 op_join()
@@ -318,12 +335,13 @@ op_here()
 # fixme goes on too far
 op_compile()
 {
-    op_comp
-    fpush 1
-    op_int_sub
-    fpush " "
-    fpush ""
-    op_join
+    feval comp 1 int_sub space nil join
+    # op_comp
+    # fpush 1
+    # op_int_sub
+    # fpush " "
+    # fpush ""
+    # op_join
 }
 
 op_define()
@@ -359,6 +377,19 @@ op_error_line()
     echo "$LINE" 1>&2
 }
 
+op_read()
+{
+    local IFS=""
+    local N="$(ftos)"
+    op_drop
+    read -n "$N" -r -p "..> " LINE
+    if [[ "${#LINE}" -lt "$N" ]]; then
+        LINE="${LINE}
+"
+    fi
+    fpush "$LINE"
+}
+
 op_readline()
 {
     local IFS=""
@@ -369,5 +400,5 @@ op_readline()
 op_sysexit()
 {
     local V="$(ftos)"
-    exit "$V"
+    exit "${V:-0}"
 }
