@@ -135,8 +135,6 @@ DEFCOL2(null_terminate, "null-terminate", &read_line3) {
   &return0
 };
 
-// fixme the AVR reads zero bytes when idle
-
 DEFCOL2(refill_input_buffer, "refill-input-buffer", &null_terminate) {
   // ++ ok?
   &prompt,
@@ -182,7 +180,7 @@ DEFCOL2(read_token3, "read-token/3", &eat_spaces) {
   &literal, (WordPtr)4, &pick,
   &literal, (WordPtr)3, &pick,
   &int_add, &poke_byte,
-  &swap, &literal, (WordPtr)1, &int_add, /* &fdup, &write_int, */ &swap,
+  &swap, &literal, (WordPtr)1, &int_add, &swap,
   &literal, (WordPtr)-34, &jumprel,
   &literal, (WordPtr)4, &pick,
   &literal, (WordPtr)3, &pick,
@@ -211,9 +209,6 @@ DEFCOL2(dict_entry_data, "dict-entry-data", &dict_entry_code) {
 DEFCOL2(dict_entry_next, "dict-entry-next", &dict_entry_data) {
   &swap, &literal, (WordPtr)offsetof(Word, next), &int_add, &swap, &return0
 };
-
-// fixme avr has limited, wrong length of 3
-// fixme lookup also not terminating on doconst
 
 DEFCOL2(byte_string_equals4, "byte-string-equals?/4", &dict_entry_next) {
   // a b length index -- yes?
@@ -391,7 +386,6 @@ DEFCOL(load, &interp) {
 };
 
 DEFCOL2(mem_used, "mem-used", &load) {
-  // fixme AVR adds 0x80000 to stack_top
   &stack_top, &peek, &here, &ptr_sub,
   &swap, &return0
 };
