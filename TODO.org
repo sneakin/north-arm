@@ -996,7 +996,11 @@ func/ chars*/
 **** JSON
 **** XML
 **** Distribution archive: cpio.gz?
-     
+** Everything is a sequence
+A sequence: ptr -> type, length, *data -> memory
+Even functions. Arguments are too. Calls would push the FP, return address, and 2 plus the number of arguments, and then the new frame pointer.
+
+
 * In the source
 #+NAME todos
 #+BEGIN_SRC shell :results output org
