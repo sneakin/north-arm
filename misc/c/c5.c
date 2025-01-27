@@ -18,7 +18,7 @@
 #define DBG_INFO 0x43
 #define DBG_CALLS 0x84
 #define DBG_TRACE 0x105
-#define DBG_INFO1 0x206
+#define DBG_COPYING 0x206
 #define DBG_INFO2 0x806
 #define DBG_IO 0x406
 
@@ -32,10 +32,14 @@
 #else
 
 #ifdef DEBUG_CALLS
-unsigned long _debug_level = DBG_TRACE|DBG_CALLS|DBG_IO|DBG_INFO|DBG_INFO1;
-#else
+unsigned long _debug_level = DBG_TRACE|DBG_CALLS|DBG_IO|DBG_INFO;
+#else // DEBUG_CALLS
+#  ifdef DEBUG
+unsigned long _debug_level = DBG_ERROR|DBG_WARN|DBG_IO;
+#  else // DEBUG
 unsigned long _debug_level = DBG_ERROR|DBG_WARN;
-#endif
+#  endif // DEBUG
+#endif // DEBUG_CALLS
 
 int is_debug_level(unsigned long level) {
   return _debug_level & (level&~0xF);
@@ -45,7 +49,7 @@ int is_debug_level(unsigned long level) {
   if(is_debug_level(level)) \
   { fprintf_P(stderr, PSTR("\e[3%im"), level & 0x7); \
     fprintf_P(stderr, PSTR(fmt), __VA_ARGS__); \
-    fprintf_P(stderr, PSTR("\e[37m\r\n")); \
+    fprintf_P(stderr, PSTR("\e[0m\r\n")); \
   }
 #endif // NOLOG
 
@@ -81,13 +85,13 @@ DEFOP(exec, &doop) {
 
 size_t strncpy_M(char *out, const FLASH char *in, size_t count) {
   size_t i;
-  DBGOUT(DBG_INFO1, "strncpy: %i bytes from %p to %p", count, (void*)in, (void*)out);
+  DBGOUT(DBG_COPYING, "strncpy: %i bytes from %p to %p", count, (void*)in, (void*)out);
   for(i = 0; i < count && in[i] != 0; i++) {
     DBGOUT(DBG_INFO2, " %i", in[i]);
     out[i] = in[i];
   }
   out[i] = 0;
-  DBGOUT(DBG_INFO1, "copied %i bytes: %s", i, out);
+  DBGOUT(DBG_COPYING, "copied %i bytes: %s", i, out);
   return i;
 }
 
@@ -96,7 +100,7 @@ size_t memcpy_M(void *outa, const FLASH void *ina, size_t count) {
   const FLASH char *in = (const FLASH char *)ina;
   size_t i;
   unsigned long outp = (unsigned long)out, inp = (unsigned long)in;
-  DBGOUT(DBG_INFO1, "memcpy: %i bytes from %lx to %lx", count, inp, outp);
+  DBGOUT(DBG_COPYING, "memcpy: %i bytes from %lx to %lx", count, inp, outp);
   for(i = 0; i < count; i++) {
     DBGOUT(DBG_INFO2, " %x", in[i]);
     out[i] = in[i];
@@ -128,16 +132,26 @@ DEFOP(next, &exec) {
 }
 
 DEFOP(cputs, &next) {
+#ifdef AVR
   int n = strncpy_M(output_buffer, (*sp)->rostr, OUTPUT_BUFFER_SIZE);
   fwrite(output_buffer, sizeof(char), n, stdout);
+#else
+  const char *str = (*sp)->rostr;
+  fwrite(str, sizeof(char), strlen(str), stdout);
+#endif
   fwrite("\r\n", sizeof(char), 2, stdout);
   (*sp)++;
   return next_op(eip);
 }
 
 DEFOP2(write_string, "write-string", &cputs) {
+#ifdef AVR
   size_t i = strncpy_M(output_buffer, (*sp)->rostr, OUTPUT_BUFFER_SIZE-1);
   fwrite(output_buffer, i, 1, stdout);
+#else
+  const char *str = (*sp)->rostr;
+  fwrite(str, strlen(str), 1, stdout);
+#endif
   (*sp)++;
   return next_op(eip);
 }
@@ -214,7 +228,23 @@ DEFOP2(uint_sub, "uint-sub", &int_sub) {
   return next_op(eip);
 }
 
-DEFOP2(write_int, "write-int", &uint_sub) {
+DEFOP2(ptr_add, "ptr-add", &uint_sub) {
+  long a = (*sp)->i;
+  *sp += 1;
+  void *b = (*sp)->ptr;
+  (*sp)->ptr = (b + a);
+  return next_op(eip);
+}
+
+DEFOP2(ptr_sub, "ptr-sub", &ptr_add) {
+  void *a = (*sp)->ptr;
+  *sp += 1;
+  void *b = (*sp)->ptr;
+  (*sp)->i = (b - a);
+  return next_op(eip);
+}
+
+DEFOP2(write_int, "write-int", &ptr_sub) {
   printf("%li ", (*sp)->i);
   fflush(stdout);
   *sp += 1;
