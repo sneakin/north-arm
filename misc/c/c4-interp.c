@@ -77,7 +77,7 @@ DEFCOL2(dump_stack, "dump-stack", &memdump) {
   &literal, (WordPtr)dump_stack_s1, &cputs,
   &here, &fdup, &write_hex_int,
   &stack_top, &peek, &fdup, &write_hex_int,
-  &over, &int_sub, &fdup, &write_uint,
+  &over, &ptr_sub, &fdup, &write_uint,
   &literal, (WordPtr)empty_string, &cputs, &fdup, &write_int, 
   &memdump, &return0
 };
