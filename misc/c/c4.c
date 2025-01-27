@@ -198,6 +198,26 @@ State _uint_sub(Cell **sp, Word ***eip) {
 
 Word uint_sub = { "uint-sub", _doop, _uint_sub, &int_sub };
 
+State _ptr_add(Cell **sp, Word ***eip) {
+  long a = (*sp)->i;
+  *sp += 1;
+  void *b = (*sp)->ptr;
+  (*sp)->ptr = (b + a);
+  return GO;
+}
+
+Word ptr_add = { "ptr-add", _doop, _ptr_add, &uint_sub };
+
+State _ptr_sub(Cell **sp, Word ***eip) {
+  void *a = (*sp)->ptr;
+  *sp += 1;
+  void *b = (*sp)->ptr;
+  (*sp)->i = (b - a);
+  return GO;
+}
+
+Word ptr_sub = { "ptr-sub", _doop, _ptr_sub, &ptr_add };
+
 State _write_int(Cell **sp, Word ***eip) {
   printf("%li ", (*sp)->i);
   fflush(stdout);
@@ -205,7 +225,7 @@ State _write_int(Cell **sp, Word ***eip) {
   return GO;
 }
 
-Word write_int = { "write-int", _doop, _write_int, &uint_sub };
+Word write_int = { "write-int", _doop, _write_int, &ptr_sub };
 
 State _write_uint(Cell **sp, Word ***eip) {
   printf("%lu ", (*sp)->ui);
