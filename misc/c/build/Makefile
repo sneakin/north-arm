@@ -83,10 +83,14 @@ endif
 c1.avr: ../avr.h ../unix_io.h ../c1.c ../ringbuffer.c ../ringbuffer.h
 	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c1.c -DAVR_UART_INTR ../ringbuffer.c
 
+ifndef AVR_BAUD
+AVR_BAUD=19200
+endif
+
 c5-interp.avr: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../avr.h ../unix_io.h ../c5.c ../c5-main.c ../ringbuffer.c ../ringbuffer.h
 	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c -DAVR_UART_INTR ../ringbuffer.c
 c5-interp.hex: c5-interp.avr
 	avr-objcopy -Oihex $< $@
 
 flash-c5: c5-interp.hex
-	avrdude -c arduino -p $(AVRDUDE_MCU) -U flash:w:$<:i -P $(AVR_PORT)
+	avrdude -c arduino -p $(AVRDUDE_MCU) -b $(AVR_BAUD) -U flash:w:$<:i -P $(AVR_PORT)
