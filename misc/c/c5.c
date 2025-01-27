@@ -581,6 +581,7 @@ DEFOP2(ram_used, "ram-used", &free_ram) {
 #ifdef AVR
 DEFOP(reboot, &ram_used) {
   avr_reboot();
+  return next_op(eip);
 }
 
 DEFOP(move, &reboot)

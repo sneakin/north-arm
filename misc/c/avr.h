@@ -12,6 +12,7 @@
 #include <avr/pgmspace.h>
 #include <avr/cpufunc.h>
 #include <avr/wdt.h>
+#include <util/delay.h>
 #include <util/setbaud.h>
 
 #include "ringbuffer.h"
@@ -100,16 +101,29 @@ static FILE static_in = FDEV_SETUP_STREAM(NULL, static_getchar, _FDEV_SETUP_READ
 
 void avr_reboot() {
   puts("Rebooting");
-  wdt_enable(WDTO_15MS);
+#if USE_AVR_WDT
+  wdt_enable(WDTO_250MS);
+  while(1) {
+    putc('.', stdout);
+    _delay_ms(500);
+  }
+#else
+  void (*reboot)() = 0x0;
+  _delay_ms(100);
+  reboot();
+#endif
 }
 
+#ifdef USE_AVR_WDT
 // disable lingering watch dogs before main()
-void wdt_init() __attribute__((naked)) __attribute__((section(".init3")));
+__attribute__((used, unused, naked, section(".init3")))
+void wdt_init(void);
 
-void wdt_init() {
+void wdt_init(void) {
   MCUSR &= ~(1<<WDRF);
   wdt_disable();
 }
+#endif // USE_AVR_WDT
 
 void avr_init() {
   // initialize the UART  
