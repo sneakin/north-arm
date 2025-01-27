@@ -99,17 +99,19 @@ static FILE static_in = FDEV_SETUP_STREAM(NULL, static_getchar, _FDEV_SETUP_READ
 #endif
 
 void avr_reboot() {
+  puts("Rebooting");
   wdt_enable(WDTO_15MS);
-  for(;;) {
-    // noop
-  }
+}
+
+// disable lingering watch dogs before main()
+void wdt_init() __attribute__((naked)) __attribute__((section(".init3")));
+
+void wdt_init() {
+  MCUSR &= ~(1<<WDRF);
+  wdt_disable();
 }
 
 void avr_init() {
-  // disable lingering watch dogs
-  MCUSR = 0;
-  wdt_disable();
-
   // initialize the UART  
   UBRR0H = UBRRH_VALUE;
   UBRR0L = UBRRL_VALUE;
