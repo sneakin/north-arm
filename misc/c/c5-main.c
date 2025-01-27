@@ -6,9 +6,11 @@ extern WordDef boot, words, fexit;
 extern WordDef one, int_add, fdup, write_int, dot, dump_stack, literal, here, swap, poke, peek, dict_entry_data, dict_entry_name, dict_entry_next, mem_info, write_hex_int, read_token, lookup;
 extern WordDef current_input, xvar;
 
-#ifdef AVR
+#if defined(AVR)
 void avr_init();
 const int STACK_SIZE=256 / sizeof(Cell); //1024;
+#elif defined(INIT_STACK_SIZE)
+const int STACK_SIZE=INIT_STACK_SIZE * sizeof(Cell);
 #else
 const int STACK_SIZE=1024 * sizeof(Cell);
 #endif
