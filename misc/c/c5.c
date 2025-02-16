@@ -273,35 +273,45 @@ DEFOP2(fdup, "dup", &swap) {
   return next_op(eip);
 }
 
-WordPtr _docol(Cell **sp, WordListPtr *eip) {
-  WordPtr w = (*sp)->word;
-#ifdef AVR
-  char *n = output_buffer;
-#ifndef NOLOG
-  if(is_debug_level(DBG_CALLS)) {
-    strncpy_M(n, w->name.rostr, OUTPUT_BUFFER_SIZE);
-  }
-#endif // NOLOG
-#else // AVR
-  const FLASH char *n = w->name.rostr;
-#endif // AVR
-  DBGOUT(DBG_CALLS, "docol %p \"%s\" (%S) from %p", (void*)w, n, w->name.rostr, *eip);
-  //(*sp)->word_list = *eip;
-  //*sp += 1;
+DEFOP(enter, &fdup) {
   // todo need to push nothing to sp, needs every word updated
+  WordListPtr neip = (*sp)->word_list;
+#ifndef NOLOG
+  DBGOUT(DBG_CALLS, "call %p from %p", neip, *eip);
+#endif
   Cell *fp = (*sp)->cell_ptr = (*sp)+1;
-  WordListPtr neip = w->data.word_list;
   WordPtr r = _next(sp, &neip);
 #ifndef NOLOG
   if(neip != NULL) DBGOUT(DBG_WARN, "eip is not null\t%p", neip);
-  DBGOUT(DBG_INFO, "<= %S returned: %p", w->name.rostr, r);
+  DBGOUT(DBG_INFO, "<= returned: %p", r);
 #endif
   if(r == &return0) { *sp = fp; return next_op(eip); }
   if(r == NULL) return next_op(eip);
   else return r;
 }
 
-DEFCONST(docol, { .fn = _docol }, &fdup);
+WordPtr _docol(Cell **sp, WordListPtr *eip) {
+  WordPtr w = (*sp)->word;
+#ifndef NOLOG
+#ifdef AVR
+  char *n = output_buffer;
+
+  if(is_debug_level(DBG_CALLS)) {
+    strncpy_M(n, w->name.rostr, OUTPUT_BUFFER_SIZE);
+  }
+#else // AVR
+  const FLASH char *n = w->name.rostr;
+#endif // AVR
+  DBGOUT(DBG_CALLS, "docol %p \"%s\" (%S) from %p", (void*)w, n, w->name.rostr, *eip);
+#endif // NOLOG
+  //(*sp)->word_list = *eip;
+  //*sp += 1;
+  // todo need to push nothing to sp, needs every word updated
+  (*sp)->word_list = w->data.word_list;
+  return _enter(sp, eip);
+}
+
+DEFCONST(docol, { .fn = _docol }, &enter);
 
 #ifndef NEEDED_ONLY
 DEFOP(eip, &docol) {

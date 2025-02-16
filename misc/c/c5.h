@@ -52,6 +52,7 @@ typedef struct Word {
 WordPtr _exec(Cell **, WordListPtr *);
 WordPtr _next(Cell **, WordListPtr *);
 WordPtr _doop(Cell **, WordListPtr *);
+WordPtr _enter(Cell **, WordListPtr *);
 WordPtr _docol(Cell **, WordListPtr *);
 WordPtr _doconst(Cell **, WordListPtr *);
 WordPtr _dovar(Cell **, WordListPtr *);
