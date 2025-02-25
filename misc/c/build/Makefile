@@ -1,5 +1,7 @@
 all: \
-	c1 c2 c3 \
+	c1 c1-tail \
+	c2 c2-tail \
+	c3 \
 	c4-words c4-scripts shared-test c4-interp c4-interp.standalone c4-interp-tests \
 	c5-interp c5-interp.standalone
 static: c4-interp.static c5-interp.static
@@ -11,7 +13,9 @@ static: c4-interp.static c5-interp.static
 	#sed -E -e 's:^Word ([^*]\S*).*:extern const FLASH Word \1;:g' -e t -e d < $< > $@
 
 c1: ../c1.c
+c1-tail: ../c1.c
 c2: ../c2.c
+c2-tail: ../c2.c
 c3: ../c3.c
 c4: ../c4.c
 c5: ../c5.c ../c5-main.c
@@ -26,6 +30,12 @@ clean:
 
 lib%.so: ../%.c
 	$(CC) $(CFLAGS) -DSHARED -shared -fPIC -o $@ $^
+
+%-tail: ../%.c
+	$(CC) -DDO_TAILCALL -DTAILCALL_FAST $(CFLAGS) -o $@ $^
+
+lib%-tail.so: ../%.c
+	$(CC) -DDO_TAILCALL -DTAILCALL_FAST $(CFLAGS) -DSHARED -shared -fPIC -o $@ $^
 	
 shared-test: ../shared-test.c libc3.so
 	$(CC) $(CFLAGS) -o $@ $^
@@ -69,6 +79,9 @@ endif
 ifndef AVR_PORT
 AVR_PORT=/dev/ttyUSB1
 endif
+
+c1.avr: ../avr.h ../unix_io.h ../c1.c ../ringbuffer.c ../ringbuffer.h
+	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c1.c -DAVR_UART_INTR ../ringbuffer.c
 
 c5-interp.avr: ../c5-words.h ../c4-interp.c ../c4-words-def.c ../avr.h ../unix_io.h ../c5.c ../c5-main.c ../ringbuffer.c ../ringbuffer.h
 	$(AVR_CC) $(CFLAGS) -DC5 -DAVR -DNOUNIX -mmcu=$(AVR_MCU) -static -o $@ ../c4-interp.c ../c5.c ../c5-main.c -DAVR_UART_INTR ../ringbuffer.c

@@ -1,10 +1,9 @@
 /* Like c1, but uses an union to represent values on stack.
-* Define STACK_RETADDR to push return addresses on the stack and to pop that into eip on returns.
-* Without it, ~next~ calls nest and actually return.
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include "tailcall.h"
 
 union Cell;
 struct Word;
@@ -28,52 +27,54 @@ typedef struct Word {
 
 const char hello[] = "Hello";
 
-Cell *_next(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_next(Cell *sp, Word **eip) {
   //printf("%s\n", (*eip)->name);
-  return (*eip)->code(sp, eip+1);
+  TAILCALL((*eip)->code(sp, eip+1));
 }
 
 Word next = { "next", _next, (void *)NULL, NULL };
 
-Cell *_cputs(Cell *sp, Word **eip) {
+#define NEXT(sp, eip) TAILCALL(_next(sp, eip))
+
+PRESERVE_NONE Cell *_cputs(Cell *sp, Word **eip) {
   puts((const char *)sp->ptr);
-  return _next(++sp, eip);
+  NEXT(++sp, eip);
 }
 
 Word cputs = { "cputs", _cputs, (void *)NULL, &next };
 
-Cell *_cexit(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_cexit(Cell *sp, Word **eip) {
   exit((int)sp->i);
-  return _next(++sp, eip);
+  NEXT(++sp, eip);
 }
 
 Word cexit = { "cexit", _cexit, (void *)NULL, &cputs };
 
-Cell *_literal(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_literal(Cell *sp, Word **eip) {
   --sp;
   *sp = *(Cell *)(eip);
-  return _next(sp, ++eip);
+  NEXT(sp, ++eip);
 }
 
 Word literal = { "literal", _literal, (void *)NULL, &cexit };
 
-Cell *_enter(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_enter(Cell *sp, Word **eip) {
 #ifdef STACK_RETADDR
   Word *w = (Word *)sp->word;
   sp--;
   sp->ptr = (Word *)eip;
-  return _next(sp, w->data);
+  NEXT(sp, w->data);
 #else
-  return _next(_next(sp+1, sp->word_list), ++eip);
+  NEXT(_next(sp+1, sp->word_list), ++eip);
 #endif
 }
 
 Word enter = { "enter", _enter, (void *)NULL, &literal };
 
-Cell *_return0(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_return0(Cell *sp, Word **eip) {
 #ifdef STACK_RETADDR
   printf("returning to %p\n", (Word **)sp->ptr);
-  //return _next(sp+1, (Word **)sp->word);
+  //NEXT(sp+1, (Word **)sp->word);
   return ++sp;
 #else
   return sp;
@@ -82,73 +83,73 @@ Cell *_return0(Cell *sp, Word **eip) {
 
 Word return0 = { "return0", _return0, (void *)NULL, &enter };
 
-Cell *_rallot(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_rallot(Cell *sp, Word **eip) {
   Cell *mem = alloca(*(unsigned long *)sp);
   sp->ptr = mem;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word rallot = { "rallot", _rallot, (void *)NULL, &return0 };
 
-Cell *_here(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_here(Cell *sp, Word **eip) {
   (sp-1)->ptr = sp;
   --sp;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word here = { "here", _here, (void *)NULL, &rallot };
 
-Cell *_rhere(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_rhere(Cell *sp, Word **eip) {
   int n = 0;
   (--sp)->ptr = (void *)&n;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word rhere = { "rhere", _rhere, (void *)NULL, &here };
 
-Cell *_int_sub(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_int_sub(Cell *sp, Word **eip) {
   long a = (sp++)->i;
   long b = (sp)->i;
   sp->i = (b - a);
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word int_sub = { "int-sub", _int_sub, (void *)NULL, &rhere };
 
-Cell *_write_int(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_write_int(Cell *sp, Word **eip) {
   long a = (sp++)->i;
   printf("%i ", (int)a);
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word write_int = { "write-int", _write_int, (void *)NULL, &int_sub };
 
-Cell *_swap(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_swap(Cell *sp, Word **eip) {
   Cell t = *sp;
   *sp = *(sp+1);
   *(sp+1) = t;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word swap = { "swap", _swap, (void *)NULL, &write_int };
 
-Cell *_dup(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_dup(Cell *sp, Word **eip) {
   Cell v = *(sp--);
   *sp = v;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word dup = { "dup", _dup, (void *)NULL, &swap };
 
-Cell *_docol(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_docol(Cell *sp, Word **eip) {
   Word *w = *(eip-1);
   printf("docol %p %s from %p\n", w, w->name, eip);
 #ifdef STACK_RETADDR
   sp--;
   sp->word_list = eip;
-  return _next(sp, w->data);
+  NEXT(sp, w->data);
 #else
-  return _next(_next(sp, w->data), eip);
+  NEXT(_next(sp, w->data), eip);
 #endif
 }
 
@@ -159,9 +160,9 @@ Word *hey_def[] = {
 };
 Word hey = { "hey", _docol, hey_def, &docol };
 
-Cell *_eip(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_eip(Cell *sp, Word **eip) {
   (--sp)->ptr = eip;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word eip = { "eip", _eip, NULL, &hey };
@@ -185,50 +186,50 @@ Word *_bootstrap[] = {
 
 Word bootstrap = { "bootstrap", _docol, _bootstrap, &eip };
 
-Cell *_int_add(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_int_add(Cell *sp, Word **eip) {
   long a = (sp++)->i;
   long b = (sp)->i;
   sp->i = (b + a);
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word int_add = { "int-add", _int_add, (void *)NULL, &bootstrap };
 
-Cell *_peek(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_peek(Cell *sp, Word **eip) {
   *sp = *(Cell *)sp->ptr;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word peek = { "peek", _peek, (void *)NULL, &int_add };
 
-Cell *_ifjump(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_ifjump(Cell *sp, Word **eip) {
   long n = (sp++)->i;
   if(sp->i != 0) {
-    return _next(sp+1, eip + n);
+    NEXT(sp+1, eip + n);
   } else {
-    return _next(sp+1, eip);
+    NEXT(sp+1, eip);
   }
 }
 
 Word ifjump = { "ifjump", _ifjump, (void *)NULL, &peek };
 
-Cell *_write_hex_int(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_write_hex_int(Cell *sp, Word **eip) {
   long a = (sp++)->i;
   printf("%lx ", a);
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word write_hex_int = { "write-hex-int", _write_hex_int, (void *)NULL, &ifjump };
 
-Cell *_drop(Cell *sp, Word **eip) {
-  return _next(sp+1, eip);
+PRESERVE_NONE Cell *_drop(Cell *sp, Word **eip) {
+  NEXT(sp+1, eip);
 }
 
 Word drop = { "drop", _drop, (void *)NULL, &write_hex_int };
 
-Cell *_fexit(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_fexit(Cell *sp, Word **eip) {
 #ifdef STACK_RETADDR
-  return _next(sp+1, sp->word_list);
+  NEXT(sp+1, sp->word_list);
 #else
   return sp; //_next(sp, eip);
 #endif
@@ -251,9 +252,9 @@ Word *_words1[] = {
 
 Word words1 = { "words/1", _docol, _words1, &fexit };
 
-Cell *_dict(Cell *sp, Word **eip) {
+PRESERVE_NONE Cell *_dict(Cell *sp, Word **eip) {
   (--sp)->word = &words1;
-  return _next(sp, eip);
+  NEXT(sp, eip);
 }
 
 Word dict = { "dict", _dict, NULL, &words1 };
