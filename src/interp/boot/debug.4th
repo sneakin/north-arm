@@ -4,7 +4,7 @@ s[ src/lib/bit-fields.4th
    src/interp/boot/debug/fancy-stack.4th
 ] load-list
 
-NORTH-PLATFORM tmp" thumb" drop contains? IF
+NORTH-PLATFORM tmp" thumb" drop string-contains? IF
   " src/interp/boot/debug/arm.4th" load
 THEN
 

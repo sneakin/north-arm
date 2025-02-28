@@ -51,7 +51,7 @@ NORTH-BUILD-TIME 1659768556 int< IF
     cs local0 11 seq-poke
     ds local0 10 seq-poke
     ( offset for thumb and exit )
-    local0 NORTH-PLATFORM " thumb" contains? IF 1 + THEN exit-frame ( todo as a seqn )
+    local0 NORTH-PLATFORM " thumb" string-contains? IF 1 + THEN exit-frame ( todo as a seqn )
   end
 
 ELSE
@@ -79,7 +79,7 @@ ELSE
       arg1 local0 local1 poke-off
       local1 cell-size + local0 + interp-save-state
       ( offset for thumb and exit )
-      local0 NORTH-PLATFORM " thumb" contains? IF 1 + THEN exit-frame ( todo as a seqn )
+      local0 NORTH-PLATFORM " thumb" string-contains? IF 1 + THEN exit-frame ( todo as a seqn )
     end
 
   ELSE
@@ -102,7 +102,7 @@ ELSE
       arg1 local0 local1 poke-off
       local1 cell-size + local0 + interp-save-state
       ( offset for thumb and exit )
-      local0 NORTH-PLATFORM " thumb" contains? IF 1 + THEN exit-frame ( todo as a seqn )
+      local0 NORTH-PLATFORM " thumb" string-contains? IF 1 + THEN exit-frame ( todo as a seqn )
     end
 
   THEN

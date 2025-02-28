@@ -63,12 +63,12 @@ def assert-string-null-terminated
   arg1 arg0 string-peek 0 assert-equals
 end
 
-: assert-contains
-  2dup contains? assertion-message
+: assert-string-contains
+  2dup string-contains? assertion-message
 ;
 
-: assert-contains-not
-  2dup contains? not assertion-message
+: assert-string-contains-not
+  2dup string-contains? not assertion-message
 ;
 
 : assert-data ( data-ptr ...cells count -- )

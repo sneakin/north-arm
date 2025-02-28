@@ -2,6 +2,12 @@
 : car speek ;
 : cdr up-stack speek ;
 
+def contains? ( list item -- yes? )
+  arg1 UNLESS literal 0 literal 2 return1-n THEN
+  arg1 car arg0 equals? IF literal 1 literal 2 return1-n THEN
+  arg1 cdr set-arg1 repeat-frame
+end
+
 def map-car/3 ( cons state fn ++ )
   arg2 null? swap 0 equals logior IF arg1 exit-frame THEN
   arg1 arg2 car arg0 exec set-arg1

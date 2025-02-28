@@ -336,4 +336,8 @@ def DEFINED? ( : word -- yes? )
 end
 THEN
 
+DEFINED? string-contains? UNLESS
+  alias> string-contains? contains?
+THEN
+
 tmp" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN

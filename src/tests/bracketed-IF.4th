@@ -41,9 +41,9 @@
 
 : test-bracketed-conditions
   NORTH-STAGE [UNLESS]
-    ' test-[IF] get-word " [IF]" assert-contains-not
-    ' test-[IF] get-word " [ELSE]" assert-contains-not
-    ' test-[IF] get-word " [THEN]" assert-contains-not
+    ' test-[IF] get-word " [IF]" assert-string-contains-not
+    ' test-[IF] get-word " [ELSE]" assert-string-contains-not
+    ' test-[IF] get-word " [THEN]" assert-string-contains-not
   [THEN]
   test-[IF]
   test-[UNLESS]

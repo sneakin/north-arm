@@ -25,8 +25,8 @@ def test-process-happy
   local1 1024 local0 process-read
   dup 5 int> assert
   local1 over null-terminate
-  local1 " Hello" assert-contains
-  local1 " 8" assert-contains
+  local1 " Hello" assert-string-contains
+  local1 " 8" assert-string-contains
   ( process status )
   local0 process-check-status 0 assert-equals
   ( clean exit and wait )
@@ -99,7 +99,7 @@ def test-process-cmd-happy
   local1 1024 local0 process-read
   dup 5 int> assert
   local1 over null-terminate
-  local1 " hello!" assert-contains
+  local1 " hello!" assert-string-contains
   ( process status )
   local0 process-check-status 0 assert-equals
   ( clean exit and wait ) ( fixme how to get cat to notice the closed pipe? )

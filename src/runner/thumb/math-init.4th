@@ -25,11 +25,11 @@ defcol arm-soft-divmod
 endcol
 
 def math-init/1 ( platform-str -- )
-  ( s" thumb2" contains? )
+  ( s" thumb2" string-contains? )
   arg0 0 peek-off-byte 0x74 equals?
   arg0 5 peek-off-byte 0x32 equals? and
   0 IF
-    ( s" aarch32" contains? )
+    ( s" aarch32" string-contains? )
     arg0 0 peek-off-byte 0x61 equals?
     arg0 5 peek-off-byte 0x33 equals? and
     arg0 6 peek-off-byte 0x32 equals? and

@@ -176,7 +176,7 @@ def string-index-of ( ptr len predicate -- index )
   0 ' string-index-of/4 tail+1
 end
 
-def string-contains?/5 ( string str-length needle ndl-length index ++ )
+def string-contains?/5 ( string str-length needle ndl-length index -- index || -1 )
   arg3 arg0 - arg1 uint< IF -1 5 return1-n THEN
   4 argn arg0 + arg2 arg1 byte-string-equals?/3
   IF arg0 5 return1-n
@@ -184,7 +184,7 @@ def string-contains?/5 ( string str-length needle ndl-length index ++ )
   THEN
 end
 
-def contains? ( string needle -- yes? )
+def string-contains? ( string needle -- yes? )
   arg1 dup string-length
   arg0 dup string-length
   0 string-contains?/5

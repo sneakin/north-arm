@@ -15,7 +15,7 @@ r6 const> cs-reg
 r7 const> eip ( todo suffix with reg? )
 
 ( target-thumb2? )
-BUILDER-TARGET tmp" thumb2" drop contains? IF
+BUILDER-TARGET tmp" thumb2" drop string-contains? IF
   tmp" Compiling for thumb2" error-line/2
   : thumb2? 1 ;
 ELSE

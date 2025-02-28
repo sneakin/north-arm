@@ -152,7 +152,7 @@ DICT['string-peek']="v=\"\${STACK[1]}\"; n=\"\${STACK[0]}\"; fpop 2; fpush \$(pr
 DICT['has-spaces?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([ \t\n\r\v]) ]]; then fpush 1; else fpush 0; fi'
 DICT['has-special-chars?']='if [[ "${STACK[0]}" == "" ]] || [[ "${STACK[0]}" =~ ([*?!~$=]) ]]; then fpush 1; else fpush 0; fi'
 DICT['quote-string']='v="${STACK[0]}"; fpop; fpush "$(printf %q "$v")"'
-DICT['contains?']='if [[ "${STACK[1]}" =~ "${STACK[0]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
+DICT['string-contains?']='if [[ "${STACK[1]}" =~ "${STACK[0]}" ]]; then fpop 2; fpush 1; else fpop 2; fpush 0; fi'
 DICT['string-equals?/3']='feval 3 overn 3 overn equals?'
 
 
