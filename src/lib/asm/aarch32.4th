@@ -586,4 +586,4 @@ alias> ins! uint32!
 
 ( Dictionary mark to keep these words from polluting the namespace: )
 pre-asm-aarch32 push-mark> asm-aarch32
-: push-asm-mark asm-aarch32 push-mark ;
+

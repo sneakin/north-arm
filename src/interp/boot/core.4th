@@ -340,4 +340,8 @@ DEFINED? string-contains? UNLESS
   alias> string-contains? contains?
 THEN
 
+DEFINED? tail+1 UNLESS
+  tmp" src/runner/frame-tailing.4th" load/2
+THEN
+
 tmp" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN

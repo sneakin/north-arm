@@ -1,7 +1,19 @@
 ( Dictionary bookmarking: )
 
+DEFINED? dict-entry-equiv? UNLESS " src/interp/dictionary/equiv.4th" load THEN
+
 ( todo dict switch with mark updating )
 ( todo output marks )
+
+' dict-entry-equiv? defined? UNLESS
+  " src/interp/dictionary/equiv.4th" load
+THEN
+
+(
+struct: mark
+pointer field: dict
+pointer field: immediates
+)
 
 def mark-dict ( mark -- dict ) ( arg0 0 + set-arg0 ) end
 def mark-immediates ( mark -- immeds ) arg0 cell-size + set-arg0 end
@@ -54,7 +66,7 @@ end
 
 def dict-terminate! ( word -- )
   ( Set a word's link to null. )
-  0 arg0 dict-entry-link !
+  null arg0 dict-entry-link !
   1 return0-n
 end
 
@@ -157,6 +169,9 @@ def does-remark ( new-mark old-mark word ++ word )
   here cs - arg0 dict-entry-data poke
   arg0 exit-frame
 end
+
+( todo switch forget! and pop-mark so it looks up a runtime created constant instead of an executable word? )
+( todo an export-to-mark that adds a work to a mark's dictionary? )
 
 def create-remark ( new-mark old-mark name len ++ word )
   ( Create a new word that restores the dictionaries to when the mark was made. )

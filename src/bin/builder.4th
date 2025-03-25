@@ -5,6 +5,10 @@
 " src/interp/dictionary/dump.4th" load
 " src/cross/builder/interp.4th" load
 
+DEFINED? error-bool UNLESS
+  " src/interp/output/bool.4th" load
+THEN
+
 null var> sources
 " main" string-const> DEFAULT-ENTRY-POINT
 DEFAULT-ENTRY-POINT var> entry-point

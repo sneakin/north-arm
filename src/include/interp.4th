@@ -6,6 +6,7 @@ s[ src/lib/seq.4th
    src/interp/dictionary.4th
    src/lib/fun.4th
    src/interp/strings/partition.4th
+   src/lib/seq-fun.4th
    src/lib/assoc.4th
    src/interp/output/strings.4th
    src/interp/output/hex.4th
@@ -26,22 +27,21 @@ s[ src/lib/seq.4th
 ( Compiling )
 s[ src/interp/list.4th
    src/interp/compiler.4th
+   src/interp/proper.4th
 ] load-list
 
-( Standand Forth colons )
-s[ src/interp/proper.4th
-] load-list
-
-( Math and big numbers: )
+( Math: )
 s[ src/lib/math/int32.4th
-   src/lib/math/int64.4th
-   src/interp/output/int64.4th
 ] load-list
    
-( Debugging )
-s[ src/interp/debug.4th
+( Optional features: )
+NORTH-STAGE 0 int> IF
+s[ src/lib/math/int64.4th
+   src/interp/output/int64.4th
+   src/interp/debug.4th
    src/interp/decompiler.4th
 ] load-list
+THEN
 
 s[ src/interp/loaders.4th ] load-list
 

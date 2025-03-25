@@ -5,7 +5,9 @@ s[
   src/lib/map/stack.4th
   src/lib/bit-fields.4th
   src/lib/byte-data.4th
+
   src/lib/asm/thumb.4th
+
   src/cross/words.4th
   src/cross/iwords.4th
   src/cross/owords.4th

@@ -2,6 +2,7 @@ s[ src/interp/boot/core.4th
    src/interp/boot/data-segment.4th
    src/interp/boot/vars.4th
    src/interp/literalizers/int64.4th
+   src/interp/dictionary/bound-lookup.4th
    src/lib/linux/errno.4th
    src/lib/byte-data.4th
    src/lib/case.4th
@@ -28,8 +29,6 @@ sys' NORTH-COMPILE-TIME defined? UNLESS
      src/lib/list-cs.4th
      src/lib/structs.4th
      src/lib/linux.4th
-     ( src/lib/linux/clock.4th
-     src/lib/linux/stat.4th )
      src/lib/io.4th
   ] load-list
 THEN

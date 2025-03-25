@@ -48,11 +48,11 @@ FUTEX_CMP_REQUEUE_PI FUTEX_PRIVATE_FLAG logior const> FUTEX_CMP_REQUEUE_PI_PRIVA
 4 const> FUTEX_OP_CMP_GT
 5 const> FUTEX_OP_CMP_GE
 
-' futex defined? UNLESS
+DEFINED? futex UNLESS
   def futex ( val3 uaddr2 utime val op uaddr -- result )
     args 6 0xf0 syscall 6 return1-n
   end
-end
+THEN
 
 def futex-op ( cmp-arg cmp op-arg op ++ futex-op )
   arg0 0xf logand 28 bsl

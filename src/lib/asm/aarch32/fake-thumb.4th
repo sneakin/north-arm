@@ -299,4 +299,4 @@ s[ src/lib/asm/thumb/helpers.4th
 ] load-list
 
 pre-asm-aarch32 push-mark> asm-aarch32-thumb
-: push-asm-mark asm-aarch32-thumb push-mark ;
+

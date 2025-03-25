@@ -160,7 +160,6 @@ FORTH_SRC=./src/bash/forth.sh \
 	./src/bash/platform.4th
 
 THUMB_ASSEMBLER_SRC=\
-	src/include/thumb-asm.4th \
 	src/lib/bit-fields.4th \
 	src/lib/stack.4th \
 	src/interp/boot/cross.4th \
@@ -315,7 +314,6 @@ INTERP_RUNTIME_SRC=\
 	src/lib/linux/threads.4th \
 	src/lib/io.4th \
 	./src/interp/boot/debug.4th \
-	./src/include/thumb-asm.4th \
 	src/lib/stack.4th \
 	src/interp/boot/cross.4th \
 	src/lib/elf/stub32.4th \

@@ -10,4 +10,4 @@ s[ src/lib/asm/thumb/v1.4th
 ] load-list
 
 pre-asm-thumb push-mark> asm-thumb
-: push-asm-mark asm-thumb push-mark ;
+

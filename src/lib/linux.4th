@@ -1,5 +1,4 @@
 s[
-  ( src/lib/linux/errno.4th )
   src/lib/linux/clock.4th
   src/lib/linux/stat.4th
   src/lib/linux/mmap.4th

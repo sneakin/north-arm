@@ -1,6 +1,6 @@
 ' builder-target-bits defined? IF
   builder-target-bits
-  NORTH-PLATFORM tmp" bash" drop contains? UNLESS peek THEN
+  NORTH-PLATFORM platform-target-bash? UNLESS peek THEN
   dup 32 equals? IF
     drop s[ src/interp/output/32/int64.4th ] load-list
   ELSE

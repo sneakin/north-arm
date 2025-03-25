@@ -1,6 +1,10 @@
 tmp" fill" defined?/2 UNLESS
    s[ src/lib/seq.4th ] load-list
 THEN
+
+tmp" map-car/3" defined?/2 UNLESS
+  " src/lib/list.4th" load
+THEN
    
 s[ src/lib/digest/sha256.4th ] load-list
 

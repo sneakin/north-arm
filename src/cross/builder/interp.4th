@@ -16,25 +16,12 @@ end
 
 ( A post-execution load step: )
 
+( todo rm what is in include/asm & bring bash up to par & compile in )
 def builder-load
   s" IF" immediates @ cs + dict-lookup
   IF 3 dropn ELSE 3 dropn load-core THEN
-  target-thumb? IF
-    s" Loading thumb assembler..." error-line/2
-    " src/include/asm/thumb.4th" load ( load-thumb-asm )
-  ELSE
-    target-aarch32? IF
-      s" Loading aarch32 assembler..." error-line/2
-      " src/include/asm/aarch32.4th" load
-    ELSE
-      target-x86? IF
-        s" Loading x86 assembler..." error-line/2
-        " src/include/asm/x86.4th" load
-      ELSE s" Unsupported target" error-line/2 -1 sysexit ( todo error )
-      THEN
-    THEN
-  THEN
-  " src/cross/builder/run/interp.4th" load
+  s" src/cross/builder/assembly.4th" load/2
+  s" src/cross/builder/run/interp.4th" load/2
   s" Builder loaded." error-line/2
   exit-frame
 end
