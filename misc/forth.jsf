@@ -75,6 +75,7 @@
 	":"	immediate
 	";"	immediate
 	"'"	immediate
+	"DEFINED?"	toplevel
 	"POSTPONE"	immediate
 	"IF"	immediate
 	"UNLESS"	immediate
@@ -101,6 +102,8 @@
 	"defstring-const>"	toplevel
 	"symbol>"	toplevel
 	"defsymbol>"	toplevel
+	"mark>"		toplevel
+	"push-mark>"	toplevel
 	"defcol"	def
 	"endcol"	end
 	"defop"	def

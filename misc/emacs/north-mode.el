@@ -5,21 +5,24 @@
 (load (concat (file-name-directory (or load-file-name buffer-file-name)) "sprites.elisp"))
 
 (forth-syntax--define "\"" #'forth-syntax--state-string)
+(forth-syntax--define "e\"" #'forth-syntax--state-string)
 (forth-syntax--define "tmp\"" #'forth-syntax--state-string)
 ;;(forth-syntax--define "literal" #'forth-syntax--state-parsing-keyword)
-(setf north-syntax--parsing-words (list "literal" "int32" "pointer" "offset"))
-(setf north-syntax--defining-words (list "def" "defcol" "defop" "var>" "const>" "defvar>" "defconst>" "alias>" "defalias>"))
-(setf north-syntax--font-lock-keywords (list "[if]" "[unless]" "[else]" "[then]" "unless" "end" "endcol" "endop" "repeat-frame" "begin-frame" "end-frame" "->" "." "when" ";;" "of-str"))
-(setf north-syntax--font-lock-builtins (list "argn" "set-argn" "localn" "set-localn" "repeat-frame" "recurse" "return" "return0" "return1" "return0-n" "return1-n" "return2-n" "drop-locals" "exit-frame" "exec" "exec-abs" "exec-cs" "!" "poke" "@" "peek"))
 
+(setf north-syntax--parsing-words (list "'" "literal" "int32" "pointer" "offset" "DEFINED?"))
 (dolist (w north-syntax--parsing-words)
   (forth-syntax--define w #'forth-syntax--state-parsing-word))
 
+(setf north-syntax--defining-words (list "def" "defcol" "defop" "var>" "const>" "defvar>" "defconst>" "alias>" "defalias>" "symbol>" "mark>" "push-mark>"))
 (dolist (w north-syntax--defining-words)
   (forth-syntax--define w #'forth-syntax--state-defining-word))
 
+(setf north-syntax--font-lock-keywords (list "[if]" "[unless]" "[else]" "[then]" "unless" "end" "endcol" "endop" "repeat-frame" "begin-frame" "end-frame" "->" "." "when" ";;" "of-str" "s[" "]"))
 (dolist (w north-syntax--font-lock-keywords)
   (forth-syntax--define w #'forth-syntax--state-font-lock-keyword))
+
+
+(setf north-syntax--font-lock-builtins (list "argn" "set-argn" "localn" "set-localn" "repeat-frame" "recurse" "return" "return0" "return1" "return0-n" "return1-n" "return2-n" "tail+0" "tail+1" "drop-locals" "exit-frame" "exec" "exec-abs" "exec-cs" "!" "poke" "@" "peek" "+" "-" "*" "/" "%" "<" "<=" ">" ">="))
 
 ;;; Has to be patched to keep the font-lock-face property of tty-img's.
 (defun forth-syntax-propertize (start end)
