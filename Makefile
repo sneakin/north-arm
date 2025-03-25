@@ -435,11 +435,11 @@ test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpi
 %.sig: %
 	@export MSG="$$(sha256sum $< | cut -d ' ' -f 1)"; \
 	  echo "Signing \"$${MSG}\""; \
-	  (echo "file: $<" ; trezorctl btc sign-message -n "m/44'/0'/0'/0/0" "$${MSG}") | tee $@
+	  (echo "file: $<"; echo "sha256: $${MSG}" ; (echo "$${MSG}" | gpg -s -a)) | tee $@
 bin/%.sig: bin/%
-	@export MSG="$$(tail -c 64 $<)"; \
+	@export MSG="$$(head -c -64 $< | sha256sum | cut -d ' ' -f 1)"; \
 	  echo "Signing \"$${MSG}\""; \
-	  (echo "file: $<"; echo "tailed: true" ; trezorctl btc sign-message -n "m/44'/0'/0'/0/0" "$${MSG}") | tee $@
+	  (echo "file: $<"; echo "binary: true" ; echo "sha256: $${MSG}" ; (echo "$${MSG}" | gpg -s -a)) | tee $@
 
 # Org-mode
 %.html: %.org
