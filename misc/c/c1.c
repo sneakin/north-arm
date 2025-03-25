@@ -26,7 +26,7 @@ const char hello[] = "Hello";
 
 PRESERVE_NONE Cell *_next(Cell *sp, Word **eip) {
   //printf("%s\n", (*eip)->name);
-  __attribute__((musttail)) return (*eip)->code(sp, eip+1);
+  TAILCALL((*eip)->code(sp, eip+1));
 }
 
 Word next = { "next", _next, (void *)NULL, NULL };
