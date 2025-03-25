@@ -1,13 +1,9 @@
 ( Dictionary bookmarking: )
 
-DEFINED? dict-entry-equiv? UNLESS " src/interp/dictionary/equiv.4th" load THEN
+DEFINED? dict-entry-equiv? UNLESS s" src/interp/dictionary/equiv.4th" load/2 THEN
 
 ( todo dict switch with mark updating )
 ( todo output marks )
-
-' dict-entry-equiv? defined? UNLESS
-  " src/interp/dictionary/equiv.4th" load
-THEN
 
 (
 struct: mark
