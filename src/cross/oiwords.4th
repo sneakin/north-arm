@@ -1,7 +1,7 @@
 NORTH-STAGE 0 equals? IF
   0 var> out-immediates
 ELSE
-  ' output-immediates defined? UNLESS
+  DEFINED? output-immediates UNLESS
     0 var> output-immediates
   THEN
 
@@ -23,7 +23,7 @@ THEN
   out-immediates out-dict copies-entry-as> set-out-immediates
 ;
 
-' oiwords defined? UNLESS
+DEFINED? oiwords UNLESS
   NORTH-STAGE 0 equals? IF
     : oiwords
       out-immediates out-origin 0 ' oword-printer dict-map/4 enl

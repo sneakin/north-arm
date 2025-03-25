@@ -81,7 +81,7 @@ def write-hex-int64 ( lo hi -- )
   2 return0-n
 end
 
-' defalias> defined? IF
+DEFINED? defalias> IF
   defalias> .Q write-uint64
   defalias> .q write-int64
   defalias> .Qh write-hex-uint64

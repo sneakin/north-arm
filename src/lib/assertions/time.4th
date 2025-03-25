@@ -1,4 +1,4 @@
-' time-on-under? defined? UNLESS
+DEFINED? time-on-under? UNLESS
   s" src/lib/time.4th" load/2
 THEN
 

@@ -1,8 +1,8 @@
-' mark> defined? UNLESS
+DEFINED? mark> UNLESS
   s[ src/lib/mark.4th ] load-list
 THEN
 
-' assert defined? UNLESS
+DEFINED? assert UNLESS
   s[ src/lib/assert.4th ] load-list
 THEN
 

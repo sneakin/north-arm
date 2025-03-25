@@ -1,4 +1,4 @@
-tmp" uint64" defined?/2 IF
+DEFINED? uint64 IF
   def next-uint64
     next-token dup 0 int<= IF 0 0 ELSE string->uint64/2 THEN return2
   end

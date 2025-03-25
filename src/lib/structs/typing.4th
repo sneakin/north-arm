@@ -3,7 +3,7 @@
 ( fixme review value-of calls. may need to be value-ptr )
 ( todo a @cs that adds cs when the pointer is in the code segment )
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
 0 defconst> null
 ELSE
 0 const> null
@@ -19,7 +19,7 @@ type field: super
 value field: data
 )
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   type defconst-offset> type
 ELSE
   " type"
@@ -50,7 +50,7 @@ def make-type ( base-type byte-size ++ type )
 end
 
 ( Makes a new type, names it, and creates a constant in the dictionary: )
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   def const> ( value : name ++ word )
     create>
     dup ' do-const does
@@ -66,7 +66,7 @@ def type: ( base-type byte-size : name ++ ... )
   exit-frame
 end
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   ( type: that also outputs to the data stack )
   alias> sys-type: type:
 

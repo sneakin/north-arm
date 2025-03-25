@@ -1,4 +1,4 @@
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   s[ src/cross/defining/proper.4th ] load-list
 THEN
 

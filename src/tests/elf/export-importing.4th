@@ -1,4 +1,4 @@
-' alias defined? UNLESS load-core THEN
+DEFINED? alias UNLESS load-core THEN
 s[ src/lib/assert.4th ] load-list
 
 ( todo needs imports for functions that follow our op abi )

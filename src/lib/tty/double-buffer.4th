@@ -1,4 +1,4 @@
-' lock-acquire/2 defined? UNLESS
+DEFINED? lock-acquire/2 UNLESS
   s[ src/lib/threading/lock.4th ] load-list
 THEN
 

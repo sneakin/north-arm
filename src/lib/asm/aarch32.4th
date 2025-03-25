@@ -1,11 +1,11 @@
 ( aarch32 assembly words )
 ( See https://gab.wallawalla.edu/~curt.nelson/cptr380/textbook/advanced%20material/Appendix_B2.pdf )
 
-' ,uint32 defined? UNLESS
+DEFINED? ,uint32 UNLESS
   " src/lib/byte-data.4th" load
 THEN
 
-' mark> defined? UNLESS
+DEFINED? mark> UNLESS
   " src/lib/mark.4th" load
 THEN
 

@@ -1,8 +1,8 @@
-' make-sha256-state defined? UNLESS
+DEFINED? make-sha256-state UNLESS
   " src/lib/digest/sha256.4th" load
 THEN
 
-' assert defined? UNLESS
+DEFINED? assert UNLESS
   " src/lib/assert.4th" load
 THEN
 

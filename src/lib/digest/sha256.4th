@@ -36,7 +36,7 @@ end
 0xab1c5ed5 0x923f82a4 0x59f111f1 0x3956c25b
 0xe9b5dba5 0xb5c0fbcf 0x71374491 0x428a2f98
 64 here
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   dhere to-out-addr
   swap 65 ,seq
   65 set-overn 64 dropn
@@ -48,7 +48,7 @@ THEN
 0x5be0cd19 0x1f83d9ab 0x9b05688c 0x510e527f
 0xa54ff53a 0x3c6ef372 0xbb67ae85 0x6a09e667
 8 here
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   dhere to-out-addr
   swap 9 ,seq
   9 set-overn 8 dropn
@@ -301,7 +301,7 @@ def sha256-update/4 ( byte-ptr length state n -- state )
   THEN
 end
 
-' tail+1 defined? IF
+DEFINED? tail+1 IF
 def sha256-update ( byte-ptr length state -- state )
   0 ' sha256-update/4 tail+1
 end

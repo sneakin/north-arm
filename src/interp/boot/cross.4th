@@ -31,7 +31,7 @@ end
 : cross-immediate dict cross-immediate/1 ;
 : cross-immediate-as dict next-token cross-immediate/3 ;
 
-' NORTH-COMPILE-TIME defined? UNLESS
+DEFINED? NORTH-COMPILE-TIME UNLESS
   ' end-compile tmp" ;" cross-immediate/3
   ' ( cross-immediate/1
 THEN
@@ -186,6 +186,10 @@ address and relative offset. )
   next-token cross-lookup-or-break
 ; immediate-as [out']
 
+: OUT:DEFINED?
+  POSTPONE out' 0 equals? not
+;
+
 : out''
   ( The immediate ~out'~ that delays the lookup of the next token until the containing definition is called. The output word's address will be on the stack. )
   POSTPONE dallot-next-token>
@@ -239,7 +243,7 @@ address and relative offset. )
   dhere to-out-addr out-dict dict-entry-data poke
 ; cross-immediate-as s" cross-immediate-as top-s"
 
-' unescape-string/2 defined? IF  
+DEFINED? unescape-string/2 IF  
 
   : out-escaped-dq-string
     ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )

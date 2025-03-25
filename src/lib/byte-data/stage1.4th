@@ -16,7 +16,7 @@
 
 : byte-string@ ( nop, the pointer is fine ) ;
 
-' dpush-short defined? IF
+DEFINED? dpush-short IF
   alias> ,uint16 dpush-short
 ELSE
   : ,uint16

@@ -1,10 +1,10 @@
-( ' NORTH-COMPILE-TIME defined? IF
+( DEFINED? NORTH-COMPILE-TIME IF
   sys-alias> es" [s"] cross-immediate
 THEN )
 
 ( todo color-reset write-crnl )
 
-' es" defined? UNLESS
+DEFINED? es" UNLESS
   " src/lib/escaped-strings.4th" load
 THEN
 
@@ -24,7 +24,7 @@ alias> RECURSE repeat-frame immediate
 0x53544f50 const> terminator
 def terminator? arg0 terminator equals? return1 end
 
-' NORTH-COMPILED-TIME defined? IF
+DEFINED? NORTH-COMPILED-TIME IF
   sys-def global-var 0 var> exit-frame end
 
   sys-def constant

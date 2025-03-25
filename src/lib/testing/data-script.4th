@@ -1,8 +1,8 @@
-' fixed16-add defined? UNLESS s" src/lib/math/32/fixed16.4th" load/2 THEN
-' process-spawn-cmd defined? UNLESS s" src/lib/process.4th" load/2 THEN
-' assert defined? UNLESS s" src/lib/assert.4th" load/2 THEN
-' assert-float32-equals defined? UNLESS s" src/lib/assertions/float.4th" load/2 THEN
-' assert-fixed16-equals defined? UNLESS s" src/lib/assertions/fixed16.4th" load/2 THEN
+DEFINED? fixed16-add UNLESS s" src/lib/math/32/fixed16.4th" load/2 THEN
+DEFINED? process-spawn-cmd UNLESS s" src/lib/process.4th" load/2 THEN
+DEFINED? assert UNLESS s" src/lib/assert.4th" load/2 THEN
+DEFINED? assert-float32-equals UNLESS s" src/lib/assertions/float.4th" load/2 THEN
+DEFINED? assert-fixed16-equals UNLESS s" src/lib/assertions/fixed16.4th" load/2 THEN
 
 1000 var> data-script-timeout-msecs
 0.001 var> data-script-float32-margin

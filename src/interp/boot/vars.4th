@@ -1,6 +1,6 @@
 ( Inplace variables: )
 
-' do-inplace-var defined? IF
+DEFINED? do-inplace-var IF
   def does-inplace-var
     arg0 pointer do-inplace-var does
   end
@@ -26,7 +26,7 @@ def data-var-init-values/2 ( word origin -- value slot )
   dup 1 seq-peek swap 0 seq-peek 2 return2-n
 end
 
-' tail+1 defined? IF
+DEFINED? tail+1 IF
   def data-var-init-values ( word -- value slot )
     cs ' data-var-init-values/2 tail+1
   end
@@ -36,7 +36,7 @@ ELSE
   end
 THEN
 
-' do-data-var defined? IF
+DEFINED? do-data-var IF
 
 def does-data-var?
   ' do-data-var dup arg0 equals?
@@ -62,7 +62,7 @@ end
 
 ( A data-var with slot 0: the current size. )
 create> *next-data-var-slot*
-sys' NORTH-COMPILE-TIME defined? IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   dup out' do-data-var does
   dhere to-out-addr swap dict-entry-data uint32!
   0 ,uint32 0 ,uint32

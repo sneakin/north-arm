@@ -1,6 +1,6 @@
 ( ARM Thumb ops translated to equivalent A32: )
 
-' asm-aarch32 defined? UNLESS
+DEFINED? asm-aarch32 UNLESS
   " src/lib/asm/aarch32.4th" load
 THEN
 

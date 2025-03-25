@@ -1,4 +1,4 @@
-' mov-lsl defined? UNLESS
+DEFINED? asm-thumb UNLESS
   " src/lib/asm/thumb.4th" load
 THEN
 

@@ -4,7 +4,7 @@ import> cgets 1 gets 1
 import> crand 1 rand 0
 import> csrand 0 srand 1
 
-' NORTH-TEST-IMPORTS defined? IF
+DEFINED? NORTH-TEST-IMPORTS IF
   ( todo needs libc to init )
   import-var> c:stdout stdout
   import> c:fputs 1 fputs 2

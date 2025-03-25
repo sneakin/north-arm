@@ -1,8 +1,8 @@
 ( cat src/bin/interp.argv.4th | ./bin/interp.android.3.elf -o test-getopt src/tests/lib/getopt.4th -e test-getopt )
 
-tmp" alias" defined?/2 UNLESS load-core THEN
+DEFINED? alias UNLESS load-core THEN
 
-tmp" defconst>" defined?/2 IF
+DEFINED? defconst> IF
   s[ src/lib/seq.4th
      src/lib/list.4th
      src/interp/strings.4th

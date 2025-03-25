@@ -38,7 +38,7 @@ def compose ( a b ++ proper[ a b ] )
   int32 4 overn exit-frame
 end
 
-' jump-op-size defined? IF
+DEFINED? jump-op-size IF
 def compose-if ( test a ++ proper[ test IF a THEN ] )
   ( Returns a noname entry that calls A if TEST is true. )
   make-proper-noname
@@ -53,7 +53,7 @@ def compose-if ( test a ++ proper[ test IF a THEN ] )
   int32 8 overn exit-frame
 end
 
-ELSE ( ' jump-op-size defined? )
+ELSE ( DEFINED? jump-op-size )
 
 def compose-if ( test a ++ proper[ test IF a THEN ] )
   ( Returns a noname entry that calls A if TEST is true. )
@@ -69,7 +69,7 @@ def compose-if ( test a ++ proper[ test IF a THEN ] )
   int32 8 overn exit-frame
 end
 
-THEN ( ' jump-op-size defined? )
+THEN ( DEFINED? jump-op-size )
 
 def fun-reduce/3 ( item-fn reducer init ++ data... accum )
   arg2 exec-abs

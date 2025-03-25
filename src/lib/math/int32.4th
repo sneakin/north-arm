@@ -167,9 +167,10 @@ end
 
 NORTH-STAGE 0 equals?
 IF true ELSE
-  sys' builder-target-bits defined? IF
-  builder-target-bits @
-  ELSE NORTH-BITS THEN 32 equals? ( fixme the host or target? )
+  SYS:DEFINED? builder-target-bits IF
+    builder-target-bits @
+  ELSE NORTH-BITS
+  THEN 32 equals? ( fixme the host or target? )
 THEN IF
   s[ src/lib/math/32/int32.4th ] load-list
 THEN

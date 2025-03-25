@@ -14,7 +14,7 @@ DEFINED? asm-thumb UNLESS s" src/lib/asm/thumb.4th" load/2 THEN
 
 : [asm'] literal literal asm' cs - ; immediate-as asm'
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   : asm-out-off' asm' dup IF to-out-addr THEN ;
 
   0
@@ -51,7 +51,7 @@ ELSE
   ;
 THEN
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   0
   asm-out-off' pc
   asm-out-off' lr
@@ -591,12 +591,12 @@ def write-word-disasm ( word -- )
   1 return0-n
 end
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   out' decompile-op-fn IF
     out' write-word-disasm out' decompile-op-fn set-out-var!
   THEN
 ELSE
-  ' decompile-op-fn defined? IF
+  DEFINED? decompile-op-fn IF
     ' write-word-disasm decompile-op-fn !
   THEN
 THEN

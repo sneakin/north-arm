@@ -2,15 +2,15 @@
 
 ( todo highlight words; seqs with sizes, typed structs, color coding, unreachable/reachable. )
 
-' red defined? UNLESS
-alias> black nop
-alias> red nop
-alias> yellow nop
-alias> green nop
-alias> cyan nop
-alias> blue nop
-alias> magenta nop
-alias> white nop
+DEFINED? red UNLESS
+  alias> black nop
+  alias> red nop
+  alias> yellow nop
+  alias> green nop
+  alias> cyan nop
+  alias> blue nop
+  alias> magenta nop
+  alias> white nop
 THEN
 
 40 var> fancy-stack-cols

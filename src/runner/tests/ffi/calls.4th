@@ -1,4 +1,4 @@
-' alias defined? UNLESS load-core THEN
+DEFINED? alias UNLESS load-core THEN
 " src/lib/case.4th" load
 " src/runner/ffi.4th" load
 " src/lib/assert.4th" load

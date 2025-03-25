@@ -9,8 +9,8 @@ NORTH-STAGE UNLESS
   load-stage0-fun
 THEN
 
-' NORTH-COMPILE-TIME defined? IF
-  ' redefproper defined? UNLESS
+DEFINED? NORTH-COMPILE-TIME IF
+  DEFINED? redefproper UNLESS
     s[ src/cross/defining/proper.4th ] load-list
   THEN
 THEN

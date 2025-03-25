@@ -1,6 +1,6 @@
 ( Atomic types: )
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   alias> type-alias> defalias>
 ELSE
   alias> type-alias> alias>

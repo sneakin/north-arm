@@ -5,6 +5,10 @@
     not-found
   THEN
 ; immediate-as [out'] immediate ( for postpone safety )
+
+: OUT:DEFINED?
+  POSTPONE out' 0 equals? not
+;
  
 : out''
   literal literal POSTPONE out'

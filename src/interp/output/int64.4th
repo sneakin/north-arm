@@ -1,4 +1,4 @@
-' builder-target-bits defined? IF
+DEFINED? builder-target-bits IF
   builder-target-bits
   NORTH-PLATFORM platform-target-bash? UNLESS peek THEN
   dup 32 equals? IF

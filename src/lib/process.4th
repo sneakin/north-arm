@@ -2,13 +2,13 @@
 
 ( todo [e]poll based reactor )
 
-' EAGAIN defined? UNLESS s" src/lib/linux/errno.4th" load/2 THEN
+DEFINED? EAGAIN UNLESS s" src/lib/linux/errno.4th" load/2 THEN
 
 s[ src/lib/linux/process.4th
 ] load-list
 
-' get-time-secs defined? UNLESS s" src/lib/linux/clock.4th" load/2 THEN
-' poll-fd-in defined? UNLESS s" src/lib/linux/epoll.4th" load/2 THEN
+DEFINED? get-time-secs UNLESS s" src/lib/linux/clock.4th" load/2 THEN
+DEFINED? poll-fd-in UNLESS s" src/lib/linux/epoll.4th" load/2 THEN
 
 ( Children replace stdio but may want to use them. )
 

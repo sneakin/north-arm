@@ -249,7 +249,7 @@ end
 
 ( Output formatters: )
 
-tmp" BUILDER-TARGET" defined?/2 UNLESS
+DEFINED? BUILDER-TARGET UNLESS
   alias> copies-entry-as> copy-as>
   sys:: to-out-addr cs - ;
 THEN

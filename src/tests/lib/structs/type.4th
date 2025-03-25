@@ -1,10 +1,10 @@
-' assert defined? UNLESS
+DEFINED? assert UNLESS
   tmp" src/lib/assert.4th" load/2
 THEN
-' struct defined? UNLESS
+DEFINED? struct UNLESS
   tmp" src/lib/structs.4th" load/2
 THEN
-' assert-type defined? UNLESS
+DEFINED? assert-type UNLESS
   tmp" src/tests/lib/structs/assert.4th" load/2
 THEN
 

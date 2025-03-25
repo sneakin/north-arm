@@ -65,7 +65,7 @@ def print-eip ( dict eip -- )
   THEN enl 2 return0-n
 end
 
-sys' NORTH-COMPILE-TIME defined? not
+SYS:DEFINED? NORTH-COMPILE-TIME not
 NORTH-BUILD-TIME 1705910557 int<= logand IF
   def signal-state-dict
     arg0 signal-state-registers dict-reg seq-peek set-arg0

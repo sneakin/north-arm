@@ -1,8 +1,8 @@
-' assert defined? UNLESS
+DEFINED? assert UNLESS
   " src/lib/assert.4th" load
 THEN
 
-' float64< defined? UNLESS
+DEFINED? float64< UNLESS
   " src/lib/math/float64.4th" load
 THEN
 

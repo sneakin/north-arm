@@ -5,8 +5,8 @@
 (forth-syntax--define "tmp\"" #'forth-syntax--state-string)
 ;;(forth-syntax--define "literal" #'forth-syntax--state-parsing-keyword)
 (setf north-syntax--parsing-words (list "literal" "int32" "pointer" "offset"))
-(setf north-syntax--defining-words (list "def" "defcol" "defop" "var>" "const>" "defvar>" "defconst>"))
-(setf north-syntax--font-lock-keywords (list "!" "poke" "@" "peek" "[if]" "[unless]" "[else]" "[then]" "unless" "end" "endcol" "repeat-frame" "begin-frame" "end-frame" "exit-frame" "return0-n" "return1-n" "return2-n" "->" "." "when" ";;" "of-str"))
+(setf north-syntax--defining-words (list "create>" "def" "defcol" "defop" "var>" "const>" "defvar>" "defconst>"))
+(setf north-syntax--font-lock-keywords (list "!" "poke" "@" "peek" "[if]" "[unless]" "[else]" "[then]" "unless" "end" "endcol" "repeat-frame" "begin-frame" "end-frame" "exit-frame" "return0-n" "return1-n" "return2-n" "->" "." "when" ";;" "of-str" "DEFINED?" "SYS:DEFINED?" "OUT:DEFINED?"))
 
 (dolist (w north-syntax--parsing-words)
   (forth-syntax--define w #'forth-syntax--state-parsing-word))

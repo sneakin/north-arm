@@ -304,7 +304,7 @@ def token-not-found
   token-buffer peek token-buffer-length peek not-found/2
 end
 
-out' parse-float32 defined? IF
+OUT:DEFINED? parse-float32 IF
   def interp-token/4 ( ptr length dict offset ++ value exec? )
     ( todo check the last byte for l, u, f, d )
     arg3 arg2 parse-int

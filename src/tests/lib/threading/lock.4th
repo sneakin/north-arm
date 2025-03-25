@@ -1,4 +1,4 @@
-' alias defined? UNLESS load-core THEN
+DEFINED? alias UNLESS load-core THEN
 
 s[ src/lib/linux.4th
    src/lib/threading/lock.4th

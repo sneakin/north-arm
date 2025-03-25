@@ -1,4 +1,4 @@
-' builder-target-bits defined? IF
+DEFINED? builder-target-bits IF
   builder-target-bits
   NORTH-PLATFORM tmp" bash" drop string-contains? UNLESS peek THEN
   dup 32 equals? IF

@@ -37,13 +37,11 @@ end
 ( Structure defining words: )
 
 ( The last struct that was defined: )
-' NORTH-COMPILE-TIME defined? UNLESS
+DEFINED? NORTH-COMPILE-TIME UNLESS
   null var> *this-struct*
 ELSE
   null defvar> *this-struct*
-THEN
 
-' NORTH-COMPILE-TIME IF
   def does-const
     arg0 ' do-const does
     1 return0-n
@@ -65,7 +63,7 @@ def struct: ( : name )
   next-token allot-byte-string/2 create-struct exit-frame
 end
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   alias> sys-struct: struct:
   : struct: sys-struct: dict exec-abs create-out-type-entry ;
 THEN

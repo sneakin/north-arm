@@ -10,7 +10,7 @@
 ( todo stats assoc on structs )
 ( todo interp powered )
 
-tmp" alias" defined?/2 UNLESS load-core THEN
+DEFINED? alias UNLESS load-core THEN
 s[ src/lib/getopt.4th
    src/lib/scantool/scantool.4th
 ] load-list

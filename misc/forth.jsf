@@ -76,6 +76,8 @@
 	";"	immediate
 	"'"	immediate
 	"DEFINED?"	toplevel
+	"SYS:DEFINED?"	toplevel
+	"OUT:DEFINED?"	toplevel
 	"POSTPONE"	immediate
 	"IF"	immediate
 	"UNLESS"	immediate
@@ -92,6 +94,7 @@
 	"LEAVE" loopword
 	"LOOP" loopword
 	"+LOOP" loopword
+	"create>"	toplevel
 	"alias>"	toplevel
 	"defalias>"	toplevel
 	"var>"	toplevel

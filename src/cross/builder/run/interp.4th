@@ -1,8 +1,8 @@
-tmp" fill" defined?/2 UNLESS
+DEFINED? fill UNLESS
    s[ src/lib/seq.4th ] load-list
 THEN
 
-tmp" map-car/3" defined?/2 UNLESS
+DEFINED? map-car/3 UNLESS
   " src/lib/list.4th" load
 THEN
    
@@ -12,18 +12,18 @@ false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. 
 0 var> boot-punter
 0 var> copyright-address
 
-tmp" open-output-file/2" defined?/2 UNLESS
+DEFINED? open-output-file/2 UNLESS
   def open-output-file/2 ( mode path -- fid )
     arg1 O_TRUNC O_CREAT logior O_WRONLY logior arg0 open 2 return1-n
   end
 THEN
 
-tmp" S_IRWXU" defined?/2 UNLESS
-00700 const> S_IRWXU
-00040 const> S_IRGRP
-00010 const> S_IXGRP
-00004 const> S_IROTH
-00001 const> S_IXOTH
+DEFINED? S_IRWXU UNLESS
+  00700 const> S_IRWXU
+  00040 const> S_IRGRP
+  00010 const> S_IXGRP
+  00004 const> S_IROTH
+  00001 const> S_IXOTH
 THEN
    
 s[ src/cross/output/data-vars.4th

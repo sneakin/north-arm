@@ -1,4 +1,4 @@
-' cons+cs-count defined? UNLESS
+DEFINED? cons+cs-count UNLESS
   " src/lib/list-cs.4th" load
 THEN
 

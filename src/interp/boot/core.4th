@@ -17,7 +17,7 @@ def const>
 end
 
 NORTH-BUILD-TIME 1704950389 int>
-' NORTH-COMPILE-TIME defined?
+' NORTH-COMPILE-TIME
 or [IF] 1 [ELSE] op-size [THEN] const> jump-op-size
 
 def alias
@@ -171,7 +171,7 @@ defcol ?jump-data
   swap dup IF jump-data ELSE drop THEN
 endcol
 
-' umin defined? [UNLESS]
+' umin [UNLESS]
   defcol uminmax rot 2dup uint< IF swap THEN rot endcol
   defcol umin rot uminmax drop swap endcol
 [THEN]
@@ -320,20 +320,24 @@ endcol
   3 dropn
 ;
 
-' IF defined? [UNLESS]
+' IF [UNLESS]
   tmp" src/interp/toplevel-if.4th" load/2
 [THEN]
 
 NORTH-BUILD-TIME 1659768556 int< IF
-def defined?/2
-  arg1 arg0 dict dict-lookup 2 return1-n
-end
+  def defined?/2
+    arg1 arg0 dict dict-lookup 2 return1-n
+  end
 THEN
 
 tmp" DEFINED?" defined?/2 UNLESS
-def DEFINED? ( : word -- yes? )
-  next-word defined?/2 return1
-end
+  def DEFINED? ( : word -- yes? )
+    next-token defined?/2 return1
+  end
+THEN
+
+DEFINED? SYS:DEFINED? UNLESS
+  alias> SYS:DEFINED? DEFINED?
 THEN
 
 DEFINED? string-contains? UNLESS

@@ -114,7 +114,7 @@ end
 
 alias> forget! top-forget!
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   sys:: make-out-mark
     dhere
     out-dict to-out-addr ,uint32 ( todo pointer? cell? )

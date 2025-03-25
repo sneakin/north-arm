@@ -7,7 +7,7 @@ def code-pointer?
 end
 )
 
-' uint-in-range? defined? UNLESS ( in runner/math.4th )
+DEFINED? uint-in-range? UNLESS ( in runner/math.4th )
   def uint-in-range? ( n max min )
     arg2 arg1 uint<=
     arg2 arg0 uint>= and return1

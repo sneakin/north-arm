@@ -297,6 +297,7 @@ alias> poke-off dpoke-off
 alias> string-const> const>
 alias> tmp" s"
 alias> sys' '
+alias> SYS:DEFINED? DEFINED?
 
 : POSTPONE
   next-token

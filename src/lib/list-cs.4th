@@ -1,6 +1,6 @@
 ( Code segment safe list functions: )
 
-' as-code-pointer defined? UNLESS
+DEFINED? as-code-pointer UNLESS
   " src/lib/pointers.4th" load
 THEN
 

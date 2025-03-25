@@ -9,7 +9,7 @@
 ' ffi-callback-1-0
 ' ffi-callback-0-0
 here
-sys' NORTH-COMPILE-TIME defined? IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   6 ,seq-pointer to-out-addr
 THEN const> ffi-callbacks-0
 
@@ -20,11 +20,11 @@ THEN const> ffi-callbacks-0
 ' ffi-callback-1-1
 ' ffi-callback-0-1
 here
-sys' NORTH-COMPILE-TIME defined? IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   6 ,seq-pointer to-out-addr
 THEN const> ffi-callbacks-1
 
-sys' NORTH-COMPILE-TIME defined? IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   def ffi-callback-for ( returns num-args -- calling-word )
     arg1 IF ffi-callbacks-1 ELSE ffi-callbacks-0 THEN
     cs +
@@ -57,7 +57,7 @@ NORTH-BUILD-TIME 1659768556 int< IF
 ELSE
 
   ( todo ARM assembly wordsbprevent ~and~ from working )
-  sys' NORTH-COMPILE-TIME defined? not
+  SYS:DEFINED? NORTH-COMPILE-TIME not
   NORTH-BUILD-TIME 1705910557 int<= logand IF
 
     def interp-save-state ( ptr -- )

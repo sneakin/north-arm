@@ -1,4 +1,4 @@
-' ds defined? UNLESS
+DEFINED? ds UNLESS
   create> *ds* does> do-var
   128 cell-size * stack-allot-zero *ds* !
   *ds* cs - const> *ds-offset*

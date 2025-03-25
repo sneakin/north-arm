@@ -3,7 +3,7 @@
 36525 const> days-per-year-100x
 days-per-year-100x 12 int-div const> days-per-month-100x
 
-' defconst> defined? IF
+DEFINED? defconst> IF
 36525 defconst> days-per-year-100x
 days-per-year-100x 12 int-div defconst> days-per-month-100x
 THEN
@@ -61,7 +61,7 @@ end
 146097 const> date-stamp-days-in-era
 146096 const> date-stamp-days-in-era-1
 
-' defconst> defined? IF
+DEFINED? defconst> IF
 1970 defconst> nix-epoch-year
 719468 defconst> date-stamp-days-to-1970
 400 defconst> date-stamp-years-in-era

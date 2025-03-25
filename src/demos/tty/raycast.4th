@@ -1342,7 +1342,7 @@ def raycaster-init
   exit-frame
 end
 
-sys' NORTH-COMPILE-TIME defined? UNLESS
+SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
   " src/demos/tty/raycaster-worlds.4th" load
 THEN
 

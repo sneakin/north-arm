@@ -11,7 +11,7 @@ endcol
 
 34 defconst> dquote
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   0 defvar> decompile-string-fn
 ELSE
   0 var> decompile-string-fn
@@ -46,7 +46,7 @@ def decompile-op-codes ( word -- )
   1 return0-n
 end
 
-' NORTH-COMPILE-TIME defined? IF
+DEFINED? NORTH-COMPILE-TIME IF
   0 defvar> decompile-op-fn
 ELSE
   0 var> decompile-op-fn

@@ -1,6 +1,6 @@
 ( Standard Forth DO...LOOP construct with LEAVE, I, and J. )
 
-' r@ defined? UNLESS " src/lib/forth/return-stack.4th" load THEN
+DEFINED? r@ UNLESS " src/lib/forth/return-stack.4th" load THEN
 
 defcol I ( ++ value )
   ( Return the value of the inner most DO...LOOP's counter. )

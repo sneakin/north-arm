@@ -2,7 +2,7 @@ s[ src/lib/math/int32.4th
    src/lib/math/int64.4th
 ] load-list
 
-tmp" assert" defined?/2 UNLESS
+DEFINED? assert UNLESS
   s[ src/lib/assert.4th src/lib/assertions/int.4th ] load-list
 THEN
 

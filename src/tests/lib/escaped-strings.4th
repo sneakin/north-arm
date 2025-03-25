@@ -1,7 +1,7 @@
-' es" defined? UNLESS
+DEFINED? es" UNLESS
   s" src/lib/escaped-strings.4th" load/2
 THEN
-' assert-equals defined? UNLESS
+DEFINED? assert-equals UNLESS
   s" src/lib/assert.4th" load/2
 THEN
 

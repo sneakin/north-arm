@@ -1,4 +1,4 @@
-' ,ins defined? UNLESS
+DEFINED? asm-thumb UNLESS
   " src/lib/asm/aarch32.4th" load
 THEN
 
