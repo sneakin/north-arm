@@ -1,4 +1,5 @@
-#+TITLE: North: Bash Bootstrap
+#+TITLE: north-arm
+#+AUTHOR: Nolan Eakins <sneakin@semanticgap.com>
 
 * Goals
 ** Ultimate:
@@ -29,20 +30,27 @@ used to rebuild.
 
 
 * Tasks
-** May
-*** Strings as seqn with length.
-** March
-*** Swap ~string length~ returns to ~length string~ ordering. SeqN for free.
-*** Literalizer for float32
-**** DONE Recognized as a literalizer.
-**** Compile token enum
-**** Decompiler output
-*** Float and fixed output when the fraction is zero.
-*** parse-float with exponents
-*** TTY reader
-*** data script error handling: need to abort the tests
-*** comparisons need to return true / -1 and false / 0.
-*** make-typed-pointer print out
+** 2025
+*** Newline output
+The decompiler's output could be formatted better. It uses ~cmemdump~ which adds a newline after its output creating an ugly line in the disassembly. Removing that newline but keeping ~cmemdump~ useful would necessitate the prompt printing the newline and other similar rework.
+*** Dir reorg
+Instead of ~cross/builder~ have ~builder/~.
+
+** 2024
+*** May
+**** Strings as seqn with length.
+*** March
+**** Swap ~string length~ returns to ~length string~ ordering. SeqN for free.
+**** Literalizer for float32
+***** DONE Recognized as a literalizer.
+***** Compile token enum
+***** Decompiler output
+**** Float and fixed output when the fraction is zero.
+**** parse-float with exponents
+**** TTY reader
+**** data script error handling: need to abort the tests
+**** comparisons need to return true / -1 and false / 0.
+**** make-typed-pointer print out
 #+BEGIN_SRC
 FFB15684:-5155192 > 3 integer make-typed-pointer
 FFB15678:-5155204 > dup print-instance
@@ -56,11 +64,11 @@ FFB1567C:0 integer (B364283F) < value
 
 Should print like a struct with a single field.
 
-*** value-of's offset detection may fail w/ stack addresses.
-*** Types and structs for existing data like dictionary entries.
+**** value-of's offset detection may fail w/ stack addresses.
+**** Types and structs for existing data like dictionary entries.
 
-** Jan 24
-*** Interfaces
+*** Jan 24
+**** Interfaces
     Collection of functions that specialize on one or more argument types.
     Would extend the ~.~ and ~->~ operators with mini dictionaries.
     Might be a base to build struct fields.
@@ -118,23 +126,24 @@ end
 3.14 make-float<32> 2.0 make-float<32> Number -> +
 #+END_SRC
 
-*** Top level ~s"~ copies to the data stack, except the interp.4th version
-*** ~exec~ that checks if the word is an offset
-*** repeat-frame does need to find a begin-frame or the start of the word.
+**** Top level ~s"~ copies to the data stack, except the interp.4th version
+**** ~exec~ that checks if the word is an offset
+**** repeat-frame does need to find a begin-frame or the start of the word.
     Does need a limit on stack-find.
     Add repeat-word?
-*** ~interp/cross~ needs a ~defined?~
-*** Review ~src/lib/linux~ types to ensure they're right. file-stat64 and timespec may have more padding.
-*** TODO qemu-arm on my desktop crashes when handling a signal. ffi-callback's
-*** DONE qemu-arm on my desktop crashes when handling a signal. ffi-callback's
+**** ~interp/cross~ needs a ~defined?~
+**** Review ~src/lib/linux~ types to ensure they're right. file-stat64 and timespec may have more padding.
+**** TODO qemu-arm on my desktop crashes when handling a signal. ffi-callback's
+**** DONE qemu-arm on my desktop crashes when handling a signal. ffi-callback's
 seem to be doing misaligend ldr-pc. patch-ldr-pc! might be doing the
 calculation wrong.
-*** DONE Building from Bash is having problems with compiling parent-frame.
+**** DONE Building from Bash is having problems with compiling parent-frame.
 
-** December 23
-*** Colon definitions lack a size.
-*** Consolidate stack inits into a function in the runner.
-*** DONE Compiled in tty
+** 2023
+*** December 23
+**** Colon definitions lack a size.
+**** Consolidate stack inits into a function in the runner.
+**** DONE Compiled in tty
 Needs constants defined in the interp and out dictionaries: output constants would overlap with builder constants in top level.
 MVP: Load linux.4th before cross.4th, escaped strings and tty-img[ available in the builder
 Builder needs abilities to load files pre-runner, post-runner, and pre-cross.
@@ -143,11 +152,11 @@ north/words needs immediates loaded prior to the runner redefines ~def~, or a wa
 between system and output mode / dictionaries.
 
 Backported the needed TTY functions.
-*** TODO Compiled in core
-**** DONE Working binary
-**** north/words has immediates that need to be used during build
-**** TODO at-start initializer function list
-**** DONE CASE when compiled in failed the tests
+**** TODO Compiled in core
+***** DONE Working binary
+***** north/words has immediates that need to be used during build
+***** TODO at-start initializer function list
+***** DONE CASE when compiled in failed the tests
 
 Needs:
 #+BEGIN_SRC
@@ -158,47 +167,47 @@ alias> defconst> const>
 color-init
 #+END_SRC
 
-*** null? that leaves argument
-*** Add bracketed word lists to be used by defcol and def.
+**** null? that leaves argument
+**** Add bracketed word lists to be used by defcol and def.
     def fn
       s[ hello world ] fn[ swap write-line ] map-seqn
     end
 
-*** NORTH-COMPILE-TIME -> cross-compiling?
+**** NORTH-COMPILE-TIME -> cross-compiling?
     Using defined? allows undefined symbols to be safely used.
     
-*** TODO Structures
-**** DONE Compile into binary
-**** TODO Usage when using builder / cross compiler
+**** TODO Structures
+***** DONE Compile into binary
+***** TODO Usage when using builder / cross compiler
 Include into the builder
-***** DONE Accessible while building
-***** DONE Copied and accessible in built code
+****** DONE Accessible while building
+****** DONE Copied and accessible in built code
       Actually copying fields at the end of the build is sounding best while keeping byte size up to date.
       ~struct:~ creates system structband an empty struct with associated word.
       ~field:~, ~inherits:~ and create-field functions add to system.
       End of build: Structs get updated, fields copied,
       Startup: traverse all instances and add ~cs~ to pointers?
-**** Usage when compiled:
-***** Builtin structs need pointer offseting
-***** Interpreter defined structs use pointers
-***** DONE print-instance is CS offset aware.
+***** Usage when compiled:
+****** Builtin structs need pointer offseting
+****** Interpreter defined structs use pointers
+****** DONE print-instance is CS offset aware.
       
-** November
-*** Rename ~offset32~ to something like ~literal+cs~ or ~cs+int32~? Then ~offset~ is free for relative pointer literals: ~eip + literal~. ~eip+int32~?
+*** November
+**** Rename ~offset32~ to something like ~literal+cs~ or ~cs+int32~? Then ~offset~ is free for relative pointer literals: ~eip + literal~. ~eip+int32~?
 
-*** DONE Cross compiled structures
-**** DONE Types need to be output AND available to the compiler.
-**** DONE Type and structure accessors need to be output and available too.
-**** DONE Field immediates need to be available to the cross compiler and may need variants.
-**** Initialized variables with an instance
+**** DONE Cross compiled structures
+***** DONE Types need to be output AND available to the compiler.
+***** DONE Type and structure accessors need to be output and available too.
+***** DONE Field immediates need to be available to the cross compiler and may need variants.
+***** Initialized variables with an instance
      
-*** A ~toplevel~ set of words to enter and exit the interp and cross compile contexts?
+**** A ~toplevel~ set of words to enter and exit the interp and cross compile contexts?
      
-*** Dictionary list
-*** TTY, socket, signal polling & input
-*** Loaded / compiled files list; ~require~ and ~include?~
+**** Dictionary list
+**** TTY, socket, signal polling & input
+**** Loaded / compiled files list; ~require~ and ~include?~
 ~load-core~ needs less use if it's compiled in. Actually crashes if core is already loaded.
-*** Interp command line args
+**** Interp command line args
     - files... :: list of files
     - -e :: eval string
     - -i :: always prompt
@@ -207,14 +216,14 @@ Include into the builder
     - -v :: verbosity
     - -d :: debug; may duplicate the above?
     - -I :: add search path
-*** ~tty-img[~ breaks github browsing: encode?
-*** number-type function to set what numeric type [-+*/%] operate on
+**** ~tty-img[~ breaks github browsing: encode?
+**** number-type function to set what numeric type [-+*/%] operate on
     One use is trig functions for float32 and float64.
     Another is using the interpreter as a calculator.
 
 
-** September!
-*** Pi Zero 1:
+*** September!
+**** Pi Zero 1:
     Has no thumb2 so no coprocessor, no float.
     Build included ~lib/math/float32.4th~ with constants computed using floats.
     Add ~hardfloat~, ~softfloat~, and ~nofloat~ to the platform string?
@@ -223,21 +232,21 @@ Include into the builder
     
     ~runner/imports.4th~ crashed a bootstrap to static build. > stage1 checked worked around.
     
-*** DONE TTY Buffer with Unicode
+**** DONE TTY Buffer with Unicode
     Buffer cells need to have a larger char field.
     Should have an indication and option to the terminal's encoding.
     Internally utf32 will be used. No need to encode for utf8 if the terminal is utf32.
     
-*** No way to call foreign function pointers without making a word.
+**** No way to call foreign function pointers without making a word.
 
-*** Cross compiling
-**** Move boot/cross.4th into src/cross/interp.4th? src/cross/words/interp.4th? src/cross/interp/words.4th?
-**** Output cell-size: Use ~out-cell-size~ in cross compiling and other ouput words. ~out-op-size~ could replace ~-op-size~ too.
-***** Use ~,cell~ instead of ~,uint32~ to make cross words more portable. ~,out-cell~?
-**** Thumb and x86 assemblers need to built into the builder.
+**** Cross compiling
+***** Move boot/cross.4th into src/cross/interp.4th? src/cross/words/interp.4th? src/cross/interp/words.4th?
+***** Output cell-size: Use ~out-cell-size~ in cross compiling and other ouput words. ~out-op-size~ could replace ~-op-size~ too.
+****** Use ~,cell~ instead of ~,uint32~ to make cross words more portable. ~,out-cell~?
+***** Thumb and x86 assemblers need to built into the builder.
     Placing each in separate dictionaries could work. defop/endop could load/unload could work for all but macros. Builder adds those words?
 
-*** Have a (super) lite version of the runner and interpreter.
+**** Have a (super) lite version of the runner and interpreter.
     Only cell sized math.
     No floats.
     Minimal syscalls.
@@ -246,82 +255,83 @@ Include into the builder
     A build option to strip unused words?
     Same words as SectorForth?
 
-*** TTY
-**** input layered on top of a reader's buffering and function pointers
-**** input w/ nonblocking support: prior state saved and continuable
+**** TTY
+***** input layered on top of a reader's buffering and function pointers
+***** input w/ nonblocking support: prior state saved and continuable
      Output too? Buffered output: dumped out in the select loop when ready?
-**** fully updating TTY code from old North
+***** fully updating TTY code from old North
      No aliases. Normalized vocab.
-**** using readeval
-**** usable in binaries
+***** using readeval
+***** usable in binaries
 
-*** Binary self verification
-**** Hashing
-***** SHA
-****** TODO sha-224, 512, etc.
-****** DONE SHA-256
-***** TODO Internally: FFI imports need relocs out of the code segment
-***** TODO Calling math-init patches arithmetic words.
-**** Signature
-***** ECC or RSA?
-***** Big integers
-***** Key storage
+**** Binary self verification
+***** Hashing
+****** SHA
+******* TODO sha-224, 512, etc.
+******* DONE SHA-256
+****** TODO Internally: FFI imports need relocs out of the code segment
+****** TODO Calling math-init patches arithmetic words.
+***** Signature
+****** ECC or RSA?
+****** Big integers
+****** Key storage
       Standards may require a full ASN.1 stack.
 
-** August
-*** big integers
-**** int64 file organization
-**** parse-int for int64
-**** int64 literal words
-*** DONE defining immediates in binary
+*** August
+**** big integers
+***** int64 file organization
+***** parse-int for int64
+***** int64 literal words
+**** DONE defining immediates in binary
     Three sets of immediates:
       * interpreter: top level, interpretable, used in evaluated defs
       * cross compiling: interpretable, only used when [cross] compiling
       * output: compiled into binary, listed in binary's immediates.
     
-*** DONE structs in binary
+**** DONE structs in binary
     Defines constants and immediates needed during compilation, and generates accessors needed in compiled output.
-*** More dictionary meta data: files loaded, definition source location
-*** DONE process.4th
-**** DONE function to start with a provided function
-**** DONE execve wrapper to run system commands: needs to build/copy env and an argv array of strings
+**** More dictionary meta data: files loaded, definition source location
+**** DONE process.4th
+***** DONE function to start with a provided function
+***** DONE execve wrapper to run system commands: needs to build/copy env and an argv array of strings
 
-** Julyzz
-*** self contained binaries
-**** DONE boot/core and friends
-***** DONE immediates
-***** DONE structs
-***** better dictionary separation by switching modes & dictionaries
-**** DONE clock, raycaster
-**** eliminate aliases
-**** DONE standalone builder w/ files on command line
-*** actual compilation to machine code
-**** DONE sized sequences for code fields
-**** copy code field, may need a trampoline field or every interpreted word needs a copied code sequence
-**** define code to translate direct threads
-*** Dictionaries
-**** DONE Remove dedicated register
+*** July
+**** self contained binaries
+***** DONE boot/core and friends
+****** DONE immediates
+****** DONE structs
+****** better dictionary separation by switching modes & dictionaries
+***** DONE clock, raycaster
+***** eliminate aliases
+***** DONE standalone builder w/ files on command line
+**** actual compilation to machine code
+***** DONE sized sequences for code fields
+***** copy code field, may need a trampoline field or every interpreted word needs a copied code sequence
+***** define code to translate direct threads
+**** Dictionaries
+***** DONE Remove dedicated register
      Use data var.
-**** Association list
-**** Ops with doop code, assembly data fields?
+***** Association list
+***** Ops with doop code, assembly data fields?
      Call code field that then jumps to data.
-**** Entries store executable function objects
-**** Reorder ~dict-map~ arguments to make ~fn~ last.
-**** Delay writing out until the end of building?
-*** error handler, catch and throw
+***** Entries store executable function objects
+***** Reorder ~dict-map~ arguments to make ~fn~ last.
+***** Delay writing out until the end of building?
+**** error handler, catch and throw
 
-** <=June?
-*** TODO struct fields don't resolve right w/ b and b1 fields.
+*** <=June?
+**** TODO struct fields don't resolve right w/ b and b1 fields.
     Fixed?
-*** swap tty-cursor-to's arguments to row, column
-*** cross-lookup in bash takes one argument, interp's version takes two.
-*** DONE cpio file format as arguments
-*** float tests
-*** uint64
-**** TODO byte order differs from stack / argument and poked memory order
+**** swap tty-cursor-to's arguments to row, column
+**** cross-lookup in bash takes one argument, interp's version takes two.
+**** DONE cpio file format as arguments
+**** float tests
+**** uint64
+***** TODO byte order differs from stack / argument and poked memory order
      Little endian puts LSB at the lower address. Stack ordering has LSB at the higher address.
      But byte order in code needs to be consistent on big and little endian systems, which may need 64 bit support in the integer reader instead of faking it.
-*** DONE core.4th needs a split to allow inclusion in binary
+**** DONE core.4th needs a split to allow inclusion in binary
+
 
 ** Sooner than later
 *** current-tty and standard-tty that opens /dev/tty for IO
