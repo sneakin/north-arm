@@ -358,10 +358,25 @@ endef
 
 # Per target and stage outputs:
 
+BUILDER_MIN_SRC=\
+	src/include/interp.4th \
+	src/interp/cross.4th \
+	src/bin/builder.4th
+
+BUILDER_SRC=\
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	src/bin/builder.4th
+
 define define_stage_targets # target, stage
-bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) $(BUILDER_MIN_SRC)
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
-	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ $$(BUILDER_MIN_SRC)
 bin/interp.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e interp-boot -o $$@ $$^
@@ -387,8 +402,12 @@ STAGE1_BUILDER=$(RUNNER) ./bin/builder.static.1$(EXECEXT)
 ./src/include/interp.4th: version.4th
 ./src/runner/main.4th: version.4th
 
+bin/builder+core.$(TARGET_ABI).$(STAGE)$(EXECEXT): $(BUILDER_SRC)
+	@echo -e "\e[36;1mBuilding $(@)\e[0m"
+	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e build -o $@ $(BUILDER_SRC)
+
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
-bin/builder$(EXECEXT): ./src/include/interp.4th ./src/interp/cross.4th ./src/bin/builder.4th
+bin/builder$(EXECEXT): $(BUILDER_MIN_SRC)
 	$(STAGE0_BUILDER) -t $(TARGET_ARCH)-$(TARGET_OS)-static -e build -o $@ $^
 
 ifeq ($(QUICK),)
