@@ -9,7 +9,7 @@ push-asm-mark
   0 r0 r7 mov-lsl ,ins
   cell-size state-byte-size + r0 ldr-sp ,ins
   ( erasing state requires that interpreted handlers have state to load. )
-  r0 0x3F ldmia ,ins ( # registers / 2 = # cycles to load )
+  r0 0x3F target-aarch32? IF swap ldm .up ELSE ldmia THEN ,ins
   ( make syscall )
   0 swi ,ins
   ( restore registers, keep return value in R0 )

@@ -161,6 +161,9 @@ alias> a.ldr ldr
 : stmia ( rb rlist ) swap stm .w .up ;
 : ldmia swap ldm .w .up ;
 
+: stmfd ( rb rlist ) swap stm .w ;
+: ldmfd swap ldm .w ;
+
 ( Unconditional branch )
 : branch ( byte-offset -- ins ) b ;
 

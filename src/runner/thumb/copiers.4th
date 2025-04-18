@@ -46,7 +46,7 @@ push-asm-mark
   6 bcc-ins ,ins
   r2 over ldmia ,ins
   r1 over stmia ,ins
-  over r0 sub# ,ins
+  over r0 sub# ,ins ( fixme ldmia/stmia should auto increment )
   -14 branch-ins ,ins
   dup popr ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
@@ -132,7 +132,7 @@ push-asm-mark
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
   dup pushr ,ins
   over r0 cmp# ,ins
-  14 bcc-ins ,ins
+  14 bcc-ins ,ins  ( fixme ldmia/stmia should auto increment )
   over r1 sub# ,ins
   over r2 sub# ,ins
   r2 r3 movrr ,ins

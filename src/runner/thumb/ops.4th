@@ -15,7 +15,15 @@ r6 const> cs-reg
 r7 const> eip ( todo suffix with reg? )
 
 ( target-thumb2? )
-BUILDER-TARGET tmp" thumb2" drop string-contains? IF
+SYS:DEFINED? BUILDER-TARGET
+IF BUILDER-TARGET tmp" thumb2" drop string-contains?
+ELSE
+  SYS:DEFINED? builder-target
+  IF builder-target @ tmp" thumb2" drop string-contains?
+  ELSE 0
+  THEN
+THEN
+IF
   tmp" Compiling for thumb2" error-line/2
   : thumb2? 1 ;
 ELSE
@@ -575,7 +583,7 @@ push-asm-mark
 ;
 
 : emit-truther
-  2 swap exec ,ins
+  2 swap exec-abs ,ins
   0 r0 mov# ,ins
   0 branch-ins ,ins
   1 r0 mov# ,ins

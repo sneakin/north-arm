@@ -416,7 +416,6 @@ MOV reg64, imm64	| B8 +rq iq | Move an 64-bit immediate value into a 64-bit regi
     dup 0x7 logand 0xB8 + ,uint8
     emit-register-data
   THEN
-THEN
 ;
 
 ( MOV reg/mem8, imm8	| C6 /0 ib | Move an 8-bit immediate value to an 8-bit register or 

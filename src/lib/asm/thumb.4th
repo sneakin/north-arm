@@ -1,6 +1,6 @@
-s[
-  src/lib/bit-fields.4th
-] load-list
+DEFINED? bit-set? UNLESS
+  tmp" src/lib/bit-fields.4th" load/2
+THEN
 
 mark> pre-asm-thumb
 
