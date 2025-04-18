@@ -3,6 +3,7 @@ a.out
 \#*\#
 DEADJOE
 *.bak
+*.core
 *.elf
 *.dict
 *.exe
