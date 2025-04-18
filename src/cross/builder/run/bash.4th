@@ -43,5 +43,6 @@ def builder-run ( entry-fn fn-length files-cons ++ )
 
   " Writing..." error-line
   out-origin .s ddump-binary-bytes
+  " Ok" error-line
   dhere to-out-addr return1
 end

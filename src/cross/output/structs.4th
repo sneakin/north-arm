@@ -54,15 +54,15 @@ def copy-struct-fields-to-data ( out-struct -- )
 end
 
 def update-out-struct ( word -- )
-  arg0 dict-entry-name @ from-out-addr error-string espace
+  arg0 dict-entry-name @ from-out-addr etab error-string espace
   arg0 dict-entry-data @ ,h enl
   copy-type-to-data to-out-addr arg0 dict-entry-data !
   1 return0-n
 end
 
 def update-out-struct-fields ( word -- )
-  arg0 dict-entry-name @ from-out-addr error-string espace
-  arg0 dict-entry-data @ ,h enl
+  arg0 dict-entry-name @ from-out-addr etab error-string espace
+  arg0 dict-entry-data @ ,h espace
   ( todo structs only? general data values? )
   from-out-addr copy-struct-fields-to-data
   1 return0-n

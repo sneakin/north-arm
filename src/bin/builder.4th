@@ -76,9 +76,7 @@ def build
   show-version @ IF about 0 return1 THEN
 
   ( fixme the condition can be removed once interp-init is updated to check for prior init )
-  return-stack @ UNLESS
-    interp-init
-  THEN
+  return-stack @ UNLESS interp-init THEN
 
   verbosity @ IF
     s" Target: " error-string/2 builder-target @ error-line
@@ -89,8 +87,8 @@ def build
     s" With interp: " error-string/2 builder-with-interp @ error-int enl
     s" With cross: " error-string/2 builder-with-cross @ error-int enl
     s" Intpreter: " error-string/2 start-interpreter @ error-int enl
-    s" Sources:" error-line/2 sources @ ' error-line map-car
-    s" Dump dictionary?" error-string/2 do-dump-dict @ error-bool enl
+    s" Dump dictionary? " error-string/2 do-dump-dict @ error-bool enl
+    s" Sources: " error-line/2 sources @ ' error-line map-car
   THEN
 
   start-interpreter @ 1 equals? IF interp THEN

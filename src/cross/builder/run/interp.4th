@@ -116,5 +116,7 @@ def builder-run ( entry len src-cons )
   out-origin peek ddump-binary-bytes
   builder-output peek IF current-output peek close THEN
   local0 current-output poke
-  out-origin peek dhere to-out-addr exit-frame
+  out-origin peek dhere to-out-addr
+  ok-s error-line
+  exit-frame ( todo how much can be cleaned up? )
 end
