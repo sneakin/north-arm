@@ -1,3 +1,4 @@
+alias> sys-create create
 alias> sys-create> create>
 alias> sys-defcol defcol
 alias> sys-def def

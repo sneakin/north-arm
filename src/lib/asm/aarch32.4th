@@ -1,12 +1,14 @@
 ( aarch32 assembly words )
 ( See https://gab.wallawalla.edu/~curt.nelson/cptr380/textbook/advanced%20material/Appendix_B2.pdf )
 
-DEFINED? ,uint32 UNLESS
-  " src/lib/byte-data.4th" load
-THEN
+DEFINED? NORTH-COMPILE-TIME UNLESS
+  DEFINED? ,uint32 UNLESS
+    " src/lib/byte-data.4th" load
+  THEN
 
-DEFINED? mark> UNLESS
-  " src/lib/mark.4th" load
+  DEFINED? mark> UNLESS
+    " src/lib/mark.4th" load
+  THEN
 THEN
 
 mark> pre-asm-aarch32

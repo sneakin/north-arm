@@ -16,8 +16,13 @@ THEN
 s[ src/lib/escaped-strings.4th
    src/interp/data-stack-list.4th
    src/runner/ffi.4th
-   src/interp/dynlibs.4th
-   src/interp/signals.4th
+] load-list
+
+DEFINED? dlopen IF
+  s" src/interp/dynlibs.4th" load/2
+THEN
+
+s[ src/interp/signals.4th
    src/interp/tty.4th
    src/interp/dictionary/revmap.4th
    src/interp/dictionary/dump.4th

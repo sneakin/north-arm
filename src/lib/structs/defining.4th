@@ -37,7 +37,7 @@ end
 ( Structure defining words: )
 
 ( The last struct that was defined: )
-DEFINED? NORTH-COMPILE-TIME UNLESS
+SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
   null var> *this-struct*
 ELSE
   null defvar> *this-struct*
@@ -63,7 +63,16 @@ def struct: ( : name )
   next-token allot-byte-string/2 create-struct exit-frame
 end
 
-DEFINED? NORTH-COMPILE-TIME IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  DEFINED? NORTH-COMPILE-TIME IF
+    def struct: ( : name )
+      ( generate type )
+      next-token allot-byte-string/2 create-struct
+      dict exec-abs create-out-type-entry
+      exit-frame
+    end
+  THEN
+  
   alias> sys-struct: struct:
   : struct: sys-struct: dict exec-abs create-out-type-entry ;
 THEN

@@ -34,9 +34,10 @@ end
 def struct-get-field ( name len struct -- field )
   arg0 null? IF null 3 return1-n THEN
   arg2 arg1 arg0 struct-fields as-code-pointer peek as-code-pointer struct-get-field-loop
-  dup null? IF drop arg0 type-super as-code-pointer peek value-of set-arg0 repeat-frame
-	    ELSE 3 return1-n
-	    THEN
+  dup null? IF
+    drop arg0 type-super as-code-pointer peek value-of set-arg0 repeat-frame
+	ELSE 3 return1-n
+	THEN
 end
 
 def struct-get-field-ptr/4 ( instance name len struct -- ptr )
@@ -111,9 +112,9 @@ DEFINED? NORTH-COMPILE-TIME IF
   : [.] ( struct-entry : field -- code... )
     map-out-struct-to-sys IF
       next-struct-field IF
-	value-of struct-field-offset peek
-	out-off' int32 swap
-	out-off' int-add
+	      value-of struct-field-offset peek
+	      out-off' int32 swap
+	      out-off' int-add
       THEN
     ELSE
       s" Output struct does not exist." error-line/2

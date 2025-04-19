@@ -3,10 +3,9 @@
 ( fixme review value-of calls. may need to be value-ptr )
 ( todo a @cs that adds cs when the pointer is in the code segment )
 
-DEFINED? NORTH-COMPILE-TIME IF
-0 defconst> null
-ELSE
-0 const> null
+SYS:DEFINED? NORTH-COMPILE-TIME IF NORTH-COMPILE-TIME @ ELSE 0 THEN
+IF 0 defconst> null
+ELSE 0 const> null
 THEN
 
 ( fixme does type-data need storage? only used by struct as the first offset. )
@@ -19,8 +18,8 @@ type field: super
 value field: data
 )
 
-DEFINED? NORTH-COMPILE-TIME IF
-  type defconst-offset> type
+SYS:DEFINED? NORTH-COMPILE-TIME IF NORTH-COMPILE-TIME @ ELSE 0 THEN
+IF type defconst-offset> type
 ELSE
   " type"
   null swap
@@ -32,11 +31,11 @@ THEN
 
 ( Returns the value of a structure reference. )
 def value-of-raw
-  arg0 as-code-pointer cdr set-arg0
+  arg0 as-code-pointer dup IF cdr ELSE null THEN set-arg0
 end  
 
 def value-of
-  arg0 value-of-raw dup as-code-pointer set-arg0
+  arg0 value-of-raw as-code-pointer set-arg0
 end  
 
 def type-name arg0 cell-size 0 * + set-arg0 end
@@ -50,7 +49,7 @@ def make-type ( base-type byte-size ++ type )
 end
 
 ( Makes a new type, names it, and creates a constant in the dictionary: )
-DEFINED? NORTH-COMPILE-TIME IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   def const> ( value : name ++ word )
     create>
     dup ' do-const does
@@ -66,19 +65,35 @@ def type: ( base-type byte-size : name ++ ... )
   exit-frame
 end
 
-DEFINED? NORTH-COMPILE-TIME IF
-  ( type: that also outputs to the data stack )
-  alias> sys-type: type:
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  NORTH-COMPILE-TIME @ UNLESS
+    def create-out-type-entry
+      s" Type: " error-string/2
+      arg0 value-of type-name @ dup string-length 2dup error-line/2 create
+      defconst-offset exit-frame
+    end
 
-  : create-out-type-entry
-    s" Type: " error-string/2
-    dup value-of type-name @ dup string-length 2dup error-line/2 create
-    defconst-offset
-  ;
-  
-  : type: ( base-type byte-size : name ++ ... )
-    sys-type: dict exec-abs create-out-type-entry
-  ;
+    def type: ( base-type byte-size : name ++ ... )
+      arg1 arg0 make-type const>
+      dict dup dict-entry-name peek cs +
+      swap dict-entry-data peek value-of type-name poke
+      dict exec-abs create-out-type-entry
+      exit-frame
+    end
+  ELSE
+    ( type: that also outputs to the data stack )
+    alias> sys-type: type:
+    
+    : create-out-type-entry
+      s" Type: " error-string/2
+      dup value-of type-name @ dup string-length 2dup error-line/2 create
+      defconst-offset
+    ;
+    
+    : type: ( base-type byte-size : name ++ ... )
+      sys-type: dict exec-abs create-out-type-entry
+    ;
+  THEN
 THEN
 
 ( The type returned for null values: )

@@ -4,7 +4,7 @@
   ( Example: read-terminator 1 2 3 4 here 0 ' + read-terminator map-stack-seq )
   4 overn speek over equals IF 2 dropn swap drop return THEN
   rot ( sp state fn term -> sp term fn state )
-  4 overn speek 3 overn exec
+  4 overn speek 3 overn exec-abs
   rot 4 overn up-stack 4 set-overn
   loop
 ;
@@ -14,7 +14,7 @@
 
 : revmap-stack-seq-loop ( ptr acc fn down-iter )
   4 overn over equals IF return THEN
-  3 overn over speek 4 overn exec
+  3 overn over speek 4 overn exec-abs
   3 set-overn
   down-stack loop
 ;

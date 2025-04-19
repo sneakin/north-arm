@@ -15,9 +15,7 @@ def mark-dict ( mark -- dict ) ( arg0 0 + set-arg0 ) end
 def mark-immediates ( mark -- immeds ) arg0 cell-size + set-arg0 end
 
 def make-mark ( ++ mark )
-  immediates @
-  dict cs -
-  here exit-frame
+  immediates @ cs + dict here exit-frame
 end
 
 def mark> ( : name ++ word )
@@ -31,23 +29,21 @@ def copy-mark ( src dest -- )
 end
 
 def remark! ( mark -- )
-  immediates @ arg0 mark-immediates !
-  dict cs - arg0 mark-dict !
+  immediates @ cs + arg0 mark-immediates !
+  dict arg0 mark-dict !
   1 return0-n
 end
 
 def use-mark ( [ dict immediates ] -- )
   ( Change the primary dictionaries to those supplied in the pair. The old values are returned in a new pair. )
-  arg0 mark-dict @ cs + set-dict
-  arg0 mark-immediates @ immediates !
+  arg0 mark-dict @ dup code-offset? IF cs + THEN set-dict
+  arg0 mark-immediates @ dup code-offset? UNLESS cs - THEN immediates !
   1 return0-n
 end
 
 def dict-swap ( [ dict immediates ] ++ [ old-dict old-immeds ] )
   ( Change the primary dictionaries to those supplied in the pair. The old values are returned in a new pair. )
-  make-mark
-  arg0 use-mark
-  exit-frame
+  make-mark arg0 use-mark exit-frame
 end
 
 def dict-entry-before ( word dict offset -- parent-word found? )
@@ -114,38 +110,67 @@ end
 
 alias> forget! top-forget!
 
-DEFINED? NORTH-COMPILE-TIME IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  sys:: use-out-mark
+    s" use-out-mark " error-string/2 ,h enl
+    dup mark-dict @ from-out-addr ,h enl out-dictionary !
+    mark-immediates @ from-out-addr ,h enl output-immediates !
+  ;
+
+  sys-def out-remark! ( mark -- )
+    out-dictionary @ to-out-addr arg0 mark-dict !
+    output-immediates @ to-out-addr arg0 mark-immediates !
+    1 return0-n
+  end
+
   sys:: make-out-mark
+    output-immediates @ to-out-addr
+    out-dictionary @ to-out-addr
+    here
+  ;
+
+  sys:: output-mark ( mark -- data-pointer )
     dhere
-    out-dict to-out-addr ,uint32 ( todo pointer? cell? )
-    output-immediates @ to-out-addr ,uint32
+    swap dup mark-dict @ ,uint32
+    mark-immediates @ ,uint32
   ;
 
-  sys:: does-forget ( mark word ++ word )
-    ( Makes a word perform a dict swap where it becomes the dictionary and the immediates become the active list. )
-    dup out' do-col does
-    dhere to-out-addr
-
-    out-off' begin-frame ,op
-    out-off' pointer ,op
-    roll to-out-addr ,op
-    out-off' dict-swap ,op
-    out-off' return0 ,op
-    0 ,op
+  sys-def out-dict-swap
+    make-out-mark ( fixme does not need to be in image )
+    arg0 use-out-mark
+    exit-frame
+  end
   
-    over dict-entry-data poke
-  ;
+  sys-def does-out-forget ( mark word ++ word )
+  ( Makes a word perform a dict swap where it becomes the dictionary and the immediates become the active list. )
+    arg0 pointer do-col does
 
-  sys:: create-forget
-    create does-forget
-  ;
+    literal return0
+    literal out-dict-swap
+    arg1 literal literal
+    literal begin-frame
+      
+    here cs - arg0 dict-entry-data poke
+    ( todo no length? )
+    arg0 exit-frame
+  end
+
+  sys-def create-out-forget
+    arg1 arg0 sys-create arg2 swap does-out-forget exit-frame
+  end
 
   sys:: mark!
-    make-out-mark s" forget!" create-forget
+    make-out-mark s" forget!" create-out-forget
   ;
 
   sys:: mark> ( : name ++ word )
-    make-out-mark to-out-addr defconst-offset>
+    make-out-mark output-mark to-out-addr const-offset>
+    s" MARK> " error-string/2
+    out-dictionary @ dict-entry-name @ from-out-addr dup error-line
+    dup string-length
+    sys-create
+    out-dictionary @ dict-entry-data @ from-out-addr ,h enl over dict-entry-data !
+    does-const
   ;
 THEN
 
@@ -198,3 +223,43 @@ alias> pop-mark top-pop-mark
 ( Global marks to the current dictionaries: )
 mark> *mark* ( restore by swapping to ~*mark*~ )
 mark! ( or restore with a ~forget!~ )
+
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  sys-def does-out-remark ( new-mark old-mark word ++ word )
+    ( Makes a word perform a dict swap after updating the prior used mark. )
+    arg0 pointer do-col does
+
+    literal return0
+    literal copy-mark
+    arg1 literal literal
+    literal out-dict-swap
+    ( literal enl literal error-hex-uint literal dup )
+    arg2 literal literal
+    literal begin-frame
+      
+      ( todo no length? )
+      here cs - arg0 dict-entry-data poke
+      arg0 exit-frame
+  end
+
+  sys-def create-out-remark ( new-mark old-mark name len ++ word )
+    ( Create a new word that restores the dictionaries to when the mark was made. )
+    arg1 arg0 sys-create
+    arg2 out-remark!
+    arg3 arg2 roll does-out-remark exit-frame
+  end
+
+  sys-def push-mark ( mark ++ word )
+    arg0 ,h enl out-dict-swap arg0 s" pop-mark" create-out-remark exit-frame
+  end
+
+  sys:: push-mark> ( out-mark : name ++ )
+    out-dict-swap output-mark to-out-addr const-offset>
+    s" PUSH MARK " error-string/2
+    out-dictionary @ dict-entry-name @ from-out-addr dup error-line
+    dup string-length
+    sys-create
+    out-dictionary @ dict-entry-data @ from-out-addr ,h enl over dict-entry-data !
+    does-const
+  ;
+THEN

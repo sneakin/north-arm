@@ -35,7 +35,7 @@ symbol> case-marker
   case-start-marker
 ; immediate
 
-: WHEN
+: WHEN ( condition -- opcode... )
   ( load the value )
   literal over
   ( compare values )
@@ -45,7 +45,7 @@ symbol> case-marker
   literal drop
 ; immediate
 
-: WHEN-STR
+: WHEN-STR ( string length -- opcode... )
   ( load the value )
   literal int32 int32 3
   literal overn

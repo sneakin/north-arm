@@ -1,3 +1,7 @@
+DEFINED? asm-thumb UNLESS : asm-thumb s" No thumb support." error-line/2 ; THEN
+DEFINED? asm-aarch32-thumb UNLESS : asm-aarch32-thumb s" No aarch32 support." error-line/2 ; THEN
+DEFINED? asm-x86 UNLESS : asm-x86 s" No x86 support." error-line/2 ; THEN
+
 : push-asm-mark
   target-thumb?
   IF asm-thumb

@@ -1,4 +1,4 @@
-' defvar> IF
+DEFINED? defvar> IF
   10 defvar> int32-precision
   0x7FFFFFFF defconst> INT32-MAX
   -0x7FFFFFFF defconst> INT32-MIN

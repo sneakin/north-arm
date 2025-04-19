@@ -1,4 +1,3 @@
-
 ' alias UNLESS load-core THEN
 " src/lib/getopt.4th" load
 " src/interp/dictionary/revmap.4th" load

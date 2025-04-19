@@ -242,11 +242,56 @@ def [if-or-unless?]
   arg1 arg0 [if?] rot swap [unless?] rot int32 2 dropn or return1
 end
 
-( todo does int32 get left behind for numbers as [IF] conditions? )
+( todo literalizes? could search a list of words registered or a flag on a word. A post-word can set the flag and/or whenever next-word or a literalizing word is used. )
+
+def literalizes?
+  0
+  pointer literal
+  pointer int32
+  pointer uint32
+  pointer offset32
+  pointer pointer
+  pointer cstring
+  pointer string
+  pointer uint64
+  pointer int64
+  pointer float32
+  pointer float64
+  here 11 arg0 seq-include? 1 return1-n
+end
+
+def token-literalizes? ( str length -- yes? )
+  0
+  " '"
+  " POSTPONE"
+  " off'"
+  " out'"
+  " out-off'"
+  " sys'"
+  " DEFINED?"
+  " SYS:DEFINED?"
+  " OUT:DEFINED?"
+  " literal"
+  " int32"
+  " uint32"
+  " offset32"
+  " pointer"
+  " cstring"
+  " string"
+  " uint64"
+  " int64"
+  " float32"
+  " float64"
+  here 20 arg1 arg0 seq-include-string?/4 2 return1-n
+end
 
 def nested-skip-tokens-until/4 ( lead-fn term-fn inner-term-fn depth ++ )
   next-token
   negative? IF ( todo error ) return0 THEN
+  2dup token-literalizes? IF
+    next-token negative? IF return0 THEN
+    drop-locals repeat-frame
+  THEN
   over s" (" string-equals?/3 IF POSTPONE ( THEN 3 dropn
   2dup
   arg0 0 uint> IF arg1 ELSE arg2 THEN exec-abs
@@ -265,6 +310,8 @@ defcol skip-bracketed-conditional-tokens
   pointer [then?]
   nested-skip-tokens-until
 endcol
+
+( todo does int32 get left behind for numbers as [IF] conditions? )
 
 defcol [IF]
   swap UNLESS skip-bracketed-conditional-tokens THEN

@@ -1,7 +1,8 @@
 ( Interpreter )
-s[ src/lib/seq.4th
-   src/lib/list.4th
+s[
    src/interp/strings.4th
+   src/lib/seq.4th
+   src/lib/list.4th
    src/interp/messages.4th
    src/interp/dictionary.4th
    src/lib/fun.4th

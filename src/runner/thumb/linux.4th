@@ -2,6 +2,12 @@
 
 push-asm-mark
 
+target-aarch32? IF
+  : ldm.up ldm .up ;
+ELSE
+  : ldm.up 2 dropn 0 ;
+THEN
+
 : emit-syscall
   ( save registers )
   state-register-mask pushr ,ins
@@ -9,7 +15,7 @@ push-asm-mark
   0 r0 r7 mov-lsl ,ins
   cell-size state-byte-size + r0 ldr-sp ,ins
   ( erasing state requires that interpreted handlers have state to load. )
-  r0 0x3F target-aarch32? IF swap ldm .up ELSE ldmia THEN ,ins
+  r0 0x3F target-aarch32? IF swap ldm.up ELSE ldmia THEN ,ins
   ( make syscall )
   0 swi ,ins
   ( restore registers, keep return value in R0 )

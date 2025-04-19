@@ -10,7 +10,9 @@
 ' ffi-callback-0-0
 here
 SYS:DEFINED? NORTH-COMPILE-TIME IF
-  6 ,seq-pointer to-out-addr
+  NORTH-COMPILE-TIME @ IF
+    6 ,seq-pointer to-out-addr
+  THEN
 THEN const> ffi-callbacks-0
 
 0
@@ -21,7 +23,9 @@ THEN const> ffi-callbacks-0
 ' ffi-callback-0-1
 here
 SYS:DEFINED? NORTH-COMPILE-TIME IF
-  6 ,seq-pointer to-out-addr
+  NORTH-COMPILE-TIME @ IF
+    6 ,seq-pointer to-out-addr
+  THEN
 THEN const> ffi-callbacks-1
 
 SYS:DEFINED? NORTH-COMPILE-TIME IF

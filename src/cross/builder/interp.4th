@@ -16,12 +16,32 @@ end
 
 ( A post-execution load step: )
 
+2 NORTH-STAGE int<= IF
+  OUT:DEFINED? const> UNLESS
+    def does-const
+      arg0 pointer do-const does
+    end
+
+    def const>
+      create> does-const
+      arg0 over dict-entry-data poke
+      exit-frame
+    end
+  THEN
+
+  DEFINED? struct IF
+    s[ src/cross/builder/assembly.4th
+       src/cross/builder/run/interp.4th
+    ] load-list
+  THEN
+THEN
+
 ( todo rm what is in include/asm & bring bash up to par & compile in )
 def builder-load
   s" IF" immediates @ cs + dict-lookup
   IF 3 dropn ELSE 3 dropn load-core THEN
-  s" src/cross/builder/assembly.4th" load/2
-  s" src/cross/builder/run/interp.4th" load/2
+  s" asm-thumb" defined?/2 UNLESS s" src/cross/builder/assembly.4th" load/2 THEN
+  s" builder-run" defined?/2 UNLESS s" src/cross/builder/run/interp.4th" load/2 THEN
   s" Builder loaded." error-line/2
   exit-frame
 end

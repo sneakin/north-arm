@@ -119,6 +119,20 @@ def seq-include? ( seq n element -- yes? )
   arg2 arg1 arg0 seq-index-of 3 return1-n
 end
 
+def seq-index-of-string/5 ( seq n string length counter -- index true | false )
+  arg0 arg3 uint< UNLESS false 5 return1-n THEN
+  4 argn arg0 seq-peek arg2 arg1 string-equals?/3 IF arg0 true 5 return2-n THEN
+  arg0 1 + set-arg0 drop-locals repeat-frame
+end
+
+def seq-index-of-string/4 ( seq n string length -- index true | false )
+  0 ' seq-index-of-string/5 tail+1
+end
+
+def seq-include-string?/4 ( seq n string length -- yes? )
+  arg3 arg2 arg1 arg0 0 seq-index-of-string/5 4 return1-n
+end
+
 ( Uniqueness: )
 
 def uniq-seq ( seq n ++ uniques num-uniqs )

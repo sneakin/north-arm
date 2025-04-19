@@ -1,7 +1,16 @@
-( Conditionals: )
+( SYS:DEFINED? NORTH-COMPILE-TIME UNLESS )
+' end-compile tmp" ;" cross-immediate/3
+' ( cross-immediate/1
+( THEN )
 
+SYS:DEFINED? out-dq-string UNLESS
+  tmp" src/interp/boot/cross/readers.4th" load/2
+THEN
+  
 ( todo are output immediates placing output words in defs? )
 ( todo whitespace? is missing a THEN and is getting an extra 0x40 )
+
+( Conditionals: )
 
 : out-IF
   out-off' int32

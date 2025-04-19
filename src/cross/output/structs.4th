@@ -3,8 +3,8 @@
 
 : map-sys-type-to-out ( sys-type -- out-type ok? )
   dup UNLESS drop false proper-exit THEN
-  type-name @ ( ,h enl )
-  dup string-length ( 2dup error-line/2 ) 2dup cross-lookup IF
+  type-name @ as-code-pointer
+  dup string-length 2dup cross-lookup IF
     2 set-overn drop dict-entry-data @ from-out-addr true
   ELSE
     drop s" System type not found: " error-string/2 error-line/2
@@ -15,7 +15,7 @@
 def copy-type-to-data ( type-ptr -- data-ptr )
   dhere
   ( copy name to data )
-  arg0 value-of type-name @ ,byte-string
+  arg0 value-of type-name @ as-code-pointer ,byte-string
   ( copy type struct )
   dhere
   local0 to-out-addr ,uint32 ( name )
@@ -30,14 +30,14 @@ end
 ( todo copy fields in second pass to get type pointers right, or dallot types to on declaration so pointer is always out-addr )
 
 def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
-  espace espace arg0 ,h espace struct-field -> name @ error-string espace
+  etab etab arg0 ,h espace struct-field -> name @ as-code-pointer error-string espace
   dhere
-  arg0 struct-field -> name @ ,byte-string
+  arg0 struct-field -> name @ as-code-pointer ,byte-string
   dhere
-  over to-out-addr ,uint32
-  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,uint32
-  arg0 struct-field -> offset @ ,uint32
-  arg0 struct-field -> byte-size @ ,uint32
+  over to-out-addr ,h espace ,uint32
+  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,h espace ,uint32
+  arg0 struct-field -> offset @ ,h espace ,uint32
+  arg0 struct-field -> byte-size @ ,h espace ,uint32
   local1 to-out-addr
   struct-field value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
   dcons to-out-addr ,h enl
@@ -47,8 +47,8 @@ end
 ( todo above needs to build a list, no initial null )
 
 def copy-struct-fields-to-data ( out-struct -- )
-  arg0 cdr from-out-addr struct-fields @
-  dup IF 0 ' copy-struct-field-to-data map-car/3 ELSE 0 THEN
+  arg0 cdr from-out-addr struct-fields @ ,h enl
+  dup IF as-code-pointer 0 ' copy-struct-field-to-data map-car+cs/3 ELSE 0 THEN
   arg0 cdr from-out-addr struct-fields !
   1 return0-n
 end
@@ -70,12 +70,14 @@ end
 
 def select-out-type ( [ const-fn count data-cons-accum ] word ++ state )
   arg0 dict-entry-code @ arg1 2 seq-peek equals? IF
-    arg0 dict-entry-data @ stack-pointer? IF
-      arg0 dict-entry-data @ type kind-of? IF
-	arg0 dict-entry-name @ from-out-addr error-line
-	arg0 arg1 0 seq-nth push-onto
-	arg1 exit-frame
-      THEN
+    arg0 dict-entry-data @
+    dup type equals?
+    IF drop true
+    ELSE dup stack-pointer? IF type kind-of? ELSE drop false THEN
+    THEN
+    IF arg0 dict-entry-name @ from-out-addr error-line
+	     arg0 arg1 0 seq-nth push-onto
+	     arg1 exit-frame
     THEN
   THEN
   arg1 2 return1-n

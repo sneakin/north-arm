@@ -73,25 +73,6 @@ def compile-token
   THEN set-arg0 set-arg1
 end
 
-def literalizes?
-  arg0 CASE
-    pointer literal OF true ENDOF
-    pointer int32 OF true ENDOF
-    pointer uint32 OF true ENDOF
-    pointer offset32 OF true ENDOF
-    pointer pointer OF true ENDOF
-    pointer cstring OF true ENDOF
-    pointer string OF true ENDOF
-    pointer uint64 OF true ENDOF
-    pointer int64 OF true ENDOF
-    pointer float32 OF true ENDOF
-    pointer float64 OF true ENDOF
-    false
-  ENDCASE 1 return1-n
-end
-
-( punt literalizes? could search a list of words registered, or flagged on a word, whenever next-word or a literalizing word is used. )
-
 def compiling-read/2 ( buffer max-length ++ list-words num-words )
   arg1 arg0 next-token/2 negative? IF int32 2 dropn locals-byte-size cell/ exit-frame THEN
   compile-token CASE

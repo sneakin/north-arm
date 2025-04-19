@@ -30,12 +30,16 @@ defalias> spoke-byte poke-byte
 
 ( Top level words: )
 
+alias> sys:def def
+alias> sys:defcol defcol
 alias> sys:: :
 alias> : defproper
 ( alias> :: redefproper )
 alias> var> defvar>
 alias> const> defconst>
 alias> const-offset> defconst-offset>
+alias> const defconst
+alias> const-offset defconst-offset
 alias> symbol> defsymbol>
 
 alias> sys' ' immediate
@@ -43,6 +47,9 @@ alias> ' out' immediate
 
 alias> immediate out-immediate
 alias> immediate-as out-immediate-as
+
+alias> SYS:DEFINED? DEFINED?
+alias> DEFINED? OUT:DEFINED?
 
 ( And finally switch alias> over: )
 alias> alias> defalias>
