@@ -31,6 +31,18 @@ used to rebuild.
 
 * Tasks
 ** 2025
+*** April
+**** Have !:~, ~def~, etc. immediates that raise errors for when terminals are forgotten, eaten, etc. Postponed calls detectable from callee?
+**** Output constants need to also be in the system dictionary.
+**** Makefile
+  - target prefixing in file names: bin/$TARGET/$binary
+  - use builder+core for demo builds
+**** builder+core
+  - Disassembler
+  - Dumping of dictionary marks
+**** Scantool is not recursing
+**** Require and load search paths
+
 *** Newline output
 The decompiler's output could be formatted better. It uses ~cmemdump~ which adds a newline after its output creating an ugly line in the disassembly. Removing that newline but keeping ~cmemdump~ useful would necessitate the prompt printing the newline and other similar rework.
 *** Dir reorg
