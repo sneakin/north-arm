@@ -47,6 +47,9 @@ $(foreach stage,$(STAGES), \
        bin/interp.$(target).$(stage)$(EXECEXT) \
        bin/runner.$(target).$(stage)$(EXECEXT) )))
 
+OUTPUTS+=bin/builder+core.$(TARGET_ABI).3$(EXECEXT) \
+	bin/interp+core.$(TARGET_ABI).3$(EXECEXT)
+
 ifeq ($(QUICK),)
 	OUTPUTS+=\
 		bin/assembler-thumb.sh \
@@ -80,6 +83,7 @@ release/root: .git/refs/heads/$(RELEASE_BRANCH) release
 
 quick:
 	cp bootstrap/interp.elf bin/interp.elf
+	touch bin/interp.elf
 
 clean:
 	rm -f $(OUTPUTS) $(DOCS)
@@ -402,10 +406,6 @@ STAGE1_BUILDER=$(RUNNER) ./bin/builder.static.1$(EXECEXT)
 ./src/include/interp.4th: version.4th
 ./src/runner/main.4th: version.4th
 
-bin/builder+core.$(TARGET_ABI).$(STAGE)$(EXECEXT): $(BUILDER_SRC)
-	@echo -e "\e[36;1mBuilding $(@)\e[0m"
-	$(STAGE$(STAGE)_BUILDER) -t $(TARGET) -e build -o $@ $(BUILDER_SRC)
-
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
 bin/builder$(EXECEXT): $(BUILDER_MIN_SRC)
 	$(STAGE0_BUILDER) -t $(TARGET_ARCH)-$(TARGET_OS)-static -e build -o $@ $^
@@ -477,6 +477,7 @@ bin/%.sig: bin/%
 
 PROGRAMS=\
   interp_core \
+  builder_core \
   scantool \
   interp_armasm \
   demo_tty_drawing \
@@ -493,6 +494,10 @@ PGRM_interp_core_sources= \
 	src/interp/boot/include.4th
 PGRM_interp_core_output=bin/interp+core
 PGRM_interp_core_entry=interp-boot
+
+PGRM_builder_core_sources=$(BUILDER_SRC)
+PGRM_builder_core_output=bin/builder+core
+PGRM_builder_core_entry=build
 
 # Scantool for stats and syntax highlighting.
 PGRM_scantool_sources=\
@@ -550,7 +555,6 @@ PGRM_demo_tty_raycaster_output=bin/demo-tty/raycaster
 PGRM_demo_tty_raycaster_entry=raycaster-boot
 PGRM_demo_tty_raycaster_sources=\
 	src/lib/tty/constants.4th \
-	src/demos/tty/clock/segment-constants.4th \
 	src/include/interp.4th \
 	src/interp/proper.4th \
 	src/lib/pointers.4th \
@@ -567,10 +571,10 @@ PGRM_demo_tty_raycaster_sources=\
 
 define define_north_program # name, target, stage, entry point, sources
 PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
-$(1): $(5)
+$(1): $$(STAGE$(3)_BUILDER) $(5)
 	@echo -e "Building \e[36;1m$$(@)\e[0m"
 	@mkdir -p $$(dir $$@)
-	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $$^
+	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $(5)
 endef
 
 $(foreach stage,$(STAGES), \
