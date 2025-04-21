@@ -54,7 +54,28 @@ def load-runner
 end
 
 def builder-load
-  " src/cross/arch/thumb.4th" load ( fixme swap load-thumb-asm? )
-  " src/cross/builder/run/bash.4th" load
+  s[ src/lib/case.4th
+     src/lib/stack-marker.4th
+     src/lib/map/stack.4th
+     src/lib/bit-fields.4th
+     src/lib/byte-data.4th
+   ] load-list
+
+  target-thumb? IF " src/lib/asm/thumb.4th" load THEN
+  target-aarch32? IF " src/lib/asm/aarch32.4th" load THEN
+  target-x86? IF " src/lib/asm/x86.4th" load THEN
+
+  s[ src/cross/words.4th
+     src/cross/iwords.4th
+     src/cross/owords.4th
+     src/cross/oiwords.4th
+     src/cross/list.4th
+     src/cross/defining/op.4th
+     src/cross/defining/alias.4th
+     src/cross/case.4th
+     src/lib/elf/stub32.4th
+
+     src/cross/builder/run/bash.4th
+   ] load-list
   exit-frame
 end

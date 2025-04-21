@@ -298,6 +298,15 @@ alias> string-const> const>
 alias> tmp" s"
 alias> sys' '
 alias> SYS:DEFINED? DEFINED?
+alias> exec-abs exec
+
+alias> cstring literal
+alias> string literal
+alias> int32 literal
+alias> uint32 literal
+alias> float32 literal
+alias> offset32 literal
+alias> pointer literal
 
 : POSTPONE
   next-token
@@ -308,6 +317,9 @@ alias> SYS:DEFINED? DEFINED?
   swap load
   1 - loop
 ;
+
+: push-asm-mark ( stub ) ;
+: pop-mark ( stub ) ;
 
 : error-line/2 drop error-line ;
 : error-int ,,i drop ;
