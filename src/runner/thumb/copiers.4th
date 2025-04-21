@@ -37,7 +37,6 @@ endop
 push-asm-mark
 
 : emit-copy-up ( bytes register -- )
-  ( todo cmp r0 before pop )
   over r0 cmp# ,ins
   18 bcc-ins ,ins
   0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
@@ -46,7 +45,7 @@ push-asm-mark
   6 bcc-ins ,ins
   r2 over ldmia ,ins
   r1 over stmia ,ins
-  over r0 sub# ,ins ( fixme ldmia/stmia should auto increment )
+  over r0 sub# ,ins ( fixme compare w/ precomputed ending )
   -14 branch-ins ,ins
   dup popr ,ins
   0 r1 bit-set r2 bit-set pushr ,ins
@@ -126,25 +125,45 @@ endop
 
 push-asm-mark
 
-: emit-copy-down
-  over r0 cmp# ,ins
-  26 bcc-ins ,ins
-  0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
-  dup pushr ,ins
-  over r0 cmp# ,ins
-  14 bcc-ins ,ins  ( fixme ldmia/stmia should auto increment )
-  over r1 sub# ,ins
-  over r2 sub# ,ins
-  r2 r3 movrr ,ins
-  r3 over ldmia ,ins
-  r1 r3 movrr ,ins
-  r3 over stmia ,ins
-  over r0 sub# ,ins
-  -22 branch-ins ,ins
-  dup popr ,ins
-  0 r1 bit-set r2 bit-set pushr ,ins
-  2 dropn
-;
+target-aarch32? IF
+  : emit-copy-down ( bytes register -- )
+    over r0 cmp# ,ins
+    22 bcc-ins ,ins
+    0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
+    cell-size r2 sub# ,ins
+    cell-size r1 sub# ,ins
+    dup pushr ,ins
+    over r0 cmp# ,ins
+    6 bcc-ins ,ins
+    dup r2 ldm .w ,ins
+    dup r1 stm .w ,ins
+    over r0 sub# ,ins ( fixme compare w/ precomputed ending )
+    -14 branch-ins ,ins
+    dup popr ,ins
+    0 r1 bit-set r2 bit-set pushr ,ins
+    2 dropn
+  ;
+ELSE
+  : emit-copy-down
+    over r0 cmp# ,ins
+    26 bcc-ins ,ins
+    0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
+    dup pushr ,ins
+    over r0 cmp# ,ins
+    14 bcc-ins ,ins
+    over r1 sub# ,ins
+    over r2 sub# ,ins
+    r2 r3 movrr ,ins
+    r3 over ldmia ,ins
+    r1 r3 movrr ,ins
+    r3 over stmia ,ins
+    over r0 sub# ,ins
+    -22 branch-ins ,ins
+    dup popr ,ins
+    0 r1 bit-set r2 bit-set pushr ,ins
+    2 dropn
+  ;
+THEN
 
 pop-mark
 
