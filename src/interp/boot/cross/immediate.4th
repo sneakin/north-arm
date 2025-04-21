@@ -21,6 +21,3 @@ end
 
 : cross-immediate dict cross-immediate/1 ;
 : cross-immediate-as dict next-token cross-immediate/3 ;
-
-alias> doc( ( cross-immediate ( bad emacs )
-alias> args( ( cross-immediate ( bad emacs )

@@ -23,6 +23,13 @@ THEN
   out-immediates out-dict copies-entry-as> set-out-immediates
 ;
 
+DEFINED? oword-printer UNLESS
+  : oword-printer
+    dict-entry-name peek from-out-addr write-string space
+    1 +
+  ;
+THEN
+
 DEFINED? oiwords UNLESS
   NORTH-STAGE 0 equals? IF
     : oiwords

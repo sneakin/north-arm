@@ -1,3 +1,6 @@
+alias> doc( ( cross-immediate ( bad emacs )
+alias> args( ( cross-immediate ( bad emacs )
+
 : out-dallot-next-token>
   out-off' cstring
   dallot-next-token swap to-out-addr swap
@@ -47,14 +50,13 @@
 ; cross-immediate-as s" cross-immediate-as top-s"
 
 DEFINED? unescape-string/2 IF  
-
   : out-escaped-dq-string
     ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
     POSTPONE etmp" dallot-byte-string/2 drop
     out-off' cstring
     swap to-out-addr
     dhere to-out-addr out-dict dict-entry-data poke
-  ; cross-immediate-as "
+  ; cross-immediate-as " ( bad emacs " )
 
   : out-escaped-dq-stringn
     ( Read until a double quote, writing the contained data to the data stack and leaving a literal and length on the stack for a definition. )
@@ -62,14 +64,14 @@ DEFINED? unescape-string/2 IF
     out-off' cstring rot
     out-off' uint32 swap
     dhere to-out-addr out-dict dict-entry-data poke
-  ; cross-immediate-as s"
+  ; cross-immediate-as s" ( bad emacs " )
 
   : out-write-escaped-string
     out-escaped-dq-stringn literal write-string/2
-  ; cross-immediate-as ."
+  ; cross-immediate-as ." ( bad emacs " )
 
   : out-char-code
     out-off' uint32
-    char-code
+    next-char-code
   ; cross-immediate-as char-code
 THEN

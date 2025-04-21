@@ -64,7 +64,7 @@ def struct: ( : name )
 end
 
 SYS:DEFINED? NORTH-COMPILE-TIME IF
-  DEFINED? NORTH-COMPILE-TIME IF
+  NORTH-COMPILE-TIME @ UNLESS
     def struct: ( : name )
       ( generate type )
       next-token allot-byte-string/2 create-struct
@@ -72,9 +72,11 @@ SYS:DEFINED? NORTH-COMPILE-TIME IF
       exit-frame
     end
   THEN
-  
-  alias> sys-struct: struct:
-  : struct: sys-struct: dict exec-abs create-out-type-entry ;
+
+  SYS:DEFINED? sys-struct: UNLESS
+    alias> sys-struct: struct:
+    : struct: sys-struct: dict exec-abs create-out-type-entry ;
+  THEN
 THEN
 
 ( Structure field definitions: )

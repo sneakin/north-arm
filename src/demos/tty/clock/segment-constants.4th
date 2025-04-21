@@ -30,10 +30,10 @@ SEGMENT-BOT SEGMENT-BOT-LEFT SEGMENT-BOT-RIGHT logior logior const> SEGMENT-BOT-
 ( 1 ) SEGMENT-RIGHT
 ( 0 ) SEGMENT-TOP SEGMENT-LEFT SEGMENT-RIGHT SEGMENT-BOT logior logior logior
 here
-SYS:DEFINED? NORTH-COMPILE-TIME IF
-  dhere to-out-addr
-  swap 16 ,seq
-  const-offset> segment-digits
+SYS:DEFINED? NORTH-CROSSED
+IF dhere to-out-addr
+   swap 16 ,seq
+   const-offset> segment-digits
 ELSE const> segment-digits
 THEN
 

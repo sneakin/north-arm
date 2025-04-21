@@ -35,6 +35,7 @@ end
 ' return0 [UNLESS]
   alias> return0 return
 [THEN]
+
 alias> return proper-exit
 alias> equals equals?
 alias> speek peek
@@ -347,5 +348,7 @@ THEN
 DEFINED? tail+1 UNLESS
   tmp" src/runner/frame-tailing.4th" load/2
 THEN
+
+def etab 9 error-byte end
 
 tmp" stack-allot-zero" defined?/2 UNLESS " src/lib/seq.4th" load THEN

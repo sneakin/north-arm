@@ -38,14 +38,14 @@ def compose ( a b ++ proper[ a b ] )
   int32 4 overn exit-frame
 end
 
-DEFINED? jump-op-size IF
+OUT:DEFINED? jump-op-size IF
 def compose-if ( test a ++ proper[ test IF a THEN ] )
   ( Returns a noname entry that calls A if TEST is true. )
   make-proper-noname
   literal proper-exit
   arg0 cs -
   literal unless-jump
-  jump-op-size 1 *
+  jump-op-size
   literal int32
   arg1 cs -
   literal dup

@@ -1,9 +1,3 @@
-( DEFINED? NORTH-COMPILE-TIME IF
-  sys-alias> es" [s"] cross-immediate
-THEN )
-
-( todo color-reset write-crnl )
-
 DEFINED? es" UNLESS
   " src/lib/escaped-strings.4th" load
 THEN
@@ -24,7 +18,7 @@ alias> RECURSE repeat-frame immediate
 0x53544f50 const> terminator
 def terminator? arg0 terminator equals? return1 end
 
-DEFINED? NORTH-COMPILED-TIME IF
+DEFINED? NORTH-COMPILED-TIME UNLESS
   sys-def global-var 0 var> exit-frame end
 
   sys-def constant
@@ -57,7 +51,7 @@ def cell+n
 end
 
 defcol returnN
-  ( copy N values over the frame's return and FP. Return from the frame. )
+  doc( copy N values over the frame's return and FP. Return from the frame. )
   ( stack: frame ... values num-values return-addr )
   drop ( the definition's call frame)
   current-frame return-address peek ( save the frame's return )
@@ -93,12 +87,15 @@ def bsrc ( a shift -- high low )
   arg1 arg0 bsr set-arg1 set-arg0
 end
 
+def write-crnl s" \r\n" write-string/2 end
+
 def tty-reset
   s" \ec" write-string/2
 end
 
 def tty-erase s" \e[2J" write-string/2 end
 def tty-erase-below s" \e[0J" write-string/2 end
+def color-reset s" \e[0m" write-string/2 end
 def bold s" \e[1m" write-string/2 end
 def dim s" \e[2m" write-string/2 end
 def inverse s" \e[7m" write-string/2 end
@@ -229,9 +226,8 @@ def utf8-encode-second
     return2
 end
 
-def utf32->utf8
+def utf32->utf8 ( int32 ++ bytes... number-bytes )
     doc( Convert an integer into an UTF-8 byte sequence as cells on the stack. )
-    args( int32 ++ bytes... number-bytes )
     arg0 int32 $7F <= IF arg0 int32 1 return2 THEN
     arg0 int32 $7FF <= IF
         arg0 utf8-encode-second

@@ -33,12 +33,13 @@ SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
   s[ src/lib/pointers.4th
      src/lib/list-cs.4th
      src/lib/structs.4th
-     src/lib/linux.4th
-     src/lib/io.4th
   ] load-list
 THEN
 
-s[ src/lib/mark.4th ] load-list
+s[ src/lib/linux.4th
+   src/lib/io.4th
+   src/lib/mark.4th
+] load-list
 
 def load-core true return1 end
 

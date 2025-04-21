@@ -10,9 +10,9 @@ def ciwords
 end
 
 def owords
-  out-dict out-origin peek 0 pointer oword-printer dict-map/4
+  out-dict out-origin peek 0 ' oword-printer dict-map/4
 end
 
 def oiwords
-  output-immediates @ out-origin peek 0 pointer oword-printer dict-map/4
+  output-immediates @ out-origin peek 0 ' oword-printer dict-map/4
 end

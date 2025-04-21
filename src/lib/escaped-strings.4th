@@ -223,14 +223,16 @@ THEN
 
 ( Readers: )
 
-def char-code
+def next-char-code
   ( reads a single character or an escape sequence, and returns the ASCII value. )
   next-token dup IF unescape-string/2 over peek-byte ELSE 0 THEN return1
 end
 
+alias> char-code next-char-code
+
 ( fixme POSTPONE failed to work with char-code )
 def [char-code]
-  literal uint32 ' char-code exec-abs return2
+  literal uint32 next-char-code return2
 end immediate-as char-code
 
 def read-until-unescaped-char-fn ( char [ end-char esc-char escape? ] -- done? )
