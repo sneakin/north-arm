@@ -34,7 +34,7 @@ def tty-raw-clock-loop ( tz )
   1 1 tty-cursor-to tty-show-cursor
   ( exit the loop when 'q' is entered )
   0 0 here cell-size current-input @ 0 polled-read-fd 0 int> IF
-    " q" contains? IF 1 return0-n THEN
+    " q" string-contains? IF 1 return0-n THEN
   ELSE
     local0 1 + sleep-until drop
   THEN
@@ -58,7 +58,7 @@ def tty-buffer-clock-loop ( screen tz )
   swap 4 overn 2 / + swap local1 local2 tty-buffer-date/4
   ( exit the loop when 'q' is entered )
   0 0 here cell-size current-input @ 0 polled-read-fd 0 int> IF
-    " q" contains? IF false 2 return1-n THEN
+    " q" string-contains? IF false 2 return1-n THEN
     arg1 tty-screen-draw
   ELSE
     local0 sleep-until drop
@@ -153,7 +153,7 @@ def tty-analog-clock-loop ( screen tz -- )
   local0 local1 arg0 + tty-analog-clock-draw
   ( exit the loop when 'q' is entered )
   0 0 here cell-size current-input @ 0 polled-read-fd 0 int> IF
-    " q" contains? IF false 2 return1-n THEN
+    " q" string-contains? IF false 2 return1-n THEN
     arg1 tty-screen-draw
   ELSE
     local1 sleep-until drop
