@@ -32,11 +32,19 @@ used to rebuild.
 * Tasks
 ** 2025
 *** April
+**** dallot and strings in the binary: separate code writing from data-stack
+**** Output dictionary on stack, writen in secondbpass; more like labels in an assembler
+**** Debugging ~next~ with a hook.
+**** Math
+***** Arbitrary big ints for crypto, optimized:  64, 256 bits.
+***** Verify trig and other functions
+***** Vectorized math with multiple registers and/or VFP/Neon
+~1 2 3 here 10 20 30 here 5 overn int-add<3>~
 **** Have !:~, ~def~, etc. immediates that raise errors for when terminals are forgotten, eaten, etc. Postponed calls detectable from callee?
 **** Output constants need to also be in the system dictionary.
 **** Makefile
-  - target prefixing in file names: bin/$TARGET/$binary
-  - use builder+core for demo builds
+***** target prefixing in file names: bin/$TARGET/$binary
+***** DOING use builder+core for demo builds
 **** builder+core
   - Disassembler
   - Dumping of dictionary marks
