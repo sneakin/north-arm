@@ -357,7 +357,7 @@ bin/%$(EXECEXT): src/bin/%.4th
 define define_stage # stage
 STAGE$(1)_PRIOR=$(shell echo $$(($(1) - 1)))
 STAGE$(1)_FORTH=$(RUNNER) ./bin/interp.$(RUN_OS).$(1)$(EXECEXT)
-STAGE$(1)_BUILDER=$(RUNNER) ./bin/builder.$(RUN_OS).$(1)$(EXECEXT)
+STAGE$(1)_BUILDER=$(RUNNER) ./bin/builder+core.$(RUN_OS).$(1)$(EXECEXT)
 endef
 
 # Per target and stage outputs:
@@ -571,10 +571,17 @@ PGRM_demo_tty_raycaster_sources=\
 
 define define_north_program # name, target, stage, entry point, sources
 PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
+ifeq ($(strip $(1)),bin/builder+core.$(strip $(2)).$(strip $(3))$(EXECEXT))
+$(1): bin/builder.$(strip $(2)).$(strip $(3))$(EXECEXT) $(5)
+	@echo -e "Building \e[36;1m$$(@)\e[0m"
+	@mkdir -p $$(dir $$@)
+	bin/builder.$(strip $(2)).$(strip $(3))$(EXECEXT) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $(5)
+else
 $(1): $$(STAGE$(3)_BUILDER) $(5)
 	@echo -e "Building \e[36;1m$$(@)\e[0m"
 	@mkdir -p $$(dir $$@)
 	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $(5)
+endif
 endef
 
 $(foreach stage,$(STAGES), \
