@@ -67,8 +67,12 @@ defcol bye
   0 sysexit
 endcol
 
+push-asm-mark
+
 : emit-sysexit ( status-reg -- )
   ebx modrr movr
   1 eax mov#
   0x80 int
 ;
+
+pop-mark

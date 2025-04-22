@@ -1,9 +1,11 @@
+push-asm-mark
+
 32 x86-bits !
 
 4 const> ptr-size
 ebp const> fp-reg
 ecx const> cs-reg
-edx const> data-reg
+edx const> ds-reg
 edi const> eval-ip
 esi const> this-word-reg
 
@@ -15,6 +17,8 @@ esi const> this-word-reg
 : jmp-disp-size signed-byte? IF 1 ELSE 16bit? IF 2 ELSE 4 THEN THEN ;
 : emit-jump dhere - dup jmp-disp-size - 1 - jmp# ;
 : emit-op-jump dict-entry-code @ from-out-addr cell-size + emit-jump ;
+
+pop-mark
 
 ( Execution: )
 
@@ -303,6 +307,7 @@ defop offset32
   ret
 endop
 
+defalias> uint32 int32
 defalias> literal offset32
 defalias> pointer offset32
 defalias> string pointer
@@ -320,6 +325,10 @@ defop do-col
 endop
 
 defop do-var
+  ret
+endop
+
+defop do-data-var
   ret
 endop
 
@@ -479,12 +488,16 @@ endop
 
 ( Comparisons: )
 
+push-asm-mark
+
 ( fixme maybe inverted )
 : emit-truther ( jump-word -- )
   0 eax mov#
   5 swap exec-abs
   -1 eax mov#
 ;
+
+pop-mark
 
 defop null?
   eax push

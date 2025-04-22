@@ -30,5 +30,8 @@ endop
 defop return2
 endop
 
+defop return2-n
+endop
+
 defop drop-locals
 endop
