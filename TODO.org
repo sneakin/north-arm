@@ -32,8 +32,21 @@ used to rebuild.
 * Tasks
 ** 2025
 *** April
+**** aarch32 stm restrictions on 1 reg
+**** copier tests
+  - dir: up/down
+  - src & dest: aligned, misaligned
+  - size: 1 less than boundaries, at boundaries, 1 plus boundaries
+  - non-overlap, overlap
+
+**** reverse sequence and string functions on par with the copiers.
+**** Rename ~exec~ to ~exec+cs~, ~exec-abs~ to ~exec~.
+**** Reorg
+marks under interp or runner
+escaped strings under interp
+cross <-> build, bash and interp builders, move boot/cross
 **** dallot and strings in the binary: separate code writing from data-stack
-**** Output dictionary on stack, writen in secondbpass; more like labels in an assembler
+**** Output dictionary on stack, writen in second pass; more like labels in an assembler
 **** Debugging ~next~ with a hook.
 **** Math
 ***** Arbitrary big ints for crypto, optimized:  64, 256 bits.
@@ -46,9 +59,11 @@ used to rebuild.
 ***** target prefixing in file names: bin/$TARGET/$binary
 ***** DOING use builder+core for demo builds
 **** builder+core
-  - Disassembler
+  - Disassembler included
   - Dumping of dictionary marks
-**** Scantool is not recursing
+**** Scantool
+***** is not recursing
+***** dot call and dependency graph generators
 **** Require and load search paths
 
 *** Newline output
