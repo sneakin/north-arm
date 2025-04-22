@@ -25,6 +25,10 @@ alias> ip r12
 alias> fp r11
 alias> sl r10
 
+s" src/lib/asm/aarch32/regmask.4th" load/2
+
+( Instructions: )
+
 : thumb-nop 0 ;
 
 ( 0 0 0 Op:2 Offset:5 Rs:3 Rd:3 Move shifted register )

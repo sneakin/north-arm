@@ -45,6 +45,8 @@ alias> ip r12
 alias> fp r11
 alias> sl r10
 
+s" src/lib/asm/aarch32/regmask.4th" load/2
+
 ( Condition code modifiers: )
 
 : .condition 28 bsl swap 0xFFFFFFF logand logior ;
@@ -403,10 +405,19 @@ L store/load
 
 : .psr 0x400000 logior ;
 
-: stm ( reglist rn -- ins )
+: stm-op ( reglist rn -- ins )
   16 bsl ( rn )
   swap 0xFFFF logand logior ( reglist )
   0xE8000000 logior
+;
+
+: stm ( reglist rn -- ins )
+  ( convert single registers to str )
+  over regmask->reglist
+  dup 1 equals?
+  IF drop swap drop 0 shift str
+  ELSE dropn stm-op
+  THEN
 ;
 
 : ldm stm .l ;
