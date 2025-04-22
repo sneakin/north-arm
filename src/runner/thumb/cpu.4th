@@ -12,12 +12,14 @@ defop push-spsr
   emit-next
 endop
 
-defop aarch32-midr
-  ( works in qemu )
-  0 r0 bit-set pushr ,ins
-  r0 cpuid-midr ,ins
-  emit-next
-endop
+target-thumb2? IF
+  defop aarch32-midr
+    ( works in qemu )
+    0 r0 bit-set pushr ,ins
+    r0 cpuid-midr ,ins
+    emit-next
+  endop
+THEN
 
 defop aarch32-acr
   ( works in qemu )
