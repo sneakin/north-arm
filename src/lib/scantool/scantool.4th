@@ -249,7 +249,7 @@ end
 
 ( Output formatters: )
 
-DEFINED? BUILDER-TARGET UNLESS
+SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
   alias> copies-entry-as> copy-as>
   sys:: to-out-addr cs - ;
 THEN

@@ -35,7 +35,7 @@ def flat-deps-scantool-load-list
 end
 
 
-DEFINED? BUILDER-TARGET IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   ' scantool-deps-dict dict-entry-data @ from-out-addr
 ELSE
   scantool-deps-dict

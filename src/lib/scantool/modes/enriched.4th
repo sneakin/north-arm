@@ -7,7 +7,6 @@ def write-escaped-enriched-byte
     60 WHEN s" <<" write-string/2 ;;
     10 WHEN nl ;;
     arg0 write-byte
-    THEN
   ESAC
 
   1 return0-n

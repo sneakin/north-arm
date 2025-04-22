@@ -42,8 +42,10 @@ alias> const defconst
 alias> const-offset defconst-offset
 alias> symbol> defsymbol>
 
-alias> sys' ' immediate
-alias> ' out' immediate
+alias> sys' '
+alias> sys'' '' immediate-as sys'
+alias> ' out'
+alias> '' out'' immediate-as '
 
 alias> immediate out-immediate
 alias> immediate-as out-immediate-as
