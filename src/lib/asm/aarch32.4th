@@ -439,7 +439,12 @@ Cond | 1 0 1 L | Offset | Branch
 L link bit: 1 = branch w/ link
 )
 
-: b 4 - 2 absr 0xFFFFFF logand 0xEA000000 logior ;
+SYS:DEFINED? absr IF
+  : b 4 - 2 absr 0xFFFFFF logand 0xEA000000 logior ;
+ELSE
+  : b 4 - 2 bsr 0xFFFFFF logand 0xEA000000 logior ;
+THEN
+
 : bl b 0x1000000 logior ;
 
 ( Coprocessor data transfer
