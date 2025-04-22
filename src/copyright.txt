@@ -3,7 +3,7 @@ Text-Width: 70
 
 <x-color><param>brightred</param>╔═════════════━━━━━━━━━━━━┅┅┅┅┅┅┅┅┅┅┅┅┄┄┄┄┄┄┄┄</x-color><x-color><param>red</param>┄┄┄┄┄┄</x-color>
 <x-color><param>brightred</param>║</x-color> <underline><bold><x-color><param>brightyellow</param>*</x-color> North  </bold></underline>   <x-color><param>brightcyan</param><bold>https://github.com/sneakin/north-arm/</bold></x-color>
-<x-color><param>brightred</param>║</x-color> Copyright © 2020-2024 Nolan Eakins @ <bold>SemanticGap™</bold>
+<x-color><param>brightred</param>║</x-color> Copyright © 2020-2025 Nolan Eakins @ <bold>SemanticGap™</bold>
 <x-color><param>brightred</param>║</x-color> All rights reserved.        <bold><x-color><param>brightcyan</param>semanticgap.com</x-color></bold>
 <x-color><param>brightred</param>╚═════════════━━━━━━━━━━━━┅┅┅┅┅┅┅┅┅┅┅┅┄┄┄┄┄┄┄┄</x-color><x-color><param>red</param>┄┄┄┄┄┄</x-color>
 
