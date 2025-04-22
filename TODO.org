@@ -32,6 +32,7 @@ used to rebuild.
 * Tasks
 ** 2025
 *** April
+**** literalizers list
 **** aarch32 stm restrictions on 1 reg
 **** copier tests
   - dir: up/down
@@ -39,7 +40,7 @@ used to rebuild.
   - size: 1 less than boundaries, at boundaries, 1 plus boundaries
   - non-overlap, overlap
 
-**** reverse sequence and string functions on par with the copiers.
+**** reverse sequence and string functions on par with the copiers. TTY blitting too?
 **** Rename ~exec~ to ~exec+cs~, ~exec-abs~ to ~exec~.
 **** Reorg
 marks under interp or runner
@@ -62,7 +63,7 @@ cross <-> build, bash and interp builders, move boot/cross
   - Disassembler included
   - Dumping of dictionary marks
 **** Scantool
-***** is not recursing
+***** DONE is not recursing
 ***** dot call and dependency graph generators
 **** Require and load search paths
 
@@ -168,7 +169,6 @@ end
     Add repeat-word?
 **** ~interp/cross~ needs a ~defined?~
 **** Review ~src/lib/linux~ types to ensure they're right. file-stat64 and timespec may have more padding.
-**** TODO qemu-arm on my desktop crashes when handling a signal. ffi-callback's
 **** DONE qemu-arm on my desktop crashes when handling a signal. ffi-callback's
 seem to be doing misaligend ldr-pc. patch-ldr-pc! might be doing the
 calculation wrong.
@@ -557,13 +557,16 @@ Call frames, stack & data pointer math
 *** ISAs
 **** Bacaw
 **** x86
+***** assembler
+***** 32 bit ops
+***** 64 bit ops
 **** TODO athumb
 ***** DONE Branching and return in Thumb; to call ops in ops and call threading
-***** Thumb Assembler meta words: mov checks arg range
+***** DONE Thumb Assembler meta words: mov checks arg range
 **** TODO aarch32
 ***** TODO Status register and coprocessor ops
-***** TODO More op coverage
-***** TODO Port from bash to North
+***** DONE More op coverage
+***** DONE Port from bash to North
 **** aarch64
 ***** assembler
 ***** ELF64
