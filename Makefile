@@ -571,7 +571,7 @@ PGRM_demo_tty_raycaster_sources=\
 
 define define_north_program # name, target, stage, entry point, sources
 PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
-ifeq ($(strip $(1)),bin/builder+core.$(strip $(2)).$(strip $(3))$(EXECEXT))
+ifneq (,$(findstring builder+core,$(1)))
 $(1): bin/builder.$(strip $(2)).$(strip $(3))$(EXECEXT) $(5)
 	@echo -e "Building \e[36;1m$$(@)\e[0m"
 	@mkdir -p $$(dir $$@)
