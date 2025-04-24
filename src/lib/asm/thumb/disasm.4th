@@ -573,10 +573,11 @@ def write-disasm ( ptr num-cells -- )
   ELSE
     dup asm-thumb mark-dict @ cs + dict-contains?/2 IF
       2 dropn dup dict-entry-name @ cs + write-string space
-      dup asm' ,ins cs + equals? IF nl THEN
+      dup asm' ,ins cs + equals? IF nl arg0 cell-size uint< UNLESS space space THEN THEN
     ELSE
-      s" Unknown-Word: " write-string/2 space
-      2 dropn dup write-hex-uint space
+      s" ( Unknown-Word: ) " write-string/2
+      2 dropn dup write-hex-uint
+      arg0 cell-size uint< IF nl ELSE space THEN
     THEN
   THEN
   drop

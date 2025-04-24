@@ -40,9 +40,18 @@ def decompile-literal-word ( value word offset -- )
   3 return0-n
 end
 
+def decompile-data-seq ( ptr n -- )
+  space space
+  arg1 @ write-hex-uint space s" ,uint32" write-line/2
+  arg0 cell-size uint< IF 2 return0-n THEN
+  arg1 cell-size + set-arg1
+  arg0 cell-size - set-arg0
+  repeat-frame
+end
+
 def decompile-op-codes ( word -- )
   arg0 dict-entry-code peek cs + 0xFFFFFFFE logand
-  dup peek cell-size + cmemdump ( todo needs ,uint32 after op codes. )
+  dup peek cell-size + decompile-data-seq
   1 return0-n
 end
 
@@ -53,23 +62,22 @@ ELSE
 THEN
 
 def decompile-op
-  s" defop " write-string/2 arg0 write-dict-entry-name nl space space
+  s" defop " write-string/2 arg0 write-dict-entry-name nl
   decompile-op-fn @ IF
-    s" ( " write-string/2
-    arg0 decompile-op-codes
-    s" )" write-string/2 nl
-    arg0 decompile-op-fn @ dup IF
-      dup *code-size* uint< IF cs + THEN exec-abs
-    ELSE drop
+    arg0 decompile-op-fn @ dup *code-size* uint< IF cs + THEN exec-abs
+    UNLESS
+      space space s" ( Not a thumb op. )" write-line/2
+      arg0 decompile-op-codes
     THEN
   ELSE
     arg0 decompile-op-codes
   THEN
-  s" endop" write-string/2 nl
+  s" endop" write-string/2
   arg0 dict-entry-data peek dup IF
-    s" data[ " write-string/2
+    nl
+    s" data[ " write-line/2
     cs + dup string-length cmemdump
-    s" ]" write-string/2 nl
+    s"  ]" write-line/2
   THEN
 end
 
@@ -139,28 +147,28 @@ def decompile-colon
     THEN
     arg0 dict-entry-data peek dup IF cs + + decompile-colon-data THEN
     nl
-    local0 IF s" end" ELSE s" endcol" THEN write-string/2 nl
+    local0 IF s" end" ELSE s" endcol" THEN write-string/2
   THEN
 end
+
+( fixme the do-proper op itself goes through here )
 
 def decompile-proper
   s" : " write-string/2 arg0 write-dict-entry-name nl space space
   arg0 dict-entry-data peek dup IF cs + decompile-colon-data THEN
   nl s" ;" write-string/2
-  nl
 end
 
 def decompile-inplace-var
   arg2 dict-entry-data peek write-uint space
   arg1 arg0 write-string/2 space
   arg2 write-dict-entry-name
-  nl
 end
 
 def decompile-const
   arg0 dict-entry-data @ arg0 equals? IF
     s" symbol> " write-string/2
-    arg0 write-dict-entry-name nl
+    arg0 write-dict-entry-name
   ELSE
     arg0 s" const>" decompile-inplace-var
   THEN
@@ -169,7 +177,7 @@ end
 def decompile-const-offset
   arg0 dict-entry-data @ arg0 cs - equals? IF
     s" symbol> " write-string/2
-    arg0 write-dict-entry-name nl
+    arg0 write-dict-entry-name
   ELSE
     arg0 s" const-offset>" decompile-inplace-var
   THEN
@@ -179,7 +187,6 @@ def decompile-data-var
   arg2 dict-entry-data peek cs + 1 seq-peek write-uint space
   arg1 arg0 write-string/2 space
   arg2 write-dict-entry-name
-  nl
 end
 
 def decompile-unknown-entry
@@ -188,7 +195,6 @@ def decompile-unknown-entry
   arg0 decompile-entry-code nl
   s" data> " write-string/2
   arg0 dict-entry-data peek write-hex-uint
-  nl
 end
 
 def is-op? ( word -- yes? )
@@ -214,10 +220,10 @@ def maybe-decompile-immediate
   arg0 immediates @ cs + dict-contains-values? IF
     2dup dict-entry-name-equals? IF
       ( local0 IF s" immediate" ELSE s" immediate-only" THEN write-string/2 )
-      s" immediate" write-string/2
+      space s" immediate" write-string/2
     ELSE
       ( local0 IF s" immediate-as " ELSE s" immediate-only-as" THEN write-string/2 )
-      s" immediate-as " write-string/2
+      space s" immediate-as " write-string/2
       dup dict-entry-name @ cs + write-string
     THEN 2 dropn
   THEN nl
@@ -235,10 +241,10 @@ def decompile ( entry )
       ' do-inplace-var WHEN arg0 s" inplace-var>" decompile-inplace-var ;;
       ' do-data-var WHEN arg0 s" var>" decompile-data-var ;;
         arg0 is-op?
-	IF arg0 decompile-op
-	ELSE arg0 decompile-unknown-entry
-	THEN
-    ESAC
+        IF arg0 decompile-op
+        ELSE arg0 decompile-unknown-entry
+        THEN
+    ENDCASE
     arg0 maybe-decompile-immediate
   THEN
 end
