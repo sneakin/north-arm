@@ -33,6 +33,19 @@ defalias> spoke-byte poke-byte
 alias> sys:def def
 alias> sys:defcol defcol
 alias> sys:: :
+alias> sys:symbol> symbol>
+alias> sys:var> var>
+alias> sys:const> const>
+DEFINED? const-offset> IF
+  alias> sys:const-offset> const-offset>
+THEN
+DEFINED? const IF
+  alias> sys:const const
+THEN
+DEFINED? const-offset IF
+  alias> sys:const-offset const-offset
+THEN
+
 alias> : defproper
 ( alias> :: redefproper )
 alias> var> defvar>
@@ -47,6 +60,8 @@ alias> sys'' '' immediate-as sys'
 alias> ' out'
 alias> '' out'' immediate-as '
 
+alias> sys:immediate immediate
+alias> sys:immediate-as immediate-as
 alias> immediate out-immediate
 alias> immediate-as out-immediate-as
 
@@ -54,4 +69,5 @@ alias> SYS:DEFINED? DEFINED?
 alias> DEFINED? OUT:DEFINED?
 
 ( And finally switch alias> over: )
+alias> sys:alias> alias>
 alias> alias> defalias>

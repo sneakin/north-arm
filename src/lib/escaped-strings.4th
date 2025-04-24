@@ -4,7 +4,9 @@
 0x5C const> char-back-slash
 0x22 const> char-dquote
 
+DEFINED? return1-1 UNLESS
 defcol return1-1 drop set-arg0 return0 endcol  
+THEN
 
 def escape?
   arg0 0x1B equals? return1

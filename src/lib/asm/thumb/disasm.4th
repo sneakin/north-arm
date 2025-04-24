@@ -1,89 +1,70 @@
 ( Register value to symbolic decoding: )
 
-DEFINED? asm-thumb UNLESS s" src/lib/asm/thumb.4th" load/2 THEN
+SYS:DEFINED? asm-thumb UNLESS s" src/lib/asm/thumb.4th" load/2 THEN
 
-( todo ldr-pc data should be output as a hex dump )
+( todo ldr-pc data should be output as a hex dump; point the entry's data at it?  )
 ( todo floating point ops )
 
-: asm'
-  next-token asm-thumb mark-dict @ cs + dict-lookup
-  UNLESS not-found/2 0
-  ELSE rot 2 dropn
-  THEN
-;
-
-: [asm'] literal literal asm' cs - ; immediate-as asm'
-
-DEFINED? NORTH-COMPILE-TIME IF
-  : asm-out-off' asm' dup IF to-out-addr THEN ;
-
-  0
-  asm-out-off' r7
-  asm-out-off' r6
-  asm-out-off' r5
-  asm-out-off' r4
-  asm-out-off' r3
-  asm-out-off' r2
-  asm-out-off' r1
-  asm-out-off' r0
-  here
-  dhere to-out-addr swap 9 ,seq
-  const-offset> DISASM-LOW-REGS
-
-  : disasm-low-register
-    7 logand DISASM-LOW-REGS swap seq-peek
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  sys:: next-asm-word
+    next-token asm-thumb mark-dict @ from-out-addr out-origin @ dict-lookup/4
+    UNLESS not-found/2 0
+    ELSE to-out-addr rot 2 dropn
+    THEN
   ;
+
+  sys:alias> asm' next-asm-word
+
+  sys:: [asm'] out-off' literal next-asm-word ; cross-immediate-as asm'
 ELSE
-  0
-  asm' r7
-  asm' r6
-  asm' r5
-  asm' r4
-  asm' r3
-  asm' r2
-  asm' r1
-  asm' r0
-  here
-  const> DISASM-LOW-REGS
-
-  : disasm-low-register
-    7 logand DISASM-LOW-REGS swap seq-peek cs -
+  : next-asm-word
+    next-token asm-thumb mark-dict @ as-code-pointer cs dict-lookup/4
+    UNLESS not-found/2 0
+    ELSE rot 2 dropn
+    THEN
   ;
+
+  alias> asm' next-asm-word
+
+  : [asm'] literal literal next-asm-word dup IF cs - THEN ; immediate-as asm'
 THEN
 
-DEFINED? NORTH-COMPILE-TIME IF
-  0
-  asm-out-off' pc
-  asm-out-off' lr
-  asm-out-off' sp
-  asm-out-off' ip
-  asm-out-off' fp
-  asm-out-off' sl
-  asm-out-off' r9
-  asm-out-off' r8
-  here
+0
+asm' r7
+asm' r6
+asm' r5
+asm' r4
+asm' r3
+asm' r2
+asm' r1
+asm' r0
+here
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  dhere to-out-addr swap 9 ,seq
+  const-offset> DISASM-LOW-REGS
+  : disasm-low-register 7 logand DISASM-LOW-REGS swap seq-peek ;
+ELSE
+  const> DISASM-LOW-REGS
+  : disasm-low-register 7 logand DISASM-LOW-REGS swap seq-peek cs - ;
+THEN
+
+0
+asm' pc
+asm' lr
+asm' sp
+asm' ip
+asm' fp
+asm' sl
+asm' r9
+asm' r8
+here
+SYS:DEFINED? NORTH-COMPILE-TIME IF
   dhere to-out-addr swap 9 ,seq
   const-offset> DISASM-HI-REGS
-
-  : disasm-hi-register
-    7 logand DISASM-HI-REGS swap seq-peek
-  ;
+  : disasm-hi-register 7 logand DISASM-HI-REGS swap seq-peek ;
 ELSE
-  0
-  asm' pc
-  asm' lr
-  asm' sp
-  asm' ip
-  asm' fp
-  asm' sl
-  asm' r9
-  asm' r8
-  here
   const> DISASM-HI-REGS
-
-  : disasm-hi-register
-    7 logand DISASM-HI-REGS swap seq-peek cs -
-  ;
+  : disasm-hi-register 7 logand DISASM-HI-REGS swap seq-peek cs - ;
 THEN
 
 : disasm-register
@@ -571,7 +552,7 @@ def write-disasm ( ptr num-cells -- )
       arg1 @ write-uint
     THEN space
   ELSE
-    dup asm-thumb mark-dict @ cs + dict-contains?/2 IF
+    dup asm-thumb mark-dict @ as-code-pointer dict-contains?/2 IF
       2 dropn dup dict-entry-name @ cs + write-string space
       dup asm' ,ins cs + equals? IF nl arg0 cell-size uint< UNLESS space space THEN THEN
     ELSE
@@ -586,18 +567,19 @@ def write-disasm ( ptr num-cells -- )
   repeat-frame
 end
 
-def write-word-disasm ( word -- )
+def write-word-disasm ( word -- decompiled? )
   arg0 disasm-word
-  dup IF write-disasm ELSE s" Not a thumb op." write-line/2 THEN
-  1 return0-n
+  dup IF space space write-disasm true
+  ELSE false
+  THEN set-arg0
 end
 
-DEFINED? NORTH-COMPILE-TIME IF
-  out' decompile-op-fn IF
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  OUT:DEFINED? decompile-op-fn IF
     out' write-word-disasm out' decompile-op-fn set-out-var!
   THEN
 ELSE
-  DEFINED? decompile-op-fn IF
+  SYS:DEFINED? decompile-op-fn IF
     ' write-word-disasm decompile-op-fn !
   THEN
 THEN

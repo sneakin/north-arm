@@ -375,7 +375,8 @@ BUILDER_SRC=\
 	src/lib/structs.4th \
 	src/interp/cross.4th \
 	src/interp/boot/include.4th \
-	src/bin/builder.4th
+	src/bin/builder.4th \
+	src/lib/asm/thumb/disasm.4th
 
 define define_stage_targets # target, stage
 bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) $(BUILDER_MIN_SRC)
