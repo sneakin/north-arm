@@ -12,10 +12,10 @@
 
 : def-read
   defcol-read-init compiling-read
-  out' return0 to-out-addr swap 1 +
-  read-terminator over 3 + set-overn
-  out' begin-frame to-out-addr over 2 + set-overn
-  here 0 ' defcol-cb revmap-stack-seq/3 1 + dropn
+  out-off' return0 swap 1 +
+  out-off' begin-frame over 2 + set-overn 1 +
+  defcol-copy-to-data
+  5 + dropn ( drops the frame left by compiling-read )
 ;
 
 : def

@@ -41,20 +41,42 @@ end
 
 ( Reversal: )
 
-def reverse-loop ( start ending )
-  arg1 arg0 uint>= IF return0 THEN
-  ( swap values )
-  arg1 peek arg0 peek
-  arg1 poke arg0 poke
-  ( loop towards the middle )
-  arg1 cell-size + set-arg1
-  arg0 cell-size - set-arg0
-  repeat-frame
-end
+OUT:DEFINED? nreverse-cells IF
+  def reverse-cells! ( ptr length -- )
+    arg1 arg0 1 - cell-size * + arg1 arg0 nreverse-cells
+    2 return0-n
+  end
 
-def reverse ( ptr length )
-  arg1 arg1 arg0 1 - cell-size * + reverse-loop
-end
+  ( todo move to string.4th? )
+  def reverse-bytes! ( ptr length -- )
+    arg1 arg0 1 - + arg1 arg0 nreverse-bytes
+    2 return0-n
+  end
+
+  def reverse ( ptr num-cells ++ )
+    arg1 arg0 1 - cell-size * + arg1 arg0 nreverse-cells
+  end
+
+  def reverse-into ( src dest num-cells -- )
+    arg2 arg0 1 - cell-size * + arg1 arg0 reverse-cells
+    3 return0-n
+  end
+ELSE
+  def reverse-loop ( start ending )
+    arg1 arg0 uint>= IF return0 THEN
+    ( swap values )
+    arg1 peek arg0 peek
+    arg1 poke arg0 poke
+    ( loop towards the middle )
+    arg1 cell-size + set-arg1
+    arg0 cell-size - set-arg0
+    repeat-frame
+  end
+
+  def reverse ( ptr length )
+    arg1 arg1 arg0 1 - cell-size * + reverse-loop
+  end
+THEN
 
 ( Iteration: )
 

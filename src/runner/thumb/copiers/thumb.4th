@@ -120,3 +120,64 @@ defop copy-down-4
   0 r1 bit-set r2 bit-set pushr ,ins
   emit-next
 endop
+
+( Reverse: )
+
+( Macros for inner loops: )
+push-asm-mark
+
+( Reverses a string of bytes. )
+: emit-reverse-bytes
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  10 bcc-ins ,ins
+  0 r2 r3 ldr-offset .offset-byte ,ins
+  0 r1 r3 str-offset .offset-byte ,ins
+  1 r0 sub# ,ins
+  1 r1 add# ,ins
+  1 r2 sub# ,ins
+  -18 branch-ins ,ins
+;
+
+( Reverse a sequence of cells. )
+: emit-reverse-cells
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  8 bcc-ins ,ins
+  0 r2 r3 ldr-offset ,ins
+  r1 0 r3 bit-set stmia ,ins
+  1 r0 sub# ,ins
+  cell-size r2 sub# ,ins
+  -16 branch-ins ,ins
+;
+
+( Reverse a sequence of cells. )
+: emit-nreverse-bytes
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  14 bcc-ins ,ins
+  0 r1 r3 ldr-offset .offset-byte ,ins
+  0 r2 r4 ldr-offset .offset-byte ,ins
+  0 r1 r4 str-offset .offset-byte ,ins
+  0 r2 r3 str-offset .offset-byte ,ins
+  1 r0 sub# ,ins
+  1 r1 add# ,ins
+  1 r2 sub# ,ins
+  -22 branch-ins ,ins
+;
+
+( Reverse a sequence of cells. )
+: emit-nreverse-cells
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  12 bcc-ins ,ins
+  0 r1 r3 ldr-offset ,ins
+  0 r2 r4 ldr-offset ,ins
+  r1 0 r4 bit-set stmia ,ins
+  0 r2 r3 str-offset ,ins
+  1 r0 sub# ,ins
+  cell-size r2 sub# ,ins
+  -20 branch-ins ,ins
+;
+
+pop-mark

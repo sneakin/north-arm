@@ -101,3 +101,51 @@ def copy-down ( src dest num-bytes -- bytes-left )
     copy-cells-down
   THEN 3 return1-n
 end
+
+( Low level reversals: )
+
+( Reverses a byte sequence given the source's ending address,
+  destination's beginning address, and the number of bytes.
+  Not hardened against misuse. )
+defop reverse-bytes ( src dest counter -- src-counter dest+counter 0 )
+  0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
+  emit-reverse-bytes
+  0 r1 bit-set r2 bit-set pushr ,ins
+  emit-next
+endop
+
+( Reverses a sequence of cells given the source's ending address,
+  destination's beginning address, and the number of cells.
+  Not hardened against misuse. )
+defop reverse-cells ( src dest counter -- src-counter dest+counter 0 )
+  0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
+  emit-reverse-cells
+  0 r1 bit-set r2 bit-set pushr ,ins
+  emit-next
+endop
+
+( Reverses a byte string in place given its start and ending
+  addresses and the number of bytes.
+  Not hardened against misuse. )
+defop nreverse-bytes ( src dest counter -- src-counter dest+counter 0 )
+  0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
+  0 r4 bit-set pushr ,ins
+  1 r0 r0 mov-asr ,ins
+  emit-nreverse-bytes
+  0 r4 bit-set popr ,ins
+  0 r1 bit-set r2 bit-set pushr ,ins
+  emit-next
+endop
+
+( Reverses a sequence of bytes in place given its start and ending
+  addresses and the number of cells.
+  Not hardened against misuse. )
+defop nreverse-cells ( src dest counter -- src-counter dest+counter 0 )
+  0 r1 bit-set r2 bit-set popr ,ins ( r1 dest, r2 src, r0 counter )
+  0 r4 bit-set pushr ,ins
+  1 r0 r0 mov-asr ,ins
+  emit-nreverse-cells
+  0 r4 bit-set popr ,ins
+  0 r1 bit-set r2 bit-set pushr ,ins
+  emit-next
+endop

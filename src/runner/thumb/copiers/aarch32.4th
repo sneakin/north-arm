@@ -108,3 +108,58 @@ defop copy-down-4
   0 r1 bit-set r2 bit-set pushr ,ins
   emit-next
 endop
+
+( Reverse: )
+
+( Macros for inner loops: )
+push-asm-mark
+
+( Reverses a string of bytes. )
+: emit-reverse-bytes
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  6 bcc-ins ,ins
+  1 r2 r3 ldr# .w .b ,ins
+  1 r1 r3 str# .w .up .b ,ins
+  1 r0 sub# ,ins
+  -14 branch-ins ,ins
+;
+
+( Reverse a sequence of cells. )
+: emit-reverse-cells
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  6 bcc-ins ,ins
+  r2 0 r3 bit-set ldmda ,ins
+  r1 0 r3 bit-set stmia ,ins
+  1 r0 sub# ,ins
+  -14 branch-ins ,ins
+;
+
+( Reverse a sequence of bytes in place. )
+: emit-nreverse-bytes
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  10 bcc-ins ,ins
+  0 r1 r3 ldr# .b ,ins
+  0 r2 r4 ldr# .b ,ins
+  1 r2 r3 str# .w .b ,ins
+  1 r1 r4 str# .w .up .b ,ins
+  1 r0 sub# ,ins
+  -18 branch-ins ,ins
+;
+
+( Reverse a sequence of cells in place. )
+: emit-nreverse-cells
+  ( r1 dest, r2 src, r0 counter )
+  1 r0 cmp# ,ins
+  10 bcc-ins ,ins
+  0 r1 r3 ldr# ,ins
+  0 r2 r4 ldr# ,ins
+  cell-size r2 r3 str# .w ,ins
+  cell-size r1 r4 str# .w .up ,ins
+  1 r0 sub# ,ins
+  -18 branch-ins ,ins
+;
+
+pop-mark
