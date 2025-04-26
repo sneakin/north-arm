@@ -32,6 +32,15 @@ used to rebuild.
 * Tasks
 ** 2025
 *** April
+**** Dumping
+const-offset: most always a pointer, but a string, seq, list, dict, or struct?
+var & const: try to detect pointers
+ops: binary bytes need to be pushed to data stack
+strings: could detect length for s"
+formatting: indenting, newlines before IF/ELSE/THEN, begin-frame, data writers
+
+disassemblers need marks too. aarch32 and x86 needs support first.
+**** *mark* needs be updated w/ full init-dict.
 **** literalizers list
 **** aarch32 stm restrictions on 1 reg
 **** copier tests
@@ -42,6 +51,10 @@ used to rebuild.
 
 **** reverse sequence and string functions on par with the copiers. TTY blitting too?
 **** Rename ~exec~ to ~exec+cs~, ~exec-abs~ to ~exec~.
+**** Startup initializers and atexit finalizers
+List of functions to call at startup and exit.
+math-init, return stack init, data init
+
 **** Reorg
 marks under interp or runner
 escaped strings under interp
@@ -49,6 +62,9 @@ cross <-> build, bash and interp builders, move boot/cross
 **** dallot and strings in the binary: separate code writing from data-stack
 **** Output dictionary on stack, writen in second pass; more like labels in an assembler
 **** Debugging ~next~ with a hook.
+Needs to be able to mix the hooked next and next for when it interprets itself.
+A whole and separate call thread may be necessary for a debugger.
+Features: inspection, tracing, break points, stepping, watchpoints, profiling (time per call, # calls, callers, etc)
 **** Math
 ***** Arbitrary big ints for crypto, optimized:  64, 256 bits.
 ***** Verify trig and other functions
