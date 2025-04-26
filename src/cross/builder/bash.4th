@@ -2,6 +2,7 @@
 
 s[ src/cross/builder/globals.4th
    src/cross/builder/predicates/bash.4th
+   src/cross/builder/marks.4th
 ] load-list
 
 ( todo duplicated by include/runner.4th )

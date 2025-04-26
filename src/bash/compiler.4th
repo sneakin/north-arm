@@ -318,9 +318,6 @@ alias> pointer literal
   1 - loop
 ;
 
-: push-asm-mark ( stub ) ;
-: pop-mark ( stub ) ;
-
 : error-line/2 drop error-line ;
 : error-int ,,i drop ;
 : error-hex-int negative? IF " -" error-string abs-int THEN ,,h drop ;

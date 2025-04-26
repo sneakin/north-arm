@@ -182,13 +182,13 @@ doc/html/assembler-thumb.html: Makefile src/bin/assembler.4th $(THUMB_ASSEMBLER_
 doc/html/bash.html: $(FORTH_SRC)
 	$(HTMLER) $^ > $@
 
-bin/fforth.dict: $(FORTH_SRC)
-	echo -e "src/bash/compiler.4th load $@ save-dict\n" | $(FORTH)
+bin/fforth.dict: src/bash/compiler.4th
+	echo -e "\" $<\" load $@ save-dict\n" | $(FORTH)
 
 bin/assembler-thumb.sh: bin/fforth bin/assembler-thumb.dict
 	ln -sf fforth $@
-bin/assembler-thumb.dict: src/cross/builder.4th $(FORTH_SRC) $(THUMB_ASSEMBLER_SRC)
-	echo -e "load-core \" src/cross/arch/thumb.4th\" load \" $<\" load \" $@\" save-dict\n" | $(FORTH)
+bin/assembler-thumb.dict: src/cross/builder.4th
+	echo -e "load-core \" $<\" load builder-load \" $@\" save-dict\n" | $(FORTH)
 
 RUNNER_THUMB_SRC=\
 	./src/include/runner.4th \
@@ -341,6 +341,9 @@ doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 
 # Stage 0
 
+./src/include/interp.4th: version.4th
+./src/runner/main.4th: version.4th
+
 %$(EXECEXT): %.4th
 	@echo -e "\e[36;1mBuilding $(@)\e[0m"
 	cat $< | $(FORTH) > $@
@@ -403,9 +406,6 @@ STAGE0_FORTH=$(RUNNER) ./bin/interp$(EXECEXT)
 STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
 #STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
 STAGE1_BUILDER=$(RUNNER) ./bin/builder.static.1$(EXECEXT)
-
-./src/include/interp.4th: version.4th
-./src/runner/main.4th: version.4th
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
 bin/builder$(EXECEXT): $(BUILDER_MIN_SRC)
