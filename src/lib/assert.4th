@@ -76,7 +76,7 @@ end
   IF 2 dropn
   ELSE
     1 int-sub
-    dup 3 int-add overn over seq-peek ,h
+    dup 3 int-add overn over seq-peek
     3 overn assert-equals
     swap drop loop
   THEN
