@@ -18,7 +18,7 @@ alias> RECURSE repeat-frame immediate
 0x53544f50 const> terminator
 def terminator? arg0 terminator equals? return1 end
 
-DEFINED? NORTH-COMPILED-TIME UNLESS
+DEFINED? NORTH-COMPILED-TIME IF
   sys-def global-var 0 var> exit-frame end
 
   sys-def constant

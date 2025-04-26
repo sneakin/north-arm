@@ -41,7 +41,7 @@ end
 
 ( Reversal: )
 
-OUT:DEFINED? nreverse-cells IF
+DEFINED? nreverse-cells IF
   def reverse-cells! ( ptr length -- )
     arg1 arg0 1 - cell-size * + arg1 arg0 nreverse-cells
     2 return0-n
