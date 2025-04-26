@@ -313,12 +313,16 @@ Rd destination
 Rm offset
 )
 
+: .b 0x400000 logior ;
+
+( todo offset is the right position? )
+
 : swp ( rm rn rd -- ins )
   strh/3 .p 0xFFFFFF0F logand 0x90 logior
 ;
 
 : swpi ( offset rn rd -- ins )
-  strhi/3 .p 0xFFFFFF0F logand 0x90 logior
+  swp .b
 ;
 
 ( PSR Transfer
@@ -368,8 +372,6 @@ Rn base
 Rd source/dest
 Offset
 )
-
-: .b 0x400000 logior ;
 
 ( todo needs auto .up, but the offset may be a shift )
 
