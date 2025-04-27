@@ -16,17 +16,20 @@ Define target-pi-zero to restrict the used CPU features.
 ( todo detect if Thumb2 is supported for coprocessor ops [coproc15 register]; adding 1 to PC only works on T2 devices. )
 ( todo enter interpreter, proper uart init, start other cores, uart, interrupts, framebuffer, threading )
 
-load-core
+asm-thumb push-mark
+
+( true const> target-pi-zero )
+
+DEFINED? target-pi-zero IF s" For Pi zero" error-line/2 THEN
 
 0xFE000000 const> MMIO-BASE4 ( pi 4 )
 0x3f000000 const> MMIO-BASE2 ( Pi 2+, Zero 2 )
 0x20000000 const> MMIO-BASE1 ( Pi 1, Zero )
-' target-pi-zero defined? IF MMIO-BASE1 ELSE MMIO-BASE2 THEN var> MMIO-BASE
+DEFINED? target-pi-zero IF MMIO-BASE1 ELSE MMIO-BASE2 THEN var> MMIO-BASE
 
 dhere const> origin
 
-s[ src/lib/asm/aarch32/fake-thumb.4th ] load-list
-s[ src/lib/asm/thumb.4th ] load-list
+pop-mark
 
 ( The Pi boots with:
   r0 = core, r1 = board id, r2 = atags, pc = 0x10000, lr = mailbox loop
@@ -64,7 +67,7 @@ pc sp movrr ,ins
 origin dhere - abs-int 4 + dec-sp ,ins
 
 ( detect and push the correct mmio base )
-' target-pi-zero defined? IF
+DEFINED? target-pi-zero IF
   ( fake a blx to exit thumb )
   pc r0 movrr ,ins
   7 r0 add# ,ins
@@ -206,7 +209,7 @@ r7 sp movrr ,ins
 
 ( determine MMIO base on each core and place in R1 and ToS )
 0 r0 bit-set pushr ,ins
-' target-pi-zero defined? IF
+DEFINED? target-pi-zero IF
   ( fake a blx )
   pc r0 movrr ,ins
   7 r0 add# ,ins
@@ -260,8 +263,10 @@ r0 r6 adc ,ins
 Register list: https://forums.raspberrypi.com/viewtopic.php?t=126891
 )
 4 pad-data
-dhere branch-mmio-base - ' target-pi-zero UNLESS 4 - THEN r0 addr-pc branch-mmio-base ins!
-dhere branch-mmio-base-2 - ' target-pi-zero UNLESS 4 - THEN r0 addr-pc branch-mmio-base-2 ins!
+dhere branch-mmio-base - DEFINED? target-pi-zero UNLESS 4 - THEN r0 addr-pc branch-mmio-base ins!
+dhere branch-mmio-base-2 - DEFINED? target-pi-zero UNLESS 4 - THEN r0 addr-pc branch-mmio-base-2 ins!
+
+pop-mark
 
 ( Zero lacks thumb2. )
 asm-aarch32-thumb push-mark
@@ -272,19 +277,23 @@ asm-aarch32-thumb push-mark
   r1 r0 and ,ins
   0xB r0 sub# ,ins
   2 r0 r0 mov-lsl ,ins
-dhere
+  dhere
   0 r1 addr-pc ,ins
   r0 r1 r0 ldr ,ins
   lr bx ,ins
 
 ( the MMIO table )
 dhere over - 8 - r1 addr-pc swap ins!
+
+pop-mark
+
+asm-thumb push-mark
+
 MMIO-BASE1 ,uint32
 MMIO-BASE2 ,uint32
 MMIO-BASE4 ,uint32
 
-pop-mark
 
 ( Dump the assembled bytes to standard out. )
-origin ddump-binary-bytes
+( origin ddump-binary-bytes )
 pop-mark

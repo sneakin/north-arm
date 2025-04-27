@@ -580,7 +580,7 @@ end
   10 overn 8 overn over - elf32-data-segment write-elf32-data-section-header
   7 overn 7 overn over - write-elf32-string-section-header
   5 overn 3 overn over - write-elf32-dynamic-section-header
-  4 overn 3 overn over - .s write-elf32-dynamic-string-section-header
+  4 overn 3 overn over - write-elf32-dynamic-string-section-header
   2 overn 2 overn over - elf32-code-segment 3 overn to-out-addr + write-elf32-data-section-header
   ( todo exported symbols from dictionary )
 

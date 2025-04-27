@@ -71,7 +71,8 @@ ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
 all: $(OUTPUTS)
 tests: lib/ffi-test-lib$(SOEXT) bin/interp-tests$(EXECEXT)
 
-.PHONY: clean doc all quick git-info env programs
+.PHONY: clean doc all quick git-info env programs \
+	run-bare-metal debug-bare-metal
 
 git-info:
 	@echo $(GIT) at "$(shell cat .git/HEAD | sed -e 's/.*: \(.*\)/\1/')"
@@ -86,7 +87,8 @@ quick:
 	touch bin/interp.elf
 
 clean:
-	rm -f $(OUTPUTS) $(DOCS)
+	rm -f $(OUTPUTS) $(DOCS) \
+		misc/pi-bare-metal.bin misc/pi-bare-metal$(EXECEXT)
 
 
 #
@@ -424,6 +426,16 @@ bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 #
 # Test cases:
 #
+
+# Bare metal executables
+misc/pi-bare-metal.bin: misc/pi-bare-metal$(EXECEXT)
+	objcopy -O binary $< $@
+misc/pi-bare-metal$(EXECEXT): misc/pi-bare-metal.4th
+	$(STAGE$(STAGE)_BUILDER) -b -o $@ $<
+run-bare-metal: misc/pi-bare-metal.bin
+	qemu-system-arm -M raspi2b -serial stdio -kernel $<
+debug-bare-metal: misc/pi-bare-metal.bin
+	qemu-system-arm -S -s -M raspi2b -serial stdio -kernel $<
 
 # Barebones ELF files:
 bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th

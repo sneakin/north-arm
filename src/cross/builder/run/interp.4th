@@ -12,6 +12,12 @@ false var> NORTH-COMPILE-TIME ( Track if the output compiling words are loaded. 
 0 var> boot-punter
 0 var> copyright-address
 
+DEFINED? builder-bare-bones IF
+  def builder-bare-bones? builder-bare-bones @ return1 end
+ELSE
+  def builder-bare-bones? false return1 end
+THEN
+
 DEFINED? open-output-file/2 UNLESS
   def open-output-file/2 ( mode path -- fid )
     arg1 O_TRUNC O_CREAT logior O_WRONLY logior arg0 open 2 return1-n
@@ -36,13 +42,28 @@ def builder-compute-output-hash ( origin size out-ptr out-size -- out-ptr out-si
   arg1 arg0 3 overn sha256->string/3 4 return2-n
 end
 
-def builder-patch-hash ( origin size word -- )
-  s" Hashed " error-string/2 arg1 error-int s"  bytes to: " error-string/2
-  dhere to-out-addr arg0 dict-entry-data !
+def builder-hash-program ( origin size -- hash-ptr )
+  s" Hashed " error-string/2 arg0 error-int s"  bytes to: " error-string/2
+  dhere
   72 stack-allot
-  arg2 arg1 3 overn 72 builder-compute-output-hash
+  arg1 arg0 3 overn 72 builder-compute-output-hash
   2dup error-string/2 enl ,byte-string/2
-  3 return0-n
+  local0 2 return1-n
+end
+
+def update-constant ( value str n -- )
+  arg1 arg0 cross-lookup LOOKUP-WORD equals?
+  IF arg2 over dict-entry-data uint32!
+  ELSE not-found
+  THEN 3 return0-n
+end
+
+def update-data-var-init ( value str n -- )
+  arg1 arg0 cross-lookup LOOKUP-WORD equals?
+  IF dict-entry-data uint32@ from-out-addr data-var-init-value
+     arg2 swap uint32!
+  ELSE not-found
+  THEN 3 return0-n
 end
 
 def builder-run ( entry len src-cons )
@@ -68,43 +89,62 @@ def builder-run ( entry len src-cons )
   write-elf-header
   dhere code-origin poke
 
-  ( Plain text message: )
-  target-raspi? IF " src/runner/thumb/boot.4th" load THEN
-  dhere copyright-address poke
-  BUILD-COPYRIGHT peek dup IF ,byte-string ELSE drop THEN
-  ( Words to later patch: )
-  s" _start" create
+  builder-bare-bones? UNLESS
+    ( Plain text message: )
+    target-raspi? IF " src/runner/thumb/boot.4th" load THEN
+    dhere copyright-address poke
+    BUILD-COPYRIGHT peek dup IF ,byte-string ELSE drop THEN
+    ( Words to later patch: )
+    s" _start" create
+  THEN
 
   ( todo options to load a file before and after the runner )
   ( The main stage: )
   true NORTH-COMPILE-TIME poke
-  builder-with-runner peek IF " src/include/runner.4th" load THEN
-  ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" load THEN THEN
-  ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" load THEN THEN
+  builder-bare-bones? UNLESS
+    builder-with-runner peek IF " src/include/runner.4th" load THEN
+    ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" load THEN THEN
+    ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" load THEN THEN
+  THEN
   arg0 load-list
 
-  out-dict update-structs
-  s" copyright" cross-lookup IF copyright-address peek to-out-addr over dict-entry-data uint32! ELSE not-found THEN drop
-  s" _start" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
-  s" *init-dict*" cross-lookup IF out-dict to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
-  s" immediates" cross-lookup IF output-immediates peek to-out-addr swap dict-entry-data uint32@ from-out-addr data-var-init-value uint32! ELSE not-found drop THEN
-  s" *code-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
-  s" *ds-offset*" cross-lookup IF elf-data-segment-offset swap dict-entry-data uint32! ELSE not-found drop THEN
+  builder-bare-bones? UNLESS
+    out-dict update-structs
+    s" _start" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN
+    copyright-address peek to-out-addr s" copyright" update-constant
+    out-dict to-out-addr s" *init-dict*" update-constant
+    output-immediates peek to-out-addr s" immediates" update-data-var-init
+    dhere to-out-addr s" *code-size*" update-constant
+    elf-data-segment-offset s" *ds-offset*" update-constant
 
-  4096 align-code
-  out-origin peek out-dict write-variable-data
-  s" *ds-size*" cross-lookup IF dhere 3 overn - swap dict-entry-data uint32! ELSE not-found drop THEN
-  s" *init-data*" cross-lookup IF over to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
+    4096 align-code
+    out-origin peek out-dict write-variable-data
+    dhere over - s" *ds-size*" update-constant
+    dup to-out-addr s" *init-data*" update-constant
+  ELSE
+    dhere
+  THEN
+  
   code-origin peek
   ( entry point: )
-  s" init" cross-lookup UNLESS " no init found" error-line not-found return0 THEN
-  dict-entry-code uint32@ cell-size +
+  s" init" cross-lookup
+  IF dict-entry-code uint32@ cell-size +
+  ELSE
+    drop
+    arg2 arg1 parse-uint UNLESS
+      " Warning: no init found or numeric entry point given" error-line
+      drop dup to-out-addr
+    THEN
+  THEN
   boot-punter peek dup IF 2dup to-out-addr - swap poke ELSE drop THEN
   ( finish the ELF file )
   write-elf-ending
-  s" *program-size*" cross-lookup IF dhere to-out-addr swap dict-entry-data uint32! ELSE not-found drop THEN
 
-  s" *program-sha256*" cross-lookup IF out-origin @ dhere over - roll builder-patch-hash ELSE not-found drop THEN
+  builder-bare-bones? UNLESS
+    dhere to-out-addr s" *program-size*" update-constant
+    out-origin peek dhere over - builder-hash-program
+    to-out-addr s" *program-sha256*" update-constant
+  THEN
 
   " Writing to " error-string
   current-output peek set-local0

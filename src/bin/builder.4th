@@ -16,7 +16,11 @@ false var> verbosity
 false var> do-dump-dict
 false var> show-version
 
-" hVt:e:vricb:o:dQ" string-const> OPTS
+DEFINED? builder-bare-bones UNLESS
+  false var> builder-bare-bones
+THEN
+
+" hVt:e:vbricf:o:dQ" string-const> OPTS
 
 def reset!
   builder-reset!
@@ -32,10 +36,11 @@ def process-opts
     s" e" WHEN-STR arg1 entry-point ! true 2 return1-n ;;
     s" t" WHEN-STR arg1 builder-target ! true 2 return1-n ;;
     s" v" WHEN-STR verbosity inc! true 2 return1-n ;;
+    s" b" WHEN-STR true builder-bare-bones ! true 2 return1-n ;;
     s" r" WHEN-STR false builder-with-runner ! true 2 return1-n ;;
     s" i" WHEN-STR true builder-with-interp ! true 2 return1-n ;;
     s" c" WHEN-STR true builder-with-cross ! true 2 return1-n ;;
-    s" b" WHEN-STR arg1 builder-output-format ! true 2 return1-n ;;
+    s" f" WHEN-STR arg1 builder-output-format ! true 2 return1-n ;;
     s" o" WHEN-STR arg1 builder-output-file ! true 2 return1-n ;;
     s" d" WHEN-STR start-interpreter inc! true 2 return1-n ;;
     s" Q" WHEN-STR true do-dump-dict ! true 2 return1-n ;;
@@ -61,8 +66,9 @@ def build
     s"         -V  Print version info." write-line/2
     s"  -t target  Platform to target" write-line/2
     s"    -e word  Word to use as the entry point." write-line/2
-    s"    -b name  Output format" write-line/2
+    s"    -f name  Output format" write-line/2
     s"    -o path  Output file name" write-line/2
+    s"         -b  Do not include anything." write-line/2
     s"         -r  Do not include the runner." write-line/2
     s"         -i  Do include the interpreter." write-line/2
     s"         -c  Do include the aliases to ease cross compiling." write-line/2
@@ -82,16 +88,17 @@ def build
     s" Output file: " error-string/2 builder-output-file @ dup IF error-line ELSE drop s" stdout" error-line/2 THEN
     s" Output format: " error-string/2 builder-output-format @ error-line
     s" Entry point: " error-string/2 entry-point @ error-line
-    s" With runner: " error-string/2 builder-with-runner @ error-int enl
-    s" With interp: " error-string/2 builder-with-interp @ error-int enl
-    s" With cross: " error-string/2 builder-with-cross @ error-int enl
-    s" Intpreter: " error-string/2 start-interpreter @ error-int enl
+    s" Bare bones? " error-string/2 builder-bare-bones @ error-bool enl
+    s" With runner? " error-string/2 builder-with-runner @ error-bool enl
+    s" With interp? " error-string/2 builder-with-interp @ error-bool enl
+    s" With cross? " error-string/2 builder-with-cross @ error-bool enl
+    s" Interpreter: " error-string/2 start-interpreter @ error-bool enl
     s" Dump dictionary? " error-string/2 do-dump-dict @ error-bool enl
     s" Sources: " error-line/2 sources @ ' error-line map-car
   THEN
 
   start-interpreter @ 1 equals? IF interp THEN
-  
+
   " src/copyright.4th" load
 
   builder-load
@@ -102,8 +109,8 @@ def build
   entry-point @
   dup string-length
   sources @
-  s" builder-run" dict dict-lookup IF
-    rot 2 dropn exec-abs
+  s" builder-run" dict dict-lookup
+  IF rot 2 dropn exec-abs
   ELSE 6 dropn
   THEN
 
