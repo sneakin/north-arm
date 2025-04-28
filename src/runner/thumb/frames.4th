@@ -42,7 +42,7 @@ endop
 
 defop return0
   ( Restore FP and SP before exiting. )
-  0 r0 bit-set pushr ,ins
+  0 r0 bit-set pushr ,ins ( for when FP is the ToS )
   fp sp movrr ,ins
   0 fp bit-set popr ,ins
   0 r0 bit-set popr ,ins
@@ -70,11 +70,9 @@ endop
 
 defop return1-1
   ( Restore FP and SP before exiting, dropping 1 arg, but keeping the next on stack. )
-  cell-size r1 mov# ,ins
-  0 r0 bit-set popr ,ins
   fp sp movrr ,ins
   0 fp bit-set eip bit-set popr ,ins
-  r1 sp addrr ,ins
+  cell-size inc-sp ,ins
   emit-next
 endop
 
