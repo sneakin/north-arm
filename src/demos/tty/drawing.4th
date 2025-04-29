@@ -65,19 +65,39 @@ end
 8 var> tty-demo-loops
 guy var> tty-demo-image
 
+def demo-tty-init-num-loops ( arg-num -- )
+  arg0 argc uint< IF
+    arg0 get-argv dup string-length parse-uint
+    IF tty-demo-loops ! THEN
+  THEN 1 return0-n
+end
+
+def demo-tty-init-image
+  2 argc uint< IF 2 get-argv dup string-length ELSE s" guy" THEN
+  s" Using sprite " error-string/2
+  2dup error-line/2 dict dict-lookup
+  IF exec-abs tty-demo-image !
+  ELSE s" No sprites found." error-line/2 -1 sysexit
+  THEN 2 dropn
+end
+  
 def demo-tty-line
+  2 demo-tty-init-num-loops
   tty-demo-loops @ ' tty-context-line demo-tty-drawing/2
 end
 
 def demo-tty-ellipse
+  2 demo-tty-init-num-loops
   tty-demo-loops @ ' tty-context-ellipse demo-tty-drawing/2
 end
 
 def demo-tty-circle
+  2 demo-tty-init-num-loops
   tty-demo-loops @ ' tty-context-circle-rect demo-tty-drawing/2
 end
 
 def demo-tty-blit
+  3 demo-tty-init-num-loops demo-tty-init-image
   ' tty-context-blit/2 tty-demo-image @ 1 partial-after
   tty-demo-loops @ over demo-tty-drawing/2
 end
@@ -92,20 +112,28 @@ def demo-tty-scaled-blit-fn ( y x context img -- )
 end
 
 def demo-tty-scaled-blit
+  3 demo-tty-init-num-loops demo-tty-init-image
   ' demo-tty-scaled-blit-fn tty-demo-image @ partial-first
   tty-demo-loops @ over demo-tty-drawing/2
 end
 
 def demo-tty-usage
-  s" Usage: " write-string/2
-  0 get-argv write-string
-  s"  line|circle|ellipse|blit|scale" write-line/2
+  s" Usage: " write-string/2 0 get-argv write-string
+  s"  MODE [options...]" write-line/2
+  nl
+  s" Modes:" write-line/2
+  s"             line [#]  Draw # random lines." write-line/2
+  s"           circle [#]  Draw # random circles." write-line/2
+  s"          ellipse [#]  Draw # random ellipses." write-line/2
+  s"    blit [sprite [#]]  Draw a sprite randomly # times." write-line/2
+  s"   scale [sprite [#]]  Scale a sprite randomly # times." write-line/2
+  s"               interp  Start an interpreter." write-line/2
 end
-  
+
 def demo-tty-boot
   interp-init
+  1 argc uint>= IF demo-tty-usage -1 sysexit THEN
   s" src/demos/tty/sprites/sprites.nth" load/2
-  s" guy tty-demo-image poke" load-string/2
   1 get-argv CASE
     ( 0 OF demo-tty-usage ENDOF )
     s" line" OF-STR demo-tty-line ENDOF
@@ -113,6 +141,7 @@ def demo-tty-boot
     s" ellipse" OF-STR demo-tty-ellipse ENDOF
     s" blit" OF-STR demo-tty-blit ENDOF
     s" scale" OF-STR demo-tty-scaled-blit ENDOF
+    s" interp" OF-STR interp ENDOF
     demo-tty-usage
   ENDCASE
   exit-frame
