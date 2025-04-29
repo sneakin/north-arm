@@ -33,7 +33,7 @@ ABIS=static android gnueabi
 #OUT_TARGETS?=$(ABIS)
 OUT_TARGETS?=$(TARGET_ABI)
 
-OUTPUTS=version.4th bin/interp$(EXECEXT)
+OUTPUTS=version.4th bin/interp$(EXECEXT) build.sh
 
 ifeq ($(QUICK),)
 	OUTPUTS+=\
@@ -48,7 +48,11 @@ $(foreach stage,$(STAGES), \
        bin/runner.$(target).$(stage)$(EXECEXT) )))
 
 OUTPUTS+=bin/builder+core.$(TARGET_ABI).3$(EXECEXT) \
-	bin/interp+core.$(TARGET_ABI).3$(EXECEXT)
+	bin/interp+core.$(TARGET_ABI).3$(EXECEXT) \
+	bin/scantool.$(TARGET_ABI).3$(EXECEXT) \
+	bin/demo-tty/drawing.$(TARGET_ABI).3$(EXECEXT) \
+	bin/demo-tty/clock.$(TARGET_ABI).3$(EXECEXT) \
+	bin/demo-tty/raycaster.$(TARGET_ABI).3$(EXECEXT)
 
 ifeq ($(QUICK),)
 	OUTPUTS+=\
