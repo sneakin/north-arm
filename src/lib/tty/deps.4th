@@ -2,6 +2,8 @@ DEFINED? es" UNLESS
   " src/lib/escaped-strings.4th" load
 THEN
 
+( Aliases: )
+
 alias> < int<
 alias> > int>
 alias> <= int<=
@@ -15,22 +17,22 @@ alias> float-div float32-div
 alias> logi badlog2-int
 alias> RECURSE repeat-frame immediate
 
-0x53544f50 const> terminator
-def terminator? arg0 terminator equals? return1 end
+( Running system vords: )
 
-DEFINED? NORTH-COMPILED-TIME IF
-  sys-def global-var 0 var> exit-frame end
+sys:: global-var 0 var> ;
 
-  sys-def constant
-    0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke exit-frame
-  end
-ELSE
-  def global-var 0 var> exit-frame end
+sys:: constant
+  0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke
+;
 
-  def constant
-    0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke exit-frame
-  end
-THEN
+( And compiled in: )
+def global-var 0 var> exit-frame end
+
+def constant
+  0 const> next-integer UNLESS 0 THEN dict dict-entry-data poke exit-frame
+end
+
+( Frame words: )
 
 defcol arg4 4 argn swap endcol
 
@@ -69,13 +71,7 @@ defcol return-locals
   drop here current-frame swap int-sub cell-size int-div returnN
 endcol
 
-( " src/lib/linux.4th" load )
-( cached-gettid
-futex-wait-for-equals/3
-futex-wake
-futex-wake-op )
-
-def control-code? arg0 32 int< return1 end
+( Bit shifts: )
 
 def bslc ( a shift -- high low )
   arg1 32 arg0 - bsr
@@ -86,6 +82,10 @@ def bsrc ( a shift -- high low )
   arg1 32 arg0 - bsl
   arg1 arg0 bsr set-arg1 set-arg0
 end
+
+( TTY Output: )
+
+def control-code? arg0 32 int< return1 end
 
 def write-crnl s" \r\n" write-string/2 end
 
@@ -166,7 +166,12 @@ def tty-read
   read-byte 1 return2
 end
 
-( DOTIMES[ ]DOTIMES )
+( DOTIMES[ ]DOTIMES )
+
+( Sequence terminal: )
+0x53544f50 const> terminator
+def terminator? arg0 terminator equals? return1 end
+
 def DOTIMES[
   literal uint32 int32 0
   literal eip
@@ -211,9 +216,9 @@ def ]DOTIMES
     return-locals
 end immediate
 
-( s" vendor/north/src/02/rand.4th" load/2 )
+( Unicode: )
 
-( shift is in the wrong direction, is a roll )
+( shift is in the wrong direction, is a roll, in North v1 )
 alias> old-roll roll
 alias> roll shift
 alias> shift old-roll
