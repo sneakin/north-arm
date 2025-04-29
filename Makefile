@@ -28,54 +28,54 @@ TRIPLE_android=$(TARGET_ARCH)-$(TARGET_OS)-android
 TRIPLE_gnueabi=$(TARGET_ARCH)-$(TARGET_OS)-gnueabi
 
 STAGES=1 2 3 4
-ABIS=static android gnueabi
+OUT_TARGETS?=$(TARGET) thumb-linux-static thumb-linux-gnueabi thumb-linux-android
 
-#OUT_TARGETS?=$(ABIS)
-OUT_TARGETS?=$(TARGET_ABI)
-
-OUTPUTS=version.4th bin/interp$(EXECEXT) build.sh
+OUTPUTS=version.4th build/$(TARGET)/bin/interp$(EXECEXT) build.sh \
+	build/target build/host
 
 ifeq ($(QUICK),)
 	OUTPUTS+=\
-		bin/fforth.dict
+		build/bin/fforth \
+		build/bin/fforth.dict
 endif
 
 $(foreach stage,$(STAGES), \
   $(foreach target,$(OUT_TARGETS), \
     $(eval OUTPUTS+= \
-       bin/builder.$(target).$(stage)$(EXECEXT) \
-       bin/interp.$(target).$(stage)$(EXECEXT) \
-       bin/runner.$(target).$(stage)$(EXECEXT) )))
+       build/$(target)/bin/builder.$(stage)$(EXECEXT) \
+       build/$(target)/bin/interp.$(stage)$(EXECEXT) \
+       build/$(target)/bin/runner.$(stage)$(EXECEXT) )))
 
-OUTPUTS+=bin/builder+core.$(TARGET_ABI).3$(EXECEXT) \
-	bin/interp+core.$(TARGET_ABI).3$(EXECEXT) \
-	bin/scantool.$(TARGET_ABI).3$(EXECEXT) \
-	bin/demo-tty/drawing.$(TARGET_ABI).3$(EXECEXT) \
-	bin/demo-tty/clock.$(TARGET_ABI).3$(EXECEXT) \
-	bin/demo-tty/raycaster.$(TARGET_ABI).3$(EXECEXT)
+OUTPUTS+=build/$(TARGET)/bin/builder+core.3$(EXECEXT) \
+	build/$(TARGET)/bin/interp+core.3$(EXECEXT) \
+	build/$(TARGET)/bin/scantool.3$(EXECEXT) \
+	build/$(TARGET)/bin/demo-tty/drawing.3$(EXECEXT) \
+	build/$(TARGET)/bin/demo-tty/clock.3$(EXECEXT) \
+	build/$(TARGET)/bin/demo-tty/raycaster.3$(EXECEXT)
 
 ifeq ($(QUICK),)
 	OUTPUTS+=\
-		bin/assembler-thumb.sh \
-		bin/assembler-thumb.dict
+		build/bin/assembler-thumb.sh \
+		build/bin/assembler-thumb.dict
 endif
 
-DOCS=doc/html/bash.html \
-	doc/html/interp.html \
-	doc/html/interp-runtime.html \
-	doc/html/assembler-thumb.html \
-	doc/html/all.html \
-	doc/html/style.css \
-	doc/html/white.css
+DOCS=build/doc/html/bash.html \
+	build/doc/html/interp.html \
+	build/doc/html/interp-runtime.html \
+	build/doc/html/assembler-thumb.html \
+	build/doc/html/all.html \
+	build/doc/html/style.css \
+	build/doc/html/white.css
 
-ELF_OUTPUT_TESTS=bin/tests/elf/bones/with-data$(EXECEXT) \
-	bin/tests/elf/bones/barest$(EXECEXT) \
-	bin/tests/elf/bones/thumb$(EXECEXT)
+ELF_OUTPUT_TESTS=build/$(TARGET)/bin/tests/elf/bones/with-data$(EXECEXT) \
+	build/$(TARGET)/bin/tests/elf/bones/barest$(EXECEXT) \
+	build/$(TARGET)/bin/tests/elf/bones/thumb$(EXECEXT)
 
 all: $(OUTPUTS)
-tests: lib/ffi-test-lib$(SOEXT) bin/interp-tests$(EXECEXT)
+tests: build/$(TARGET)/lib/ffi-test-lib$(SOEXT) build/$(TATGET)/bin/interp-tests$(EXECEXT)
 
-.PHONY: clean doc all quick git-info env programs \
+.PHONY: clean doc all quick misc \
+	git-info env print-targets print-programs \
 	run-bare-metal debug-bare-metal
 
 git-info:
@@ -87,38 +87,53 @@ release/root: .git/refs/heads/$(RELEASE_BRANCH) release
 	if [ -d release/root ]; then cd release/root && $(GIT) fetch; else $(GIT) clone . release/root && cd release/root; fi && $(GIT) checkout $(RELEASE_BRANCH) && $(GIT) pull origin $(RELEASE_BRANCH)
 
 quick:
-	cp bootstrap/interp.elf bin/interp.elf
-	touch bin/interp.elf
+	mkdir -p build/$(HOST)/bin
+	cp bootstrap/$(HOST)/interp$(EXECEXT) build/$(HOST)/bin/interp$(EXECEXT)
+	touch build/$(HOST)/bin/interp$(EXECEXT)
 
 clean:
-	rm -f $(OUTPUTS) $(DOCS) \
-		misc/pi-bare-metal.bin misc/pi-bare-metal$(EXECEXT)
+	rm -f build
 
+
+build:
+	mkdir build
+	
+build/target:
+	ln -nsf $(TARGET) $@
+
+build/host:
+	ln -nsf $(HOST) $@
+
+build/$(HOST)/bin:
+	mkdir -p $@
+
+build/$(TARGET)/bin:
+	mkdir -p $@
 
 #
 # Prebuilt binary building from a clean tree.
 #
 
 bootstrap:
-	mkdir -p bootstrap
+	mkdir -p $@
 
-bootstrap/interp.elf: release/root bootstrap
-	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf
-	cp release/root/bin/interp.elf bootstrap/interp.elf
+BOOTSTRAPS=
 
-bootstrap/interp.static.elf: release/root bootstrap
-	$(MAKE) TARGET=thumb-linux-static -C release/root version.4th bin/interp.elf bin/interp.static.1.elf bin/interp.static.2.elf
-	cp release/root/bin/interp.static.2.elf bootstrap/interp.static.elf
+define define_bootstrap # targen
+bootstrap/$(1):
+	mkdir -p $$@
 
-bootstrap/interp.gnueabi.elf: release/root bootstrap
-	$(MAKE) TARGET=thumb-linux-gnueabi -C release/root version.4th bin/interp.elf bin/interp.gnueabi.1.elf bin/interp.gnueabi.2.elf bin/interp.gnueabi.3.elf
-	cp release/root/bin/interp.gnueabi.3.elf bootstrap/interp.gnueabi.elf
+bootstrap/$(1)/interp$$(EXECEXT): release/root bootstrap/$(1)
+	$(MAKE) TARGET=$(1) -C release/root version.4th build/$(1)/bin/interp$$(EXECEXT)
+	cp release/root/build/$(1)/bin/interp$$(EXECEXT) $$@
 
-bootstrap/interp.android.elf: release/root bootstrap
-	$(MAKE) TARGET=thumb-linux-android -C release/root version.4th bin/interp.android.1.elf bin/interp.android.2.elf bin/interp.android.3.elf
-	cp release/root/bin/interp.android.3.elf bootstrap/interp.android.elf
+BOOTSTRAPS+=bootstrap/$(1)/interp$(EXECEXT)
+endef
 
-boot: bootstrap/interp.elf bootstrap/interp.static.elf bootstrap/interp.gnueabi.elf bootstrap/interp.android.elf
+$(foreach target,$(OUT_TARGETS),$(eval $(call define_bootstrap,$(target))))
+
+boot: $(BOOTSTRAPS)
+
 
 #
 # Generated source files:
@@ -145,17 +160,17 @@ build.sh: Makefile
 # Formatted code docs
 #
 
-doc: doc/html $(DOCS)
+build/doc: build/doc/html $(DOCS)
 
-doc/html:
-	mkdir -p doc/html
+build/doc/html:
+	mkdir -p $@
 
-doc/html/all.html:
+build/doc/html/all.html:
 	$(HTMLER) `find src -name \*.4th` `find scripts -name \*.4th` > $@
 
-doc/html/style.css: doc/style.css
+build/doc/html/style.css: doc/style.css build/doc/html
 	cp $< $@
-doc/html/white.css: doc/white.css
+build/doc/html/white.css: doc/white.css build/doc/html
 	cp $< $@
 
 FORTH_SRC=./src/bash/forth.sh \
@@ -183,17 +198,22 @@ THUMB_ASSEMBLER_SRC=\
 	src/cross/defining/op.4th \
 	src/cross/defining/alias.4th
 
-doc/html/assembler-thumb.html: Makefile src/bin/assembler.4th $(THUMB_ASSEMBLER_SRC)
+build/doc/html/assembler-thumb.html: Makefile src/bin/assembler.4th $(THUMB_ASSEMBLER_SRC)
 	$(HTMLER) $^ > $@
-doc/html/bash.html: $(FORTH_SRC)
+build/doc/html/bash.html: $(FORTH_SRC)
 	$(HTMLER) $^ > $@
 
-bin/fforth.dict: src/bash/compiler.4th
+build/bin: build
+	mkdir $@
+
+build/bin/fforth: bin/fforth build/bin
+	ln -sf ../../bin/fforth $@
+build/bin/fforth.dict: src/bash/compiler.4th build/bin/fforth
 	echo -e "\" $<\" load $@ save-dict\n" | $(FORTH)
 
-bin/assembler-thumb.sh: bin/fforth bin/assembler-thumb.dict
-	ln -sf fforth $@
-bin/assembler-thumb.dict: src/cross/builder.4th
+build/bin/assembler-thumb.sh: build/bin/fforth build/bin/assembler-thumb.dict
+	ln -sf ../../bin/fforth $@
+build/bin/assembler-thumb.dict: src/cross/builder.4th
 	echo -e "load-core \" $<\" load builder-load \" $@\" save-dict\n" | $(FORTH)
 
 RUNNER_THUMB_SRC=\
@@ -340,9 +360,9 @@ INTERP_RUNTIME_SRC=\
 	src/runner/imports/linux.4th \
 	$(THUMB_ASSEMBLER_SRC)
 
-doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
+build/doc/html/interp-runtime.html: Makefile $(INTERP_RUNTIME_SRC)
 	$(HTMLER) $^ > $@
-doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
+build/doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 	$(HTMLER) $^ > $@
 
 # Stage 0
@@ -350,23 +370,13 @@ doc/html/interp.html: Makefile src/bin/interp.4th $(RUNNER_THUMB_SRC)
 ./src/include/interp.4th: version.4th
 ./src/runner/main.4th: version.4th
 
-%$(EXECEXT): %.4th
-	@echo -e "\e[36;1mBuilding $(@)\e[0m"
-	cat $< | $(FORTH) > $@
-	chmod u+x $@
-
-bin/%$(EXECEXT): src/bin/%.4th
-	@echo -e "\e[36;1mBuilding $(@)\e[0m"
-	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
-	chmod u+x $@
-
 # Per stage variabless:
 
 # todo filenames need full triples and this would really cross compile
 define define_stage # stage
 STAGE$(1)_PRIOR=$(shell echo $$(($(1) - 1)))
-STAGE$(1)_FORTH=$(RUNNER) ./bin/interp.$(RUN_OS).$(1)$(EXECEXT)
-STAGE$(1)_BUILDER=$(RUNNER) ./bin/builder+core.$(RUN_OS).$(1)$(EXECEXT)
+STAGE$(1)_FORTH=$(RUNNER) ./build/$(HOST)/bin/interp.$(1)$(EXECEXT)
+STAGE$(1)_BUILDER=$(RUNNER) ./build/$(HOST)/bin/builder+core.$(1)$(EXECEXT)
 endef
 
 # Per target and stage outputs:
@@ -388,81 +398,104 @@ BUILDER_SRC=\
 	src/lib/asm/thumb/disasm.4th
 
 define define_stage_targets # target, stage
-bin/builder.$(1).$(2)$$(EXECEXT): $$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) $(BUILDER_MIN_SRC)
+build/$(strip $(1))/bin/builder.$(strip $(2))$$(EXECEXT): $$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) $(BUILDER_MIN_SRC)
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
-	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e build -o $$@ $$(BUILDER_MIN_SRC)
-bin/interp.$(1).$(2)$$(EXECEXT): ./src/include/interp.4th
+	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e build -o $$@ $$(BUILDER_MIN_SRC)
+build/$(strip $(1))/bin/interp.$(strip $(2))$$(EXECEXT): ./src/include/interp.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
-	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e interp-boot -o $$@ $$^
-bin/runner.$(1).$(2)$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
+	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e interp-boot -o $$@ $$^
+build/$(strip $(1))/bin/runner.$(strip $(2))$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
-	$$(STAGE$$(STAGE$(2)_PRIOR)_BUILDER) -t $$(TRIPLE_$(1)) -e runner-boot -o $$@ $$^
+	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e runner-boot -o $$@ $$^
 endef
 
 # Define instances of the above:
 $(foreach stage,$(STAGES),$(eval $(call define_stage,$(stage))))
 
 $(foreach stage,$(STAGES), \
-  $(foreach target,$(ABIS), \
+  $(foreach target,$(TARGETS), \
     $(eval $(call define_stage_targets,$(target),$(stage)))))
 
 # Bootstrap stage 0:
 
-STAGE0_FORTH=$(RUNNER) ./bin/interp$(EXECEXT)
+STAGE0_FORTH=$(RUNNER) ./build/$(HOST)/bin/interp$(EXECEXT)
 STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
 #STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
-STAGE1_BUILDER=$(RUNNER) ./bin/builder.static.1$(EXECEXT)
+STAGE1_BUILDER=$(RUNNER) ./build/$(HOST)/bin/builder.1$(EXECEXT)
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
-bin/builder$(EXECEXT): $(BUILDER_MIN_SRC)
+build/$(TARGET_ARCH)-$(TARGET_OS)-static/bin/builder$(EXECEXT): $(BUILDER_MIN_SRC)
 	$(STAGE0_BUILDER) -t $(TARGET_ARCH)-$(TARGET_OS)-static -e build -o $@ $^
 
 ifeq ($(QUICK),)
-bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+# Actually build with Bash
+build/$(HOST)/bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+	@echo -e "\e[35;1mBuilding $(@)\e[0m"
+	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
+	chmod u+x $@
+
+build/$(TARGET)/bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
+	@echo -e "\e[35;1mBuilding $(@)\e[0m"
+	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
+	chmod u+x $@
+
 else
-bin/interp$(EXECEXT):
-	cp bootstrap/interp.elf $@
+# Or copy the last distributed binary.
+build/$(HOST)/bin/interp$(EXECEXT): build/$(HOST)/bin
+	cp bootstrap/interp$(EXECEXT) $@
+build/$(TARGET)/bin/interp$(EXECEXT): build/$(TARGET)/bin
+	cp bootstrap/interp$(EXECEXT) $@
+
 endif
 
-bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
-bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
+# misc Stage 0 binaries
+
+build/$(TARGET)/bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
 
 #
 # Test cases:
 #
 
+build/$(TARGET)/bin/interp-tests$(EXECEXT): src/bin/interp-tests.4th $(RUNNER_THUMB_SRC)
+
 # Bare metal executables
-misc/pi-bare-metal.bin: misc/pi-bare-metal$(EXECEXT)
+build/misc/pi-bare-metal.bin: build/misc/pi-bare-metal$(EXECEXT)
 	objcopy -O binary $< $@
-misc/pi-bare-metal$(EXECEXT): misc/pi-bare-metal.4th
-	$(STAGE$(STAGE)_BUILDER) -b -o $@ $<
-run-bare-metal: misc/pi-bare-metal.bin
+build/misc/pi-bare-metal$(EXECEXT): misc/pi-bare-metal.4th
+	mkdir -p build/misc && $(STAGE$(STAGE)_BUILDER) -b -o $@ $<
+run-bare-metal: build/misc/pi-bare-metal.bin
 	qemu-system-arm -M raspi2b -serial stdio -kernel $<
-debug-bare-metal: misc/pi-bare-metal.bin
+debug-bare-metal: build/misc/pi-bare-metal.bin
 	qemu-system-arm -S -s -M raspi2b -serial stdio -kernel $<
 
 # Barebones ELF files:
-bin/tests/elf/bones/%.elf: src/tests/elf/bones/%.4th
+build/$(TARGET)/bin/tests/elf/bones/%$(EXECEXT): src/tests/elf/bones/%.4th
 	cat $< | $(FORTH) > $@
 	chmod u+x $@
 
 # FFI Test library
-lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
-	mkdir -p lib && $(TARGET_CC) $(SO_CFLAGS) -o $@ $<
+build/$(TARGET)/lib/ffi-test-lib$(SOEXT): src/runner/tests/ffi/test-lib.c
+	mkdir -p build/$(TARGET)/lib && $(TARGET_CC) $(SO_CFLAGS) -o $@ $<
 
 # CPIO test inputs
-misc/cpio:
+build/misc/cpio:
 	mkdir -p $@
 
-misc/cpio/odc.cpio: $(RUNNER_THUMB_SRC)
+build/misc/cpio/odc.cpio: $(RUNNER_THUMB_SRC)
 	ls $^ | cpio -o -H odc > $@
-misc/cpio/newc.cpio: $(RUNNER_THUMB_SRC)
+build/misc/cpio/newc.cpio: $(RUNNER_THUMB_SRC)
 	ls $^ | cpio -o -H newc > $@
-misc/cpio/binary.cpio: $(RUNNER_THUMB_SRC)
+build/misc/cpio/binary.cpio: $(RUNNER_THUMB_SRC)
 	ls $^ | cpio -o -H bin > $@
 
-test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpio
+CPIO_TEST_ARCHIVES=build/misc/cpio/odc.cpio build/misc/cpio/binary.cpio build/misc/cpio/newc.cpio
+
+test-cpio: build/misc/cpio $(CPIO_TEST_ARCHIVES)
 	echo 'load-core tmp" src/tests/lib/cpio.4th" load/2 test-cpio' | $(STAGE3_FORTH)
+
+misc: build/misc/pi-bare-metal.bin \
+	build/$(TARGET)/lib/ffi-test-lib$(SOEXT) \
+	build/misc/cpio $(CPIO_TEST_ARCHIVES)	
 
 #m
 # Rules
@@ -472,7 +505,7 @@ test-cpio: misc/cpio misc/cpio/odc.cpio misc/cpio/binary.cpio misc/cpio/newc.cpi
 	@export MSG="$$(sha256sum $< | cut -d ' ' -f 1)"; \
 	  echo "Signing \"$${MSG}\""; \
 	  (echo "file: $<"; echo "sha256: $${MSG}" ; (echo "$${MSG}" | gpg -s -a)) | tee $@
-bin/%.sig: bin/%
+build/$(TARGET)/bin/%.sig: bin/%
 	@export MSG="$$(head -c -64 $< | sha256sum | cut -d ' ' -f 1)"; \
 	  echo "Signing \"$${MSG}\""; \
 	  (echo "file: $<"; echo "binary: true" ; echo "sha256: $${MSG}" ; (echo "$${MSG}" | gpg -s -a)) | tee $@
@@ -589,28 +622,28 @@ PGRM_demo_tty_raycaster_sources=\
 define define_north_program # name, target, stage, entry point, sources
 PGRMS_$(strip $(2))_$(strip $(3))+=$(1)
 ifneq (,$(findstring builder+core,$(1)))
-$(1): bin/builder.$(strip $(2)).$(strip $(3))$(EXECEXT) $(5)
+$(1): build/$$(HOST)/bin/builder.$(strip $(3))$(EXECEXT) $(5)
 	@echo -e "Building \e[36;1m$$(@)\e[0m"
 	@mkdir -p $$(dir $$@)
-	bin/builder.$(strip $(2)).$(strip $(3))$(EXECEXT) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $(5)
+	build/$$(HOST)/bin/builder.$(strip $(3))$(EXECEXT) -t $(2) -e $(4) -o $$@ $(5)
 else
 $(1): $$(STAGE$(3)_BUILDER) $(5)
 	@echo -e "Building \e[36;1m$$(@)\e[0m"
 	@mkdir -p $$(dir $$@)
-	$$(STAGE$(3)_BUILDER) -t $$(TRIPLE_$(strip $(2))) -e $(4) -o $$@ $(5)
+	$$(STAGE$(3)_BUILDER) -t $(strip $(2)) -e $(4) -o $$@ $(5)
 endif
 endef
 
 $(foreach stage,$(STAGES), \
-  $(foreach target,$(ABIS), \
+  $(foreach target,$(TARGETS), \
     $(foreach program,$(PROGRAMS), \
       $(eval $(call define_north_program,\
-	      $(PGRM_$(program)_output).$(target).$(stage)$(EXECEXT),\
+	      build/$(target)/$(PGRM_$(program)_output).$(stage)$(EXECEXT),\
         $(target),$(stage),\
         $(PGRM_$(program)_entry),\
         $(PGRM_$(program)_sources))))))
 
-programs: $(PGRMS_$(TARGET_ABI)_$(STAGE))
+programs: $(PGRMS_$(TARGET)_$(STAGE))
 
 print-programs:
-	@echo $(PGRMS_$(TARGET_ABI)_$(STAGE))
+	@echo $(PGRMS_$(TARGET)_$(STAGE))

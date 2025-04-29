@@ -104,11 +104,11 @@ else
 		TARGET_CFLAGS?=-m32
 	endif
 	ifeq ($(TARGET_ARCH), thumb)
-	     TARGET_CC?=arm-$(TARGET_OS)-$(TARGET_ABI)
+	     TARGET_CC?=arm-$(TARGET_OS)-$(TARGET_ABI)-gcc
 	     TARGET_CFLAGS+=-Mthumb
 	else
 		ifeq ($(TARGET_ARCH), thumb2)
-		   TARGET_CC?=arm-$(TARGET_OS)-$(TARGET_ABI)
+		   TARGET_CC?=arm-$(TARGET_OS)-$(TARGET_ABI)-gcc
 	     	   TARGET_CFLAGS+=-Mthumb
 		else
 		   TARGET_CC?=$(TARGET)-gcc
