@@ -9,8 +9,7 @@ s[ src/interp/boot/core.4th
 ] load-list
 
 NORTH-BUILD-TIME 1634096442 int<= IF
-  s[ src/lib/fun.4th
-  ] load-list
+  s[ src/lib/fun.4th ] load-list
 THEN
 
 s[ src/lib/escaped-strings.4th
@@ -38,7 +37,7 @@ THEN
 
 s[ src/lib/linux.4th
    src/lib/io.4th
-   src/lib/mark.4th
+   src/interp/mark.4th
 ] load-list
 
 def load-core true return1 end

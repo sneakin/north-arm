@@ -2,7 +2,6 @@ s[
   src/lib/bit-fields.4th
   src/lib/map/stack.4th
 
-  src/cross/sys-aliases.4th
   src/interp/boot/cross.4th
 
   src/lib/elf/stub32.4th

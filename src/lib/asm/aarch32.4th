@@ -7,7 +7,7 @@ DEFINED? NORTH-COMPILE-TIME UNLESS
   THEN
 
   DEFINED? mark> UNLESS
-    " src/lib/mark.4th" load
+    " src/interp/mark.4th" load
   THEN
 THEN
 

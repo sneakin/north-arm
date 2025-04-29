@@ -1,5 +1,7 @@
 tmp" Loading cross compiling words..." error-line/2
 
+s" src/interp/boot/cross/sys-aliases.4th" load/2
+
 SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
   alias> exec-cs exec
   alias> exec exec-abs

@@ -1,5 +1,5 @@
 DEFINED? mark> UNLESS
-  s[ src/lib/mark.4th ] load-list
+  s[ src/interp/mark.4th ] load-list
 THEN
 
 DEFINED? assert UNLESS
