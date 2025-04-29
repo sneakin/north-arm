@@ -1,7 +1,5 @@
 DEFINED? alias> UNLESS load-core THEN
 
-s[ src/lib/linux.4th ] load-list
-
 s[ src/lib/threading/worker.4th
    src/lib/assert.4th
    src/lib/assertions/time.4th

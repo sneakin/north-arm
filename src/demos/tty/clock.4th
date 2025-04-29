@@ -2,7 +2,6 @@
 
 ' TtyScreen UNLESS
   s[ src/lib/time.4th
-     src/lib/linux.4th
      src/lib/tty.4th
    ] load-list
 THEN

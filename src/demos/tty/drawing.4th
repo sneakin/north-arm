@@ -2,7 +2,6 @@ DEFINED? alias UNLESS load-core THEN
 
 DEFINED? ' TtyScreen UNLESS
   s[ src/lib/time.4th
-     src/lib/linux.4th
      src/lib/io.4th
      src/lib/tty.4th
   ] load-list
