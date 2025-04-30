@@ -28,7 +28,10 @@ TRIPLE_android=$(TARGET_ARCH)-$(TARGET_OS)-android
 TRIPLE_gnueabi=$(TARGET_ARCH)-$(TARGET_OS)-gnueabi
 
 STAGES=1 2 3 4
-OUT_TARGETS?=$(TARGET) thumb-linux-static thumb-linux-gnueabi thumb-linux-android
+OUT_TARGETS?=$(TARGET)
+ifeq ($(QUICK),)
+OUT_TARGETS+=thumb-linux-static thumb-linux-gnueabi thumb-linux-android
+endif
 
 OUTPUTS=version.4th build/$(TARGET)/bin/interp$(EXECEXT) build.sh \
 	build/target build/host
@@ -36,28 +39,23 @@ OUTPUTS=version.4th build/$(TARGET)/bin/interp$(EXECEXT) build.sh \
 ifeq ($(QUICK),)
 	OUTPUTS+=\
 		build/bin/fforth \
-		build/bin/fforth.dict
+		build/bin/fforth.dict \
+		build/bin/assembler-thumb.sh \
+		build/bin/assembler-thumb.dict
 endif
 
 $(foreach stage,$(STAGES), \
   $(foreach target,$(OUT_TARGETS), \
     $(eval OUTPUTS+= \
-       build/$(target)/bin/builder.$(stage)$(EXECEXT) \
-       build/$(target)/bin/interp.$(stage)$(EXECEXT) \
-       build/$(target)/bin/runner.$(stage)$(EXECEXT) )))
-
-OUTPUTS+=build/$(TARGET)/bin/builder+core.3$(EXECEXT) \
-	build/$(TARGET)/bin/interp+core.3$(EXECEXT) \
-	build/$(TARGET)/bin/scantool.3$(EXECEXT) \
-	build/$(TARGET)/bin/demo-tty/drawing.3$(EXECEXT) \
-	build/$(TARGET)/bin/demo-tty/clock.3$(EXECEXT) \
-	build/$(TARGET)/bin/demo-tty/raycaster.3$(EXECEXT)
-
-ifeq ($(QUICK),)
-	OUTPUTS+=\
-		build/bin/assembler-thumb.sh \
-		build/bin/assembler-thumb.dict
-endif
+	build/$(target)/bin/builder.$(stage)$(EXECEXT) \
+	build/$(target)/bin/interp.$(stage)$(EXECEXT) \
+	build/$(target)/bin/runner.$(stage)$(EXECEXT) \
+	build/$(target)/bin/builder+core.3$(EXECEXT) \
+	build/$(target)/bin/interp+core.3$(EXECEXT) \
+	build/$(target)/bin/scantool.3$(EXECEXT) \
+	build/$(target)/bin/demo-tty/drawing.3$(EXECEXT) \
+	build/$(target)/bin/demo-tty/clock.3$(EXECEXT) \
+	build/$(target)/bin/demo-tty/raycaster.3$(EXECEXT) )))
 
 DOCS=build/doc/html/bash.html \
 	build/doc/html/interp.html \
@@ -148,13 +146,16 @@ version.4th: .git/refs/heads/$(RELEASE_BRANCH) Makefile Makefile.arch
 src/copyright.4th: src/copyright.4th.tmpl src/copyright.txt
 	./scripts/copyright-gen.sh $< > $@
 
+ifeq ($(BUILDSH),)
 build.sh: Makefile
 	@echo "#!/bin/sh" > $@
 	@echo "HOST?=\"\$${2:-$(HOST)}\"" >> $@
 	@echo "TARGET?=\"\$${1:-$(TARGET)}\"" >> $@
-	@make -Bns all TARGET='$(TARGET)' HOST='$(HOST)' \
+	@make -Bns all BUILDSH=1 TARGET='$(TARGET)' HOST='$(HOST)' \
 	  | sed -e 's:$(TARGET):"$${TARGET}":g' -e 's:$(HOST):"$${HOST}":g' >> $@
-
+else
+build.sh:
+endif
 
 #
 # Formatted code docs
@@ -424,33 +425,26 @@ STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
 STAGE1_BUILDER=$(RUNNER) ./build/$(HOST)/bin/builder.1$(EXECEXT)
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
-build/$(TARGET_ARCH)-$(TARGET_OS)-static/bin/builder$(EXECEXT): $(BUILDER_MIN_SRC)
-	$(STAGE0_BUILDER) -t $(TARGET_ARCH)-$(TARGET_OS)-static -e build -o $@ $^
 
-ifeq ($(QUICK),)
+define stage0_targets # target
+build/$(1)/bin/builder$$(EXECEXT): $$(BUILDER_MIN_SRC)
+	$$(STAGE0_BUILDER) -t $(1) -e build -o $$@ $$^
+build/$(1)/bin/runner$$(EXECEXT): src/bin/runner.4th $$(RUNNER_THUMB_SRC)
+
+ifeq ($$(QUICK),)
 # Actually build with Bash
-build/$(HOST)/bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
-	@echo -e "\e[35;1mBuilding $(@)\e[0m"
-	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
-	chmod u+x $@
-
-build/$(TARGET)/bin/interp$(EXECEXT): src/bin/interp.4th $(RUNNER_THUMB_SRC)
-	@echo -e "\e[35;1mBuilding $(@)\e[0m"
-	cat $< | LC_ALL=en_US.ISO-8859-1 $(FORTH) > $@
-	chmod u+x $@
-
+build/$(1)/bin/interp$$(EXECEXT): src/bin/interp.4th $$(RUNNER_THUMB_SRC)
+	@echo -e "\e[35;1mBuilding $$(@)\e[0m"
+	cat $$< | LC_ALL=en_US.ISO-8859-1 $$(FORTH) > $$@
+	chmod u+x $$@
 else
 # Or copy the last distributed binary.
-build/$(HOST)/bin/interp$(EXECEXT): build/$(HOST)/bin
-	cp bootstrap/interp$(EXECEXT) $@
-build/$(TARGET)/bin/interp$(EXECEXT): build/$(TARGET)/bin
-	cp bootstrap/interp$(EXECEXT) $@
-
+build/$(1)/bin/interp$$(EXECEXT): build/$(1)/bin
+	cp bootstrap/interp$$(EXECEXT) $$@
 endif
+endef
 
-# misc Stage 0 binaries
-
-build/$(TARGET)/bin/runner$(EXECEXT): src/bin/runner.4th $(RUNNER_THUMB_SRC)
+$(foreach target,$(TARGETS),$(eval $(call stage0_targets,$(target))))
 
 #
 # Test cases:
