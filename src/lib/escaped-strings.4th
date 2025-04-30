@@ -204,6 +204,16 @@ def escape-string/2 ( str len ++ escaped-str new-len )
   exit-frame
 end
 
+def write-escaped-string/2 ( str length -- )
+  arg1 arg0 escape-string/2 write-string/2
+  2 return0-n
+end
+
+def error-escaped-string/2 ( str length -- )
+  arg1 arg0 escape-string/2 error-string/2
+  2 return0-n
+end
+
 ( Test:
 256 stack-allot-zero var> s
 es" hello\n\x02\e[1mworld\e[0m\n" 2dup write-line/2

@@ -340,6 +340,13 @@ end
 ' html-keyword-top-token copies-entry-as> copies-as>
 ' html-keyword-top-token2 copies-entry-as> alias>
 ' html-keyword-top-token2 copies-entry-as> defalias>
+' html-keyword-top-token copies-entry-as> seq-field:
+' html-keyword-top-token copies-entry-as> field:
+' html-keyword-top-token copies-entry-as> struct:
+' html-keyword-top-token copies-entry-as> type:
+' html-keyword-top-token copies-entry-as> OUT:DEFINED?
+' html-keyword-top-token copies-entry-as> SYS:DEFINED?
+' html-keyword-top-token copies-entry-as> DEFINED?
 ' html-keyword-token copies-entry-as> POSTPONE
 ' html-keyword-token copies-entry-as> '
 ' html-keyword-token copies-entry-as> out'

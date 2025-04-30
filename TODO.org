@@ -32,6 +32,9 @@ used to rebuild.
 * Tasks
 ** 2025
 *** April
+**** TTY style and color functions
+These should modify a state tracking variable that is output when
+a ~write-*~ function is called.
 **** When inlining constants, what to do about constants w/ values set later by the compiler?
 **** Dumping
 const-offset: most always a pointer, but a string, seq, list, dict, or struct?

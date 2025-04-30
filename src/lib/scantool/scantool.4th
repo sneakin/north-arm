@@ -60,7 +60,7 @@ end
 
 ( Highligher state: )
 
-1536 var> scantool-max-token-size
+2048 var> scantool-max-token-size
 
 def scantool-state-current-token arg0 cell-size 10 * + set-arg0 end
 def scantool-state-current-size arg0 cell-size 9 * + set-arg0 end
@@ -113,7 +113,7 @@ end
 def scantool-terminated-text ( each-fn done-fn state -- )
   arg0 scantool-state-last-size @ 1 - 0 over stack-allot set-local1
   local1 local0 arg1 arg0 scantool-state-reader @ reader-read-until
-  shift 2dup null-terminate
+  ( shift ) roll 2dup null-terminate
   arg2 dup IF exec-abs ELSE 3 dropn THEN
   0 equals? IF repeat-frame THEN
   local1 local0 arg0 scantool-state-reader @ reader-next-token drop
@@ -145,7 +145,7 @@ def scantool-token-list-loop ( buffer size state cons -- cons )
   arg2 cell-size 3 * int< IF
     s" Warning: token list too large." error-line/2
     s" List so far: " error-string/2
-    ' error-string ' espace compose arg0 0 roll revmap-cons/3 enl
+    ' error-string ' espace compose arg0 0 ( roll ) shift revmap-cons/3 enl
     arg0 4 return1-n
   THEN
   arg3 arg2 arg1 scantool-state-reader @ reader-next-token
@@ -259,20 +259,24 @@ s[ src/lib/linux/errno.4th
    src/lib/scantool/modes/common.4th
    src/lib/scantool/modes/enriched.4th
    src/lib/scantool/modes/html.4th
+   src/lib/scantool/modes/tty.4th
    src/lib/scantool/modes/deps.4th
    src/lib/scantool/modes/flat-deps.4th
    src/lib/scantool/modes/stats.4th
+   src/lib/scantool/modes/dot-call-graph.4th
 ] load-list
 
 " stats" string-const> SCANTOOL-DEFAULT-OUTPUT
 
 def make-scantool-output ( name ++ output )
   arg0 CASE
+    s" tty" OF-STR ' tty-scantool droptail-1 ENDOF
     s" enriched" OF-STR ' enriched-scantool droptail-1 ENDOF
     s" html" OF-STR ' html-scantool droptail-1 ENDOF
     s" deps" OF-STR ' deps-scantool droptail-1 ENDOF
     s" flat-deps" OF-STR ' flat-deps-scantool droptail-1 ENDOF
     s" stats" OF-STR ' stats-scantool droptail-1 ENDOF
+    s" dot:calls" OF-STR ' dot-call-graph-scantool droptail-1 ENDOF
     drop ' enriched-scantool droptail-1
   ENDCASE
 end

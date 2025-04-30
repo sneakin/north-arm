@@ -97,7 +97,7 @@ clean:
 
 build:
 	mkdir build
-	
+
 build/target:
 	ln -nsf $(TARGET) $@
 
@@ -551,7 +551,16 @@ PGRM_builder_core_entry=build
 
 # Scantool for stats and syntax highlighting.
 PGRM_scantool_sources=\
-	src/include/interp.4th src/interp/cross.4th src/bin/scantool.4th
+	src/lib/tty/constants.4th \
+	src/include/interp.4th \
+	src/interp/proper.4th \
+	src/lib/pointers.4th \
+	src/lib/list-cs.4th \
+	src/lib/structs.4th \
+	src/interp/cross.4th \
+	src/interp/boot/include.4th \
+	src/lib/tty/deps.4th \
+	src/bin/scantool.4th
 PGRM_scantool_output=bin/scantool
 PGRM_scantool_entry=main
 

@@ -166,7 +166,7 @@ if __FILE__ == $0
   width = ARGF.readline
   _ = ARGF.readline
   data = ARGF.read
-  x = REXML::Document.new('<root>' + data + '</root>')
+  x = REXML::Document.new('<root>' + data.gsub('&', '&amp;').gsub('<<', '&lt;') + '</root>')
   term = ENV['STRIPED'] ? NoTerm.new : nil
   enrich(x, $stdout, term)
 end

@@ -253,6 +253,13 @@ end
 ' enriched-keyword-top-token copies-entry-as> copies-as>
 ' enriched-keyword-top-token2 copies-entry-as> alias>
 ' enriched-keyword-top-token2 copies-entry-as> defalias>
+' enriched-keyword-top-token copies-entry-as> seq-field:
+' enriched-keyword-top-token copies-entry-as> field:
+' enriched-keyword-top-token copies-entry-as> struct:
+' enriched-keyword-top-token copies-entry-as> type:
+' enriched-keyword-top-token copies-entry-as> OUT:DEFINED?
+' enriched-keyword-top-token copies-entry-as> SYS:DEFINED?
+' enriched-keyword-top-token copies-entry-as> DEFINED?
 ' enriched-keyword-token copies-entry-as> POSTPONE
 ' enriched-keyword-token copies-entry-as> '
 ' enriched-keyword-token copies-entry-as> out'

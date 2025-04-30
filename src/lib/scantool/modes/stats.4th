@@ -1,4 +1,4 @@
-( Por definition stats: )
+( Per definition stats: )
 
 def stats-per-def-caller-count arg0 cell-size 2 * + set-arg0 end
 def stats-per-def-word-count arg0 cell-size 1 * + set-arg0 end
@@ -276,7 +276,7 @@ def stats-keyword-const
   exit-frame
 end
 
-( Stats dictdonary: )
+( Stats dictionary: )
 
 0
 ' stats-scantool-load copies-entry-as> load
