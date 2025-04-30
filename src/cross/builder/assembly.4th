@@ -8,11 +8,11 @@ s[ src/lib/bit-fields.4th
    src/lib/elf/stub.4th
 ] load-list
 
-SYS:DEFINED? NORTH-COMPILE-TIME IF
-  s[ src/lib/asm/thumb.4th
-     src/lib/asm/aarch32/fake-thumb.4th
-     src/lib/asm/x86.4th
-  ] load-list
+SYS:DEFINED? NORTH-COMPILE-TIME IF NORTH-COMPILE-TIME @ ELSE 0 THEN
+IF s[ src/lib/asm/thumb.4th
+      src/lib/asm/aarch32/fake-thumb.4th
+      src/lib/asm/x86.4th
+   ] load-list
 ELSE
   target-thumb? IF s" src/lib/asm/thumb.4th" load/2 THEN
   target-aarch32? IF s" src/lib/asm/aarch32/fake-thumb.4th" load/2 THEN

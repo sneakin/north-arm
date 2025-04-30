@@ -16,8 +16,8 @@ end
 
 ( A post-execution load step: )
 
-2 NORTH-STAGE int<= IF
-  OUT:DEFINED? const> UNLESS
+1 NORTH-STAGE int<= IF
+  DEFINED? const> UNLESS
     def does-const
       arg0 pointer do-const does
     end
@@ -28,8 +28,14 @@ end
       exit-frame
     end
   THEN
+THEN
 
-  DEFINED? struct IF
+( Include the assembler dictionaries only if the builder is being
+  compiled with the boot/core. )
+SYS:DEFINED? NORTH-COMPILE-TIME IF NORTH-COMPILE-TIME @ ELSE 0 THEN
+IF
+  ( not that struct is used, but boot/core includes it )
+  DEFINED? struct: IF
     s[ src/cross/builder/assembly.4th
        src/cross/builder/run/interp.4th
     ] load-list
