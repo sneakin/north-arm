@@ -64,10 +64,10 @@ def tty-scantool-string
 end  
 
 def tty-scantool-token-list
-  bold magenta
-  arg2 arg1 write-string/2
-  arg0 scantool-token-list 0 ' write-line revmap-cons/3
-  s" ] " write-string/2 color-reset
+  magenta
+  arg2 arg1 write-string/2 space
+  bold arg0 scantool-token-list 0 ' write-line revmap-cons/3
+  color-reset magenta s" ] " write-string/2 color-reset
   3 return0-n
 end
 
