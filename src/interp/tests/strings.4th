@@ -74,13 +74,13 @@ def test-string-append
   0 0
   32 stack-allot-zero set-local0
   ( basic append )
-  local0 32 s" hello " s" world" string-append/5
+  local0 32 s" hello " s" world" string-append/6
   dup set-local1
   2dup write-line/2
   assert-string-null-terminated
   2dup s" hello world" assert-byte-string-equals/4
   ( append to target )
-  local0 32 local0 local1 s" !! " string-append/5
+  local0 32 local0 local1 s" !! " string-append/6
   dup set-local1
   2dup write-line/2
   assert-string-null-terminated
@@ -97,27 +97,27 @@ def test-string-append
   assert-string-null-terminated
   2dup s" hello world!! hello world!! he" assert-byte-string-equals/4
   ( prepend target )
-  local0 32 s" You! " local0 local1 string-append/5
+  local0 32 s" You! " local0 local1 string-append/6
   dup set-local1
   2dup write-line/2
   assert-string-null-terminated
   2dup s" You! hello world!! hello world" assert-byte-string-equals/4
   ( more )
-  local0 32 s" Hello" s"  " string-append/5
+  local0 32 s" Hello" s"  " string-append/6
   2dup write-line/2
-  local0 32 2swap s" World" string-append/5
-  2dup write-line/2
-  s" Hello World" assert-byte-string-equals/4
-  ( more )
-  local0 13 s" Hello" s"  " string-append/5
-  2dup write-line/2
-  local0 13 2swap s" World" string-append/5
+  local0 32 2swap s" World" string-append/6
   2dup write-line/2
   s" Hello World" assert-byte-string-equals/4
   ( more )
-  local0 12 s" Hello" s"  " string-append/5
+  local0 13 s" Hello" s"  " string-append/6
   2dup write-line/2
-  local0 12 2swap s" World" string-append/5
+  local0 13 2swap s" World" string-append/6
+  2dup write-line/2
+  s" Hello World" assert-byte-string-equals/4
+  ( more )
+  local0 12 s" Hello" s"  " string-append/6
+  2dup write-line/2
+  local0 12 2swap s" World" string-append/6
   2dup write-line/2
   s" Hello Worl" assert-byte-string-equals/4
 end

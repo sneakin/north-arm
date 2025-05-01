@@ -125,7 +125,7 @@ end
 
 ( Combining strings: )
 
-def string-append/5 ( dest max-len front front-len back back-len -- dest len )
+def string-append/6 ( dest max-len front front-len back back-len -- dest len )
   4 argn arg2 min
   4 argn arg2 - 2 - arg0 min
   arg1 5 argn dup 4 argn + swap in-range? IF
@@ -144,7 +144,7 @@ def string-append/4 ( dest max-len front back -- dest len )
   arg3 arg2
   arg1 arg1 string-length
   arg0 arg0 string-length
-  string-append/5
+  string-append/6
   3 return1-n
 end
 
