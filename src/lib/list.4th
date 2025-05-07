@@ -60,6 +60,16 @@ def find-first ( list fn -- result )
   THEN 2 return1-n
 end
 
+def find-first-result ( list fn[item -- result yes?]  -- result yes? )
+  arg1 IF
+    arg1 car arg0 exec-abs
+    IF true
+    ELSE arg1 cdr set-arg1 repeat-frame
+    THEN
+  ELSE false
+  THEN 2 return2-n
+end
+
 def skip-first ( n lst -- nth-item )
   arg0 IF
     arg1 0 uint> IF

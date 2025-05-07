@@ -16,6 +16,28 @@ def partial-first ( fn arg ++ proper[ arg fn ] )
   int32 5 overn exit-frame
 end
 
+def inline-seq ( src-seqn dest max n -- )
+  arg1 0 uint> UNLESS 4 return0-n THEN
+  arg1 1 - set-arg1
+  literal int32 arg2 arg0 2 * seq-poke
+  arg3 arg1 seqn-peek
+  arg2 arg0 2 * 1 + seq-poke
+  arg0 1 + set-arg0 repeat-frame
+end
+
+def partial-first-n ( fn argn ... arg0 n ++ proper[ argn ... arg0 ] )
+  ( Returns a noname entry that pushes arg onto the stack before calling fn. )
+  arg0 0 equals? IF arg0 1 + dup argn swap return1-n THEN
+  make-proper-noname
+  0
+  literal proper-exit
+  arg0 1 + argn cs -
+  arg0 cell-size * 2 * stack-allot
+  args over arg0 0 inline-seq
+  cs - arg0 2 * 5 + overn dup shift dict-entry-data poke
+  exit-frame ( todo great candidate for garbage collection )
+end
+
 def partial-after ( fn arg n ++ proper[ arg n roll-back-n fn ] )
   ( Returns a noname entry that inserts arg N cells up the stack before calling fn. )
   make-proper-noname

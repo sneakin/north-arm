@@ -1,3 +1,5 @@
 : out-dcons
-  dhere swap to-out-addr ,uint32 swap to-out-addr ,uint32
+  dhere
+  swap dup IF to-out-addr THEN ,uint32
+  swap dup IF to-out-addr THEN ,uint32
 ;

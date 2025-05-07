@@ -424,17 +424,20 @@ def open-input-file ( path -- fd )
   0 O_RDONLY arg0 open set-arg0
 end
 
-def load
+def load ( path ++ ... ok? )
   the-reader peek
   token-buffer-max stack-allot ( fixme this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams )
   token-buffer-max
   s" Loading " error-string/2 arg0 error-line
-  arg0 open-input-file negative? IF return0 THEN
+  arg0 open-input-file negative? IF
+    s" Error " error-string/2 error-int enl
+    false return1-1
+  THEN
   make-fd-reader the-reader poke
   interp
   the-reader peek fd-reader-close
   local0 the-reader poke
-  exit-frame
+  true exit-frame
 end
 
 def load/2

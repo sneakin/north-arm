@@ -1,4 +1,6 @@
-" src/lib/assert.4th" load
+DEFINED? assert UNLESS
+  " src/lib/assert.4th" load
+THEN
 
 def test-string-peek
   0 0 string-peek 0 assert-equals
@@ -47,6 +49,56 @@ def test-string-index-of
   2dup ' newline? string-index-of -1 assert-equals
 end
 
+def is-str-space?
+  arg1 0 string-peek is-space? 2 return1-n
+end
+
+def asserting-long-is-str-space?
+  arg0 5 uint>= assert
+  ' is-str-space? tail-0 
+end
+
+def asserting-short-is-str-space?
+  arg0 6 uint<= assert
+  ' is-str-space? tail-0 
+end
+
+def test-string-index-of-str
+  s" hello world" ' asserting-long-is-str-space? string-index-of-str
+  true assert-equals
+  5 assert-equals
+  
+  s" hello" ' asserting-short-is-str-space? string-index-of-str
+  false assert-equals
+  s" " ' asserting-short-is-str-space? string-index-of-str
+  false assert-equals
+
+  s" hello " ' asserting-short-is-str-space? string-index-of-str
+  true assert-equals
+  5 assert-equals
+  s"  hello" ' asserting-short-is-str-space? string-index-of-str
+  true assert-equals
+  0 assert-equals
+end
+
+def test-string-rindex-of
+  s" hello world" ' asserting-short-is-str-space? string-rindex-of
+  true assert-equals
+  5 assert-equals
+
+  s" hello" ' asserting-short-is-str-space? string-rindex-of
+  false assert-equals
+  s" " ' asserting-short-is-str-space? string-rindex-of
+  false assert-equals
+
+  s" hello " ' asserting-short-is-str-space? string-rindex-of
+  true assert-equals
+  5 assert-equals
+  s"  hello" ' asserting-short-is-str-space? string-rindex-of
+  true assert-equals
+  0 assert-equals
+end
+
 def test-string-contains?
   s" hello world. how are you?"
   2dup s" how" 0 string-contains?/5
@@ -91,11 +143,36 @@ def test-string-append
   2dup write-line/2
   assert-string-null-terminated
   2dup s" hello world!! hello world!! " assert-byte-string-equals/4
+  ( nothing )
+  local0 32 local0 " " string-append/4
+  2dup write-line/2
+  assert-string-null-terminated
+  2dup s" hello world!! hello world!! " assert-byte-string-equals/4
+  ( overflowing the target by 1 )
+  local0 32 local0 " 123" string-append/4
+  2dup write-line/2
+  assert-string-null-terminated
+  2dup s" hello world!! hello world!! 12" assert-byte-string-equals/4
+  ( filled target )
+  local0 32 local0 32 s" 123" string-append/6
+  2dup write-line/2
+  assert-string-null-terminated
+  2dup s" hello world!! hello world!! 12" assert-byte-string-equals/4
   ( overflowing the target )
   local0 32 local0 local0 string-append/4
   2dup write-line/2
   assert-string-null-terminated
-  2dup s" hello world!! hello world!! he" assert-byte-string-equals/4
+  2dup s" hello world!! hello world!! 12" assert-byte-string-equals/4
+  ( overflowing the target again )
+  local0 32 local0 local0 string-append/4
+  2dup write-line/2
+  assert-string-null-terminated
+  2dup s" hello world!! hello world!! 12" assert-byte-string-equals/4
+  ( overflowing the target by 1 )
+  local0 32 local0 " 1" string-append/4
+  2dup write-line/2
+  assert-string-null-terminated
+  2dup s" hello world!! hello world!! 12" assert-byte-string-equals/4
   ( prepend target )
   local0 32 s" You! " local0 local1 string-append/6
   dup set-local1
@@ -186,6 +263,8 @@ def test-strings
   test-string-poke
   test-copy-byte-string
   test-string-index-of
+  test-string-index-of-str
+  test-string-rindex-of
   test-string-contains?
   test-string-append
   test-byte-string-compare/2

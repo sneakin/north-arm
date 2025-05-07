@@ -85,3 +85,12 @@ end
 : assert-in-range
   in-range? assert 3 dropn
 ;
+
+: assert-list-has-string ( list string length -- )
+  3 overn IF
+    3 overn car+cs 3 overn 3 overn byte-string-equals?/3
+    UNLESS 3 dropn rot cdr+cs rot loop THEN
+    6 dropn true
+  ELSE 3 dropn false
+  THEN assert
+;

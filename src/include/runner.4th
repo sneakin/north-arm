@@ -21,6 +21,7 @@ s[
    src/cross/constants.4th
    src/cross/defining/variables.4th
    src/lib/map/stack.4th
+   src/cross/string-list.4th
    src/cross/defining/colon.4th
 
    src/interp/boot/cross/case.4th

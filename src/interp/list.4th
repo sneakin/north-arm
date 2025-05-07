@@ -45,11 +45,6 @@ def print-cons
   s" )" write-string/2
 end
 
-def load-1
-  arg0 load
-  1 exit-frame
-end
-  
 def load-list ( pair ++ )
-  arg0 0 ' load-1 revmap-cons/3 exit-frame
+  arg0 0 ' load revmap-cons/3 exit-frame
 end

@@ -1,31 +1,10 @@
-tmp" src/lib/assert.4th" load/2
+DEFINED? assert UNLESS
+  tmp" src/lib/assert.4th" load/2
+THEN
 
-def test-rolln
-  ( typical )
-  1 2 3 4 5 0x33 3 rolln
-  5 assert-equals
-  4 assert-equals
-  3 assert-equals
-  0x33 assert-equals
-  2 assert-equals
-  1 assert-equals
-  ( zero )
-  1 2 3 4 5 0x33 0 rolln
-  0x33 assert-equals
-  5 assert-equals
-  4 assert-equals
-  3 assert-equals
-  2 assert-equals
-  1 assert-equals
-  ( one )
-  1 2 3 4 5 0x33 1 rolln
-  5 assert-equals
-  0x33 assert-equals
-  4 assert-equals
-  3 assert-equals
-  2 assert-equals
-  1 assert-equals
-end
+DEFINED? partial-first UNLESS
+  tmp" src/lib/fun.4th" load/2
+THEN
 
 def test-partial-first
   0 0
@@ -44,6 +23,14 @@ def test-partial-first
   1 assert-equals
   3 dropn
   2 assert-equals
+end
+
+def test-partial-first-n
+  ' int-add 0 partial-first-n 200 100 3 overn exec-abs 300 assert-equals
+  ' int-add 10 1 partial-first-n 100 over exec-abs 110 assert-equals
+  ' int-add 10 20 2 partial-first-n dup exec-abs 30 assert-equals
+  ' int-add 10 20 30 3 partial-first-n dup exec-abs 50 assert-equals 10 assert-equals
+  ' int-add 10 20 30 40 4 partial-first-n dup exec-abs 70 assert-equals 20 assert-equals
 end
 
 def test-partial-after
@@ -73,4 +60,11 @@ def test-compose
   2 3 4 local1 exec-abs
   -4 assert-equals
   2 assert-equals
+end
+
+def test-fun
+  test-partial-first
+  test-partial-first-n
+  test-partial-after
+  test-compose
 end

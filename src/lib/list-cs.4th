@@ -26,3 +26,13 @@ end
 def cons+cs-count
   arg0 0 ' cons+cs-count-fn map-car+cs/3 set-arg0
 end
+
+def find-first-result+cs ( list fn[item -- result yes?]  -- result yes? )
+  arg1 IF
+    arg1 car+cs arg0 exec-abs
+    IF true
+    ELSE arg1 cdr+cs set-arg1 repeat-frame
+    THEN
+  ELSE false
+  THEN 2 return2-n
+end

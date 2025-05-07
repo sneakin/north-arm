@@ -54,6 +54,10 @@ def execve ( env argv program -- status )
   args 3 0xB syscall 3 return1-n
 end
 
+def chdir
+  args 1 12 syscall return1
+end
+
 def getpid
   args 0 20 syscall return1
 end
@@ -181,6 +185,10 @@ end
 
 def pwrite64 ( offset len ptr fd -- result )
   args 4 181 syscall 4 return1-n
+end
+
+def getcwd ( out-length out-str -- result )
+  args 2 0xB7 syscall 2 return1-n
 end
 
 def sendfile ( count offset-ptr in-fd out-fd -- result )
