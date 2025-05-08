@@ -73,7 +73,23 @@ ELSE
   alias> file-size file-size32
 THEN
 
-( Check if a file exists. )
-def file-exists? ( path -- yes? )
+( Check if a pathname exists. )
+def pathname-exists? ( path -- yes? )
   arg0 stat-path IF true ELSE false THEN 1 return1-n
+end
+
+( Check if a pathname is a file. )
+def file-exists? ( path -- yes? )
+  arg0 stat-path dup IF
+    file-stat64 -> mode @ S_ISREG
+  ELSE false
+  THEN 1 return1-n
+end
+
+( Check if a pathname is a directory. )
+def directory-exists? ( path -- yes? )
+  arg0 stat-path dup IF
+    file-stat64 -> mode @ S_ISDIR
+  ELSE false
+  THEN 1 return1-n
 end
