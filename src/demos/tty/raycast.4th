@@ -45,7 +45,7 @@ end
 
 2f 2f float32-mul const> 4f
 pi 2f float32-div const> pi/2
-pi 4f float32-div const> pi/4
+pi 2f 2f float32-mul float32-div const> pi/4
 
 0 var> sin-lut
 pi 128 int32->float32 float32-div const> pi/128

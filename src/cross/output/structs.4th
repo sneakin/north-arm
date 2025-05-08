@@ -1,6 +1,10 @@
 ( todo type and every super needs to be updated. gets the live sys pointer or crashes checking the manipulated type hierachy. two passes. select and update passes?)
 ( todo factor )
 
+DEFINED? dcons UNLESS
+  tmp" src/interp/data-stack-list.4th" load/2
+THEN
+
 : map-sys-type-to-out ( sys-type -- out-type ok? )
   dup UNLESS drop false proper-exit THEN
   type-name @ as-code-pointer

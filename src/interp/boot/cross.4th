@@ -7,6 +7,10 @@ SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
   alias> exec exec-abs
 THEN
 
+DEFINED? ,uint32 UNLESS
+  tmp" src/lib/byte-data.4th" load/2
+THEN
+
 DEFINED? out-origin UNLESS
   tmp" src/interp/boot/cross/addressing.4th" load/2
 THEN
