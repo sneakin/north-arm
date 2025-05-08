@@ -1,6 +1,4 @@
-DEFINED? assert UNLESS
-  " src/lib/assert.4th" load
-THEN
+require[ assert ]
 
 def test-string-peek
   0 0 string-peek 0 assert-equals

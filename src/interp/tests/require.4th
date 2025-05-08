@@ -1,10 +1,8 @@
-DEFINED? assert UNLESS
-  s[ src/lib/assert.4th ] load-list
-THEN
-
 DEFINED? require UNLESS
   s[ src/interp/require.4th ] load-list
 THEN
+
+require[ assert ]
 
 def test-find-file
   s" find-file" error-line/2

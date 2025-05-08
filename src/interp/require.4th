@@ -6,7 +6,7 @@
 ( todo stage0 )
 
 DEFINED? require IF
-  require[ pointers structs linux/stat list-cs ]
+  require[ pointers list-cs structs linux/stat ]
 ELSE
   
 SYS:DEFINED? NORTH-COMPILE-TIME
@@ -85,7 +85,7 @@ def loaded?
   *loaded-files* @ swap find-first IF true ELSE false THEN return1-1
 end
 
-OUT:DEFINED? pad-addr UNLESS
+DEFINED? pad-addr UNLESS
   def pad-addr ( addr alignment )
     arg1 arg0 1 - + arg0 uint-div arg0 int-mul
     2 return1-n
@@ -98,6 +98,8 @@ def move-string-right ( str len max-len -- new-str len )
   dup arg1 null-terminate
   arg1 3 return2-n
 end
+
+( todo loaded-files needs to have a copy of the string )
 
 def load-once ( path ++ ok? )
   *current-file* @

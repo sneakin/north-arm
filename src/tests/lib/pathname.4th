@@ -1,10 +1,4 @@
-DEFINED? assert UNLESS
-  s[ src/lib/assert.4th ] load-list
-THEN
-
-DEFINED? pathname-join/6 UNLESS
-  s[ src/lib/pathname.4th ] load-list
-THEN
+require[ pathname assert ]
 
 128 var> assert-max-pathname
 

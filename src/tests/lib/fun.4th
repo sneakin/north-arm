@@ -1,9 +1,7 @@
-DEFINED? assert UNLESS
-  tmp" src/lib/assert.4th" load/2
-THEN
+require[ assert ]
 
 DEFINED? partial-first UNLESS
-  tmp" src/lib/fun.4th" load/2
+  require[ fun ]
 THEN
 
 def test-partial-first

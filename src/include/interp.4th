@@ -22,6 +22,8 @@ s[
    src/interp/linux/hwcaps.4th
    src/lib/time.4th
    src/interp/data-stack.4th
+   src/lib/pointers.4th ( needs program-args' top-stack )
+   src/lib/list-cs.4th
    src/interp/interp.4th
 ] load-list
 
@@ -50,15 +52,3 @@ s[ src/interp/loaders.4th ] load-list
 NORTH-STAGE 1 int> IF
   s[ src/interp/imports.4th ] load-list
 THEN
-
-( Extra fun )
-( s[ src/lib/list.4th
-   src/interp/dynlibs.4th
-   src/interp/libc.4th ] load-list
-)
-( tmp" src/cross/defining/proper.4th" drop load )
-( tmp" src/interp/cross.4th" drop load )
-(
-tmp" src/lib/stack-marker.4th" drop load
-tmp" src/lib/strings.4th" drop load
-)
