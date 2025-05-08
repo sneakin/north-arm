@@ -433,7 +433,14 @@ def load ( path ++ ... ok? )
     s" Error " error-string/2 error-int enl
     false return1-1
   THEN
-  make-fd-reader the-reader poke
+  make-fd-reader
+  ( try a read to trigger an error here on directories )
+  dup reader-top-up negative? IF
+    s" Error reading " error-string/2 error-int enl
+    fd-reader-close
+    false return1-1
+  ELSE drop the-reader poke
+  THEN
   interp
   the-reader peek fd-reader-close
   local0 the-reader poke

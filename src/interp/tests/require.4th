@@ -46,6 +46,9 @@ def test-load-once
   ( not found )
   " wut" load-once assert-not
   *loaded-files* @ cons-count 1 assert-equals
+  ( directories )
+  " src/lib" load-once assert-not
+  *loaded-files* @ cons-count 1 assert-equals
   
   local0 *loaded-files* !
 end
@@ -69,6 +72,11 @@ def test-require
   " src/interp/tests/data/load-once-0" require assert
   *loaded-files* @ cons-count 1 assert-equals
 
+  " src/lib" require assert-not
+  *loaded-files* @ cons-count 1 assert-equals
+  " boo-who" require assert-not
+  *loaded-files* @ cons-count 1 assert-equals
+  
   local0 *loaded-files* !
 end
 
