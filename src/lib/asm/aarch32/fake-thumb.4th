@@ -298,7 +298,6 @@ alias> a.udiv udiv
 ;
 
 s[ src/lib/asm/thumb/helpers.4th
-   src/lib/asm/thumb/vfp-constants.4th
    src/lib/asm/thumb/vfp.4th
 ] load-list
 

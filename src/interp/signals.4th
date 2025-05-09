@@ -1,6 +1,9 @@
+DEFINED? as-code-pointer UNLESS
+  s[ src/lib/pointers.4th ] load-list
+THEN
+
 s[ src/lib/linux/signals/constants.4th
    src/lib/linux/signals/types.4th
-   src/lib/pointers.4th
 ] load-list
 
 def signal->string ( signum -- name )
