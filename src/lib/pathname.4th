@@ -13,6 +13,7 @@ SYS:DEFINED? NORTH-COMPILE-TIME IF
   1024 defconst> max-pathname
 THEN
 
+0 IF
 def string-rindex-compare/4 ( str length needle needle-length -- yes? )
   arg3 arg1 arg0 byte-string-equals?/3 4 return1-n
 end
@@ -33,6 +34,7 @@ def xpathname-basename ( pathname length -- basename length )
   arg1 over + 1 +
   swap arg0 swap - 1 - 2 return2-n
 end
+THEN
 
 def is-path-separator? ( str length -- yes? )
   arg0 path-separator-length uint<

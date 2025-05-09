@@ -22,7 +22,7 @@ s[
    src/interp/linux/hwcaps.4th
    src/lib/time.4th
    src/interp/data-stack.4th
-   src/lib/pointers.4th ( needs program-args' top-stack )
+   src/lib/pointers.4th
    src/lib/list-cs.4th
    src/interp/interp.4th
 ] load-list
@@ -31,11 +31,13 @@ s[
 s[ src/interp/list.4th
    src/interp/compiler.4th
    src/interp/proper.4th
+   src/lib/pathname.4th
+   src/lib/linux/stat-lite.4th
+   src/interp/require.4th
 ] load-list
 
 ( Math: )
-s[ src/lib/math/int32.4th
-] load-list
+s[ src/lib/math/int32.4th ] load-list
    
 ( Optional features: )
 NORTH-STAGE 0 int> IF

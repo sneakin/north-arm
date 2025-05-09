@@ -66,8 +66,30 @@ def update-data-var-init ( value str n -- )
   THEN 3 return0-n
 end
 
+DEFINED? *load-paths* IF
+  def builder-store-load-paths
+    *loaded-files* @ *load-paths* @ *north-file-exts* @
+    here exit-frame
+  end
+
+  def builder-set-load-paths
+    arg0 2 seq-peek *loaded-files* !
+    arg0 1 seq-peek *load-paths* !
+    arg0 0 seq-peek *north-file-exts* !
+    1 return0-n
+  end
+ELSE
+  def builder-store-load-paths
+    0 return1
+  end
+
+  def builder-set-load-paths
+    1 return0-n
+  end
+THEN
+
 def builder-run ( entry len src-cons )
-  0
+  0 0 builder-store-load-paths set-local1
 
   target-android?
   IF elf32-target-android! ELSE elf32-target-linux! THEN
@@ -82,6 +104,9 @@ def builder-run ( entry len src-cons )
     THEN
     builder-output poke
   THEN
+
+  0 builder-load-paths @ builder-file-exts @ here builder-set-load-paths 3 dropn
+  builder-load-paths @ as-code-pointer ' error-line map-car+cs
 
   " Building..." error-line
   4 align-data ( todo align-data that's origin aware so 4k align is relative to any origin' not abs addresses )
@@ -157,6 +182,9 @@ def builder-run ( entry len src-cons )
   builder-output peek IF current-output peek close THEN
   local0 current-output poke
   out-origin peek dhere to-out-addr
+
+  local1 builder-set-load-paths
+  
   ok-s error-line
   exit-frame ( todo how much can be cleaned up? )
 end

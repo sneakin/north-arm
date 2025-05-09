@@ -1,36 +1,66 @@
 ( todo save mark before file loading to restore on failure )
 ( todo store data and stats on required files )
-( todo interp and builder lists )
 ( todo this file to init loaded files list, full list when compiled )
 ( todo require-relative )
 ( todo stage0 )
 
-DEFINED? require IF
-  require[ pointers list-cs structs linux/stat ]
+SYS:DEFINED? require IF
+  OUT:DEFINED? make-instance
+  IF require[ linux/stat ]
+  ELSE require[ linux/stat-lite ]
+  THEN
+
+  require[ pathname list-cs ]
 ELSE
   
-SYS:DEFINED? NORTH-COMPILE-TIME
-IF OUT:DEFINED? struct:
-ELSE DEFINED? struct:
-THEN UNLESS s[ src/lib/pointers.4th src/lib/structs.4th ] load-list THEN
+  SYS:DEFINED? NORTH-COMPILE-TIME
+  IF OUT:DEFINED? file-exists?
+  ELSE DEFINED? file-exists?
+  THEN UNLESS
+    SYS:DEFINED? struct:
+    IF s[ src/lib/linux/stat.4th ] load-list
+    ELSE s[ src/lib/linux/stat-lite.4th ] load-list
+    THEN
+  THEN
 
-SYS:DEFINED? NORTH-COMPILE-TIME
-IF OUT:DEFINED? file-exists?
-ELSE DEFINED? file-exists?
-THEN UNLESS s[ src/lib/linux/stat.4th ] load-list THEN
+  SYS:DEFINED? NORTH-COMPILE-TIME
+  IF OUT:DEFINED? pathname-join/6
+  ELSE DEFINED? pathname-join/6
+  THEN UNLESS s[ src/lib/pathname.4th ] load-list THEN
 
-SYS:DEFINED? NORTH-COMPILE-TIME
-IF OUT:DEFINED? pathname-join/6
-ELSE DEFINED? pathname-join/6
-THEN UNLESS s[ src/lib/pathname.4th ] load-list THEN
-
-SYS:DEFINED? NORTH-COMPILE-TIME
-IF OUT:DEFINED? find-first-result+cs
-ELSE DEFINED? find-first-result+cs
-THEN UNLESS s[ src/lib/list-cs.4th ] load-list THEN
+  SYS:DEFINED? NORTH-COMPILE-TIME
+  IF OUT:DEFINED? find-first-result+cs
+  ELSE DEFINED? find-first-result+cs
+  THEN UNLESS s[ src/lib/list-cs.4th ] load-list THEN
 
 THEN
 
+SYS:DEFINED? NORTH-COMPILE-TIME IF
+  0 defvar> *loaded-files*
+  0 defvar> *current-file*
+ELSE  
+  0 var> *loaded-files*
+  0 var> *current-file*
+THEN
+
+s[ /lib/north
+   /usr/lib/north
+   /usr/local/lib/north
+   src/lib
+   src
+   .
+]
+SYS:DEFINED? defvar>
+IF ,out-string-list to-out-addr defvar> *load-paths*
+ELSE var> *load-paths*
+THEN
+
+s[ .4th .nth ]
+SYS:DEFINED? defvar>
+IF ,out-string-list to-out-addr defvar> *north-file-exts*
+ELSE  var> *north-file-exts*
+THEN
+  
 def find-file-ext-fn ( candidate-ext out-buffer out-max fn-length -- full-path true | false )
   arg3 string-length
   arg3 arg2 arg0 + local0 copy
@@ -53,6 +83,16 @@ def find-file-fn ( candidate-dir out-buffer out-max file-name fn-length ext-list
   THEN
 end
 
+def write-line-list
+  arg0 ' write-line map-car+cs
+  1 return0-n
+end
+
+def error-line-list
+  arg0 ' error-line map-car+cs
+  1 return0-n
+end
+
 ( Search for a file in a list of dirertories trying different file name extensions. The fdnal path name is copied into ~out~. )
 def find-file/6 ( out out-len path path-len dir-list ext-list -- out out-len true | false )
   arg0 as-code-pointer " " cons ( s[ can not have empty strings so add one )
@@ -63,29 +103,22 @@ def find-file/6 ( out out-len path path-len dir-list ext-list -- out out-len tru
   THEN
 end
 
-SYS:DEFINED? NORTH-COMPILE-TIME IF
-  s[ /usr/lib/north src/lib . ] ,out-string-list to-out-addr defvar> *load-paths*
-  s[ .4th .nth ] ,out-string-list to-out-addr defvar> *north-file-exts*
-  0 defvar> *loaded-files*
-  0 defvar> *current-file*
-ELSE
-  s[ /usr/lib/north src/lib . ] var> *load-paths*
-  s[ .4th .nth ] var> *north-file-exts*
-  null var> *loaded-files*
-  null var> *current-file*
+DEFINED? string-equals? UNLESS
+  def string-equals?
+    arg1 arg0
+    arg1 string-length
+    arg0 string-length
+    2dup equals? IF drop byte-string-equals?/3 ELSE false THEN 2 return1-n
+  end
 THEN
-
-def write-line-list
-  arg0 ' write-line map-car+cs
-  1 return0-n
-end
 
 def loaded?
   ' string-equals? arg0 partial-first
   *loaded-files* @ swap find-first IF true ELSE false THEN return1-1
 end
 
-DEFINED? pad-addr UNLESS
+SYS:DEFINED? OUT:DEFINED? IF OUT:DEFINED? pad-addr ELSE DEFINED? pad-addr THEN
+UNLESS
   def pad-addr ( addr alignment )
     arg1 arg0 1 - + arg0 uint-div arg0 int-mul
     2 return1-n

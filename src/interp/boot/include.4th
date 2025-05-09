@@ -28,21 +28,29 @@ s[ src/interp/signals.4th
    src/lib/math.4th
 ] load-list
 
-SYS:DEFINED? NORTH-COMPILE-TIME UNLESS
-  DEFINED? as-code-pointer UNLESS
-    s[ src/lib/pointers.4th
-       src/lib/list-cs.4th
-    ] load-list
-  THEN
+DEFINED? as-code-pointer UNLESS
+  s[ src/lib/pointers.4th ] load-list
+THEN
+DEFINED? map-car+cs UNLESS  
+  s[ src/lib/list-cs.4th ] load-list
+THEN
+DEFINED? struct: UNLESS
   s[ src/lib/structs.4th ] load-list
 THEN
 
 s[ src/lib/linux.4th
    src/lib/io.4th
-   src/lib/pathname.4th
-   src/interp/require.4th
-   src/interp/mark.4th
 ] load-list
+
+DEFINED? require UNLESS
+  DEFINED? string-rindex-of IF
+    s[ src/lib/pathname.4th
+       src/interp/require.4th
+    ] load-list
+  THEN
+THEN
+
+s[ src/interp/mark.4th ] load-list
 
 def load-core true return1 end
 

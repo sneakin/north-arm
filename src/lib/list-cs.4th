@@ -36,3 +36,8 @@ def find-first-result+cs ( list fn[item -- result yes?]  -- result yes? )
   ELSE false
   THEN 2 return2-n
 end
+
+def list+cs-has-string? ( str len list -- yes? )
+  ' byte-string-equals?/3 arg2 arg1 2 partial-first-n
+  arg0 swap find-first-result+cs 3 return1-n
+end

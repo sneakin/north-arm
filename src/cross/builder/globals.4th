@@ -2,6 +2,9 @@
 DEFAULT-BUILDER-TARGET var> builder-target
 32 var> builder-target-bits
 true var> builder-target-little-endian
+null var> builder-load-paths
+null var> builder-file-exts
+null var> builder-baked-features
 false var> builder-bare-bones
 true var> builder-with-runner
 false var> builder-with-interp

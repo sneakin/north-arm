@@ -5,8 +5,18 @@ s[ src/cross/builder/globals.4th
 ] load-list
 
 def builder-reset!
+  ' *load-paths* IF
+    *load-paths* @ as-code-pointer builder-load-paths !
+    *north-file-exts* @ as-code-pointer builder-file-exts !
+  ELSE
+    0 builder-load-paths !
+    0 builder-file-exts !
+  THEN
+  0 builder-baked-features !
+  false builder-with-runner !
+  false builder-with-interp !
+  false builder-with-cross !
   DEFAULT-BUILDER-TARGET builder-target !
-  true builder-with-runner !
   DEFAULT-OUTPUT-FORMAT builder-output-format !
   0 builder-output-file !
   0 builder-output !
