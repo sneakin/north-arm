@@ -88,6 +88,10 @@ ELSE
   end
 THEN
 
+DEFINED? require UNLESS
+  alias> require load
+THEN
+
 def builder-run ( entry len src-cons )
   0 0 builder-store-load-paths set-local1
 
@@ -116,7 +120,7 @@ def builder-run ( entry len src-cons )
 
   builder-bare-bones? UNLESS
     ( Plain text message: )
-    target-raspi? IF " src/runner/thumb/boot.4th" load THEN
+    target-raspi? IF " src/runner/thumb/boot.4th" require THEN
     dhere copyright-address poke
     BUILD-COPYRIGHT peek dup IF ,byte-string ELSE drop THEN
     ( Words to later patch: )
@@ -127,9 +131,9 @@ def builder-run ( entry len src-cons )
   ( The main stage: )
   true NORTH-COMPILE-TIME poke
   builder-bare-bones? UNLESS
-    builder-with-runner peek IF " src/include/runner.4th" load THEN
-    ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" load THEN THEN
-    ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" load THEN THEN
+    builder-with-runner peek IF " src/include/runner.4th" require THEN
+    ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" require THEN THEN
+    ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" require THEN THEN
   THEN
   arg0 load-list
 

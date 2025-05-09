@@ -4,7 +4,7 @@
 ( todo require-relative )
 ( todo stage0 )
 
-SYS:DEFINED? require IF
+SYS:DEFINED? require[ IF
   OUT:DEFINED? make-instance
   IF require[ linux/stat ]
   ELSE require[ linux/stat-lite ]
