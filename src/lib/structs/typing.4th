@@ -68,9 +68,10 @@ end
 SYS:DEFINED? NORTH-COMPILE-TIME IF
   NORTH-COMPILE-TIME @ UNLESS
     def create-out-type-entry
-      s" Type: " error-string/2
-      arg0 value-of type-name @ dup string-length 2dup error-line/2 create
-      defconst-offset exit-frame
+      INTERP-LOG-WORDS interp-logs? IF s" Type: " error-string/2 THEN
+      arg0 value-of type-name @ dup string-length
+      INTERP-LOG-WORDS interp-logs? IF 2dup error-line/2 THEN
+      create defconst-offset exit-frame
     end
 
     def type: ( base-type byte-size : name ++ ... )
@@ -85,9 +86,10 @@ SYS:DEFINED? NORTH-COMPILE-TIME IF
     alias> sys-type: type:
     
     : create-out-type-entry
-      s" Type: " error-string/2
-      dup value-of type-name @ dup string-length 2dup error-line/2 create
-      defconst-offset
+      INTERP-LOG-WORDS interp-logs? IF s" Type: " error-string/2 THEN
+      dup value-of type-name @ dup string-length
+      INTERP-LOG-WORDS interp-logs? IF 2dup error-line/2 THEN
+      create defconst-offset
     ;
     
     : type: ( base-type byte-size : name ++ ... )

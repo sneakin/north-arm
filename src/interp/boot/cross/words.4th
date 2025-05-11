@@ -67,8 +67,9 @@ end
 ;
 
 : create ( ptr length -- entry )
-  2dup error-line/2
-  drop make-dict-entry dup to-out-addr error-hex-uint enl
+  INTERP-LOG-WORDS interp-logs? IF 2dup error-line/2 THEN
+  drop make-dict-entry
+  INTERP-LOG-WORDS interp-logs? IF dup to-out-addr error-hex-uint enl THEN
   dup out-dictionary poke
 ;
 

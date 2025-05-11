@@ -50,7 +50,6 @@ THEN
 
 ( Creates a new dictionary entry with a struct as a value. )
 def create-struct ( name name-len ++ )
-  arg1 arg0 error-line/2
   arg1 arg0 create does-const
   arg1 new-struct dup dict dict-entry-data poke
   *this-struct* poke

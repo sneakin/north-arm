@@ -1,5 +1,5 @@
 ( Interpreter )
-s[
+s[ src/interp/logging.4th
    src/interp/strings.4th
    src/lib/seq.4th
    src/lib/list.4th

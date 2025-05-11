@@ -24,8 +24,13 @@ def variable-writer-state-dict arg0 cell-size 1 * + set-arg0 end
 def variable-writer-state-total arg0 cell-size 0 * + set-arg0 end
 
 def log-data-var-info ( origin word number -- )
-  arg0 error-int espace arg1 dict-entry-name @ arg2 + error-string espace
-  arg1 arg2 data-var-init-values/2 error-hex-uint espace error-hex-int enl
+  INTERP-LOG-DETAILS interp-logs? IF
+    arg0 error-int espace arg1 dict-entry-name @ arg2 + error-string espace
+  THEN
+  arg1 arg2 data-var-init-values/2
+  INTERP-LOG-DETAILS interp-logs? IF
+    error-hex-uint espace error-hex-int enl
+  THEN
   3 return0-n
 end
 
@@ -54,9 +59,11 @@ end
 def write-variable-data
   dhere
   0 ,uint32
-  s" Copying variable data:" error-line/2
+  INTERP-LOG-DETAILS interp-logs? IF s" Copying variable data:" error-line/2 THEN
   local0 arg1 arg0 0 write-data-variable-loop
-  dup error-int s"  variables" error-line/2
+  INTERP-LOG-DETAILS interp-logs? IF
+    dup error-int s"  variables" error-line/2
+  THEN
   local0 !
   local0 2 return1-n
 end

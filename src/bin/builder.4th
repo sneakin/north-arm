@@ -11,7 +11,6 @@ THEN
 null var> sources
 " main" string-const> DEFAULT-ENTRY-POINT
 DEFAULT-ENTRY-POINT var> entry-point
-false var> verbosity
 0 var> start-interpreter
 false var> do-dump-dict
 false var> show-version
@@ -34,7 +33,15 @@ def builder-has-feature? ( str length -- yes? )
   arg1 arg0 builder-baked-features @ list+cs-has-string? 2 return1-n
 end
 
-" hVt:e:vBb:I:Z:X:f:o:dQ" string-const> OPTS
+def parse-log-level
+  arg0 dup string-length
+  2dup parse-int UNLESS
+    drop dict dict-lookup
+    IF dict-entry-data @ ELSE false return1-1 THEN
+  THEN true 1 return2-n
+end
+
+" hVt:e:v:Bb:I:Z:X:f:o:dQ" string-const> OPTS
 
 def reset!
   builder-reset!
@@ -49,7 +56,13 @@ def process-opts
     s" V" OF-STR true show-version ! true 2 return1-n ENDOF
     s" e" OF-STR arg1 entry-point ! true 2 return1-n ENDOF
     s" t" OF-STR arg1 builder-target ! true 2 return1-n ENDOF
-    s" v" OF-STR verbosity inc! true 2 return1-n ENDOF
+    s" v" OF-STR
+      arg1 parse-log-level IF
+        dup IF *interp-log-level* @ logior THEN
+        *interp-log-level* !
+      ELSE s" Unknown log level: " error-string/2 arg1 error-line
+      THEN true 2 return1-n
+    ENDOF
     s" B" OF-STR true builder-bare-bones ! true 2 return1-n ENDOF
     s" b" OF-STR arg1 builder-baked-features push-onto true exit-frame ENDOF
     s" I" OF-STR arg1 builder-load-paths push-onto true exit-frame ENDOF
@@ -95,7 +108,7 @@ def print-builder-usage
   THEN
   s"         -Q  Dump the dictionary and exit." write-line/2
   s"         -d  Increase counter to start interpreter" write-line/2
-  s"         -v  Increase verbosity" write-line/2
+  s"   -v level  Add a log level by nawe or value" write-line/2
 end
 
 def dump-builder-config
@@ -116,6 +129,9 @@ def dump-builder-config
 end
 
 def build
+  ( fixme the condition can be removed once interp-init is updated to check for prior init )
+  return-stack @ UNLESS interp-init THEN
+
   reset!
 
   ( todo init builder-target-bits and endian by target and option )
@@ -123,9 +139,6 @@ def build
   ' process-opts OPTS getopt UNLESS print-builder-usage -1 return1 THEN
 
   show-version @ IF about 0 return1 THEN
-
-  ( fixme the condition can be removed once interp-init is updated to check for prior init )
-  return-stack @ UNLESS interp-init THEN
 
   builder-baked-features @ UNLESS
     builder-bare-bones @ UNLESS
@@ -137,7 +150,7 @@ def build
   s" interp" builder-has-feature? builder-with-interp !
   s" crossover" builder-has-feature? builder-with-cross !
 
-  verbosity @ IF dump-builder-config THEN
+  LOG-USER-INFO interp-logs? IF dump-builder-config THEN
   start-interpreter @ 1 equals? IF interp THEN
   do-dump-dict @ IF dump-dict 0 return1 THEN
 

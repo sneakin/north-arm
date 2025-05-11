@@ -428,7 +428,7 @@ def load ( path ++ ... ok? )
   the-reader peek
   token-buffer-max stack-allot ( fixme this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams )
   token-buffer-max
-  s" Loading " error-string/2 arg0 error-line
+  INTERP-LOG-LOADS interp-logs? IF s" Loading " error-string/2 arg0 error-line THEN
   arg0 open-input-file negative? IF
     s" Error " error-string/2 error-int enl
     false return1-1
@@ -452,7 +452,7 @@ def load/2
 end
 
 def load-string/2
-  s" Loading string: " error-string/2 arg1 arg0 error-line/2
+  INTERP-LOG-LOADS interp-logs? IF s" Loading string: " error-string/2 arg1 arg0 error-line/2 THEN
   the-reader peek
   arg1 arg0 make-string-reader the-reader poke
   interp

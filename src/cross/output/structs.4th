@@ -34,41 +34,46 @@ end
 ( todo copy fields in second pass to get type pointers right, or dallot types to on declaration so pointer is always out-addr )
 
 def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
-  etab etab arg0 ,h espace struct-field -> name @ as-code-pointer error-string espace
+  INTERP-LOG-DETAILS interp-logs? IF etab etab arg0 ,h espace struct-field -> name @ as-code-pointer error-string espace THEN
   dhere
   arg0 struct-field -> name @ as-code-pointer ,byte-string
   dhere
-  over to-out-addr ,h espace ,uint32
-  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,h espace ,uint32
-  arg0 struct-field -> offset @ ,h espace ,uint32
-  arg0 struct-field -> byte-size @ ,h espace ,uint32
+  over to-out-addr INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
+  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
+  INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
+  arg0 struct-field -> offset @ INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
+  arg0 struct-field -> byte-size @ INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
   local1 to-out-addr
   struct-field value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
-  dcons to-out-addr ,h enl
+  dcons to-out-addr INTERP-LOG-DETAILS interp-logs? IF ,h enl THEN
   arg1 swap dcons to-out-addr 2 return1-n
 end
 
 ( todo above needs to build a list, no initial null )
 
 def copy-struct-fields-to-data ( out-struct -- )
-  arg0 cdr from-out-addr struct-fields @ ,h enl
+  arg0 cdr from-out-addr struct-fields @ INTERP-LOG-DETAILS interp-logs? IF ,h enl THEN
   dup IF as-code-pointer 0 ' copy-struct-field-to-data map-car+cs/3 ELSE 0 THEN
   arg0 cdr from-out-addr struct-fields !
   1 return0-n
 end
 
 def update-out-struct ( word -- )
-  arg0 dict-entry-name @ from-out-addr etab error-string espace
-  arg0 dict-entry-data @ ,h enl
-  copy-type-to-data to-out-addr arg0 dict-entry-data !
+  INTERP-LOG-DETAILS interp-logs? IF
+    arg0 dict-entry-name @ from-out-addr etab error-string espace
+    arg0 dict-entry-data @ .h enl
+  THEN
+  arg0 dict-entry-data @ copy-type-to-data to-out-addr arg0 dict-entry-data !
   1 return0-n
 end
 
 def update-out-struct-fields ( word -- )
-  arg0 dict-entry-name @ from-out-addr etab error-string espace
-  arg0 dict-entry-data @ ,h espace
+  INTERP-LOG-DETAILS interp-logs? IF
+    arg0 dict-entry-name @ from-out-addr etab error-string espace
+    arg0 dict-entry-data @ .h espace
+  THEN
   ( todo structs only? general data values? )
-  from-out-addr copy-struct-fields-to-data
+  arg0 dict-entry-data @ from-out-addr copy-struct-fields-to-data
   1 return0-n
 end
 
@@ -79,7 +84,7 @@ def select-out-type ( [ const-fn count data-cons-accum ] word ++ state )
     IF drop true
     ELSE dup stack-pointer? IF type kind-of? ELSE drop false THEN
     THEN
-    IF arg0 dict-entry-name @ from-out-addr error-line
+    IF INTERP-LOG-DETAILS interp-logs? IF arg0 dict-entry-name @ from-out-addr error-line THEN
 	     arg0 arg1 0 seq-nth push-onto
 	     arg1 exit-frame
     THEN
@@ -88,13 +93,13 @@ def select-out-type ( [ const-fn count data-cons-accum ] word ++ state )
 end
 
 def update-structs ( out-dict -- )
-  s" Selecting structs:" error-line/2
+  INTERP-LOG-DETAILS interp-logs? IF s" Selecting structs:" error-line/2 THEN
   0
   out' do-const-offset dict-entry-code @
   0 0 here arg0 out-origin @ roll ' select-out-type dict-map/4 set-local0
-  s" Updating structs:" error-line/2
+  INTERP-LOG-DETAILS interp-logs? IF s" Updating structs:" error-line/2 THEN
   local0 0 seq-peek ' update-out-struct map-car
-  s" Updating fields:" error-line/2
+  INTERP-LOG-DETAILS interp-logs? IF s" Updating fields:" error-line/2 THEN
   local0 0 seq-peek ' update-out-struct-fields map-car
   1 return0-n
 end

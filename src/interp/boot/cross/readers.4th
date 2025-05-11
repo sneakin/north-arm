@@ -21,8 +21,7 @@ alias> args( ( cross-immediate ( bad emacs )
 ; cross-immediate-as '
 
 : out-POSTPONE
-  etab s" POSTPONE " error-string/2
-  next-token 2dup error-line/2
+  next-token
   output-immediates @ out-origin @ dict-lookup/4 IF
     to-out-addr rot 2 dropn
   ELSE drop cross-lookup-offset-or-break

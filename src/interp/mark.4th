@@ -112,9 +112,8 @@ alias> forget! top-forget!
 
 SYS:DEFINED? NORTH-COMPILE-TIME IF
   sys:: use-out-mark
-    s" use-out-mark " error-string/2 ,h enl
-    dup mark-dict @ from-out-addr ,h enl out-dictionary !
-    mark-immediates @ from-out-addr ,h enl output-immediates !
+    dup mark-dict @ from-out-addr out-dictionary !
+    mark-immediates @ from-out-addr output-immediates !
   ;
 
   sys-def out-remark! ( mark -- )
@@ -165,11 +164,14 @@ SYS:DEFINED? NORTH-COMPILE-TIME IF
 
   sys:: mark> ( : name ++ word )
     make-out-mark output-mark to-out-addr const-offset>
-    s" MARK> " error-string/2
-    out-dictionary @ dict-entry-name @ from-out-addr dup error-line
+    out-dictionary @ dict-entry-name @ from-out-addr
     dup string-length
+    INTERP-LOG-DEBUG interp-logs? IF
+      s" MARK> " error-string/2
+      2dup error-line/2
+    THEN
     sys-create
-    out-dictionary @ dict-entry-data @ from-out-addr ,h enl over dict-entry-data !
+    out-dictionary @ dict-entry-data @ from-out-addr over dict-entry-data !
     does-const
   ;
 THEN
@@ -250,16 +252,21 @@ SYS:DEFINED? NORTH-COMPILE-TIME IF
   end
 
   sys-def push-mark ( mark ++ word )
-    arg0 ,h enl out-dict-swap arg0 s" pop-mark" create-out-remark exit-frame
+    arg0 out-dict-swap arg0 s" pop-mark" create-out-remark exit-frame
   end
 
   sys:: push-mark> ( out-mark : name ++ )
     out-dict-swap output-mark to-out-addr const-offset>
-    s" PUSH MARK " error-string/2
-    out-dictionary @ dict-entry-name @ from-out-addr dup error-line
+    out-dictionary @ dict-entry-name @ from-out-addr
     dup string-length
+    INTERP-LOG-DEBUG interp-logs? IF
+      s" PUSH MARK " error-string/2
+      2dup error-line/2
+    THEN
     sys-create
-    out-dictionary @ dict-entry-data @ from-out-addr ,h enl over dict-entry-data !
+    out-dictionary @ dict-entry-data @ from-out-addr
+    INTERP-LOG-DEBUG interp-logs? IF ,h enl THEN
+    over dict-entry-data !
     does-const
   ;
 THEN

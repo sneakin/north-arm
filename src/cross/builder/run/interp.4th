@@ -110,7 +110,6 @@ def builder-run ( entry len src-cons )
   THEN
 
   0 builder-load-paths @ builder-file-exts @ here builder-set-load-paths 3 dropn
-  builder-load-paths @ as-code-pointer ' error-line map-car+cs
 
   " Building..." error-line
   4 align-data ( todo align-data that's origin aware so 4k align is relative to any origin' not abs addresses )

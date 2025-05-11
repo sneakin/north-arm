@@ -25,11 +25,13 @@ end
 0 var> tty-winch-sigaction
 
 def tty-winch-handler
-  s" WINCH " error-string/2
   tty-update-size
-  tty-columns peek error-uint
-  s" x" error-string/2
-  tty-lines peek error-uint enl
+  INTERP-LOG-INFO interp-logs? IF
+    s" WINCH " error-string/2
+    tty-columns peek error-uint
+    s" x" error-string/2
+    tty-lines peek error-uint enl
+  THEN
   3 return0-n
 end
 

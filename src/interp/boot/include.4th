@@ -12,7 +12,8 @@ NORTH-BUILD-TIME 1634096442 int<= IF
   s[ src/lib/fun.4th ] load-list
 THEN
 
-s[ src/lib/escaped-strings.4th
+s[ src/interp/logging.4th
+   src/lib/escaped-strings.4th
    src/interp/data-stack-list.4th
    src/runner/ffi.4th
 ] load-list

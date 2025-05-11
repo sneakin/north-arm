@@ -52,7 +52,6 @@ s[ src/runner/thumb/frames.4th
    src/runner/thumb/vfp-constants.4th
    src/runner/thumb/proper.4th
    src/runner/proper.4th
-   ( src/interp/data-stack.4th )
    src/runner/thumb/state.4th
    src/runner/dictionary.4th
    src/runner/frame-tailing.4th

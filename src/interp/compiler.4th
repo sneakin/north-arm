@@ -25,7 +25,7 @@ end
 def create>
   ( read in the name )
   next-token allot-byte-string/2
-  2dup error-line/2
+  INTERP-LOG-WORDS interp-logs? IF 2dup error-line/2 THEN
   ( then... )
   create exit-frame
 end
