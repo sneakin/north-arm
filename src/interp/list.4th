@@ -14,27 +14,6 @@ def s[
   s" ]" drop 0 read-list exit-frame
 end
 
-( todo switch to defs gets these included when cross compiling. )
-
-( Reads a list of tokens to the stack, placing ' literal before each so the list is stack allocated at runtime. )
-: read-literal-stack-list
-  next-token negative? IF 2 dropn proper-exit THEN
-  over s" (" byte-string-equals?/3 IF 5 dropn POSTPONE ( loop THEN
-  over s" ]" byte-string-equals?/3
-  IF 5 dropn proper-exit ELSE 3 dropn THEN
-  dhere rot swap ,byte-string/2 3 dropn ( fixme drop the drop )
-  literal literal rot ( to-out-addr )
-  literal cons swap
-  1 + loop
-;
-
-( fixme "literal int32 0" caused problems. )
-
-: old-'s[
-  literal int32 int32 0
-  0 read-literal-stack-list drop
-; immediate-as old-s[
-
 ( Operations: )
 
 def print-cons
