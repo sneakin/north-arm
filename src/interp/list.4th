@@ -22,7 +22,7 @@ end
   over s" (" byte-string-equals?/3 IF 5 dropn POSTPONE ( loop THEN
   over s" ]" byte-string-equals?/3
   IF 5 dropn proper-exit ELSE 3 dropn THEN
-  dhere rot swap 0 ,byte-string/3 3 dropn ( fixme drop the drop )
+  dhere rot swap ,byte-string/2 3 dropn ( fixme drop the drop )
   literal literal rot ( to-out-addr )
   literal cons swap
   1 + loop

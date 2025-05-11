@@ -309,18 +309,6 @@ defcol write-tabbed-hex-uint
   0x10000 uint< IF tab THEN
 endcol
 
-: ,byte-string/3
-  ( string length n )
-  2dup equals IF 0 dpush-byte return0 THEN
-  3 overn 2 overn string-peek dpush-byte
-  1 + loop
-;
-
-: ,byte-string
-  dup string-length 0 ,byte-string/3
-  3 dropn
-;
-
 ' IF [UNLESS]
   tmp" src/interp/toplevel-if.4th" load/2
 [THEN]

@@ -24,27 +24,22 @@ alias> ,int64 ,uint64
 alias> int64@ uint64@
 alias> int64! uint64!
 
-: ,byte-string/3
-  ( string length n )
-  2dup equals IF 0 ,uint8 3 dropn return THEN
-  3 overn 2 overn string-peek ,uint8
-  1 + loop
+: ,byte-string/2
+  dup shift
+  dhere swap copy
+  dhere int-add dmove
+  0 ,uint8
 ;
 
-: ,byte-string/2 0 ,byte-string/3 ;
-
 : ,byte-string
-  dup string-length 0 ,byte-string/3
+  dup string-length ,byte-string/2
 ;
 
 : ,seq ( seq n -- )
-  ( todo use copy )
-  dup 0 uint> UNLESS 2 dropn return THEN
-  1 -
-  swap
-  dup peek ,uint32
-  cell-size + swap
-  loop
+  cell-size int-mul dup shift
+  dhere swap copy
+  dhere
+  int-add dmove
 ;
 
 : byte-swap-uint16
