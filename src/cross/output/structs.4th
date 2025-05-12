@@ -33,19 +33,27 @@ end
 
 ( todo copy fields in second pass to get type pointers right, or dallot types to on declaration so pointer is always out-addr )
 
+def log-output-struct-field
+  etab etab arg0 ,h espace struct-field -> name @ as-code-pointer error-string espace
+  arg1 to-out-addr ,h espace
+  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,h espace THEN
+  arg0 struct-field -> offset @ ,h espace
+  arg0 struct-field -> byte-size @ ,h espace
+  2 return0-n
+end
+
 def copy-struct-field-to-data ( field-list sys-struct-field -- out-field-list )
-  INTERP-LOG-DETAILS interp-logs? IF etab etab arg0 ,h espace struct-field -> name @ as-code-pointer error-string espace THEN
   dhere
   arg0 struct-field -> name @ as-code-pointer ,byte-string
   dhere
-  over to-out-addr INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
-  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
-  INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
-  arg0 struct-field -> offset @ INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
-  arg0 struct-field -> byte-size @ INTERP-LOG-DETAILS interp-logs? IF ,h espace ,uint32 THEN
+  INTERP-LOG-DETAILS interp-logs? IF local0 arg0 log-output-struct-field THEN
+  over to-out-addr ,uint32
+  arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,uint32
+  arg0 struct-field -> offset @ ,uint32
+  arg0 struct-field -> byte-size @ ,uint32
   local1 to-out-addr
   struct-field value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN
-  dcons to-out-addr INTERP-LOG-DETAILS interp-logs? IF ,h enl THEN
+  dcons to-out-addr
   arg1 swap dcons to-out-addr 2 return1-n
 end
 
