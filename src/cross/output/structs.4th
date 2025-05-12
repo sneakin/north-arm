@@ -38,7 +38,7 @@ def log-output-struct-field
   arg1 to-out-addr ,h espace
   arg0 struct-field -> type @ value-of map-sys-type-to-out IF to-out-addr ELSE 0 THEN ,h espace THEN
   arg0 struct-field -> offset @ ,h espace
-  arg0 struct-field -> byte-size @ ,h espace
+  arg0 struct-field -> byte-size @ ,h enl
   2 return0-n
 end
 
