@@ -17,7 +17,7 @@ ELSE
   IF OUT:DEFINED? file-exists?
   ELSE DEFINED? file-exists?
   THEN UNLESS
-    SYS:DEFINED? struct:
+    OUT:DEFINED? make-instance
     IF s[ src/lib/linux/stat.4th ] load-list
     ELSE s[ src/lib/linux/stat-lite.4th ] load-list
     THEN

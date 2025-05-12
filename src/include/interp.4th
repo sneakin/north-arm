@@ -31,8 +31,6 @@ s[ src/interp/logging.4th
 s[ src/interp/list.4th
    src/interp/compiler.4th
    src/interp/proper.4th
-   src/lib/pathname.4th
-   src/lib/linux/stat-lite.4th
    src/interp/require.4th
 ] load-list
 
