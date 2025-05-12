@@ -117,6 +117,8 @@ def builder-run ( entry len src-cons )
   write-elf-header
   dhere code-origin poke
 
+  ( todo options to load a file before and after the runner )
+
   builder-bare-bones? UNLESS
     ( Plain text message: )
     target-raspi? IF " src/runner/thumb/boot.4th" require THEN
@@ -126,16 +128,25 @@ def builder-run ( entry len src-cons )
     s" _start" create
   THEN
 
-  ( todo options to load a file before and after the runner )
   ( The main stage: )
   true NORTH-COMPILE-TIME poke
+
+  ( baked in features: )
   builder-bare-bones? UNLESS
     builder-with-runner peek IF " src/include/runner.4th" require THEN
     ' builder-with-interp IF builder-with-interp peek IF " src/include/interp.4th" require THEN THEN
     ' builder-with-cross IF builder-with-cross peek IF " src/interp/cross.4th" require THEN THEN
   THEN
-  arg0 load-list
 
+  ( user code: )
+  arg0 IF arg0 load-list
+       ( try stdin only when it's not a TTY or nothing was compiled )
+       ELSE current-input @ is-tty? not
+            builder-bare-bones?
+            or IF interp THEN
+       THEN
+
+  ( post compile updates )
   builder-bare-bones? UNLESS
     out-dict update-structs
     s" _start" cross-lookup IF arg2 arg1 does-defalias ELSE not-found drop THEN

@@ -20,6 +20,10 @@ end
 
 def cons-count arg0 0 cons-count/2 set-arg0 end
 
+def cons-empty?
+  arg0 IF false ELSE true THEN set-arg0
+end
+
 def map-cons ( cons fn )
   arg1 UNLESS exit-frame THEN
   arg1 arg0 exec-abs

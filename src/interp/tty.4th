@@ -1,6 +1,10 @@
 0x5413 const> TIOCGWINSZ
 0x5414 const> TIOCSWINSZ
 
+def is-tty? ( fd -- yes? )
+  0 0 here TIOCGWINSZ arg0 ioctl 0 int>= set-arg0
+end
+
 def tty-read-size ( ++ lines columns )
   0 0 here TIOCGWINSZ current-output peek ioctl 0 int>= IF
     here dup peek-short
