@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
 
-FFROOT=$(dirname "$0")
+for dir in "$(dirname "$0")/../src/bash" \
+           "$(dirname "$0")/../lib/north/bash" \
+           "$(dirname "$0")/../../src/bash" \
+           "./src/bash"
+do
+  if [ -e "${dir}/forth.sh" ]
+  then
+    FFROOT="${dir}"
+    break
+  fi
+done
+
 FFBASE=$(basename "$0")
 FFBASE0="${FFBASE/.*/}"
 
-source "$FFROOT"/../src/bash/forth.sh
-source "$FFROOT"/"$FFBASE0".dict
-source "$FFROOT"/../src/bash/data.sh
+source "$FFROOT"/forth.sh
+[ -e "$FFROOT"/"$FFBASE0".dict ] && source "$FFROOT"/"$FFBASE0".dict
+[ -e "$FFROOT"/data.sh ] && source "$FFROOT"/data.sh
 
 feval boot
 finterp
