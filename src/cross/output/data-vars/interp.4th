@@ -40,6 +40,8 @@ def write-data-variable ( state word -- )
   2 return0-n
 end
 
+( fixme crash when do-var aliased as do-data-var )
+
 def maybe-write-data-variable ( state word -- state )
   arg0 out-does-data-var? IF
     arg1 variable-writer-state-cs @

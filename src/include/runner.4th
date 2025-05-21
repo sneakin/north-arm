@@ -5,6 +5,15 @@ s[ src/runner/thumb/ops.4th
    src/runner/thumb/math/int64.4th
    src/runner/thumb/vfp.4th
  ] load-list
+THEN
+
+target-x86? IF
+s[
+   src/runner/x86/ops.4th
+   src/runner/x86/float.4th
+   src/runner/x86/int64.4th
+] load-list
+THEN
 
 NORTH-STAGE 0 int> IF
   s[ src/cross/dynlibs.4th
@@ -28,6 +37,7 @@ s[
  ] load-list
 
 ( Platform ops and words )
+target-aarch32? target-thumb? or IF
 s[ src/runner/thumb/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames.4th
@@ -63,18 +73,7 @@ THEN
 
 target-x86? IF
 s[
-   src/runner/x86/ops.4th
-
-   src/cross/list.4th
-   src/interp/boot/cross/iwords.4th
-   src/cross/defining/constants.4th
-   src/cross/constants.4th
-   src/cross/defining/variables.4th
-   src/lib/map/stack.4th
-   src/cross/defining/colon.4th
-
-   src/interp/boot/cross/case.4th
-
+   src/runner/x86/constants.4th
    src/runner/x86/frames.4th
    src/runner/frames.4th
    src/cross/defining/frames/interp.4th
@@ -88,6 +87,8 @@ s[
    src/runner/math/signed.4th
    src/runner/math.4th
    src/runner/aliases.4th
+   src/runner/x86/proper.4th
+   src/runner/proper.4th
    src/runner/x86/linux.4th
    src/runner/dictionary.4th
    src/runner/frame-tailing.4th

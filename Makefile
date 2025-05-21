@@ -93,7 +93,7 @@ clean:
 
 
 build:
-	mkdir build
+	mkdir -p build
 
 build/target:
 	ln -nsf $(TARGET) $@
@@ -186,7 +186,7 @@ build/doc/html/bash.html: $(FORTH_SRC)
 	$(HTMLER) $^ > $@
 
 build/bin: build
-	mkdir $@
+	mkdir -p $@
 
 build/bin/fforth: bin/fforth build/bin
 	ln -sf ../../bin/fforth $@
@@ -244,12 +244,15 @@ endef
 define define_stage_targets # target, stage
 build/$(strip $(1))/bin/builder.$(strip $(2))$$(EXECEXT): $$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) $(BUILDER_MIN_SRC)
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
+	mkdir -p $$(dir $$@)
 	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e build -o $$@ $$(BUILDER_MIN_SRC)
 build/$(strip $(1))/bin/interp.$(strip $(2))$$(EXECEXT): ./src/include/interp.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
+	mkdir -p $$(dir $$@)
 	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e interp-boot -o $$@ $$^
 build/$(strip $(1))/bin/runner.$(strip $(2))$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
+	mkdir -p $$(dir $$@)
 	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e runner-boot -o $$@ $$^
 endef
 
