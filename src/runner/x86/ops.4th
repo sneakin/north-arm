@@ -49,6 +49,10 @@ defop exec
   out' exec-abs emit-op-jump
 endop
 
+defop nop
+  ret
+endop
+
 
 ( Calls: )
 
@@ -185,6 +189,12 @@ defop swap ( a b -- b a )
   ret
 endop
 
+defop 2swap ( a b -- b a )
+endop
+
+defop swapn
+endop
+
 defop rot ( a b c -- c b a )
   cell-size 2 * esp modrm-sib x1 sib ebx modrm+x movr
   cell-size 2 * esp modrm-sib x1 sib eax modrm+x movm
@@ -229,6 +239,9 @@ defop peek-byte ( pointer -- byte )
   ret
 endop
 
+defop peek-short ( pointer -- byte )
+endop
+
 defop peek-off ( offset base -- value )
   cell-size esp modrm-sib x1 sib ebx modrm+x movr
   0 eax ebx x1 sib eax modrmx movr
@@ -261,6 +274,9 @@ defop poke-byte ( byte pointer -- )
   eax pop
   ebx push
   ret
+endop
+
+defop poke-short ( byte pointer -- )
 endop
 
 defop poke-off ( value offset base -- )
@@ -324,13 +340,15 @@ defop do-col
   out' enter emit-op-jump
 endop
 
-defop do-var
+defop do-inplace-var
   ret
 endop
 
 defop do-data-var
   ret
 endop
+
+defalias> do-var do-inplace-var
 
 defop do-const
   ret
@@ -396,7 +414,7 @@ defop bsr
   ret
 endop
 
-defop asr
+defop absr
   cl eax modrr movr
   ebx pop
   eax pop
@@ -415,6 +433,12 @@ defop int-add
   ebx pop
   0 esp modrm-sib x1 sib ebx modrm+x movm
   ret
+endop
+
+defop uint-addc
+endop
+
+defop uint-add3
 endop
 
 defop int-mul
@@ -466,7 +490,7 @@ defop logand
   ret
 endop
 
-defop logor
+defop logior
   cell-size esp modrm-sib x1 sib eax modrm+x orr
   ebx pop
   0 esp modrm-sib x1 sib ebx modrm+x movm

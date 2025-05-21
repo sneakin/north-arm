@@ -51,6 +51,12 @@ defop syscall/4
   ret
 endop
 
+def open
+end
+
+def close
+end
+
 def read ( len ptr fd -- bytes-or-error )
   arg2 arg1 arg0 3 syscall/4 3 return1-n
 end
@@ -66,6 +72,13 @@ endcol
 defcol bye
   0 sysexit
 endcol
+
+def getcwd
+end
+
+def stat
+end
+
 
 push-asm-mark
 

@@ -9,10 +9,16 @@ defop current-frame
   ret
 endop
 
+defop set-current-frame
+endop
+
 defop begin-frame
 endop
 
 defop end-frame
+endop
+
+defop drop-locals
 endop
 
 defop return0
@@ -24,6 +30,9 @@ endop
 defop return1
 endop
 
+defop return1-1
+endop
+
 defop return1-n
 endop
 
@@ -33,5 +42,11 @@ endop
 defop return2-n
 endop
 
-defop drop-locals
+defop return2
+endop
+
+defop return3
+endop
+
+defop return4
 endop
