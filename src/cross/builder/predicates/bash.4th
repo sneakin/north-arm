@@ -1,3 +1,5 @@
+( fixme target-thumb? failed for thumb2 )
+
 s[ src/lib/platform-target.4th
 ] load-list
 

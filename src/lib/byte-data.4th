@@ -24,22 +24,8 @@ alias> ,int64 ,uint64
 alias> int64@ uint64@
 alias> int64! uint64!
 
-: ,byte-string/2
-  dup shift
-  dhere swap copy
-  dhere int-add dmove
-  0 ,uint8
-;
-
 : ,byte-string
   dup string-length ,byte-string/2
-;
-
-: ,seq ( seq n -- )
-  cell-size int-mul dup shift
-  dhere swap copy
-  dhere
-  int-add dmove
 ;
 
 : byte-swap-uint16

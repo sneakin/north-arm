@@ -41,3 +41,17 @@ THEN
 cell-size 8 int> cell-size 4 int< or IF
   s" Only 32 and 64 bit cells supported. Not: " error-string/2 cell-size 8 * error-int enl ( todo raise error )
 THEN
+
+: ,byte-string/2
+  dup shift
+  dhere swap copy
+  dhere int-add dmove
+  0 ,uint8
+;
+
+: ,seq ( seq n -- )
+  cell-size int-mul dup shift
+  dhere swap copy
+  dhere
+  int-add dmove
+;

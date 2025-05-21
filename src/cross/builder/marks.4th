@@ -14,6 +14,13 @@ DEFINED? push-mark IF
     THEN push-mark
   ;
 ELSE
-  : push-asm-mark ( stub ) ;
+  NORTH-STAGE 0 equals? IF
+    : push-mark> next-token 2 dropn ;
+  ELSE
+    : push-mark> next-token 3 dropn ;
+  THEN
+  : push-mark drop ;
   : pop-mark ( stub ) ;
+  : top-pop-mark ( stub ) ;
+  : push-asm-mark ( stub ) ;
 THEN

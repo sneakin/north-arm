@@ -3,6 +3,7 @@
 : ddump-binary-bytes
   dup dhere equals IF drop return THEN
   dup uint8@ write-byte
+  dup 1023 logand 0 equals? IF " ." error-string THEN
   1 + loop
 ;
 
@@ -96,4 +97,20 @@ def byte-string@ arg0 " " 0 byte-string@/3 1 return2-n end
   8 bsl logior
   8 bsl logior
   8 bsl logior
+;
+
+: ,byte-string/3 ( string length n )
+  2dup equals IF 0 ,uint8 3 dropn return THEN
+  3 overn 2 overn string-peek ,uint8
+  1 + loop
+;
+
+: ,byte-string/2 0 ,byte-string/3 ;
+
+: ,seq ( seq n -- )
+  dup 0 uint> UNLESS 2 dropn return THEN
+  1 -
+  swap dup peek ,uint32
+  cell-size + swap
+  loop
 ;

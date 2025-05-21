@@ -1,9 +1,10 @@
 ( Memory copying assembler routines: )
 
+( fixme bash skipped the whole thing )
+
 target-aarch32? IF
   s" src/runner/thumb/copiers/aarch32.4th" load/2
-THEN
-target-thumb? IF
+ELSE
   s" src/runner/thumb/copiers/thumb.4th" load/2 
 THEN
 

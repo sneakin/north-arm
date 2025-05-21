@@ -5,7 +5,7 @@ s[ src/cross/builder/globals.4th
    src/cross/builder/marks.4th
 ] load-list
 
-( todo duplicated by include/runner.4th )
+( todo duplicated by cross/builder/assembly.4th and include/runner.4th )
 def load-runner
   s[
   src/runner/thumb/ops.4th
@@ -38,13 +38,13 @@ def load-runner
   src/runner/math.4th
   src/runner/cells.4th
   src/runner/stack.4th
+  src/runner/thumb/copiers/thumb.4th
   src/runner/thumb/copiers.4th
   src/runner/copy.4th
   src/runner/thumb/vfp-constants.4th
   src/runner/thumb/proper.4th
   src/runner/proper.4th
   src/runner/aliases.4th
-  ( src/interp/data-stack.4th )
   src/runner/thumb/state.4th
   src/runner/dictionary.4th
   src/runner/frame-tailing.4th
@@ -74,6 +74,7 @@ def builder-load
      src/cross/defining/op.4th
      src/cross/defining/alias.4th
      src/cross/case.4th
+     src/cross/defining/endop.4th
      src/lib/elf/stub32.4th
 
      src/cross/builder/run/bash.4th

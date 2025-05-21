@@ -10,10 +10,15 @@ SYS:DEFINED? require[ IF
   ELSE require[ linux/stat-lite ]
   THEN
 
-  require[ pathname list-cs ]
+  require[ list-cs pathname ]
 ELSE
   
-  SYS:DEFINED? NORTH-COMPILE-TIME
+  SYS:DEFINED? OUT:DEFINED?
+  IF OUT:DEFINED? find-first-result+cs
+  ELSE DEFINED? find-first-result+cs
+  THEN UNLESS s[ src/lib/list-cs.4th ] load-list THEN
+
+  SYS:DEFINED? OUT:DEFINED?
   IF OUT:DEFINED? file-exists?
   ELSE DEFINED? file-exists?
   THEN UNLESS
@@ -23,19 +28,19 @@ ELSE
     THEN
   THEN
 
-  SYS:DEFINED? NORTH-COMPILE-TIME
+  SYS:DEFINED? OUT:DEFINED?
   IF OUT:DEFINED? pathname-join/6
   ELSE DEFINED? pathname-join/6
   THEN UNLESS s[ src/lib/pathname.4th ] load-list THEN
 
-  SYS:DEFINED? NORTH-COMPILE-TIME
-  IF OUT:DEFINED? find-first-result+cs
-  ELSE DEFINED? find-first-result+cs
-  THEN UNLESS s[ src/lib/list-cs.4th ] load-list THEN
-
 THEN
 
-SYS:DEFINED? NORTH-COMPILE-TIME IF
+NORTH-STAGE 0 equals? IF
+  s[ src/lib/list-cs.4th src/lib/linux/stat-lite.4th src/lib/pathname.4th ] load-list
+THEN
+
+
+SYS:DEFINED? defvar> IF
   0 defvar> *loaded-files*
   0 defvar> *current-file*
 ELSE  
@@ -103,7 +108,8 @@ def find-file/6 ( out out-len path path-len dir-list ext-list -- out out-len tru
   THEN
 end
 
-DEFINED? string-equals? UNLESS
+DEFINED? OUT:DEFINED? IF OUT:DEFINED? string-equals? ELSE DEFINED? string-equals? THEN
+UNLESS
   def string-equals?
     arg1 arg0
     arg1 string-length
