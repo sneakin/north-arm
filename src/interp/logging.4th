@@ -26,12 +26,16 @@ THEN
 
 DEFINED? NORTH-COMPILE-TIME IF false ELSE DEFINED? *interp-log-level* THEN
 UNLESS
-  INTERP-LOG-ERROR
-  INTERP-LOG-WARN logior
-  INTERP-LOG-LOADS logior
-  LOG-USER-ERROR logior
-  LOG-USER-WARN logior
-  early-var> *interp-log-level*
+  NORTH-STAGE 0 equals?
+  IF -1
+  ELSE
+    ( todo may not have the most recent constants available )
+    INTERP-LOG-ERROR
+    INTERP-LOG-WARN logior
+    INTERP-LOG-LOADS logior
+    LOG-USER-ERROR logior
+    LOG-USER-WARN logior
+  THEN early-var> *interp-log-level*
 THEN
 
 def interp-logs? ( feature -- yes? )
