@@ -14,16 +14,7 @@ r5 const> data-reg
 r6 const> cs-reg
 r7 const> eip ( todo suffix with reg? )
 
-( target-thumb2? )
-SYS:DEFINED? BUILDER-TARGET
-IF BUILDER-TARGET tmp" thumb2" drop string-contains?
-ELSE
-  SYS:DEFINED? builder-target
-  IF builder-target @ tmp" thumb2" drop string-contains?
-  ELSE 0
-  THEN
-THEN
-IF
+target-thumb2? IF
   tmp" Compiling for thumb2" error-line/2
   : thumb2? 1 ;
 ELSE

@@ -1,5 +1,5 @@
 NORTH-STAGE 1 + defconst> NORTH-STAGE
-BUILDER-TARGET string-const> NORTH-PLATFORM
+builder-target NORTH-STAGE 0 equals? UNLESS peek THEN string-const> NORTH-PLATFORM
 
 0 defconst-offset> copyright
 0 defconst-offset> *program-header*

@@ -15,10 +15,6 @@ DEFAULT-ENTRY-POINT var> entry-point
 false var> do-dump-dict
 false var> show-version
 
-def BUILDER-TARGET
-  builder-target @ return1
-end
-
 def spaced-error-string
   arg0 as-code-pointer espace error-string
   1 return0-n

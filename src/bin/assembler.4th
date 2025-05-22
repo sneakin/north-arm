@@ -36,5 +36,5 @@ s[
    src/lib/asm/thumb/vfp.4th
 ] const> sources
 
-" thumb-linux-static" string-const> BUILDER-TARGET
+" thumb-linux-static" builder-target !
 s" assembler-boot" sources builder-run

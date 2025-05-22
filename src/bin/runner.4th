@@ -5,7 +5,7 @@
 
 builder-load
 
-" thumb-linux-static" string-const> BUILDER-TARGET
+" thumb-linux-static" builder-target !
 
 s[ src/interp/strings.4th
    src/runner/main.4th
