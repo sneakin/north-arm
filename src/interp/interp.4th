@@ -424,8 +424,14 @@ def open-input-file ( path -- fd )
   0 O_RDONLY arg0 open set-arg0
 end
 
+0 defvar> *current-file*
+
+def current-file *current-file* @ return1 end
+def [current-file] literal literal *current-file* @ return2 end out-immediate-as current-file
+  
 def load ( path ++ ... ok? )
   the-reader peek
+  *current-file* @
   token-buffer-max stack-allot ( fixme this buffer gets made for each load, could reuse for file reads, or get rid of by reading whole files and tokenizing that memory making buffering only needed when reading streams )
   token-buffer-max
   INTERP-LOG-LOADS interp-logs? IF s" Loading " error-string/2 arg0 error-line THEN
@@ -441,9 +447,11 @@ def load ( path ++ ... ok? )
     false return1-1
   ELSE drop the-reader poke
   THEN
-  interp
+  arg0 *current-file* !
+  interp ( todo return this? )
   the-reader peek fd-reader-close
   local0 the-reader poke
+  local1 *current-file* !
   true exit-frame
 end
 
@@ -454,9 +462,12 @@ end
 def load-string/2
   INTERP-LOG-LOADS interp-logs? IF s" Loading string: " error-string/2 arg1 arg0 error-line/2 THEN
   the-reader peek
+  *current-file* @
   arg1 arg0 make-string-reader the-reader poke
+  " <string>" *current-file* !
   interp
   local0 the-reader poke
+  local1 *current-file* !
   exit-frame
 end
 

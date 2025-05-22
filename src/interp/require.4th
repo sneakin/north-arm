@@ -42,10 +42,8 @@ THEN
 
 SYS:DEFINED? defvar> IF
   0 defvar> *loaded-files*
-  0 defvar> *current-file*
 ELSE  
   0 var> *loaded-files*
-  0 var> *current-file*
 THEN
 
 s[ /lib/north
@@ -141,17 +139,13 @@ end
 ( todo loaded-files needs to have a copy of the string )
 
 def load-once ( path ++ ok? )
-  *current-file* @
   arg0 loaded?
   IF true return1-1
   ELSE
-    arg0 *current-file* !
     arg0 load IF
       arg0 *loaded-files* push-onto
-      local0 *current-file* !
       true exit-frame
     ELSE
-      local0 *current-file* !
       false return1-1
     THEN
   THEN
