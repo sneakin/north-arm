@@ -63,7 +63,7 @@ SYS:DEFINED? defvar>
 IF ,out-string-list to-out-addr defvar> *north-file-exts*
 ELSE  var> *north-file-exts*
 THEN
-  
+
 def find-file-ext-fn ( candidate-ext out-buffer out-max fn-length -- full-path true | false )
   arg3 string-length
   arg3 arg2 arg0 + local0 copy
@@ -74,14 +74,21 @@ def find-file-ext-fn ( candidate-ext out-buffer out-max fn-length -- full-path t
   THEN
 end
 
-def find-file-fn ( candidate-dir out-buffer out-max file-name fn-length ext-list -- full-path true | false )
+def find-file-ext/7 ( candidate-dir cdir-length out-buffer out-max file-name fn-length ext-list -- full-path length true | false )
   ( append file name to the candidate )
-  4 argn arg3 5 argn dup string-length arg2 arg1 pathname-join/6
-  UNLESS false 6 return1-n THEN
+  4 argn arg3 6 argn 5 argn arg2 arg1 pathname-join/6
+  UNLESS false 7 return1-n THEN
   ( try the extensions )
   ' find-file-ext-fn 4 argn arg3 4 overn 3 partial-first-n
   arg0 as-code-pointer over find-first-result+cs
-  IF 4 set-argn true 4 return1-n
+  IF 4 argn 6 set-argn true 6 return2-n
+  ELSE false 7 return1-n
+  THEN
+end
+
+def find-file-ext ( candidate-dir out-buffer out-max file-name fn-length ext-list -- full-path length true | false )
+  5 argn dup string-length 4 argn arg3 arg2 arg1 arg0 find-file-ext/7
+  IF 4 argn 5 set-argn true 4 return2-n
   ELSE false 6 return1-n
   THEN
 end
@@ -99,7 +106,7 @@ end
 ( Search for a file in a list of dirertories trying different file name extensions. The fdnal path name is copied into ~out~. )
 def find-file/6 ( out out-len path path-len dir-list ext-list -- out out-len true | false )
   arg0 as-code-pointer " " cons ( s[ can not have empty strings so add one )
-  ' find-file-fn 5 argn 4 argn arg3 arg2 6 overn 5 partial-first-n
+  ' find-file-ext 5 argn 4 argn arg3 arg2 6 overn 5 partial-first-n
   arg1 as-code-pointer over find-first-result+cs
   IF 4 set-argn true 4 return1-n
   ELSE false 6 return1-n
@@ -151,22 +158,26 @@ def load-once ( path ++ ok? )
   THEN
 end
 
-def require ( path ++ ok? )
+def require/2 ( path load-paths ++ ok? )
   max-pathname stack-allot-zero max-pathname
-  arg0 dup string-length
-  *load-paths* @ *north-file-exts* @ find-file/6
+  arg1 dup string-length
+  arg0 *north-file-exts* @ find-file/6
   IF
     over max-pathname 4 overn 4 overn pathname-expand
     IF
       ( tighten the memory alloc )
       max-pathname move-string-right
       over move here
-      load-once exit-frame
+      load-once exit-frame ( todo tail-0 )
     ELSE
       s" Failed to expand path name: " error-string/2
-      arg0 error-line
+      arg1 error-line
     THEN
-  THEN false return1-1
+  THEN false 2 return1-n
+end
+
+def require ( path ++ ok? )
+  *load-paths* @ ' require/2 tail+1
 end
 
 def require-list
@@ -176,3 +187,41 @@ end
 def require[
   POSTPONE s[ require-list exit-frame
 end
+
+( ] stop the highlighting in bad editors )
+
+def require-relative/2 ( path current-file ++ ok? )
+  0 0
+  max-pathname stack-allot-zero set-local0
+  max-pathname stack-allot-zero set-local1
+  *north-file-exts* @ as-code-pointer " " cons ( s[ can not have empty strings so add one )
+  arg0 dup string-length pathname-dirname
+  local0 max-pathname arg1 dup string-length 7 overn find-file-ext/7
+  IF local1 max-pathname 4 overn 4 overn pathname-expand
+    IF max-pathname move-string-right
+       over move here
+       load-once exit-frame ( todo tail+0 )
+    THEN
+  THEN not-found false 2 return1-n
+end
+
+def require-relative ( path ++ ok? )
+  *current-file* @ ' require-relative/2 tail+1
+end
+
+def require-relative-list
+  arg0 0 ' require-relative revmap-cons/3 exit-frame
+end
+
+def require-relative[
+  POSTPONE s[ require-relative-list exit-frame
+end
+
+( ] stop the highlighting in bad editors )
+
+def [require-relative]
+  literal literal *current-file* peek
+  literal require-relative/2
+  return3
+end immediate-as require-relative
+SYS:DEFINED? out-immediate-as IF out-immediate-as require-relative THEN

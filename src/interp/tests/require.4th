@@ -78,8 +78,77 @@ def test-require
   local0 *loaded-files* !
 end
 
+0 var> require-relative-loaded
+0 var> require-relative-from-path
+
+def test-require-relative-bad
+  *loaded-files* @
+  0 require-relative-loaded !
+  s" src/interp/tests/require-relative/acks.4th" load/2 assert
+  require-relative-loaded @ assert-not
+  local0 *loaded-files* !
+end
+
+def test-require-relative-from-file
+  *loaded-files* @
+  0 require-relative-loaded !
+  s" src/interp/tests/require-relative/top.4th" load/2 assert
+  require-relative-loaded @ assert
+  128 stack-allot-zero 128 s" src/interp/tests/require-relative/setter.4th" pathname-expand
+  IF *loaded-files* @ 3 overn 3 overn assert-list-has-string THEN
+  local0 *loaded-files* !
+end
+
+def test-require-relative-from-nested-file
+  *loaded-files* @
+  0 require-relative-loaded !
+  s" src/interp/tests/require-relative/nested.4th" load/2 assert
+  require-relative-loaded @ assert
+  128 stack-allot-zero 128 s" src/interp/tests/require-relative/setter.4th" pathname-expand
+  IF *loaded-files* @ 3 overn 3 overn assert-list-has-string THEN
+  local0 *loaded-files* !
+end
+
+def test-require-relative-from-def
+  *loaded-files* @
+  0 require-relative-loaded !
+  " require-relative/setter.4th" require-relative assert
+  require-relative-loaded @ assert
+  128 stack-allot-zero 128 s" src/interp/tests/require-relative/setter.4th" pathname-expand
+  IF *loaded-files* @ 3 overn 3 overn assert-list-has-string THEN
+  local0 *loaded-files* !
+end
+
+def test-require-relative-from-def-bad
+  *loaded-files* @
+  0 require-relative-loaded !
+  " require-relative/badbad" require-relative assert-not
+  require-relative-loaded @ assert-not
+  local0 *loaded-files* !
+end
+
+def test-require-relative-from-def-without-ext
+  *loaded-files* @
+  0 require-relative-loaded !
+  " require-relative/setter" require-relative assert
+  require-relative-loaded @ assert
+  128 stack-allot-zero 128 s" src/interp/tests/require-relative/setter.4th" pathname-expand
+  IF *loaded-files* @ 3 overn 3 overn assert-list-has-string THEN
+  local0 *loaded-files* !
+end
+
+def test-require-relative
+  test-require-relative-bad
+  test-require-relative-from-def
+  test-require-relative-from-def-bad
+  test-require-relative-from-def-without-ext
+  test-require-relative-from-file
+  test-require-relative-from-nested-file
+end
+
 def test-requires
   test-find-file
   test-load-once
   test-require
+  test-require-relative
 end
