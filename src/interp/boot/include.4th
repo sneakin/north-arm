@@ -22,6 +22,10 @@ DEFINED? dlopen IF
   s" src/interp/dynlibs.4th" load/2
 THEN
 
+DEFINED? cmemdump UNLESS
+  s" src/interp/debug.4th" load/2
+THEN
+
 s[ src/interp/signals.4th
    src/interp/tty.4th
    src/interp/dictionary/revmap.4th
