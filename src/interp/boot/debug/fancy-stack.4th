@@ -123,7 +123,7 @@ def fancy-stack/4 ( stop-ptr start-ptr link-cols next-fp -- )
   arg2 peek write-tabbed-hex-uint
   ( update the link waterfall )
   arg2 peek arg1 fancy-stack-maybe-add-link
-  arg2 peek cs + arg1 fancy-stack-maybe-add-link
+  ( arg2 peek cs + arg1 fancy-stack-maybe-add-link )
   arg2 arg1 0 fancy-stack-zero-past-links
   ( write out the waterfall )
   white
