@@ -1,21 +1,39 @@
 ( todo save fp and eval-ip too? )
 
-defop syscall/1
+( Arguments are passed in ebx   ecx   edx   esi   edi   ebp  )
+
+push-asm-mark
+
+: emit-push-state
   cs-reg push
-  data-reg push
-  0x80 int
-  data-reg pop
+  ds-reg push
+  fp-reg push
+  eval-ip push
+;
+
+: emit-pop-state
+  eval-ip pop
+  fp-reg pop
+  ds-reg pop
   cs-reg pop
+;
+
+cell-size 4 * const> state-byte-size
+
+pop-mark
+
+defop syscall/1
+  emit-push-state
+  0x80 int
+  emit-pop-state
   ret
 endop
 
 defop syscall/2
-  cs-reg push
-  data-reg push
-  cell-size 3 * esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
+  emit-push-state
+  cell-size 1 * state-byte-size + esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
   0x80 int
-  data-reg pop
-  cs-reg pop
+  emit-pop-state
   ebx pop
   cell-size esp esp modrr add#
   ebx push
@@ -23,13 +41,11 @@ defop syscall/2
 endop
 
 defop syscall/3
-  cs-reg push
-  data-reg push
-  cell-size 3 * esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
-  cell-size 4 * esp modrm-sib x1 sib modrm-sib ecx modrm+ movr
+  emit-push-state
+  cell-size 1 * state-byte-size + esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
+  cell-size 2 * state-byte-size + esp modrm-sib x1 sib modrm-sib ecx modrm+ movr
   0x80 int
-  data-reg pop
-  cs-reg pop
+  emit-pop-state
   ebx pop
   cell-size 2 * esp esp modrr add#
   ebx push
@@ -37,14 +53,12 @@ defop syscall/3
 endop
 
 defop syscall/4
-  cs-reg push
-  data-reg push
-  cell-size 3 * esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
-  cell-size 4 * esp modrm-sib x1 sib modrm-sib ecx modrm+ movr
-  cell-size 5 * esp modrm-sib x1 sib modrm-sib edx modrm+ movr
+  emit-push-state
+  cell-size 1 * state-byte-size + esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
+  cell-size 2 * state-byte-size + esp modrm-sib x1 sib modrm-sib ecx modrm+ movr
+  cell-size 3 * state-byte-size + esp modrm-sib x1 sib modrm-sib edx modrm+ movr
   0x80 int
-  data-reg pop
-  cs-reg pop
+  emit-pop-state
   ebx pop
   cell-size 3 * esp esp modrr add#
   ebx push

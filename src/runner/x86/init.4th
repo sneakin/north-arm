@@ -1,5 +1,7 @@
 defcol hello
-  s" Hello" swap 1 4 syscall/4
+  s" Hello there.\n" swap 1 4 syscall/4 drop
+  s" Hello\n" swap 1 4 syscall/4 drop
+  s" It works\n" 1 write-string/3
 endcol
 
 defop init ( env argv argc -- status )
@@ -23,9 +25,14 @@ defop init ( env argv argc -- status )
   out' syscall/4 to-out-addr eax mov#
   out' exec emit-op-call
   ( call an op )
-  ( out' _start to-out-addr eax mov# )
-  out' bye to-out-addr eax mov#
+  out' hello to-out-addr eax mov#
   out' exec emit-op-call
+  out' hello to-out-addr eax mov#
+  out' exec emit-op-call
+  out' _start to-out-addr eax mov#
+  out' exec emit-op-call
+  ( out' bye to-out-addr eax mov#
+  out' exec emit-op-call )
   ( clean exit with ToS )
   0 eax mov#
   eax emit-sysexit

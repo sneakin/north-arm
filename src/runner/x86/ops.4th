@@ -35,10 +35,13 @@ endop
 
 defop exec-abs
   eax this-word-reg modrr movr
-  0 esp modrm-sib x1 sib modrm-sib ebx modrm+ movr
-  cell-size esp modrm-sib x1 sib modrm-sib eax modrm+ movr
-  cell-size esp modrm-sib x1 sib modrm-sib ebx modrm+ movm
-  cell-size esp 0 modrr add#
+  ebx pop
+  eax pop
+  ebx push
+  ( 0 esp modrm-sib x1 sib modrm-sib ebx modrm+ movr )
+  ( cell-size esp modrm-sib x1 sib modrm-sib eax modrm+ movr )
+  ( cell-size esp modrm-sib x1 sib modrm-sib ebx modrm+ movm )
+  ( cell-size esp 0 modrr add# )
   0 dict-entry-code this-word-reg ebx modrm+ movr
   cell-size cs-reg ebx x1 sib modrm-sib ebx modrm+ lea
   ebx 0 modrr jmpr
@@ -65,16 +68,24 @@ endop
   
 defop exit
   eax eval-ip modrr movr
-  ebx pop
-  eax pop
+  eax pop ( eat the exit op's ret addr )
+  eax pop ( so we can use do-col's )
   ret
 endop
+
+defop do-col
+  eax push
+  this-word-reg eax modrr movr
+  out' enter emit-op-jump
+endop
+
 
 ( Control flow: )
 
 defop if-jump
   0 cell-size esp modrm-sib x1 sib modrm-sib 0 modrm+ cmp#
   2 jz
+  2 eax eax modrr rol#
   eax eval-ip modrr addr
   ebx pop
   cell-size esp 0 modrr add#
@@ -86,6 +97,7 @@ endop
 defop unless-jump
   0 cell-size esp modrm-sib x1 sib modrm-sib 0 modrm+ cmp#
   2 jnz
+  2 eax eax modrr rol#
   eax eval-ip modrr addr
   ebx pop
   cell-size esp 0 modrr add#
@@ -95,7 +107,8 @@ defop unless-jump
 endop
 
 defop jump
-  eax eval-ip modrr movr
+  2 eax eax modrr rol#
+  eax eval-ip modrr addr
   ebx pop
   eax pop
   ebx push
@@ -112,6 +125,7 @@ defop jump-cs
 endop
 
 defop jump-rel
+  2 eax eax modrr rol#
   eax eval-ip modrr addr
   ebx pop
   eax pop
@@ -189,10 +203,20 @@ defop swap ( a b -- b a )
   ret
 endop
 
-defop 2swap ( a b -- b a )
+defop 2swap ( a b c d -- c d a b )
+  ( d <-> b )
+  cell-size esp modrm-sib x1 sib ebx modrm+x movr
+  cell-size 3 * esp modrm-sib x1 sib eax modrm+x movm
+  ebx eax modrr movr
+  ( c <-> a )
+  cell-size 2 * esp modrm-sib x1 sib ebx modrm+x movr
+  cell-size 4 * esp modrm-sib x1 sib ecx modrm+x movr
+  cell-size 4 * esp modrm-sib x1 sib ebx modrm+x movm
+  cell-size 2 * esp modrm-sib x1 sib ecx modrm+x movm
+  ret
 endop
 
-defop swapn
+defop swapn ( Xn ... v n -- v ... Xn )
 endop
 
 defop rot ( a b c -- c b a )
@@ -235,11 +259,13 @@ defop peek ( pointer -- value )
 endop
 
 defop peek-byte ( pointer -- byte )
-  eax eax modrm movzx
+  eax al modrm movzx
   ret
 endop
 
 defop peek-short ( pointer -- byte )
+  eax ax modrm movzx
+  ret
 endop
 
 defop peek-off ( offset base -- value )
@@ -277,6 +303,12 @@ defop poke-byte ( byte pointer -- )
 endop
 
 defop poke-short ( byte pointer -- )
+  cell-size esp modrm-sib x1 sib ebx modrm+x movr
+  eax bx modrm movm
+  ebx pop
+  eax pop
+  ebx push
+  ret
 endop
 
 defop poke-off ( value offset base -- )
@@ -331,14 +363,6 @@ defalias> cstring string
 
 
 ( Code words: )
-
-defop do-col
-  ebx pop
-  eax push
-  ebx push
-  this-word-reg eax modrr movr
-  out' enter emit-op-jump
-endop
 
 defop do-inplace-var
   ret
