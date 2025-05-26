@@ -10,7 +10,12 @@ SYS:DEFINED? require[ IF
   ELSE require[ linux/stat-lite ]
   THEN
 
-  require[ list-cs pathname ]
+  OUT:DEFINED? find-first-result+cs
+  UNLESS require[ list-cs ] THEN
+
+  OUT:DEFINED? pathname-dirname
+  UNLESS require[ pathname ] THEN
+
 ELSE
   
   SYS:DEFINED? OUT:DEFINED?
