@@ -5,7 +5,7 @@ end
 
 ( Input: )
 
-1024 defconst> token-buffer-max
+64 defconst> token-buffer-max
 0 defvar> token-buffer
 0 defvar> token-buffer-length
 
@@ -174,6 +174,7 @@ def read-until-char
   set-arg0 set-arg1
 end
 
+1024 defconst> string-buffer-max
 0 defvar> string-buffer
 0 defvar> string-buffer-length
 
@@ -181,7 +182,7 @@ defcol tmp" ( ++ token-buffer-ptr bytes-read )
   ( eat leading space )
   the-reader peek reader-read-byte drop
   ( read the string )
-  string-buffer peek token-buffer-max int32 34 read-until-char
+  string-buffer peek string-buffer-max int32 34 read-until-char
   drop
   2dup null-terminate
   ( update the string-buffer )
@@ -496,7 +497,7 @@ def interp-init
   ( string-buffer )
   string-buffer peek UNLESS
     int32 0 string-buffer-length poke
-    token-buffer-max stack-allot string-buffer poke
+    string-buffer-max stack-allot string-buffer poke
   THEN
   ( stdin reader )
   the-reader peek UNLESS ( todo push a new one always? )

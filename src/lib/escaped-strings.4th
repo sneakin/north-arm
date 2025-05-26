@@ -4,6 +4,10 @@
 0x5C const> char-back-slash
 0x22 const> char-dquote
 
+DEFINED? string-buffer-max UNLESS
+  1024 const> string-buffer-max
+THEN
+
 DEFINED? return1-1 UNLESS
 defcol return1-1 drop set-arg0 return0 endcol  
 THEN
@@ -284,7 +288,7 @@ defcol etmp" ( ++ token-buffer-ptr bytes-read )
   ( eat leading space )
   the-reader peek reader-read-byte drop
   ( read the string )
-  string-buffer peek token-buffer-max char-dquote read-until-unescaped-char
+  string-buffer peek string-buffer-max char-dquote read-until-unescaped-char
   drop
   unescape-string/2 2dup null-terminate
   ( update the string-buffer )

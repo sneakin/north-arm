@@ -1,9 +1,13 @@
-token-buffer-max ${RICH_LEN} int>= IF
- " ${RICH}"
+DEFINED? string-buffer-max IF string-buffer-max ELSE token-buffer-max THEN
+dup ${RICH_LEN} int>=bIF
+  drop
+  " ${RICH}"
 ELSE
-  token-buffer-max ${TXT_LEN} int>= IF
+  dup ${TXT_LEN} int>= IF
+    drop
     " ${TXT}"
   ELSE
+    drop
     " Copyright (C) 2020-2025 Nolan Eakins, SemanticGap. All rights reserved.
 https://github.com/sneakin/north-arm.git"
   THEN
