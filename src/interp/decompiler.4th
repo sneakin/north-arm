@@ -88,20 +88,20 @@ def decompile-colon-data
     dup literalizes? IF
       arg0 op-size + dup set-arg0 peek
       swap dup CASE
-	' cstring OF drop cs + write-quoted-string space ENDOF
-	' string OF drop write-quoted-string space ENDOF
-	' int32 OF drop write-int space ENDOF
-	' int64 OF
-          write-dict-entry-name space
-	  arg0 op-size + dup set-arg0 peek write-int64 space
-	ENDOF
-	' uint64 OF
-          write-dict-entry-name space
-	  arg0 op-size + dup set-arg0 peek write-uint64 space
-	ENDOF
-	' pointer OF cs decompile-literal-word ENDOF
-	' literal OF cs decompile-literal-word ENDOF
-	drop write-dict-entry-name space write-hex-uint space
+        ' cstring OF drop cs + write-quoted-string space ENDOF
+        ' string OF drop write-quoted-string space ENDOF
+        ' int32 OF drop write-int space ENDOF
+        ' int64 OF
+            write-dict-entry-name space
+	          arg0 op-size + dup set-arg0 peek write-int64 space
+        ENDOF
+        ' uint64 OF
+            write-dict-entry-name space
+            arg0 op-size + dup set-arg0 peek write-uint64 space
+        ENDOF
+        ' pointer OF cs decompile-literal-word ENDOF
+        ' literal OF cs decompile-literal-word ENDOF
+        drop write-dict-entry-name space write-hex-uint space
       ENDCASE
     ELSE write-dict-entry-name space
     THEN
@@ -113,7 +113,7 @@ end
 
 def dict-entry-code-word
   arg0 dict-entry-code peek 1 lognot logand
-  ( hope for no data in from of the assembly... )
+  ( hope for no data in front of the assembly... )
   dup IF cs + dict-entry-size - THEN set-arg0
 end
 
@@ -230,21 +230,43 @@ def maybe-decompile-immediate
   1 return0-n
 end
 
+def is-alias? ( word -- word target true || false )
+  arg0 dict-entry-code-word
+  dup ' do-const equals? UNLESS
+    ' do-const-offset equals? UNLESS
+      arg0 dup dict-entry-link @ dup IF cs + THEN dict-contains-values?
+      IF true return2 THEN
+    THEN
+  THEN false return1-1
+end
+
+def decompile-alias ( word alias -- )
+  s" alias>" write-string/2 space
+  arg1 write-dict-entry-name space
+  arg0 write-dict-entry-name
+  2 return0-n
+end
+
 def decompile ( entry )
   arg0 IF
-    arg0 dict-entry-code-word CASE
-      ' do-col WHEN arg0 decompile-colon ;;
-      ' do-proper WHEN arg0 decompile-proper ;;
-      ' do-const WHEN arg0 decompile-const ;;
-      ' do-const-offset WHEN arg0 decompile-const-offset ;;
-      ' do-var WHEN arg0 s" var>" decompile-data-var ;;
-      ' do-inplace-var WHEN arg0 s" inplace-var>" decompile-inplace-var ;;
-      ' do-data-var WHEN arg0 s" var>" decompile-data-var ;;
-        arg0 is-op?
-        IF arg0 decompile-op
-        ELSE arg0 decompile-unknown-entry
-        THEN
-    ENDCASE
+    arg0 is-op?
+    IF arg0 decompile-op
+    ELSE
+      arg0 is-alias?
+      IF decompile-alias
+      ELSE
+        arg0 dict-entry-code-word CASE
+          ' do-col OF arg0 decompile-colon ENDOF
+          ' do-proper OF arg0 decompile-proper ENDOF
+          ' do-const OF arg0 decompile-const ENDOF
+          ' do-const-offset OF arg0 decompile-const-offset ENDOF
+          ' do-var OF arg0 s" var>" decompile-data-var ENDOF
+          ' do-inplace-var OF arg0 s" inplace-var>" decompile-inplace-var ENDOF
+          ' do-data-var OF arg0 s" var>" decompile-data-var ENDOF
+          arg0 decompile-unknown-entry
+        ENDCASE
+      THEN
+    THEN
     arg0 maybe-decompile-immediate
   THEN
 end
