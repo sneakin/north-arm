@@ -267,8 +267,7 @@ $(foreach stage,$(STAGES), \
 
 STAGE0_FORTH=$(RUNNER) ./build/$(HOST)/bin/interp$(EXECEXT)
 STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
-#STAGE1_BUILDER=$(RUNNER) ./bin/builder$(EXECEXT)
-STAGE1_BUILDER=$(RUNNER) ./build/$(HOST)/bin/builder.1$(EXECEXT)
+STAGE1_BUILDER=$(RUNNER) ./build/$(HOST)/bin/builder+core.1$(EXECEXT)
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
 
