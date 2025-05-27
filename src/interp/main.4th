@@ -40,7 +40,7 @@ end
 
 def print-usage
   banner nl
-  s" Usage: " write-string/2 0 get-argv write-string s" [-" write-string/2 OPTS write-string s" ] [files...]" write-string/2 nl
+  s" Usage: " write-string/2 0 get-argv write-string s"  [-" write-string/2 OPTS write-string s" ] [files...]" write-string/2 nl
   nl
   s"       -h  Display this message." write-line/2
   s"       -V  Display the version information." write-line/2
