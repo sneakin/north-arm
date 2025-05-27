@@ -1,6 +1,9 @@
 ( Arbitrary radix: )
 
 10 defvar> output-base
+0 defvar> output-number-prefix
+
+4 defconst> output-number-prefix-length
 
 ( todo cap number digits to buffer size, will require useless divide[s] or divide by radix )
 ( todo return with output adjusted to first digit and a length )
@@ -29,7 +32,7 @@ def uint->string/6 ( n out-ptr out-max radix digit padding -- output-start )
       arg1 arg3 uint<= IF 4 argn arg1 string-poke THEN
       ( bail to prevent extra zero if not padding and N is zero )
       5 argn 0 equals? arg0 0 equals? and IF
-	4 argn arg1 arg3 min + 6 return1-n
+        4 argn arg1 arg3 min + 6 return1-n
       THEN
       repeat-frame
     THEN
@@ -47,17 +50,57 @@ def digit-count ( n radix -- count )
   2 return1-n
 end
 
+def uint->string-no-prefix/5 ( n out-ptr out-max radix ndigits -- out-ptr length )
+  4 argn arg3 arg2 arg1 arg0 0 uint->string/6
+  drop arg3 arg0 2dup null-terminate
+  5 return2-n
+end
+
+def uint->string-no-prefix/4 ( n out-ptr out-max radix -- out-ptr length )
+  arg3 arg0 digit-count ' uint->string-no-prefix/5 tail+1
+end
+
+def radix-prefix ( radix -- str length )
+  arg0 32 2 in-range? UNLESS s" ERR" 1 return2-n THEN ( todo raise error )
+  arg0 16 equals? IF s" 0x" 1 return2-n THEN
+  arg0 8 equals? IF s" 0" 1 return2-n THEN
+  arg0 2 equals? IF s" 0b" 1 return2-n THEN
+  ( BB# )
+  4 stack-allot
+  arg0 over 4 10 uint->string-no-prefix/4
+  char-code # 3 overn 3 overn string-poke
+  1 + 2dup null-terminate
+  exit-frame
+end
+
+def copy-output-number-prefix ( out-ptr out-max radix -- out-ptr length )
+  output-number-prefix @ dup IF output-base @ equals? not THEN
+  IF
+    0 arg0 radix-prefix
+    arg1 umin set-local0
+    arg2 local0
+    copy
+    arg2 local0 3 return2-n
+  THEN arg2 0 3 return2-n
+end
+
+def uint->string/5 ( n out-ptr out-max radix ndigits -- out-ptr length )
+  arg3 arg2 arg1 copy-output-number-prefix
+  4 argn local0 local1 arg2 advance-string-len arg1 arg0 0 uint->string/6
+  drop arg3
+  arg0 local1 + 
+  2dup null-terminate
+  5 return2-n
+end
+
 def uint->string/4 ( n out-ptr out-max radix -- out-ptr length )
-  arg3 arg0 digit-count
-  arg3 arg2 arg1 arg0 local0 0 uint->string/6 set-arg3
-  arg2 local0 null-terminate
-  local0 arg3 arg2 - - set-arg2 2 return0-n
+  arg3 arg0 digit-count ' uint->string/5 tail+1
 end
 
 def uint->string-rad/2 ( n radix ++ string length )
-  arg1 arg0 digit-count 1 +
-  dup stack-allot
-  arg1 over local0 arg0 uint->string/4
+  arg1 arg0 digit-count
+  dup output-number-prefix-length + stack-allot
+  arg1 over local0 output-number-prefix-length + arg0 local0 uint->string/5
   exit-frame
 end
 
@@ -85,7 +128,7 @@ def int->string-rad/2 ( n radix ++ string length )
   arg1 abs-int arg0 digit-count
   arg1 negative? swap drop IF 1 + THEN
   dup UNLESS 1 + THEN
-  dup stack-allot
+  output-number-prefix-length + dup stack-allot
   arg1 over local0 arg0 int->string/4
   exit-frame
 end
@@ -146,7 +189,7 @@ def uint->padded-string/3 ( n out-ptr out-max -- out-ptr length )
 end
 
 def uint->padded-string ( n digits -- string length )
-  arg0 1 + stack-allot
+  arg0 output-number-prefix-length + 1 + stack-allot
   arg1 over arg0 uint->padded-string/3
   exit-frame
 end

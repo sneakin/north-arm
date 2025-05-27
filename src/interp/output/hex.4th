@@ -1,5 +1,20 @@
 ( Hexadecimal output: )
 
+0 defvar> hex-output-prefix
+0 defvar> hex-output-prefix-length
+
+def set-hex-output-prefix
+  arg1 hex-output-prefix !
+  arg0 hex-output-prefix-length !
+  2 return0-n
+end
+
+def get-hex-output-prefix
+  hex-output-prefix @
+  hex-output-prefix-length @
+  return2
+end
+
 defcol ascii-digit
   swap ( int32 0xF logand )
   dup int32 10 int< IF
@@ -73,11 +88,21 @@ def int->hex-string ( n out-ptr -- out-ptr length )
   return0
 end
 
-def write-hex-uint/2 ( n fd )
+def write-hex-uint-no-prefix/2 ( n fd )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
   arg1 over uint->hex-string arg0 write-string/3
   return0
 end
+
+def write-hex-uint/2 ( n fd )
+  hex-output-prefix @ dup IF hex-output-prefix-length @ write-string/2 ELSE drop THEN
+  ' write-hex-uint-no-prefix/2 tail-0
+end
+
+defcol write-hex-uint-no-prefix
+  swap current-output peek write-hex-uint-no-prefix/2
+  int32 2 dropn
+endcol
 
 defcol write-hex-uint
   swap current-output peek write-hex-uint/2
@@ -89,11 +114,21 @@ defcol error-hex-uint
   int32 2 dropn
 endcol
 
-def write-hex-int/2 ( n fd )
+def write-hex-int-no-prefix/2 ( n fd )
   int32 12 stack-allot ( need 9 bytes for a 32 bit number, 10 with minus. )
   arg1 over int->hex-string arg0 write-string/3
   return0
 end
+
+def write-hex-int/2 ( n fd )
+  hex-output-prefix @ dup IF hex-output-prefix-length @ write-string/2 ELSE drop THEN
+  ' write-hex-int-no-prefix/2 tail-0
+end
+
+defcol write-hex-int-no-prefix
+  swap current-output peek write-hex-int-no-prefix/2
+  int32 2 dropn
+endcol
 
 defcol write-hex-int
   swap current-output peek write-hex-int/2
@@ -115,12 +150,12 @@ defalias> error-uint error-hex-uint
 
 defcol write-hex-uint8
   swap dup
-  4 bsr 0xF logand write-hex-uint
-  0xF logand write-hex-uint 
+  4 bsr 0xF logand write-hex-uint-no-prefix
+  0xF logand write-hex-uint-no-prefix
 endcol
 
 def write-cell-lsb
-  arg0 dup write-hex-uint8
+  arg0 dup write-hex-uint8 
   8 bsr dup write-hex-uint8
   8 bsr dup write-hex-uint8
   8 bsr dup write-hex-uint8

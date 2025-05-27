@@ -236,3 +236,11 @@ def string-contains? ( string needle -- yes? )
   0 string-contains?/5
   negative? IF false ELSE true THEN 2 return1-n
 end
+
+( String utility functions: )
+
+def advance-string-len ( ptr length max -- ptr+length max-length )
+  arg2 arg1 +
+  arg0 arg1 -
+  3 return2-n
+end
