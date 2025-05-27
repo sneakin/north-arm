@@ -472,6 +472,10 @@ def load-string/2
   exit-frame
 end
 
+def load-string
+  arg0 string-length ' load-string/2 tail+1
+end
+
 defcol ,h over error-hex-uint endcol
 defcol .h swap error-hex-uint endcol
 defcol ,i over error-int endcol

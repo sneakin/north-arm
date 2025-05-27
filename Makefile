@@ -372,9 +372,9 @@ PROGRAMS=\
   demo_tty_clock \
   demo_tty_raycaster
 
-PGRM_interp_core_sources=$(INTERP_CORE_SRC)
+PGRM_interp_core_sources=$(INTERP_CORE_SRC) src/interp/main.4th
 PGRM_interp_core_output=bin/interp+core
-PGRM_interp_core_entry=interp-boot
+PGRM_interp_core_entry=main
 
 PGRM_builder_core_sources=$(BUILDER_SRC)
 PGRM_builder_core_output=bin/builder+core
