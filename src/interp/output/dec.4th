@@ -85,7 +85,7 @@ def copy-output-number-prefix ( out-ptr out-max radix -- out-ptr length )
 end
 
 def uint->string/5 ( n out-ptr out-max radix ndigits -- out-ptr length )
-  arg3 arg2 arg1 copy-output-number-prefix
+  4 argn IF arg3 arg2 arg1 copy-output-number-prefix ELSE arg3 0 THEN
   4 argn local0 local1 arg2 advance-string-len arg1 arg0 0 uint->string/6
   drop arg3
   arg0 local1 + 

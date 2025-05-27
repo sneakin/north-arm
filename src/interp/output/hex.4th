@@ -95,7 +95,7 @@ def write-hex-uint-no-prefix/2 ( n fd )
 end
 
 def write-hex-uint/2 ( n fd )
-  hex-output-prefix @ dup IF hex-output-prefix-length @ write-string/2 ELSE drop THEN
+  arg1 IF hex-output-prefix @ dup IF hex-output-prefix-length @ arg0 write-string/3 ELSE drop THEN THEN
   ' write-hex-uint-no-prefix/2 tail-0
 end
 
@@ -121,7 +121,7 @@ def write-hex-int-no-prefix/2 ( n fd )
 end
 
 def write-hex-int/2 ( n fd )
-  hex-output-prefix @ dup IF hex-output-prefix-length @ write-string/2 ELSE drop THEN
+  arg1 IF hex-output-prefix @ dup IF hex-output-prefix-length @ arg0 write-string/3 ELSE drop THEN THEN
   ' write-hex-int-no-prefix/2 tail-0
 end
 
