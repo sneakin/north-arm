@@ -58,8 +58,8 @@ def main
   show-version @ IF about 0 return1 THEN
   interp-init
   files-to-require @ require-list
-  strings-to-load-before @ ' load-string map-car
+  strings-to-load-before @ 0 ' load-string revmap-cons/3
   files-to-load @ dup IF load-list ELSE drop banner interp THEN
-  strings-to-load-after @ ' load-string map-car
+  strings-to-load-after @ 0 ' load-string revmap-cons/3
   0 return1
 end
