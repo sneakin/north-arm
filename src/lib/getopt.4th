@@ -5,6 +5,13 @@
 2 const> GETOPT-FLAG
 3 const> GETOPT-UNKNOWN
 
+DEFINED? defconst> IF
+0 defconst> GETOPT-NONE
+1 defconst> GETOPT-KEY
+2 defconst> GETOPT-FLAG
+3 defconst> GETOPT-UNKNOWN
+THEN
+
 def getopt-flag?
   arg0 peek-byte 0x2D ( - ) equals? set-arg0
 end

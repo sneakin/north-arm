@@ -249,7 +249,7 @@ build/$(strip $(1))/bin/builder.$(strip $(2))$$(EXECEXT): $$(STAGE$$(STAGE$(stri
 build/$(strip $(1))/bin/interp.$(strip $(2))$$(EXECEXT): ./src/include/interp.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	mkdir -p $$(dir $$@)
-	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e interp-boot -o $$@ $$^
+	$$(STAGE$$(STAGE$(strip $(2))_PRIOR)_BUILDER) -t $(1) -e main -o $$@ $$^
 build/$(strip $(1))/bin/runner.$(strip $(2))$$(EXECEXT): ./src/interp/strings.4th ./src/runner/main.4th
 	@echo -e "\e[36;1mBuilding $$(@)\e[0m"
 	mkdir -p $$(dir $$@)
@@ -372,7 +372,7 @@ PROGRAMS=\
   demo_tty_clock \
   demo_tty_raycaster
 
-PGRM_interp_core_sources=$(INTERP_CORE_SRC) src/interp/main.4th
+PGRM_interp_core_sources=$(INTERP_CORE_SRC)
 PGRM_interp_core_output=bin/interp+core
 PGRM_interp_core_entry=main
 

@@ -1,10 +1,14 @@
-require[ getopt ]
+SYS:DEFINED? require[ IF
+  require[ getopt ]
+ELSE
+  s[ src/lib/getopt.4th ] load-list
+THEN
 
-0 var> show-version
-0 var> strings-to-load-before
-0 var> strings-to-load-after
-0 var> files-to-load
-0 var> files-to-require
+0 defvar> show-version
+0 defvar> strings-to-load-before
+0 defvar> strings-to-load-after
+0 defvar> files-to-load
+0 defvar> files-to-require
 
 " hVv:r:I:e:E:S:R:" string-const> OPTS
 

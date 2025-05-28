@@ -43,6 +43,7 @@ s[ src/lib/math/int64.4th
    src/interp/output/int64.4th
    src/interp/debug.4th
    src/interp/decompiler.4th
+   src/interp/main.4th
 ] load-list
 THEN
 
