@@ -45,7 +45,7 @@ end
 
 ~processor-fn~ Function that takes a value, name, and index as arguments. Returns false if option parsing should stop. Value may be null for flags. Name may be "*" for standalone values or "." for unknown flags. A "--" flag is treated specially when processing it returns false causing option processing to stop in an OK state.
 ~option-string~ A string of character flags possibly followed by a colon to indicate a value is required.
-~argv-fn~ A fenction that takes an integer algument to retrieve arguments.
+~argv-fn~ A function that takes an integer argument to retrieve arguments.
 ~argc~ Size of the argument sequence.
 ~n~ Loop counter < ~argc~. )
 def getopt/5 ( processor-fn option-string argv-fn argc n ++ ok? )
@@ -65,7 +65,7 @@ def getopt/5 ( processor-fn option-string argv-fn argc n ++ ok? )
     ;;
     drop
     arg0 dup arg2 exec-abs " *" 4 argn exec-abs
-    arg0 1 + set-arg0 repeat-frame
+    IF arg0 1 + set-arg0 repeat-frame ELSE true exit-frame THEN
   ESAC
   arg0 arg2 exec-abs s" --" string-equals?/3
   IF true ELSE false THEN exit-frame

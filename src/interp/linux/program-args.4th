@@ -1,5 +1,6 @@
 0 defvar> *top-frame*
 0 defvar> *auxvec*
+0 defvar> *argv-offset*
 
 def top-frame-loop
   arg0 parent-frame dup IF set-arg0 repeat-frame THEN
@@ -14,8 +15,12 @@ def top-frame
   THEN return1
 end
 
-def argc
+def sys-argc
   top-frame farg0 peek return1
+end
+
+def argc
+  sys-argc *argv-offset* @ - 0 max return1
 end
 
 def argv
@@ -24,14 +29,14 @@ end
 
 def get-argv ( index -- value )
   arg0 argc int< IF
-    argv cell-size arg0 * +
+    *argv-offset* @ arg0 + cell-size * argv +
     dup IF peek ELSE 0 THEN
   ELSE 0
   THEN set-arg0
 end
 
 def env-addr ( ++ pointer )
-  top-frame frame-args cell-size 2 argc + * + return1
+  top-frame frame-args cell-size 2 sys-argc + * + return1
 end
 
 def env ( index ++ value-string )
