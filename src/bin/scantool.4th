@@ -27,7 +27,7 @@ true var> with-file-heading
 
 def process-opts
   arg0 CASE
-    s" h" WHEN-STR false 2 return1-n ;;
+    s" h" WHEN-STR false 3 return1-n ;;
     s" i" WHEN-STR true start-interp ! ;;
     s" v" WHEN-STR verbosity @ 1 + verbosity ! ;;
     s" r" WHEN-STR true recurse-files ! ;;
@@ -35,8 +35,8 @@ def process-opts
     s" f" WHEN-STR false with-file-heading ! ;;
     s" m" WHEN-STR arg1 scantool-mode ! ;;
     s" *" WHEN-STR arg1 files-to-scan push-onto true exit-frame ;;
-    drop false 2 return1-n
-  ESAC  
+    drop false 3 return1-n
+  ESAC true 3 return1-n
 end
 
 def usage

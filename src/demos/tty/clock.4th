@@ -177,20 +177,20 @@ end
 
 def tty-clock-opts-processor
   arg0 CASE
-    s" h" OF-STR false 2 return1-n ENDOF
-    s" i" OF-STR true tty-clock-interp ! true 2 return1-n ENDOF
+    s" h" OF-STR false 3 return1-n ENDOF
+    s" i" OF-STR true tty-clock-interp ! true 3 return1-n ENDOF
     s" Z" OF-STR arg1 dup string-length parse-int
 		 IF tty-clock-tz-offset !
 		 ELSE s" Invalid time zone." error-line/2
-		 THEN true 2 return1-n
+		 THEN true 3 return1-n
 	  ENDOF
     s" z" OF-STR arg1 dup string-length parse-int
 		 IF hours->secs tty-clock-tz-offset !
 		 ELSE s" Invalid time zone." error-line/2
-		 THEN true 2 return1-n
+		 THEN true 3 return1-n
 	  ENDOF
-    s" m" OF-STR arg1 tty-clock-mode ! true 2 return1-n ENDOF
-    drop false 2 return1-n
+    s" m" OF-STR arg1 tty-clock-mode ! true 3 return1-n ENDOF
+    drop false 3 return1-n
   ENDCASE
 end
 

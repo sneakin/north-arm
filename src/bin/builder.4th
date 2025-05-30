@@ -48,18 +48,18 @@ end
 
 def process-opts
   arg0 CASE
-    s" h" OF-STR false 2 return1-n ENDOF
-    s" V" OF-STR true show-version ! true 2 return1-n ENDOF
-    s" e" OF-STR arg1 entry-point ! true 2 return1-n ENDOF
-    s" t" OF-STR arg1 builder-target ! true 2 return1-n ENDOF
+    s" h" OF-STR false 3 return1-n ENDOF
+    s" V" OF-STR true show-version ! true 3 return1-n ENDOF
+    s" e" OF-STR arg1 entry-point ! true 3 return1-n ENDOF
+    s" t" OF-STR arg1 builder-target ! true 3 return1-n ENDOF
     s" v" OF-STR
       arg1 parse-log-level IF
         dup IF *interp-log-level* @ logior THEN
         *interp-log-level* !
       ELSE s" Unknown log level: " error-string/2 arg1 error-line
-      THEN true 2 return1-n
+      THEN true 3 return1-n
     ENDOF
-    s" B" OF-STR true builder-bare-bones ! true 2 return1-n ENDOF
+    s" B" OF-STR true builder-bare-bones ! true 3 return1-n ENDOF
     s" b" OF-STR arg1 builder-baked-features push-onto true exit-frame ENDOF
     s" I" OF-STR arg1 builder-load-paths push-onto true exit-frame ENDOF
     s" Z" OF-STR
@@ -68,15 +68,15 @@ def process-opts
         s" file-exts" OF-STR 0 builder-file-exts ! ENDOF
         s" Warning: unknown zeroing: " error-string/2 error-line
       ENDCASE
-      true 2 return1-n
+      true 3 return1-n
     ENDOF
     s" X" OF-STR arg1 builder-file-exts push-onto true exit-frame ENDOF
-    s" f" OF-STR arg1 builder-output-format ! true 2 return1-n ENDOF
-    s" o" OF-STR arg1 builder-output-file ! true 2 return1-n ENDOF
-    s" d" OF-STR start-interpreter inc! true 2 return1-n ENDOF
-    s" Q" OF-STR true do-dump-dict ! true 2 return1-n ENDOF
+    s" f" OF-STR arg1 builder-output-format ! true 3 return1-n ENDOF
+    s" o" OF-STR arg1 builder-output-file ! true 3 return1-n ENDOF
+    s" d" OF-STR start-interpreter inc! true 3 return1-n ENDOF
+    s" Q" OF-STR true do-dump-dict ! true 3 return1-n ENDOF
     s" *" OF-STR arg1 sources push-onto true exit-frame ENDOF
-    drop false 2 return1-n
+    drop false 3 return1-n
   ENDCASE
 end
 
