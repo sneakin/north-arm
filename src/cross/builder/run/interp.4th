@@ -181,8 +181,8 @@ def builder-run ( entry len src-cons )
 
   builder-bare-bones? UNLESS
     dhere to-out-addr s" *program-size*" update-constant
+    dhere to-out-addr s" *program-sha256*" update-constant
     out-origin peek dhere over - builder-hash-program
-    to-out-addr s" *program-sha256*" update-constant
   THEN
 
   " Writing to " error-string
