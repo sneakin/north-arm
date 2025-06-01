@@ -25,6 +25,7 @@ s[ src/interp/logging.4th
    src/lib/pointers.4th
    src/lib/list-cs.4th
    src/interp/interp.4th
+   src/interp/shebang.4th
 ] load-list
 
 ( Compiling )

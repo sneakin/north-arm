@@ -36,6 +36,7 @@ used to rebuild.
 ***** The interpreter may only need to allow one file argument.
 ***** "--" also needs support.
 ***** ~get-argv~ needs to only show script arguments in the script.
+***** shebang lines
 **** Dictionary dumps
 ***** DONE Aliases
 ***** DONE do-proper

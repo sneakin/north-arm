@@ -163,6 +163,13 @@ def reader-skip-tokens-until ( fn reader )
   reader-skip-tokens-until/4
 end
 
+def reader-read-line ( ptr max-length reader -- ptr length last-byte )
+  arg2 arg1 pointer newline? arg0 reader-read-until
+  set-arg0
+  2dup null-terminate
+  set-arg1
+end
+
 def make-string-reader
   make-reader
   arg1 over reader-buffer poke

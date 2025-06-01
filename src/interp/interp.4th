@@ -65,7 +65,7 @@ end
 
 ( the-reader procedures: )
 
-defcol read-line ( ptr len -- ptr read-length )
+defcol raw-read-line ( ptr len -- ptr read-length )
   over int32 4 overn current-input peek read
   negative? UNLESS
     int32 1 -
@@ -73,6 +73,11 @@ defcol read-line ( ptr len -- ptr read-length )
   THEN
   rot drop
 endcol
+
+def read-line ( ptr len -- ptr read-length )
+  arg1 arg0 the-reader peek reader-read-line
+  drop 2 return2-n
+end
 
 defcol read-token ( ptr len reader -- ptr read-length )
   int32 4 overn int32 4 overn int32 4 overn reader-next-token
