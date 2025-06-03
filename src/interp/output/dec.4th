@@ -6,62 +6,47 @@
 4 defconst> output-number-prefix-length
 
 ( todo cap number digits to buffer size, will require useless divide[s] or divide by radix )
-( todo return with output adjusted to first digit and a length )
 
-def uint->string/6 ( n out-ptr out-max radix digit padding -- output-start )
-  arg1 0 equals? IF
-    4 argn 6 return1-n
-  ELSE
-    ( zero without padding )
-    5 argn 0 equals? arg0 0 equals? and IF
-      arg1 1 - set-arg1
-      0 ascii-digit 4 argn arg1 string-poke
-      4 argn arg1 + 6 return1-n
-    ELSE
-      ( extract dgit from n )
-      5 argn arg2 uint-divmod
-      swap 5 set-argn
-      ( reached zero? pad or bail; otherwise decode character )
-      dup 0 equals?
-      5 argn 0 equals? and
-      IF arg0 IF drop arg0 ELSE 4 argn arg1 arg3 min + 6 return1-n THEN
-      ELSE ascii-digit
-      THEN
-      ( store digit or padding )
-      arg1 1 - set-arg1
-      arg1 arg3 uint<= IF 4 argn arg1 string-poke THEN
-      ( bail to prevent extra zero if not padding and N is zero )
-      5 argn 0 equals? arg0 0 equals? and IF
-        4 argn arg1 arg3 min + 6 return1-n
-      THEN
-      repeat-frame
+( The loop to convert an unsigned integer into a string. )
+def uint->byte-seq/5 ( out out-size n radix digit -- out length remaining )
+  arg0 0 equals? arg2 or IF
+    arg0 arg3 uint< IF
+      arg2 arg1 uint-divmod
+      ascii-digit 4 argn arg0 string-poke
+      set-arg2 arg0 1 + set-arg0 repeat-frame
     THEN
   THEN
+  4 argn arg0 reverse-bytes! arg0 arg2 4 return2-n
 end
 
-def digit-count ( n radix -- count )
-  arg1 0 equals?
-  IF 1
-  ELSE
-    arg1 arg0 badlogn-uint
-    arg0 over int-pow arg1 uint<= IF 1 + THEN
-    dup UNLESS 1 + THEN
+( A very basic unsigned integer to a string / byte sequence. )
+def uint->byte-seq/4 ( out out-size n radix -- out length remaining )
+  0 ' uint->byte-seq/5 tail+1
+end
+
+( Converts an unsigned integer into a string possibly aligning the number right using the provided character of padding. )
+def uint->string/6 ( n out-ptr out-max radix digit padding -- output-start )
+  4 argn arg3 5 argn arg2 uint->byte-seq/4
+  UNLESS ( right justify the number w/ padding )
+    dup arg3 uint<
+    arg0 and IF
+      2dup over arg3 2swap arg0 string-align-right
+      rot 2 dropn
+    THEN
   THEN
-  2 return1-n
-end
-
-def uint->string-no-prefix/5 ( n out-ptr out-max radix ndigits -- out-ptr length )
-  4 argn arg3 arg2 arg1 arg0 0 uint->string/6
-  drop arg3 arg0 2dup null-terminate
-  5 return2-n
+  2dup null-terminate
+  drop 6 return1-n
 end
 
 def uint->string-no-prefix/4 ( n out-ptr out-max radix -- out-ptr length )
-  arg3 arg0 digit-count ' uint->string-no-prefix/5 tail+1
+  arg2 arg1 arg3 arg0 uint->byte-seq/4 drop
+  2dup null-terminate
+  4 return2-n
 end
 
+( Returns the prefix for a given radix. )
 def radix-prefix ( radix -- str length )
-  arg0 32 2 in-range? UNLESS s" ERR" 1 return2-n THEN ( todo raise error )
+  arg0 64 2 in-range? UNLESS s" ERR#" 1 return2-n THEN ( todo raise error )
   arg0 16 equals? IF s" 0x" 1 return2-n THEN
   arg0 8 equals? IF s" 0" 1 return2-n THEN
   arg0 2 equals? IF s" 0b" 1 return2-n THEN
@@ -84,34 +69,45 @@ def copy-output-number-prefix ( out-ptr out-max radix -- out-ptr length )
   THEN arg2 0 3 return2-n
 end
 
-def uint->string/5 ( n out-ptr out-max radix ndigits -- out-ptr length )
-  4 argn IF arg3 arg2 arg1 copy-output-number-prefix ELSE arg3 0 THEN
-  4 argn local0 local1 arg2 advance-string-len arg1 arg0 0 uint->string/6
-  drop arg3
-  arg0 local1 + 
-  2dup null-terminate
-  5 return2-n
-end
-
+( Converts an unsigned integer into a string possibly with a base prefix. )
 def uint->string/4 ( n out-ptr out-max radix -- out-ptr length )
-  arg3 arg0 digit-count ' uint->string/5 tail+1
+  arg3 IF arg2 arg1 arg0 copy-output-number-prefix ELSE arg2 0 THEN
+  2dup arg1 advance-string-len arg3 arg0 uint->byte-seq/4
+  drop
+  2dup null-terminate
+  local1 + arg2 swap 4 return2-n
 end
 
+cell-size 8 * defconst> bits-per-cell
+
+( todo factor in the outputted number too? N < radix always 1 digit. )
+
+( Return a rough size to hold the maximum value using the radix. )
+def uint->string-allot-size ( radix -- max-bytes )
+  bits-per-cell
+  arg0 4 uint< UNLESS
+    arg0 16 uint< IF 1 ELSE 2 THEN bsr
+  THEN output-number-prefix-length + 2 + return1-1
+end
+
+( Create a new string of an unsigned integer as a string with the provided radix. )
 def uint->string-rad/2 ( n radix ++ string length )
-  arg1 arg0 digit-count
-  dup output-number-prefix-length + stack-allot
-  arg1 over local0 output-number-prefix-length + arg0 local0 uint->string/5
+  arg0 uint->string-allot-size dup stack-allot-zero
+  arg1 over local0 arg0 uint->string/4
   exit-frame
 end
 
+( Convert an unsigned integer into a string with ~output-base~. )
 def uint->string/3 ( n output out-max -- output length )
   arg2 arg1 arg0 output-base peek uint->string/4 set-arg0 set-arg1
 end
 
+( Create a new string from an unsigned integer in ~output-base~. )
 def uint->string ( n ++ string length )
   arg0 output-base peek uint->string-rad/2 exit-frame
 end
 
+( Converts an integer into a string possibly with a base prefix. )
 def int->string/4 ( n out-ptr out-max radix -- out-ptr length )
   arg3 negative? IF
     negate arg2 int32 1 + arg1 arg0 uint->string/4
@@ -124,19 +120,19 @@ def int->string/4 ( n out-ptr out-max radix -- out-ptr length )
   THEN
 end
 
+( Create a new string of an integer as a string with the provided radix. )
 def int->string-rad/2 ( n radix ++ string length )
-  arg1 abs-int arg0 digit-count
-  arg1 negative? swap drop IF 1 + THEN
-  dup UNLESS 1 + THEN
-  output-number-prefix-length + dup stack-allot
+  arg0 uint->string-allot-size dup stack-allot-zero
   arg1 over local0 arg0 int->string/4
   exit-frame
 end
 
+( Convert an integer into a string with ~output-base~. )
 def int->string/3 ( n out-ptr out-max -- out-ptr length )
   arg2 arg1 arg0 output-base peek int->string/4 set-arg1 set-arg2 1 return0-n
 end
 
+( Create a new string from an integer in ~output-base~. )
 def int->string ( n ++ string length )
   arg0 output-base peek int->string-rad/2 exit-frame
 end
@@ -183,13 +179,12 @@ def bin 2 output-base poke end
 ( Zero padded number output: )
 
 def uint->padded-string/3 ( n out-ptr out-max -- out-ptr length )
-  arg2 arg1 arg0 output-base peek arg0 48 uint->string/6
-  arg1 arg0 null-terminate
+  arg2 arg1 arg0 output-base peek arg0 char-code 0 uint->string/6
   set-arg2 arg0 set-arg1 1 return0-n
 end
 
 def uint->padded-string ( n digits -- string length )
-  arg0 output-number-prefix-length + 1 + stack-allot
+  arg0 1 + stack-allot
   arg1 over arg0 uint->padded-string/3
   exit-frame
 end

@@ -9,11 +9,24 @@ end
 
 def assert-uint->string-6 ( n radix digits padding expecting length )
   0 0
-  33 stack-allot set-local0
-  5 argn local0 32 4 argn arg3 arg2 uint->string/6 set-local1
-  local0 32 arg3 min null-terminate ( todo null terminate in function? )
-  local1 local0 32 arg3 min + arg0 - assert-equals
-  local1 arg1 arg0 assert-byte-string-equals/3
+  arg3 1 + stack-allot set-local0
+  5 argn local0 arg3 4 argn arg3 arg2 uint->string/6 local0 assert-equals
+  local0 arg1 arg0 assert-byte-string-equals/3
+end
+
+def test-uint->byte-seq/5
+  0 64 stack-allot-zero set-local0
+  local0 4 12345678 10 0 uint->byte-seq/5
+  1234 assert-equals
+  s" 5678" assert-byte-string-equals/4
+
+  local0 4 0x12345678 16 0 uint->byte-seq/5
+  0x1234 assert-equals
+  s" 5678" assert-byte-string-equals/4
+
+  local0 8 0x12345678 2 0 uint->byte-seq/5
+  0x123456 assert-equals
+  s" 01111000" assert-byte-string-equals/4
 end
 
 def test-uint->string/6
@@ -25,10 +38,11 @@ def test-uint->string/6
   -1 16 16 48 s" 00000000FFFFFFFF" assert-uint->string-6
   -1 2 32 0 s" 11111111111111111111111111111111" assert-uint->string-6
   ( past max, padded )
-  -1 2 40 48 s" 00000000111111111111111111111111" assert-uint->string-6
-  -1 16 64 48 s" 00000000000000000000000000000000" assert-uint->string-6
+  -1 2 40 48 s" 0000000011111111111111111111111111111111" assert-uint->string-6
+  -1 16 64 48 s" 00000000000000000000000000000000000000000000000000000000FFFFFFFF" assert-uint->string-6
   ( past max, no padding )
-  -1 16 64 0 s" " assert-uint->string-6
+  -1 16 64 0 s" FFFFFFFF" assert-uint->string-6
+  0 16 64 0 s" 0" assert-uint->string-6
 end
 
 def test-int->string-16
@@ -95,6 +109,7 @@ def test-int->string-61
 end
 
 def test-int->string
+  test-uint->byte-seq/5
   test-uint->string/6
   test-int->string-16
   test-int->string-10

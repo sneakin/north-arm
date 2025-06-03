@@ -256,6 +256,25 @@ def test-string-split
   0 assert-equals
 end
 
+def test-string-align-right
+  0 32 stack-allot-zero set-local0
+  local0 16 s" hello" 32 string-align-right
+  2dup write-line/2
+  s"            hello" assert-byte-string-equals/4
+  local0 4 s" hello" 32 string-align-right
+  s" hell" assert-byte-string-equals/4
+  local0 8 s" hello" char-code _ string-align-right
+  s" ___hello" assert-byte-string-equals/4
+  local0 12 s" hello!" char-code _ string-align-right
+  s" ______hello!" assert-byte-string-equals/4
+  local0 8 s" hello!" char-code _ string-align-right
+  s" __hello!" assert-byte-string-equals/4
+
+  " hey you!" local0 8 copy
+  local0 10 local0 8 char-code _ string-align-right
+  s" __hey you!" assert-byte-string-equals/4
+end
+
 def test-strings
   test-string-peek
   test-string-poke
@@ -268,4 +287,5 @@ def test-strings
   test-byte-string-compare/2
   test-string-partition
   test-string-split
+  test-string-align-right
 end

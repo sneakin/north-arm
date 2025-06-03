@@ -244,3 +244,31 @@ def advance-string-len ( ptr length max -- ptr+length max-length )
   arg0 arg1 -
   3 return2-n
 end
+
+def fill ( ptr num-bytes value -- )
+  arg1 0 int> UNLESS 3 return0-n THEN
+  arg1 1 - set-arg1
+  arg0 arg2 arg1 poke-off-byte
+  repeat-frame
+end
+
+def string-align-right ( out out-size str str-n padding-char -- out out-size )
+  arg3 arg1 uint< IF
+    arg2 4 argn arg3 copy
+  ELSE
+    arg2 4 argn arg3 + arg1 - arg1 copy
+    4 argn arg3 arg1 - arg0 fill
+  THEN 3 return0-n
+end
+
+def pad-addr ( addr alignment )
+  arg1 arg0 1 - + arg0 uint-div arg0 int-mul
+  2 return1-n
+end
+
+def move-string-right ( str len max-len -- new-str len )
+  arg2 arg0 + arg1 - 1 - cell-size - cell-size pad-addr
+  arg2 over arg1 copy
+  dup arg1 null-terminate
+  arg1 3 return2-n
+end

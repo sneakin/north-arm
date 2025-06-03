@@ -64,6 +64,12 @@ def int-pow-loop
   THEN
 end
 
+def uint-pow
+  arg0 0 uint<= IF 1 2 return1-n THEN
+  arg0 1 uint<= IF arg1 2 return1-n THEN
+  arg1 dup arg0 int-pow-loop 2 return1-n
+end
+
 def int-pow
   arg0 0 int< IF 0 2 return1-n THEN
   arg0 0 int<= IF 1 2 return1-n THEN

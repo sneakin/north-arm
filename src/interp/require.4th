@@ -133,21 +133,6 @@ def loaded?
   *loaded-files* @ swap find-first IF true ELSE false THEN return1-1
 end
 
-SYS:DEFINED? OUT:DEFINED? IF OUT:DEFINED? pad-addr ELSE DEFINED? pad-addr THEN
-UNLESS
-  def pad-addr ( addr alignment )
-    arg1 arg0 1 - + arg0 uint-div arg0 int-mul
-    2 return1-n
-  end
-THEN
-
-def move-string-right ( str len max-len -- new-str len )
-  arg2 arg0 + arg1 - 1 - cell-size - cell-size pad-addr
-  arg2 over arg1 copy
-  dup arg1 null-terminate
-  arg1 3 return2-n
-end
-
 ( todo loaded-files needs to have a copy of the string )
 
 def load-once ( path ++ ok? )

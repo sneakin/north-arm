@@ -64,6 +64,10 @@ def int64-add
   arg3 arg2 arg1 arg0 int64-addc drop 4 return2-n
 end
 
+def int64-negative?
+  arg1 arg0 0LL int64< 2 return1-n
+end
+
 def int64-negate
   arg1 dup IF negate THEN
   arg0 CASE

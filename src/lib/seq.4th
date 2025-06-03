@@ -98,13 +98,6 @@ def fill-seq ( seq n value -- )
   repeat-frame
 end
 
-def fill ( ptr num-bytes value -- )
-  arg1 0 int> UNLESS 3 return0-n THEN
-  arg1 1 - set-arg1
-  arg0 arg2 arg1 poke-off-byte
-  repeat-frame
-end
-
 ( Allocating: )
 
 def stack-allot-zero
