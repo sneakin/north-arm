@@ -42,17 +42,6 @@ end
 ( Reversal: )
 
 DEFINED? nreverse-cells IF
-  def reverse-cells! ( ptr length -- )
-    arg1 arg0 1 - cell-size * + arg1 arg0 nreverse-cells
-    2 return0-n
-  end
-
-  ( todo move to string.4th? )
-  def reverse-bytes! ( ptr length -- )
-    arg1 arg0 1 - + arg1 arg0 nreverse-bytes
-    2 return0-n
-  end
-
   def reverse ( ptr num-cells ++ )
     arg1 arg0 1 - cell-size * + arg1 arg0 nreverse-cells
   end
@@ -97,6 +86,15 @@ def fill-seq ( seq n value -- )
   arg0 arg2 arg1 seq-poke
   repeat-frame
 end
+
+DEFINED? fill UNLESS
+  def fill ( ptr num-bytes value -- )
+    arg1 0 int> UNLESS 3 return0-n THEN
+    arg1 1 - set-arg1
+    arg0 arg2 arg1 poke-off-byte
+    repeat-frame
+  end
+THEN
 
 ( Allocating: )
 

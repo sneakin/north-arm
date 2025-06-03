@@ -26,3 +26,14 @@ def roll-back-n ( nth ... item n -- item nth ... )
   arg0 up-stack/2 poke
   1 return0-n
 end
+
+def reverse-cells! ( ptr length -- )
+  arg1 arg0 1 int-sub cell-size int-mul int-add arg1 arg0 nreverse-cells
+  2 return0-n
+end
+
+def reverse-bytes! ( ptr length -- )
+  arg1 arg0 1 int-sub int-add arg1 arg0 nreverse-bytes
+  2 return0-n
+end
+
