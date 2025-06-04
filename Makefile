@@ -33,7 +33,7 @@ ifeq ($(QUICK),)
 OUT_TARGETS+=thumb-linux-static thumb-linux-gnueabi thumb-linux-android
 endif
 
-OUTPUTS=version.4th build/$(TARGET)/bin/interp$(EXECEXT) build.sh \
+OUTPUTS=version.4th build/$(HOST)/bin/interp$(EXECEXT) build.sh \
 	build/target build/host
 
 ifeq ($(QUICK),)
@@ -44,8 +44,12 @@ ifeq ($(QUICK),)
 		build/bin/assembler-thumb.dict
 endif
 
+$(foreach target,$(sort $(OUT_TARGETS)), \
+  $(eval OUTPUTS+= \
+		build/$(target)/bin/interp$(EXECEXT)))
+
 $(foreach stage,$(STAGES), \
-  $(foreach target,$(OUT_TARGETS), \
+  $(foreach target,$(sort $(OUT_TARGETS)), \
     $(eval OUTPUTS+= \
 	build/$(target)/bin/builder.$(stage)$(EXECEXT) \
 	build/$(target)/bin/interp.$(stage)$(EXECEXT) \
@@ -104,8 +108,10 @@ build/host:
 build/$(HOST)/bin:
 	mkdir -p $@
 
+ifneq ($(HOST),$(TARGET))
 build/$(TARGET)/bin:
 	mkdir -p $@
+endif
 
 #
 # Prebuilt binary building from a clean tree.
@@ -116,7 +122,7 @@ bootstrap:
 
 BOOTSTRAPS=
 
-define define_bootstrap # targen
+define define_bootstrap # target
 bootstrap/$(1):
 	mkdir -p $$@
 
@@ -127,7 +133,7 @@ bootstrap/$(1)/interp$$(EXECEXT): release/root bootstrap/$(1)
 BOOTSTRAPS+=bootstrap/$(1)/interp$(EXECEXT)
 endef
 
-$(foreach target,$(OUT_TARGETS),$(eval $(call define_bootstrap,$(target))))
+$(foreach target,$(sort $(OUT_TARGETS)),$(eval $(call define_bootstrap,$(target))))
 
 boot: $(BOOTSTRAPS)
 
@@ -270,6 +276,7 @@ STAGE0_BUILDER=echo '" ./src/bin/builder.4th" load build' | $(STAGE0_FORTH)
 STAGE1_BUILDER=$(RUNNER) ./build/$(HOST)/bin/builder+core.1$(EXECEXT)
 
 # todo was using HOST vars which attempted a build for x86. Right but not ready.
+# todo the builder under bash needs a means to communicate the target
 
 define stage0_targets # target
 build/$(1)/bin/builder$$(EXECEXT): $$(BUILDER_MIN_SRC)
