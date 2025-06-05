@@ -35,3 +35,10 @@ defcol dict-entry-clone-fields
   over dict-entry-data peek over dict-entry-data poke
   2 dropn
 endcol
+
+( Execution: )
+
+defcol jump-data
+  drop
+  dict-entry-data peek jump-cs
+end

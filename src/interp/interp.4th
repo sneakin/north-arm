@@ -1,8 +1,3 @@
-defcol jump-data
-  drop
-  dict-entry-data peek jump-cs
-end
-
 ( Input: )
 
 64 defconst> token-buffer-max

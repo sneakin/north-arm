@@ -34,30 +34,56 @@ end
 
 ( todo optimize by counting down? divide & conquer? )
 
-def badlog2-uint-loop
+
+def badlog2-uint-loop ( n log -- log )
   arg1 1 uint<= IF arg0 2 return1-n THEN
   arg1 1 bsr set-arg1
   arg0 1 int-add set-arg0 repeat-frame
 end
 
-def badlog2-uint arg0 0 badlog2-uint-loop return1-1 end
-
-def badlog2-int
-  1 arg0 int<=
-  IF ' badlog2-uint tail-0
-  ELSE 0 return1-1 ( " range error" error )
+def badlog2-shift-for-precision ( bits-shifted n ++ )
+  arg0 1 uint> arg0 0x10000 uint< and IF
+    arg1 1 int-add set-arg1
+    arg0 dup int-mul set-arg0
+    repeat-frame
   THEN
 end
 
-def badlogn-uint->fixed16
-  arg1 badlog2-uint 16 bsl
+def badlog2-uint ( n -- log2ish )
+  0 arg0 badlog2-shift-for-precision 0 badlog2-uint-loop
+  local0 absr return1-1
+end
+
+def badlog2-ufixed16 ( n -- log2ish )
+  0 arg0 badlog2-shift-for-precision 0 badlog2-uint-loop
+  16 local0 int-sub bsl return1-1
+end
+
+def badlog2-int ( n -- log2ish )
+  1 arg0 int<=
+  IF arg0 badlog2-uint
+  ELSE 0 ( " range error" error )
+  THEN return1-1
+end
+
+def badlogn-uint->fixed16 ( n e -- log_e_N )
+  arg1 badlog2-ufixed16
   arg0 badlog2-uint
   uint-div 2 return1-n
 end
 
-def badlogn-uint
-  arg1 arg0 badlogn-uint->fixed16 16 absr 2 return1-n
+DEFINED? fixed16-ceil IF
+def badlogn-uint ( n e -- log_e_N )
+  arg1 arg0 badlogn-uint->fixed16 fixed16-ceil 2 return1-n
 end
+ELSE
+def badlogn-uint ( n e -- log_e_N )
+  arg1 arg0 badlogn-uint->fixed16
+  ( fixed16-ceil )
+  dup 0xFFFF logand 0x0 uint> IF 0x10000 int-add THEN
+  16 absr 2 return1-n
+end
+THEN
 
 ( todo optimize by recursively apply exponent/2 )
 
